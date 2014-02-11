@@ -19,26 +19,21 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
-import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
+import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.LibraryInterface;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
-import edu.umn.crisys.plexil.translator.il.action.AssignAction;
-import edu.umn.crisys.plexil.translator.il.action.CommandAction;
-import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
-import edu.umn.crisys.plexil.translator.il.action.UpdateAction;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
-import edu.umn.crisys.plexil.translator.il.vars.NodeTimepointReference;
-import edu.umn.crisys.util.Pair;
 
 public class Plan {
 
-    public static boolean PRUNE_TIMEPOINTS = true;
+    public static boolean PRUNE_TIMEPOINTS = false;
+    public static boolean REMOVE_IMPOSSIBLE_TRANSITIONS = false;
+
     
 	private List<NodeStateMachine> stateMachines = new LinkedList<NodeStateMachine>(); 
 	private Set<IntermediateVariable> variables = new HashSet<IntermediateVariable>();
@@ -52,6 +47,14 @@ public class Plan {
     public Plan(String planName) {
 	    this.planName = planName;
 	}
+    
+    public List<NodeStateMachine> getMachines() {
+    	return stateMachines;
+    }
+    
+    public Set<IntermediateVariable> getVariables() {
+    	return variables;
+    }
 	
 	public JDefinedClass toJava(JCodeModel cm, String pkg, boolean library) {
 	    String realPkg = pkg.equals("") ? "" : pkg+".";
@@ -65,9 +68,14 @@ public class Plan {
         
         clazz._extends(cm.ref(JavaPlan.class));
         
+
+	    if (REMOVE_IMPOSSIBLE_TRANSITIONS) {
+	        RemoveDeadTransitions.optimize(this);
+	    }
+        
         // Eliminate any start or end timepoints that aren't even read
         if (PRUNE_TIMEPOINTS) {
-            pruneTimepoints();
+            PruneUnusedTimepoints.optimize(this);
         }
 
         if (library) {
@@ -103,91 +111,7 @@ public class Plan {
 	    return clazz;
 	}
 	
-	private void pruneTimepoints() {
-	    Set<ILExpression> safeList = new HashSet<ILExpression>();
-	    
-	    Filter<ILExpression> timeFilter = new Filter<ILExpression>() {
 
-            @Override
-            public boolean accept(ILExpression obj) {
-                return obj instanceof NodeTimepointReference;
-            }};
-            
-	    // Save any that are being read in a guard or action
-	    // (assignment, command, or update could reference it)
-	    for (NodeStateMachine sm : stateMachines) {
-	        for (Transition t : sm.transitions) {
-	            for (TransitionGuard g : t.guards) {
-	                addAllMatchingInExpressionTo(g.getExpression(), safeList, timeFilter);
-	            }
-	            for (PlexilAction a : t.actions) {
-	                pruneTimepointActionHelper(a, safeList);
-	            }
-	        }
-	        for (State s : sm.states) {
-	            for (PlexilAction a : s.entryActions) {
-	                pruneTimepointActionHelper(a, safeList);
-	            }
-	            for (PlexilAction a : s.inActions) {
-	                pruneTimepointActionHelper(a, safeList);
-	            }
-	        }
-	    }
-	    
-	    // Okay, everything not on the list is being told to leave itself out.
-	    for (IntermediateVariable v : variables) {
-	        if (v instanceof NodeTimepointReference && ! safeList.contains(v) ) {
-	            ((NodeTimepointReference) v).markAsUnused();
-	        }
-	    }
-	}
-
-	private void pruneTimepointActionHelper(PlexilAction a, Set<ILExpression> safeList) {
-	    Filter<ILExpression> timeFilter = new Filter<ILExpression>() {
-
-	        @Override
-	        public boolean accept(ILExpression obj) {
-	            return obj instanceof NodeTimepointReference;
-	        }};
-	        
-        if (a instanceof AssignAction) {
-            addAllMatchingInExpressionTo(((AssignAction) a).getRHS(), safeList, timeFilter);
-        } else if (a instanceof CommandAction) {
-            addAllMatchingInExpressionTo(((CommandAction) a).getArgs(), safeList, timeFilter);
-        } else if (a instanceof UpdateAction) {
-            for (Pair<String, ILExpression> p : ((UpdateAction) a).getUpdates()) {
-                addAllMatchingInExpressionTo(p.second, safeList, timeFilter);
-            }
-        }
-
-	}
-
-	private static interface Filter<T> {
-	    public boolean accept(T obj);
-	}
-	
-	private void addAllMatchingInExpressionTo(List<ILExpression> es, Set<ILExpression> s, Filter<ILExpression> f) {
-	    for (ILExpression e : es) {
-	        addAllMatchingInExpressionTo(e, s, f);
-	    }
-	}
-	
-	private void addAllMatchingInExpressionTo(ILExpression e, Set<ILExpression> s, Filter<ILExpression> f) {
-	    if (f.accept(e)) {
-	        s.add(e);
-	        return;
-	    }
-	    
-	    if (e instanceof CompositeExpr) {
-	        CompositeExpr comp = (CompositeExpr) e;
-	        for (Expression arg : comp.getArguments()) {
-	            addAllMatchingInExpressionTo((ILExpression) arg, s, f);
-	        }    
-	    }
-	}
-	
-	
-	
 	public void addVariable(IntermediateVariable var) {
 	    variables.add(var);
 	}

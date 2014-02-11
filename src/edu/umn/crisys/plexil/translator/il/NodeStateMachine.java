@@ -28,7 +28,6 @@ import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 
 public class NodeStateMachine {
     
-    public static boolean REMOVE_IMPOSSIBLE_TRANSITIONS = true;
 	
 	public Plan thePlan;
 	
@@ -159,12 +158,8 @@ public class NodeStateMachine {
 	    JMethod stepMethod = clazz.method(JMod.NONE, cm.VOID, getStepMethodName());
 	    stepMethod.body().decl(cm.ref(PBoolean.class), "temp");
 	    JSwitch sw = stepMethod.body()._switch(stateVar.invoke("getCurrent"));
-	    // Now to go through the possible transitions. They need to be sorted by priority and optimized
+	    // Now to go through the transitions. They need to be sorted by priority for this.
 	    Collections.sort(transitions);
-	    
-	    if (REMOVE_IMPOSSIBLE_TRANSITIONS) {
-	        Optimization.removeImpossibleTransitions(transitions);
-	    }
 	    
 	    // We're going in order of priority, but the final code will be ordered by the
 	    // starting state. This map will let us grab the correct code block to add on to.

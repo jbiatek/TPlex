@@ -14,7 +14,7 @@ import com.sun.codemodel.JMod;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
-import edu.umn.crisys.plexil.java.plx.PlexilArray;
+import edu.umn.crisys.plexil.java.plx.VariableArray;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.translator.il.ILExprToJava;
 import edu.umn.crisys.plexil.translator.il.NodeUID;
@@ -60,8 +60,8 @@ public class ArrayReference extends RHSVariable {
     public void addVarToClass(JDefinedClass clazz) {
         JCodeModel cm = clazz.owner();
         
-        // Create JClass for PlexilArray<PBooleanOrPIntOrPWhatever>:
-        JClass parameterized = cm.ref(PlexilArray.class).narrow(type.elementType().getTypeClass());
+        // Create JClass for VariableArray<PBooleanOrPIntOrPWhatever>:
+        JClass parameterized = cm.ref(VariableArray.class).narrow(type.elementType().getTypeClass());
         
         // Grab the initial values
         Object[] initials = new Object[] { };

@@ -1,12 +1,25 @@
-package edu.umn.crisys.plexil.translator.il;
+package edu.umn.crisys.plexil.il.optimize;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Optimization {
+import edu.umn.crisys.plexil.translator.il.NodeStateMachine;
+import edu.umn.crisys.plexil.translator.il.Plan;
+import edu.umn.crisys.plexil.translator.il.State;
+import edu.umn.crisys.plexil.translator.il.Transition;
 
+public class RemoveDeadTransitions {
+	
+	private RemoveDeadTransitions() {}
+	
+	public static void optimize(Plan ilPlan) {
+		for (NodeStateMachine nsm : ilPlan.getMachines()) {
+			removeImpossibleTransitions(nsm.transitions);
+		}
+	}
+	
     /**
      * Takes a list of transitions, and removes:
      * <ul>
@@ -17,13 +30,10 @@ public class Optimization {
      * 
      * @param chart The list that will be modified
      */
-    public static void removeImpossibleTransitions(List<Transition> chart) {
+    private static void removeImpossibleTransitions(List<Transition> chart) {
         // These optimizations are generic. We look for:
         //   - Transitions that are never taken
         //   - Transitions that are always taken that cause others to never be taken
-        
-        
-        // 
         Map<State, Integer> alwaysTaken = new HashMap<State, Integer>();
         for (Iterator<Transition> it = chart.iterator();
                 it.hasNext();) {
@@ -55,14 +65,5 @@ public class Optimization {
             } 
         }
     }
-    
-    public NodeStateMachine mergeSequentialMachines(NodeStateMachine one, NodeStateMachine two) {
-        
-        
-        
-        
-        throw new Error();
-    }
 
-    
 }

@@ -6,7 +6,15 @@ import java.util.List;
 import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
+import edu.umn.crisys.plexil.java.values.BooleanValue;
+import edu.umn.crisys.plexil.java.values.IntegerValue;
+import edu.umn.crisys.plexil.java.values.PBoolean;
+import edu.umn.crisys.plexil.java.values.PNumeric;
+import edu.umn.crisys.plexil.java.values.PString;
+import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.StringValue;
+import edu.umn.crisys.plexil.java.values.UnknownValue;
 
 /**
  * Almost all of Plexil's native operations. 
@@ -211,6 +219,99 @@ public class Operation extends CompositeExpr {
             this.argType = argType;
             this.returnType = returnType;
         }
+        
+        public PValue eval(List<PValue> values) {
+        	if (expectedArgs != -1 && values.size() != expectedArgs) {
+        		throw new RuntimeException(this+" didn't expect "+values.size()+" args");
+        	}
+        	for (PValue p : values) {
+        		argType.typeCheck(p.getType());
+        	}
+        	switch(this) {
+        	case ABS:
+        		return num(values.get(0)).abs();
+        	case ADD:
+        		PNumeric sum = IntegerValue.get(0);
+        		for (PValue n : values) {
+        			sum = sum.add(num(n));
+        		}
+        		return sum;
+        	case AND:
+        		PBoolean ret = BooleanValue.get(true);
+        		for (PValue b : values) {
+        			ret = ret.and(bool(b));
+        		}
+        		return ret;
+        	case CONCAT:
+        		PString str = StringValue.get("");
+        		for (PValue s : values) {
+        			str = str.concat(str(s));
+        		}
+        	case DIV:
+        		return num(values.get(0)).div(num(values.get(1)));
+        	case EQ:
+        		return values.get(0).equalTo(values.get(1));
+        	case GE:
+        		return num(values.get(0)).ge(num(values.get(1)));
+        	case GT:
+        		return num(values.get(0)).gt(num(values.get(1)));
+        	case LE:
+        		return num(values.get(0)).le(num(values.get(1)));
+        	case LT: 
+        		return num(values.get(0)).lt(num(values.get(1)));
+        	case ISKNOWN:
+        		return BooleanValue.get(values.get(0).isKnown());
+        	case MAX:
+        		return num(values.get(0)).max(num(values.get(1)));
+        	case MIN:
+        		return num(values.get(0)).min(num(values.get(1)));
+        	case MOD:
+        		return num(values.get(0)).mod(num(values.get(1)));
+        	case MUL:
+        		PNumeric mul = IntegerValue.get(1);
+        		for (PValue n : values) {
+        			mul = mul.mul(num(n));
+        		}
+        		return mul;
+        	case NE:
+        		return values.get(0).equalTo(values.get(1)).not();
+        	case NOT:
+        		return bool(values.get(0)).not();
+        	case OR:
+        		PBoolean or = BooleanValue.get(false);
+        		for (PValue b : values) {
+        			or = or.or(bool(b));
+        		}
+        		return or;
+        	case SQRT:
+        		return num(values.get(0)).sqrt();
+        	case SUB:
+        		return num(values.get(0)).sub(num(values.get(1)));
+        	case XOR:
+        		PBoolean xor = bool(values.get(0));
+        		for (int i = 1; i < values.size(); i++) {
+        			xor = xor.xor(bool(values.get(i)));
+        		}
+        		return xor;
+        	case CAST_BOOL:
+        	case CAST_NUMERIC:
+        	case CAST_STRING: 
+        		return values.get(0);
+        	default:
+        		return UnknownValue.get();
+        	}
+        }
+        
+        private PNumeric num(PValue p) {
+        	return (PNumeric) p;
+        }
+        private PBoolean bool(PValue p) {
+        	return (PBoolean) p;
+        }
+        private PString str(PValue p) {
+        	return (PString) p;
+        }
+        
         
         private String toString(List<Expression> args) {
             String ret;

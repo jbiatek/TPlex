@@ -20,7 +20,7 @@ import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
-import edu.umn.crisys.plexil.java.plx.PlexilArray;
+import edu.umn.crisys.plexil.java.plx.VariableArray;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.PBoolean;
@@ -41,13 +41,82 @@ import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 public class ILExprToJava {
 
     public static boolean isConstant(ILExpression ilExpr) {
-        // TODO: Actually evaluate this.
-        return false;
+        return eval(ilExpr).isKnown();
     }
     
     public static PValue eval(ILExpression ilExpr) {
-        // TODO: Write a real eval.
-        return UnknownValue.get();
+        return ilExpr.accept(new ILEval(), null);
+    }
+    
+    private static class ILEval implements ILExprVisitor<Void, PValue> {
+
+		@Override
+		public PValue visitArrayIndex(ArrayIndexExpr array, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitArrayLiteral(ArrayLiteralExpr array, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitLookupNow(LookupNowExpr lookup, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitNodeTimepoint(NodeTimepointExpr timept, Void param) {
+			return UnknownValue.get();
+		}
+
+		
+		@Override
+		public PValue visitOperation(Operation op, Void param) {
+			List<PValue> values = new ArrayList<PValue>();
+			for (Expression arg : op.getArguments()) {
+				values.add(arg.accept(this, null));
+			}
+			return op.getOperator().eval(values);
+		}
+
+		@Override
+		public PValue visitPValue(PValueExpression value, Void param) {
+			return value.getValue();
+		}
+
+		@Override
+		public PValue visitRootParentState(RootParentStateExpr state, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitRootParentExit(RootAncestorExitExpr ancExit,
+				Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitRootParentInvariant(
+				RootAncestorInvariantExpr ancInv, Void param) {
+			return UnknownValue.get();
+		}
+
+		@Override
+		public PValue visitVariable(IntermediateVariable var, Void param) {
+			return UnknownValue.get();
+		}
+    	
     }
     
     public static JExpression toJava(ILExpression expr, JCodeModel cm) {
@@ -81,7 +150,8 @@ public class ILExprToJava {
         @Override
         public JExpression visitArrayLiteral(ArrayLiteralExpr array,
                 JCodeModel cm) {
-            throw new RuntimeException("Array literals can't be used as Expressions");
+        	// This should only be used by PlexilScript.
+        	return newArrayExpression("anon", array.getType(), array.getArguments().size(), cm, array.getArguments().toArray());
         }
 
         @Override
@@ -306,8 +376,8 @@ public class ILExprToJava {
     }
     
     /**
-     * Create an expression for making a new PlexilArray. This will return
-     * <pre>new PlexilArray&lt;Type&gt;(name, maxSize, type, Type... inits)</pre>
+     * Create an expression for making a new VariableArray. This will return
+     * <pre>new VariableArray&lt;Type&gt;(name, maxSize, type, Type... inits)</pre>
      * @param name The name of the array
      * @param type The ARRAY type, e.g. BOOLEAN_ARRAY
      * @param maxSize The max size of the array
@@ -327,8 +397,8 @@ public class ILExprToJava {
         Class<? extends PValue> elementClass = type.elementType().getConcreteTypeClass();
 
         
-        // Create JClass for PlexilArray<PBooleanOrPIntOrPWhatever>:
-        JClass parameterized = cm.ref(PlexilArray.class).narrow(type.elementType().getTypeClass());
+        // Create JClass for VariableArray<PBooleanOrPIntOrPWhatever>:
+        JClass parameterized = cm.ref(VariableArray.class).narrow(type.elementType().getTypeClass());
 
         
         JInvocation init = JExpr._new(parameterized)
@@ -367,7 +437,7 @@ public class ILExprToJava {
         if (type.isArrayType()) {
             // Time to build up an array expression.
             @SuppressWarnings("unchecked")
-            PlexilArray<? extends StandardValue> arr = (PlexilArray<? extends StandardValue>) v;
+            VariableArray<? extends StandardValue> arr = (VariableArray<? extends StandardValue>) v;
             
             // Let's get the invocation, but do our own initial values since newArrayExpression
             // expects Java natives, not the PValues that we have in this array.

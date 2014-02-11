@@ -9,10 +9,9 @@ import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.StandardValue;
-import edu.umn.crisys.plexil.java.values.PValue.Util;
 
 
-public class PlexilArray<T extends PValue> extends StandardValue {
+public class VariableArray<T extends PValue> extends StandardValue {
 
 	private List<Variable<T>> array;
 	private PlexilType type; 
@@ -25,7 +24,7 @@ public class PlexilArray<T extends PValue> extends StandardValue {
 	 * @param elements Number of elements this array will hold
 	 * @param type The type of value that this array will hold.
 	 */
-	public PlexilArray(String name, int elements, PlexilType type, 
+	public VariableArray(String name, int elements, PlexilType type, 
 			T... initial) {
 	    this.name = name;
 	    if (type.isArrayType()) {
@@ -82,10 +81,10 @@ public class PlexilArray<T extends PValue> extends StandardValue {
 	}
 	
 	public void assignArray(PValue o, int priority) {
-	    if (o instanceof PlexilArray) {
+	    if (o instanceof VariableArray) {
 	        @SuppressWarnings("unchecked")
-            PlexilArray<? extends StandardValue> other = 
-                (PlexilArray<? extends StandardValue>) o;
+            VariableArray<? extends StandardValue> other = 
+                (VariableArray<? extends StandardValue>) o;
 	        
 	        
 	        if (other.array.size() > this.array.size()) {
@@ -110,26 +109,10 @@ public class PlexilArray<T extends PValue> extends StandardValue {
 	}
 	
 	@Override
-	public boolean isKnown() {
-		return true;
-	}
-
-	@Override
-	public boolean isUnknown() {
-		return false;
-	}
-
-	@Override
-	public PBoolean equalTo(PValue o) {
-		// Is array equality even a thing?
-		return BooleanValue.get(equals(o));
-	}
-
-	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PlexilArray) {
+		if (obj instanceof VariableArray) {
 			@SuppressWarnings("rawtypes")
-			PlexilArray other = (PlexilArray) obj;
+			VariableArray other = (VariableArray) obj;
 			return this.array.equals(other.array);
 		}
 		return false;
@@ -144,16 +127,6 @@ public class PlexilArray<T extends PValue> extends StandardValue {
 		return hash;
 	}
 
-	@Override
-	public PlexilType getType() {
-		return type;
-	}
-
-	@Override
-	public PValue castTo(PlexilType type) {
-		return PValue.Util.defaultCastTo(this, type);
-	}
-	
 	public void reset() {
 		for (Variable<T> var : array) {
 			var.reset();
@@ -173,5 +146,15 @@ public class PlexilArray<T extends PValue> extends StandardValue {
         }
         return false;
     }
+
+	@Override
+	public PBoolean equalTo(PValue o) {
+		return BooleanValue.get(false);
+	}
+
+	@Override
+	public PlexilType getType() {
+		return type;
+	}
 	
 }

@@ -16,10 +16,11 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import edu.umn.crisys.plexil.java.plx.PlexilArray;
+import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
+import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 
 public class PsxParser {
 
@@ -136,7 +137,7 @@ public class PsxParser {
         }
         // Then 1 or more Result tags.
         assertStart("Result", current);
-        PValue result = parseValueOrResult(current, xml, type, "Result");
+        ILExpression result = parseValueOrResult(current, xml, type, "Result");
         
         // Make sure that we're done
         assertClosedTag(cmdStart, xml);
@@ -160,7 +161,7 @@ public class PsxParser {
         }
         
         // Then, 1 Value tag, unless it's an array.
-        PValue returnValue = parseValueOrResult(current, xml, type, "Value");
+        ILExpression returnValue = parseValueOrResult(current, xml, type, "Value");
         
         
         // That should be everything, right?
@@ -196,18 +197,16 @@ public class PsxParser {
         return PlexilType.fuzzyValueOf(paramType).parseValue(value);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static PValue parseValueOrResult(XMLEvent current, XMLEventReader xml, PlexilType type, String expectedTagName) throws XMLStreamException {
+    private static ILExpression parseValueOrResult(XMLEvent current, XMLEventReader xml, PlexilType type, String expectedTagName) throws XMLStreamException {
         assertStart(expectedTagName, current);
-        PValue returnValue;
         if (type.isArrayType()) {
             // Expect a few value tags then.
-            List<StandardValue> values = new ArrayList<StandardValue>();
+            List<PValueExpression> values = new ArrayList<PValueExpression>();
             PlexilType elementType = type.elementType();
             
-            //This check will be redundant after the first time, because we'll peek ahead and make sure first
+            //As long as we keep seeing our tags, keep adding values in.
             while ( isTag(current, expectedTagName) ) {
-                values.add((StandardValue) elementType.parseValue(getStringContent(current, xml)));
+                values.add(new PValueExpression(elementType.parseValue(getStringContent(current, xml))));
                 
                 if ( ! nextTagIsStartOf(expectedTagName, xml)) {
                     break;
@@ -215,13 +214,12 @@ public class PsxParser {
                     current = xml.nextTag();
                 }
             }
-            returnValue = new PlexilArray("script array", values.size(), type, values.toArray(new StandardValue[] {}));
+            return new ArrayLiteralExpr(type, values);
             
         } else {
+        	// Should just be a single value.
             String valueStr = getStringContent(current, xml);
-            returnValue = type.parseValue(valueStr);
+            return new PValueExpression(type.parseValue(valueStr));
         }
-        
-        return returnValue;
     }
 }

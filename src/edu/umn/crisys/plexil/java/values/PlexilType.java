@@ -1,8 +1,5 @@
 package edu.umn.crisys.plexil.java.values;
 
-import edu.umn.crisys.plexil.java.plx.PlexilArray;
-
-
 public enum PlexilType {
 
     BOOLEAN			(UnknownValue.get()),
@@ -51,18 +48,13 @@ public enum PlexilType {
         case REAL: return PReal.class;
         case STRING: return PString.class;
         case NUMERIC: return PNumeric.class;
-        case ARRAY:
-        case BOOLEAN_ARRAY:
-        case INTEGER_ARRAY:
-        case REAL_ARRAY:
-        case STRING_ARRAY:
-            return PlexilArray.class;
         case STATE: return NodeState.class;
         case OUTCOME: return NodeOutcome.class;
         case FAILURE: return NodeFailureType.class;
         case COMMAND_HANDLE: return CommandHandleState.class;
+        default:
+        	throw new RuntimeException(this+" does not have a type class."); 
         }
-        throw new RuntimeException("Couldn't find the type, add it");
     }
     
     /**
@@ -145,22 +137,7 @@ public enum PlexilType {
      * @param values
      * @return
      */
-    public PValue parseValue(String... values) {
-        if ( ! this.isArrayType()) {
-            if (values.length == 1) {
-                return parseSingleValue(values[0]);
-            } else {
-                throw new RuntimeException(this+" is not an array, can't parse more than 1 item");
-            }
-        }
-        StandardValue[] parsed = new StandardValue[values.length];
-        for (int i=0; i < values.length; i++) {
-            parsed[i] = (StandardValue) elementType().parseSingleValue(values[i]);
-        }
-        return new PlexilArray<StandardValue>("parsed array", parsed.length, this, parsed);
-    }
-    
-    private PValue parseSingleValue(String value) {
+    public PValue parseValue(String value) {
         switch(this) {
         case UNKNOWN:
             return UnknownValue.get();
@@ -187,9 +164,9 @@ public enum PlexilType {
             return NodeFailureType.valueOf(value);
         case COMMAND_HANDLE:
             return CommandHandleState.valueOf(value);
+        default:
+        	throw new RuntimeException("Cannot parse values of "+this);
         }
-        throw new RuntimeException("Couldn't find "+this+" in the case statement here");
-        
     }
     
     /**
@@ -211,8 +188,9 @@ public enum PlexilType {
         case INTEGER: return IntegerValue.class;
         case REAL: return RealValue.class;
         case STRING: return StringValue.class;
-        }
+        default:
         return getTypeClass();
+        }
     }
     
     /**
@@ -237,8 +215,9 @@ public enum PlexilType {
             return REAL_ARRAY;
         case STRING:
             return STRING_ARRAY;
+        default:
+        	throw new RuntimeException("Cannot make an array of "+this);
         }
-        throw new RuntimeException("Cannot make an array of "+this);
     }
 
     /**
@@ -257,8 +236,9 @@ public enum PlexilType {
             return STRING;
         case ARRAY:
             return UNKNOWN;
+        default:
+        	throw new RuntimeException(this+" is not an array and has no elements");
         }
-        throw new RuntimeException(this+" is not an array and has no elements");
     }
     
     /**
@@ -279,8 +259,9 @@ public enum PlexilType {
         case FAILURE:
         case COMMAND_HANDLE:
             return true;
+        default:
+        	return false;
         }
-        return false;
     }
 
     /**

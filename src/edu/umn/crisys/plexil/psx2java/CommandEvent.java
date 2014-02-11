@@ -7,6 +7,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JInvocation;
 
+import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.translator.il.ILExprToJava;
 
@@ -28,9 +29,9 @@ public class CommandEvent implements ScriptEvent {
     private String name;
     private Action action;
     private List<PValue> params;
-    private PValue result;
+    private ILExpression result;
     
-    public CommandEvent(Action action, String name, List<PValue> params, PValue result) {
+    public CommandEvent(Action action, String name, List<PValue> params, ILExpression result) {
         this.name = name;
         this.action = action;
         this.params = params;
@@ -40,7 +41,7 @@ public class CommandEvent implements ScriptEvent {
     @Override
     public void toJava(JBlock block, JCodeModel cm) {
         JInvocation invoke = block.invoke(action.methodToCall)
-            .arg(ILExprToJava.PValueToJava(result, cm))
+            .arg(ILExprToJava.toJava(result, cm))
             .arg(JExpr.lit(name));
         for (PValue param : params) {
             invoke.arg(ILExprToJava.PValueToJava(param, cm));

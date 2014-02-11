@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.test.java;
 
 import java.util.Arrays;
 
-import edu.umn.crisys.plexil.java.plx.PlexilArray;
+import edu.umn.crisys.plexil.java.plx.VariableArray;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.PBoolean;
@@ -26,8 +26,8 @@ public class TypelessPlexilArray extends StandardValue {
     }
     
     public boolean equals(Object o) {
-        if (o instanceof PlexilArray) {
-            PlexilArray arr = (PlexilArray) o;
+        if (o instanceof VariableArray) {
+            VariableArray arr = (VariableArray) o;
             if (arr.size() != values.length) {
                 System.out.println(arr.size());
                 System.out.println(values.length);

@@ -27,9 +27,9 @@ public abstract class JavaPlan implements PlexilTestable {
     @SuppressWarnings("rawtypes")
     private List<Variable> commitVarsAfterMacroStep = new LinkedList<Variable>();
     @SuppressWarnings("rawtypes")
-    private List<PlexilArray> commitArraysAfterMicroStep = new LinkedList<PlexilArray>();
+    private List<VariableArray> commitArraysAfterMicroStep = new LinkedList<VariableArray>();
     @SuppressWarnings("rawtypes")
-    private List<PlexilArray> commitArraysAfterMacroStep = new LinkedList<PlexilArray>();
+    private List<VariableArray> commitArraysAfterMacroStep = new LinkedList<VariableArray>();
     
     private List<SimpleCurrentNext<?>> commitSimpleAfterMicroStep = 
         new LinkedList<SimpleCurrentNext<?>>();
@@ -112,7 +112,7 @@ public abstract class JavaPlan implements PlexilTestable {
         for (Variable v : commitVarsAfterMicroStep) {
             v.commit();
         }
-        for (PlexilArray a : commitArraysAfterMicroStep) {
+        for (VariableArray a : commitArraysAfterMicroStep) {
             a.commit();
         }
         for (SimpleCurrentNext<?> s : commitSimpleAfterMicroStep) {
@@ -132,7 +132,7 @@ public abstract class JavaPlan implements PlexilTestable {
         for (Variable v : commitVarsAfterMacroStep) {
             v.commit();
         }
-        for (PlexilArray a : commitArraysAfterMacroStep) {
+        for (VariableArray a : commitArraysAfterMacroStep) {
             a.commit();
         }
         for (JavaPlan lib : commitLibraryAfterMacroStep) {
@@ -185,13 +185,13 @@ public abstract class JavaPlan implements PlexilTestable {
     }
     
     @SuppressWarnings("rawtypes")
-    public void commitAfterMicroStep(PlexilArray a) {
+    public void commitAfterMicroStep(VariableArray a) {
         askForCommitAfterMicro();
         commitArraysAfterMicroStep.add(a);
     }
     
     @SuppressWarnings("rawtypes")
-    public void commitAfterMacroStep(PlexilArray a) {
+    public void commitAfterMacroStep(VariableArray a) {
         askForCommitAfterMacro();
         commitArraysAfterMacroStep.add(a);
     }

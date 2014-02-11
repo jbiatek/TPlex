@@ -25,20 +25,18 @@ public class PValueExpression implements ASTExpression, ILExpression {
     /**
      * Try to put together a PValue out of the type and value(s). 
      * @param type
-     * @param values
+     * @param value
      */
-    public PValueExpression(String type, String...values) {
-        this.value = PlexilType.fuzzyValueOf(type).parseValue(values);
+    public PValueExpression(String type, String value) {
+        this.value = PlexilType.fuzzyValueOf(type).parseValue(value);
     }
     
     /**
-     * Parse the value(s) as the given type. Does the same thing as 
-     * PlexilType.parseValue(), meaning that unless the type is an array type,
-     * you should only pass in one value to be parsed.
+     * Parse the value(s) as the given type. 
      * @param type
      * @param value
      */
-    public PValueExpression(PlexilType type, String... value) {
+    public PValueExpression(PlexilType type, String value) {
         this.value = type.parseValue(value);
     }
     
@@ -65,6 +63,10 @@ public class PValueExpression implements ASTExpression, ILExpression {
         }
     }
     
+    /**
+     * Create a PValueExpression from a PValue.
+     * @param v
+     */
     public PValueExpression(PValue v) {
         value = v;
     }
