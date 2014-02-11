@@ -1,0 +1,84 @@
+
+[PlexilExec:printPlan]
+StartConditionCheck{
+ State: StartConditionCheck (id_22[au](WAITING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ SkipCondition: Boolean constant false (id_28[au](0): boolean)
+ StartCondition: (id_67[au](0): ((id_69[au](0): LookupOnChange(some_state(), RealValue (id_73[au](1): real))) >= RealValue (id_75[au](3): real)))
+ EndCondition: Boolean constant true (id_30[au](1): boolean)
+ ExitCondition: Boolean constant false (id_28[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ PreCondition: Boolean constant true (id_30[au](1): boolean)
+ PostCondition: Boolean constant true (id_30[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_28[au](0): boolean)
+ ActionCompleteCondition: StartConditionCheck ack (id_61[iu](UNKNOWN): boolean)
+ AbortCompleteCondition: StartConditionCheck abortComplete (id_63[iu](UNKNOWN): boolean)
+ foo: foo (id_32[iu](0): int)
+}
+
+[PlexilExec:printPlan]
+StartConditionCheck{
+ State: StartConditionCheck (id_22[au](WAITING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ SkipCondition: Boolean constant false (id_28[au](0): boolean)
+ StartCondition: (id_67[au](0): ((id_69[au](1): LookupOnChange(some_state(), RealValue (id_73[au](1): real))) >= RealValue (id_75[au](3): real)))
+ EndCondition: Boolean constant true (id_30[au](1): boolean)
+ ExitCondition: Boolean constant false (id_28[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ PreCondition: Boolean constant true (id_30[au](1): boolean)
+ PostCondition: Boolean constant true (id_30[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_28[au](0): boolean)
+ ActionCompleteCondition: StartConditionCheck ack (id_61[iu](UNKNOWN): boolean)
+ AbortCompleteCondition: StartConditionCheck abortComplete (id_63[iu](UNKNOWN): boolean)
+ foo: foo (id_32[iu](0): int)
+}
+
+[PlexilExec:printPlan]
+StartConditionCheck{
+ State: StartConditionCheck (id_22[au](WAITING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ SkipCondition: Boolean constant false (id_28[au](0): boolean)
+ StartCondition: (id_67[au](0): ((id_69[au](2): LookupOnChange(some_state(), RealValue (id_73[au](1): real))) >= RealValue (id_75[au](3): real)))
+ EndCondition: Boolean constant true (id_30[au](1): boolean)
+ ExitCondition: Boolean constant false (id_28[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ PreCondition: Boolean constant true (id_30[au](1): boolean)
+ PostCondition: Boolean constant true (id_30[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_28[au](0): boolean)
+ ActionCompleteCondition: StartConditionCheck ack (id_61[iu](UNKNOWN): boolean)
+ AbortCompleteCondition: StartConditionCheck abortComplete (id_63[iu](UNKNOWN): boolean)
+ foo: foo (id_32[iu](0): int)
+}
+
+[PlexilExec:printPlan]
+StartConditionCheck{
+ State: StartConditionCheck (id_22[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_28[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ SkipCondition: Boolean constant false (id_28[au](0): boolean)
+ StartCondition: (id_67[iu](UNKNOWN): ((id_69[iu](UNKNOWN): LookupOnChange(some_state(), RealValue (id_73[au](1): real))) >= RealValue (id_75[au](3): real)))
+ EndCondition: Boolean constant true (id_30[au](1): boolean)
+ ExitCondition: Boolean constant false (id_28[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_30[au](1): boolean)
+ PreCondition: Boolean constant true (id_30[au](1): boolean)
+ PostCondition: Boolean constant true (id_30[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_28[au](0): boolean)
+ ActionCompleteCondition: StartConditionCheck ack (id_61[au](1): boolean)
+ AbortCompleteCondition: StartConditionCheck abortComplete (id_63[iu](UNKNOWN): boolean)
+ foo: foo (id_32[au](3): int)
+}
+
+[PlexilExec:printPlan]
+StartConditionCheck{
+ State: StartConditionCheck (id_22[au](FINISHED): state) (0)
+ Outcome: StartConditionCheck (id_24[au](SUCCESS): outcome)
+ foo: foo (id_32[iu](3): int)
+}
+

@@ -1,0 +1,1547 @@
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](0): boolean)
+ targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[au](0): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[iu](UNKNOWN): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](INACTIVE): state) (inf)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](INACTIVE): state) (inf)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](0): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](0): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](0): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](0): boolean)
+   targetSpeed: targetSpeed (id_83[au](UNKNOWN): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(3:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](EXECUTING): state) (4)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_455[iu](UNKNOWN): LookupOnChange(SetPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: (id_449[au](0): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+   ActionCompleteCondition: (id_443[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](EXECUTING): state) (4)
+     AncestorEndCondition: (id_462[au](0): ((id_431[au](0): childrenFinished(3:6)) || (id_449[au](0): childrenFinished(0:2))))
+     AncestorExitCondition: (id_464[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_466[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: Boolean constant true (id_79[au](1): boolean)
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: SetCruiseOn ack (id_471[au](1): boolean)
+     AbortCompleteCondition: SetCruiseOn abortComplete (id_473[iu](UNKNOWN): boolean)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](EXECUTING): state) (4)
+     AncestorEndCondition: (id_462[au](0): ((id_431[au](0): childrenFinished(3:6)) || (id_449[au](0): childrenFinished(0:2))))
+     AncestorExitCondition: (id_464[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_466[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: Boolean constant true (id_79[au](1): boolean)
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: SetTargetSpeed ack (id_484[au](1): boolean)
+     AbortCompleteCondition: SetTargetSpeed abortComplete (id_486[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(3:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[iu](UNKNOWN): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](INACTIVE): state) (inf)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](INACTIVE): state) (inf)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(4:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](FINISHED): state) (5)
+   Outcome: SET (id_90[au](SUCCESS): outcome)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](FINISHED): state) (5)
+     Outcome: SetCruiseOn (id_97[au](SUCCESS): outcome)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](FINISHED): state) (5)
+     Outcome: SetTargetSpeed (id_128[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](EXECUTING): state) (5)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[au](0): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](WAITING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_554[au](0): ((id_556[au](52): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) < targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: IncreaseThrottle ack (id_546[iu](UNKNOWN): boolean)
+     AbortCompleteCondition: IncreaseThrottle abortComplete (id_548[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0): real)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](WAITING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_574[au](0): ((id_576[au](52): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) > targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: DecreaseThrottle ack (id_566[iu](UNKNOWN): boolean)
+     AbortCompleteCondition: DecreaseThrottle abortComplete (id_568[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(4:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0.1): real)
+  SET{
+   State: SET (id_88[au](FINISHED): state) (5)
+   Outcome: SET (id_90[au](SUCCESS): outcome)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](FINISHED): state) (5)
+     Outcome: SetCruiseOn (id_97[au](SUCCESS): outcome)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](FINISHED): state) (5)
+     Outcome: SetTargetSpeed (id_128[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](EXECUTING): state) (5)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[au](0): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0.1): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](EXECUTING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_554[iu](UNKNOWN): ((id_556[iu](UNKNOWN): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) < targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: IncreaseThrottle ack (id_546[au](1): boolean)
+     AbortCompleteCondition: IncreaseThrottle abortComplete (id_548[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0.1): real)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](WAITING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_574[au](0): ((id_576[au](50): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) > targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: DecreaseThrottle ack (id_566[iu](UNKNOWN): boolean)
+     AbortCompleteCondition: DecreaseThrottle abortComplete (id_568[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0.1): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(4:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0.1): real)
+  SET{
+   State: SET (id_88[au](FINISHED): state) (5)
+   Outcome: SET (id_90[au](SUCCESS): outcome)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](FINISHED): state) (5)
+     Outcome: SetCruiseOn (id_97[au](SUCCESS): outcome)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](FINISHED): state) (5)
+     Outcome: SetTargetSpeed (id_128[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](EXECUTING): state) (5)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[au](0): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0.1): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](FINISHED): state) (5)
+     Outcome: IncreaseThrottle (id_306[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0.1): real)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](WAITING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_574[au](0): ((id_576[au](50): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) > targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: DecreaseThrottle ack (id_566[iu](UNKNOWN): boolean)
+     AbortCompleteCondition: DecreaseThrottle abortComplete (id_568[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0.1): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(4:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0.1): real)
+  SET{
+   State: SET (id_88[au](FINISHED): state) (5)
+   Outcome: SET (id_90[au](SUCCESS): outcome)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](FINISHED): state) (5)
+     Outcome: SetCruiseOn (id_97[au](SUCCESS): outcome)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](FINISHED): state) (5)
+     Outcome: SetTargetSpeed (id_128[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](EXECUTING): state) (5)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[au](0): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0.1): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](FINISHED): state) (5)
+     Outcome: IncreaseThrottle (id_306[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0.1): real)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](WAITING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_574[au](0): ((id_576[au](51): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) > targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: DecreaseThrottle ack (id_566[iu](UNKNOWN): boolean)
+     AbortCompleteCondition: DecreaseThrottle abortComplete (id_568[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0.1): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(4:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](FINISHED): state) (5)
+   Outcome: SET (id_90[au](SUCCESS): outcome)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](FINISHED): state) (5)
+     Outcome: SetCruiseOn (id_97[au](SUCCESS): outcome)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](FINISHED): state) (5)
+     Outcome: SetTargetSpeed (id_128[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](EXECUTING): state) (5)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[au](0): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](FINISHED): state) (5)
+     Outcome: IncreaseThrottle (id_306[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0): real)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](EXECUTING): state) (5)
+     AncestorEndCondition: (id_535[au](0): ((id_431[au](0): childrenFinished(4:6)) || (id_533[au](0): !cruiseOn (id_81[au](1): boolean))))
+     AncestorExitCondition: (id_537[au](0): (Boolean constant false (id_77[au](0): boolean) || Boolean constant false (id_77[au](0): boolean)))
+     AncestorInvariantCondition: (id_539[au](1): (Boolean constant true (id_79[au](1): boolean) && Boolean constant true (id_79[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_77[au](0): boolean)
+     StartCondition: (id_574[iu](UNKNOWN): ((id_576[iu](UNKNOWN): LookupOnChange(ActualSpeed(), Real constant 0 (id_459[au](0): real))) > targetSpeed (id_83[au](52): real)))
+     EndCondition: Boolean constant true (id_79[au](1): boolean)
+     ExitCondition: Boolean constant false (id_77[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+     PreCondition: Boolean constant true (id_79[au](1): boolean)
+     PostCondition: Boolean constant true (id_79[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+     ActionCompleteCondition: DecreaseThrottle ack (id_566[au](1): boolean)
+     AbortCompleteCondition: DecreaseThrottle abortComplete (id_568[iu](UNKNOWN): boolean)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+CruiseControl{
+ State: CruiseControl (id_71[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ SkipCondition: Boolean constant false (id_77[au](0): boolean)
+ StartCondition: Boolean constant true (id_79[au](1): boolean)
+ EndCondition: (id_431[au](0): childrenFinished(4:6))
+ ExitCondition: Boolean constant false (id_77[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+ PreCondition: Boolean constant true (id_79[au](1): boolean)
+ PostCondition: Boolean constant true (id_79[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_77[au](0): boolean)
+ ActionCompleteCondition: (id_421[iu](UNKNOWN): childrenWaitingOrFinished(0:6))
+ cruiseOn: cruiseOn (id_81[au](1): boolean)
+ targetSpeed: targetSpeed (id_83[au](52): real)
+ throttlePos: throttlePos (id_85[au](0): real)
+  SET{
+   State: SET (id_88[au](FINISHED): state) (5)
+   Outcome: SET (id_90[au](SUCCESS): outcome)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+    SetCruiseOn{
+     State: SetCruiseOn (id_95[au](FINISHED): state) (5)
+     Outcome: SetCruiseOn (id_97[au](SUCCESS): outcome)
+     cruiseOn: cruiseOn (id_81[au](1): boolean)
+    }
+    SetTargetSpeed{
+     State: SetTargetSpeed (id_126[au](FINISHED): state) (5)
+     Outcome: SetTargetSpeed (id_128[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+    }
+  }
+  CANCEL{
+   State: CANCEL (id_185[au](WAITING): state) (0)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: (id_503[au](0): LookupOnChange(CancelPressed(), Real constant 0 (id_459[au](0): real)))
+   EndCondition: Boolean constant true (id_79[au](1): boolean)
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: BooleanValue (id_508[iu](1): boolean)
+   ActionCompleteCondition: CANCEL ack (id_495[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: CANCEL abortComplete (id_497[iu](UNKNOWN): boolean)
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+  }
+  RESUME{
+   State: RESUME (id_216[au](FINISHED): state) (0)
+   Outcome: RESUME (id_218[au](SUCCESS): outcome)
+  }
+  ACCEL{
+   State: ACCEL (id_243[au](FINISHED): state) (0)
+   Outcome: ACCEL (id_245[au](SUCCESS): outcome)
+  }
+  DECEL{
+   State: DECEL (id_270[au](FINISHED): state) (0)
+   Outcome: DECEL (id_272[au](SUCCESS): outcome)
+  }
+  ControlSpeedAutomatically{
+   State: ControlSpeedAutomatically (id_297[au](EXECUTING): state) (5)
+   AncestorEndCondition: (id_431[au](0): childrenFinished(4:6))
+   AncestorExitCondition: Boolean constant false (id_77[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   SkipCondition: Boolean constant false (id_77[au](0): boolean)
+   StartCondition: cruiseOn (id_81[au](1): boolean)
+   EndCondition: (id_533[au](0): !cruiseOn (id_81[au](1): boolean))
+   ExitCondition: Boolean constant false (id_77[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_79[au](1): boolean)
+   PreCondition: Boolean constant true (id_79[au](1): boolean)
+   PostCondition: Boolean constant true (id_79[au](1): boolean)
+   RepeatCondition: cruiseOn (id_81[au](1): boolean)
+   ActionCompleteCondition: (id_519[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   cruiseOn: cruiseOn (id_81[au](1): boolean)
+   targetSpeed: targetSpeed (id_83[au](52): real)
+   throttlePos: throttlePos (id_85[au](0): real)
+    IncreaseThrottle{
+     State: IncreaseThrottle (id_304[au](FINISHED): state) (5)
+     Outcome: IncreaseThrottle (id_306[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0): real)
+    }
+    DecreaseThrottle{
+     State: DecreaseThrottle (id_335[au](FINISHED): state) (5)
+     Outcome: DecreaseThrottle (id_337[au](SUCCESS): outcome)
+     targetSpeed: targetSpeed (id_83[au](52): real)
+     throttlePos: throttlePos (id_85[au](0): real)
+    }
+  }
+}
+

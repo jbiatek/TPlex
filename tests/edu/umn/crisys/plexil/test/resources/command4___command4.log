@@ -1,0 +1,86 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_20[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_26[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_26[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_28[au](1): boolean)
+ SkipCondition: Boolean constant false (id_26[au](0): boolean)
+ StartCondition: Boolean constant true (id_28[au](1): boolean)
+ EndCondition: (id_100[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_26[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_28[au](1): boolean)
+ PreCondition: Boolean constant true (id_28[au](1): boolean)
+ PostCondition: Boolean constant true (id_28[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_26[au](0): boolean)
+ ActionCompleteCondition: (id_95[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ result-string: result-string (id_30[au](UNKNOWN): string)
+  StringCommand{
+   State: StringCommand (id_33[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_100[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_26[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_28[au](1): boolean)
+   SkipCondition: Boolean constant false (id_26[au](0): boolean)
+   StartCondition: Boolean constant true (id_28[au](1): boolean)
+   EndCondition: Boolean constant true (id_28[au](1): boolean)
+   ExitCondition: Boolean constant false (id_26[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_28[au](1): boolean)
+   PreCondition: Boolean constant true (id_28[au](1): boolean)
+   PostCondition: Boolean constant true (id_28[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_26[au](0): boolean)
+   ActionCompleteCondition: (id_114[iu](UNKNOWN): isknown(StringCommand command_handle (id_110[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: StringCommand abortComplete (id_112[au](UNKNOWN): boolean)
+   Command handle: StringCommand command_handle (id_110[au](UNKNOWN): command_handle)
+   result-string: result-string (id_30[au](UNKNOWN): string)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_20[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_26[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_26[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_28[au](1): boolean)
+ SkipCondition: Boolean constant false (id_26[au](0): boolean)
+ StartCondition: Boolean constant true (id_28[au](1): boolean)
+ EndCondition: (id_100[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_26[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_28[au](1): boolean)
+ PreCondition: Boolean constant true (id_28[au](1): boolean)
+ PostCondition: Boolean constant true (id_28[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_26[au](0): boolean)
+ ActionCompleteCondition: (id_95[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ result-string: result-string (id_30[au](fred): string)
+  StringCommand{
+   State: StringCommand (id_33[au](FINISHING): state) (0)
+   AncestorEndCondition: (id_100[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_26[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_28[au](1): boolean)
+   SkipCondition: Boolean constant false (id_26[au](0): boolean)
+   StartCondition: Boolean constant true (id_28[au](1): boolean)
+   EndCondition: Boolean constant true (id_28[au](1): boolean)
+   ExitCondition: Boolean constant false (id_26[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_28[au](1): boolean)
+   PreCondition: Boolean constant true (id_28[au](1): boolean)
+   PostCondition: Boolean constant true (id_28[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_26[au](0): boolean)
+   ActionCompleteCondition: (id_114[au](0): isknown(StringCommand command_handle (id_110[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: StringCommand abortComplete (id_112[au](UNKNOWN): boolean)
+   Command handle: StringCommand command_handle (id_110[au](UNKNOWN): command_handle)
+   result-string: result-string (id_30[au](fred): string)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_20[au](FINISHED): state) (0)
+ Outcome: Root (id_22[au](SUCCESS): outcome)
+ result-string: result-string (id_30[iu](fred): string)
+  StringCommand{
+   State: StringCommand (id_33[au](FINISHED): state) (0)
+   Outcome: StringCommand (id_35[au](SUCCESS): outcome)
+   Command handle: StringCommand command_handle (id_110[iu](COMMAND_SUCCESS): command_handle)
+   result-string: result-string (id_30[iu](fred): string)
+  }
+}
+

@@ -1,0 +1,50 @@
+
+[PlexilExec:printPlan]
+Increment-test2{
+ State: Increment-test2 (id_32[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_38[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+ SkipCondition: Boolean constant false (id_38[au](0): boolean)
+ StartCondition: Boolean constant true (id_40[au](1): boolean)
+ EndCondition: (id_122[au](1): (result (id_42[au](3): int) == IntegerValue (id_124[au](3): int)))
+ ExitCondition: Boolean constant false (id_38[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+ PreCondition: Boolean constant true (id_40[au](1): boolean)
+ PostCondition: Boolean constant true (id_40[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_38[au](0): boolean)
+ ActionCompleteCondition: (id_112[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ result: result (id_42[au](3): int)
+  Increment{
+   State: Increment (id_54[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_122[au](1): (result (id_42[au](3): int) == IntegerValue (id_124[au](3): int)))
+   AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   SkipCondition: Boolean constant false (id_38[au](0): boolean)
+   StartCondition: Boolean constant true (id_40[au](1): boolean)
+   EndCondition: Boolean constant true (id_40[au](1): boolean)
+   ExitCondition: Boolean constant false (id_38[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   PreCondition: Boolean constant true (id_40[au](1): boolean)
+   PostCondition: Boolean constant true (id_40[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_38[au](0): boolean)
+   ActionCompleteCondition: Increment ack (id_131[au](1): boolean)
+   AbortCompleteCondition: Increment abortComplete (id_133[iu](UNKNOWN): boolean)
+   result: result (id_42[au](3): int)
+   x: x (id_50[au](2): const AliasVariable for (id_44[au](2): (IntegerValue (id_46[au](1): int) + IntegerValue (id_48[au](1): int))))
+  }
+}
+
+[PlexilExec:printPlan]
+Increment-test2{
+ State: Increment-test2 (id_32[au](FINISHED): state) (0)
+ Outcome: Increment-test2 (id_34[au](SUCCESS): outcome)
+ result: result (id_42[iu](3): int)
+  Increment{
+   State: Increment (id_54[au](FINISHED): state) (0)
+   Outcome: Increment (id_56[au](SUCCESS): outcome)
+   result: result (id_42[iu](3): int)
+   x: x (id_50[iu](UNKNOWN): const AliasVariable for (id_44[iu](UNKNOWN): (IntegerValue (id_46[au](1): int) + IntegerValue (id_48[au](1): int))))
+  }
+}
+

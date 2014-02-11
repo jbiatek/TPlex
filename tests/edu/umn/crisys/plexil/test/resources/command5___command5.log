@@ -1,0 +1,46 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_19[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_25[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_25[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_27[au](1): boolean)
+ SkipCondition: Boolean constant false (id_25[au](0): boolean)
+ StartCondition: Boolean constant true (id_27[au](1): boolean)
+ EndCondition: (id_97[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_25[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_27[au](1): boolean)
+ PreCondition: Boolean constant true (id_27[au](1): boolean)
+ PostCondition: Boolean constant true (id_27[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_25[au](0): boolean)
+ ActionCompleteCondition: (id_92[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+  StringCommand{
+   State: StringCommand (id_30[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_97[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_25[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_27[au](1): boolean)
+   SkipCondition: Boolean constant false (id_25[au](0): boolean)
+   StartCondition: Boolean constant true (id_27[au](1): boolean)
+   EndCondition: Boolean constant true (id_27[au](1): boolean)
+   ExitCondition: Boolean constant false (id_25[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_27[au](1): boolean)
+   PreCondition: Boolean constant true (id_27[au](1): boolean)
+   PostCondition: Boolean constant true (id_27[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_25[au](0): boolean)
+   ActionCompleteCondition: (id_115[iu](UNKNOWN): isknown(StringCommand command_handle (id_111[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: StringCommand abortComplete (id_113[au](UNKNOWN): boolean)
+   Command handle: StringCommand command_handle (id_111[au](UNKNOWN): command_handle)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_19[au](FINISHED): state) (0)
+ Outcome: Root (id_21[au](SUCCESS): outcome)
+  StringCommand{
+   State: StringCommand (id_30[au](FINISHED): state) (0)
+   Outcome: StringCommand (id_32[au](SUCCESS): outcome)
+   Command handle: StringCommand command_handle (id_111[iu](COMMAND_SUCCESS): command_handle)
+  }
+}
+

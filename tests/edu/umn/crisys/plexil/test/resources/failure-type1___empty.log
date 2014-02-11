@@ -1,0 +1,31 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_21[au](FINISHED): state) (0)
+ Outcome: Root (id_23[au](SUCCESS): outcome)
+  One{
+   State: One (id_32[au](FINISHED): state) (0)
+   Outcome: One (id_34[au](FAILURE): outcome)
+   Failure type: One (id_36[au](POST_CONDITION_FAILED): failure)
+  }
+  Two{
+   State: Two (id_59[au](FINISHED): state) (0)
+   Outcome: Two (id_61[au](SUCCESS): outcome)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_21[au](FINISHED): state) (0)
+ Outcome: Root (id_23[au](SUCCESS): outcome)
+  One{
+   State: One (id_32[au](FINISHED): state) (0)
+   Outcome: One (id_34[au](FAILURE): outcome)
+   Failure type: One (id_36[au](POST_CONDITION_FAILED): failure)
+  }
+  Two{
+   State: Two (id_59[au](FINISHED): state) (0)
+   Outcome: Two (id_61[au](SUCCESS): outcome)
+  }
+}
+

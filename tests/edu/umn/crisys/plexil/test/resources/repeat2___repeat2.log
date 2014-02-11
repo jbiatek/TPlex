@@ -1,0 +1,212 @@
+
+[PlexilExec:printPlan]
+Wrapper0{
+ State: Wrapper0 (id_47[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_53[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_53[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_55[au](1): boolean)
+ SkipCondition: Boolean constant false (id_53[au](0): boolean)
+ StartCondition: Boolean constant true (id_55[au](1): boolean)
+ EndCondition: (id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int)))
+ ExitCondition: Boolean constant false (id_53[au](0): boolean)
+ InvariantCondition: (id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_55[au](1): boolean)
+ PostCondition: Boolean constant true (id_55[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+ ActionCompleteCondition: (id_190[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+  Wrapper1{
+   State: Wrapper1 (id_58[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int)))
+   AncestorExitCondition: Boolean constant false (id_53[au](0): boolean)
+   AncestorInvariantCondition: (id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_53[au](0): boolean)
+   StartCondition: Boolean constant true (id_55[au](1): boolean)
+   EndCondition: (id_230[au](0): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_53[au](0): boolean)
+   InvariantCondition: (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome)))))))))
+   PreCondition: Boolean constant true (id_55[au](1): boolean)
+   PostCondition: Boolean constant true (id_55[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+   ActionCompleteCondition: (id_225[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+    Wrapper2{
+     State: Wrapper2 (id_65[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_248[au](0): ((id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int))) || (id_230[au](0): childrenFinished(0:1))))
+     AncestorExitCondition: (id_250[au](0): (Boolean constant false (id_53[au](0): boolean) || Boolean constant false (id_53[au](0): boolean)))
+     AncestorInvariantCondition: (id_252[au](UNKNOWN): ((id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome))))))))) && (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome)))))))))))
+     SkipCondition: Boolean constant false (id_53[au](0): boolean)
+     StartCondition: Boolean constant true (id_55[au](1): boolean)
+     EndCondition: (id_261[au](0): childrenFinished(0:1))
+     ExitCondition: Boolean constant false (id_53[au](0): boolean)
+     InvariantCondition: (id_266[au](UNKNOWN): ((id_268[au](UNKNOWN): !(id_270[au](UNKNOWN): ((id_272[au](UNKNOWN): (id_276[au](UNKNOWN): (FooCall (id_74[au](UNKNOWN): outcome) == NodeOutcomeValue (id_274[au](FAILURE): outcome)))))))))
+     PreCondition: Boolean constant true (id_55[au](1): boolean)
+     PostCondition: Boolean constant true (id_55[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+     ActionCompleteCondition: (id_256[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+      FooCall{
+       State: FooCall (id_72[au](EXECUTING): state) (0)
+       AncestorEndCondition: (id_279[au](0): ((id_248[au](0): ((id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int))) || (id_230[au](0): childrenFinished(0:1)))) || (id_261[au](0): childrenFinished(0:1))))
+       AncestorExitCondition: (id_281[au](0): ((id_250[au](0): (Boolean constant false (id_53[au](0): boolean) || Boolean constant false (id_53[au](0): boolean))) || Boolean constant false (id_53[au](0): boolean)))
+       AncestorInvariantCondition: (id_283[au](UNKNOWN): ((id_252[au](UNKNOWN): ((id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome))))))))) && (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome))))))))))) && (id_266[au](UNKNOWN): ((id_268[au](UNKNOWN): !(id_270[au](UNKNOWN): ((id_272[au](UNKNOWN): (id_276[au](UNKNOWN): (FooCall (id_74[au](UNKNOWN): outcome) == NodeOutcomeValue (id_274[au](FAILURE): outcome)))))))))))
+       SkipCondition: Boolean constant false (id_53[au](0): boolean)
+       StartCondition: Boolean constant true (id_55[au](1): boolean)
+       EndCondition: Boolean constant true (id_55[au](1): boolean)
+       ExitCondition: Boolean constant false (id_53[au](0): boolean)
+       InvariantCondition: Boolean constant true (id_55[au](1): boolean)
+       PreCondition: Boolean constant true (id_55[au](1): boolean)
+       PostCondition: Boolean constant true (id_55[au](1): boolean)
+       RepeatCondition: BooleanValue (id_298[iu](1): boolean)
+       ActionCompleteCondition: (id_292[iu](UNKNOWN): isknown(FooCall command_handle (id_288[au](UNKNOWN): command_handle)))
+       AbortCompleteCondition: FooCall abortComplete (id_290[au](UNKNOWN): boolean)
+       Command handle: FooCall command_handle (id_288[au](UNKNOWN): command_handle)
+      }
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+Wrapper0{
+ State: Wrapper0 (id_47[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_53[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_53[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_55[au](1): boolean)
+ SkipCondition: Boolean constant false (id_53[au](0): boolean)
+ StartCondition: Boolean constant true (id_55[au](1): boolean)
+ EndCondition: (id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int)))
+ ExitCondition: Boolean constant false (id_53[au](0): boolean)
+ InvariantCondition: (id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_55[au](1): boolean)
+ PostCondition: Boolean constant true (id_55[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+ ActionCompleteCondition: (id_190[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+  Wrapper1{
+   State: Wrapper1 (id_58[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int)))
+   AncestorExitCondition: Boolean constant false (id_53[au](0): boolean)
+   AncestorInvariantCondition: (id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_53[au](0): boolean)
+   StartCondition: Boolean constant true (id_55[au](1): boolean)
+   EndCondition: (id_230[au](0): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_53[au](0): boolean)
+   InvariantCondition: (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome)))))))))
+   PreCondition: Boolean constant true (id_55[au](1): boolean)
+   PostCondition: Boolean constant true (id_55[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+   ActionCompleteCondition: (id_225[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+    Wrapper2{
+     State: Wrapper2 (id_65[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_248[au](0): ((id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int))) || (id_230[au](0): childrenFinished(0:1))))
+     AncestorExitCondition: (id_250[au](0): (Boolean constant false (id_53[au](0): boolean) || Boolean constant false (id_53[au](0): boolean)))
+     AncestorInvariantCondition: (id_252[au](UNKNOWN): ((id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome))))))))) && (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome)))))))))))
+     SkipCondition: Boolean constant false (id_53[au](0): boolean)
+     StartCondition: Boolean constant true (id_55[au](1): boolean)
+     EndCondition: (id_261[au](0): childrenFinished(0:1))
+     ExitCondition: Boolean constant false (id_53[au](0): boolean)
+     InvariantCondition: (id_266[au](UNKNOWN): ((id_268[au](UNKNOWN): !(id_270[au](UNKNOWN): ((id_272[au](UNKNOWN): (id_276[au](UNKNOWN): (FooCall (id_74[au](UNKNOWN): outcome) == NodeOutcomeValue (id_274[au](FAILURE): outcome)))))))))
+     PreCondition: Boolean constant true (id_55[au](1): boolean)
+     PostCondition: Boolean constant true (id_55[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+     ActionCompleteCondition: (id_256[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+      FooCall{
+       State: FooCall (id_72[au](EXECUTING): state) (0)
+       AncestorEndCondition: (id_279[au](0): ((id_248[au](0): ((id_213[au](0): ((id_215[au](0): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int))) || (id_230[au](0): childrenFinished(0:1)))) || (id_261[au](0): childrenFinished(0:1))))
+       AncestorExitCondition: (id_281[au](0): ((id_250[au](0): (Boolean constant false (id_53[au](0): boolean) || Boolean constant false (id_53[au](0): boolean))) || Boolean constant false (id_53[au](0): boolean)))
+       AncestorInvariantCondition: (id_283[au](UNKNOWN): ((id_252[au](UNKNOWN): ((id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome))))))))) && (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome))))))))))) && (id_266[au](UNKNOWN): ((id_268[au](UNKNOWN): !(id_270[au](UNKNOWN): ((id_272[au](UNKNOWN): (id_276[au](UNKNOWN): (FooCall (id_74[au](UNKNOWN): outcome) == NodeOutcomeValue (id_274[au](FAILURE): outcome)))))))))))
+       SkipCondition: Boolean constant false (id_53[au](0): boolean)
+       StartCondition: Boolean constant true (id_55[au](1): boolean)
+       EndCondition: Boolean constant true (id_55[au](1): boolean)
+       ExitCondition: Boolean constant false (id_53[au](0): boolean)
+       InvariantCondition: Boolean constant true (id_55[au](1): boolean)
+       PreCondition: Boolean constant true (id_55[au](1): boolean)
+       PostCondition: Boolean constant true (id_55[au](1): boolean)
+       RepeatCondition: BooleanValue (id_298[iu](1): boolean)
+       ActionCompleteCondition: (id_292[iu](UNKNOWN): isknown(FooCall command_handle (id_288[au](UNKNOWN): command_handle)))
+       AbortCompleteCondition: FooCall abortComplete (id_290[au](UNKNOWN): boolean)
+       Command handle: FooCall command_handle (id_288[au](UNKNOWN): command_handle)
+      }
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+Wrapper0{
+ State: Wrapper0 (id_47[au](FINISHING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_53[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_53[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_55[au](1): boolean)
+ SkipCondition: Boolean constant false (id_53[au](0): boolean)
+ StartCondition: Boolean constant true (id_55[au](1): boolean)
+ EndCondition: (id_213[au](1): ((id_215[au](1): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int)))
+ ExitCondition: Boolean constant false (id_53[au](0): boolean)
+ InvariantCondition: (id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_55[au](1): boolean)
+ PostCondition: Boolean constant true (id_55[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+ ActionCompleteCondition: (id_190[au](0): childrenWaitingOrFinished(0:1))
+  Wrapper1{
+   State: Wrapper1 (id_58[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_213[au](1): ((id_215[au](1): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int)))
+   AncestorExitCondition: Boolean constant false (id_53[au](0): boolean)
+   AncestorInvariantCondition: (id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_53[au](0): boolean)
+   StartCondition: Boolean constant true (id_55[au](1): boolean)
+   EndCondition: (id_230[au](0): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_53[au](0): boolean)
+   InvariantCondition: (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome)))))))))
+   PreCondition: Boolean constant true (id_55[au](1): boolean)
+   PostCondition: Boolean constant true (id_55[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+   ActionCompleteCondition: (id_225[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+    Wrapper2{
+     State: Wrapper2 (id_65[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_248[au](1): ((id_213[au](1): ((id_215[au](1): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int))) || (id_230[au](0): childrenFinished(0:1))))
+     AncestorExitCondition: (id_250[au](0): (Boolean constant false (id_53[au](0): boolean) || Boolean constant false (id_53[au](0): boolean)))
+     AncestorInvariantCondition: (id_252[au](UNKNOWN): ((id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome))))))))) && (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome)))))))))))
+     SkipCondition: Boolean constant false (id_53[au](0): boolean)
+     StartCondition: Boolean constant true (id_55[au](1): boolean)
+     EndCondition: (id_261[au](0): childrenFinished(0:1))
+     ExitCondition: Boolean constant false (id_53[au](0): boolean)
+     InvariantCondition: (id_266[au](UNKNOWN): ((id_268[au](UNKNOWN): !(id_270[au](UNKNOWN): ((id_272[au](UNKNOWN): (id_276[au](UNKNOWN): (FooCall (id_74[au](UNKNOWN): outcome) == NodeOutcomeValue (id_274[au](FAILURE): outcome)))))))))
+     PreCondition: Boolean constant true (id_55[au](1): boolean)
+     PostCondition: Boolean constant true (id_55[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_53[au](0): boolean)
+     ActionCompleteCondition: (id_256[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+      FooCall{
+       State: FooCall (id_72[au](FINISHING): state) (0)
+       AncestorEndCondition: (id_279[au](1): ((id_248[au](1): ((id_213[au](1): ((id_215[au](1): LookupOnChange(x(), Real constant 0 (id_219[au](0): real))) != IntegerValue (id_221[au](0): int))) || (id_230[au](0): childrenFinished(0:1)))) || (id_261[au](0): childrenFinished(0:1))))
+       AncestorExitCondition: (id_281[au](0): ((id_250[au](0): (Boolean constant false (id_53[au](0): boolean) || Boolean constant false (id_53[au](0): boolean))) || Boolean constant false (id_53[au](0): boolean)))
+       AncestorInvariantCondition: (id_283[au](UNKNOWN): ((id_252[au](UNKNOWN): ((id_200[au](UNKNOWN): ((id_202[au](UNKNOWN): !(id_204[au](UNKNOWN): ((id_206[au](UNKNOWN): (id_210[au](UNKNOWN): (Wrapper1 (id_60[au](UNKNOWN): outcome) == NodeOutcomeValue (id_208[au](FAILURE): outcome))))))))) && (id_235[au](UNKNOWN): ((id_237[au](UNKNOWN): !(id_239[au](UNKNOWN): ((id_241[au](UNKNOWN): (id_245[au](UNKNOWN): (Wrapper2 (id_67[au](UNKNOWN): outcome) == NodeOutcomeValue (id_243[au](FAILURE): outcome))))))))))) && (id_266[au](UNKNOWN): ((id_268[au](UNKNOWN): !(id_270[au](UNKNOWN): ((id_272[au](UNKNOWN): (id_276[au](UNKNOWN): (FooCall (id_74[au](UNKNOWN): outcome) == NodeOutcomeValue (id_274[au](FAILURE): outcome)))))))))))
+       SkipCondition: Boolean constant false (id_53[au](0): boolean)
+       StartCondition: Boolean constant true (id_55[au](1): boolean)
+       EndCondition: Boolean constant true (id_55[au](1): boolean)
+       ExitCondition: Boolean constant false (id_53[au](0): boolean)
+       InvariantCondition: Boolean constant true (id_55[au](1): boolean)
+       PreCondition: Boolean constant true (id_55[au](1): boolean)
+       PostCondition: Boolean constant true (id_55[au](1): boolean)
+       RepeatCondition: BooleanValue (id_298[iu](1): boolean)
+       ActionCompleteCondition: (id_292[au](0): isknown(FooCall command_handle (id_288[au](UNKNOWN): command_handle)))
+       AbortCompleteCondition: FooCall abortComplete (id_290[au](UNKNOWN): boolean)
+       Command handle: FooCall command_handle (id_288[au](UNKNOWN): command_handle)
+      }
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+Wrapper0{
+ State: Wrapper0 (id_47[au](FINISHED): state) (0)
+ Outcome: Wrapper0 (id_49[au](SUCCESS): outcome)
+  Wrapper1{
+   State: Wrapper1 (id_58[au](FINISHED): state) (0)
+   Outcome: Wrapper1 (id_60[au](SUCCESS): outcome)
+    Wrapper2{
+     State: Wrapper2 (id_65[au](FINISHED): state) (0)
+     Outcome: Wrapper2 (id_67[au](SUCCESS): outcome)
+      FooCall{
+       State: FooCall (id_72[au](FINISHED): state) (0)
+       Outcome: FooCall (id_74[au](SUCCESS): outcome)
+       Command handle: FooCall command_handle (id_288[iu](COMMAND_SUCCESS): command_handle)
+      }
+    }
+  }
+}
+

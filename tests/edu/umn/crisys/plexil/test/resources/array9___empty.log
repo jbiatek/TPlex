@@ -1,0 +1,50 @@
+
+[PlexilExec:printPlan]
+TestArrayAssignment{
+ State: TestArrayAssignment (id_29[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_35[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_35[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_37[au](1): boolean)
+ SkipCondition: Boolean constant false (id_35[au](0): boolean)
+ StartCondition: (id_114[iu](UNKNOWN): ((id_116[iu](UNKNOWN): !(id_118[iu](UNKNOWN): isknown((id_120[iu](UNKNOWN): ArrayElement: myIntegerArray (id_39[au](Array: [4, 5, 6]): array)[IntegerValue (id_124[au](2): int)]))))))
+ EndCondition: (id_109[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_35[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_37[au](1): boolean)
+ PreCondition: Boolean constant true (id_37[au](1): boolean)
+ PostCondition: Boolean constant true (id_37[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_35[au](0): boolean)
+ ActionCompleteCondition: (id_104[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ myIntegerArray: myIntegerArray (id_39[au](Array: [4, 5, 6]): array)
+  testIntArrayAssignment{
+   State: testIntArrayAssignment (id_43[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_109[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_35[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_37[au](1): boolean)
+   SkipCondition: Boolean constant false (id_35[au](0): boolean)
+   StartCondition: (id_136[iu](UNKNOWN): ((id_138[iu](UNKNOWN): ArrayElement: myIntegerArray (id_39[au](Array: [4, 5, 6]): array)[IntegerValue (id_142[au](0): int)]) == IntegerValue (id_144[au](1): int)))
+   EndCondition: Boolean constant true (id_37[au](1): boolean)
+   ExitCondition: Boolean constant false (id_35[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_37[au](1): boolean)
+   PreCondition: Boolean constant true (id_37[au](1): boolean)
+   PostCondition: Boolean constant true (id_37[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_35[au](0): boolean)
+   ActionCompleteCondition: testIntArrayAssignment ack (id_128[au](1): boolean)
+   AbortCompleteCondition: testIntArrayAssignment abortComplete (id_130[iu](UNKNOWN): boolean)
+   myIntegerArray: myIntegerArray (id_39[au](Array: [4, 5, 6]): array)
+   myOtherIntegerArray: myOtherIntegerArray (id_49[au](Array: [4, 5, 6]): array)
+  }
+}
+
+[PlexilExec:printPlan]
+TestArrayAssignment{
+ State: TestArrayAssignment (id_29[au](FINISHED): state) (0)
+ Outcome: TestArrayAssignment (id_31[au](SUCCESS): outcome)
+ myIntegerArray: myIntegerArray (id_39[iu](Array: [4, 5, 6]): array)
+  testIntArrayAssignment{
+   State: testIntArrayAssignment (id_43[au](FINISHED): state) (0)
+   Outcome: testIntArrayAssignment (id_45[au](SUCCESS): outcome)
+   myIntegerArray: myIntegerArray (id_39[iu](Array: [4, 5, 6]): array)
+   myOtherIntegerArray: myOtherIntegerArray (id_49[iu](Array: [4, 5, 6]): array)
+  }
+}
+

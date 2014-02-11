@@ -1,0 +1,153 @@
+
+[PlexilExec:printPlan]
+repeat8{
+ State: repeat8 (id_26[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ SkipCondition: Boolean constant false (id_32[au](0): boolean)
+ StartCondition: Boolean constant true (id_34[au](1): boolean)
+ EndCondition: (id_102[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_32[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ PreCondition: Boolean constant true (id_34[au](1): boolean)
+ PostCondition: (id_107[iu](UNKNOWN): (IntegerValue (id_109[au](4): int) == repeat-count (id_36[au](1): int)))
+ RepeatCondition: Boolean constant false (id_32[au](0): boolean)
+ ActionCompleteCondition: (id_97[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ repeat-count: repeat-count (id_36[au](1): int)
+  repeater{
+   State: repeater (id_39[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_102[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   SkipCondition: Boolean constant false (id_32[au](0): boolean)
+   StartCondition: Boolean constant true (id_34[au](1): boolean)
+   EndCondition: Boolean constant true (id_34[au](1): boolean)
+   ExitCondition: Boolean constant false (id_32[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   PreCondition: Boolean constant true (id_34[au](1): boolean)
+   PostCondition: Boolean constant true (id_34[au](1): boolean)
+   RepeatCondition: (id_125[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_129[au](0): real)))
+   ActionCompleteCondition: repeater ack (id_117[au](1): boolean)
+   AbortCompleteCondition: repeater abortComplete (id_119[iu](UNKNOWN): boolean)
+   repeat-count: repeat-count (id_36[au](1): int)
+  }
+}
+
+[PlexilExec:printPlan]
+repeat8{
+ State: repeat8 (id_26[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ SkipCondition: Boolean constant false (id_32[au](0): boolean)
+ StartCondition: Boolean constant true (id_34[au](1): boolean)
+ EndCondition: (id_102[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_32[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ PreCondition: Boolean constant true (id_34[au](1): boolean)
+ PostCondition: (id_107[iu](UNKNOWN): (IntegerValue (id_109[au](4): int) == repeat-count (id_36[au](2): int)))
+ RepeatCondition: Boolean constant false (id_32[au](0): boolean)
+ ActionCompleteCondition: (id_97[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ repeat-count: repeat-count (id_36[au](2): int)
+  repeater{
+   State: repeater (id_39[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_102[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   SkipCondition: Boolean constant false (id_32[au](0): boolean)
+   StartCondition: Boolean constant true (id_34[au](1): boolean)
+   EndCondition: Boolean constant true (id_34[au](1): boolean)
+   ExitCondition: Boolean constant false (id_32[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   PreCondition: Boolean constant true (id_34[au](1): boolean)
+   PostCondition: Boolean constant true (id_34[au](1): boolean)
+   RepeatCondition: (id_125[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_129[au](0): real)))
+   ActionCompleteCondition: repeater ack (id_117[au](1): boolean)
+   AbortCompleteCondition: repeater abortComplete (id_119[iu](UNKNOWN): boolean)
+   repeat-count: repeat-count (id_36[au](2): int)
+  }
+}
+
+[PlexilExec:printPlan]
+repeat8{
+ State: repeat8 (id_26[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ SkipCondition: Boolean constant false (id_32[au](0): boolean)
+ StartCondition: Boolean constant true (id_34[au](1): boolean)
+ EndCondition: (id_102[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_32[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ PreCondition: Boolean constant true (id_34[au](1): boolean)
+ PostCondition: (id_107[iu](UNKNOWN): (IntegerValue (id_109[au](4): int) == repeat-count (id_36[au](3): int)))
+ RepeatCondition: Boolean constant false (id_32[au](0): boolean)
+ ActionCompleteCondition: (id_97[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ repeat-count: repeat-count (id_36[au](3): int)
+  repeater{
+   State: repeater (id_39[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_102[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   SkipCondition: Boolean constant false (id_32[au](0): boolean)
+   StartCondition: Boolean constant true (id_34[au](1): boolean)
+   EndCondition: Boolean constant true (id_34[au](1): boolean)
+   ExitCondition: Boolean constant false (id_32[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   PreCondition: Boolean constant true (id_34[au](1): boolean)
+   PostCondition: Boolean constant true (id_34[au](1): boolean)
+   RepeatCondition: (id_125[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_129[au](0): real)))
+   ActionCompleteCondition: repeater ack (id_117[au](1): boolean)
+   AbortCompleteCondition: repeater abortComplete (id_119[iu](UNKNOWN): boolean)
+   repeat-count: repeat-count (id_36[au](3): int)
+  }
+}
+
+[PlexilExec:printPlan]
+repeat8{
+ State: repeat8 (id_26[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ SkipCondition: Boolean constant false (id_32[au](0): boolean)
+ StartCondition: Boolean constant true (id_34[au](1): boolean)
+ EndCondition: (id_102[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_32[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+ PreCondition: Boolean constant true (id_34[au](1): boolean)
+ PostCondition: (id_107[iu](UNKNOWN): (IntegerValue (id_109[au](4): int) == repeat-count (id_36[au](4): int)))
+ RepeatCondition: Boolean constant false (id_32[au](0): boolean)
+ ActionCompleteCondition: (id_97[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ repeat-count: repeat-count (id_36[au](4): int)
+  repeater{
+   State: repeater (id_39[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_102[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_32[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   SkipCondition: Boolean constant false (id_32[au](0): boolean)
+   StartCondition: Boolean constant true (id_34[au](1): boolean)
+   EndCondition: Boolean constant true (id_34[au](1): boolean)
+   ExitCondition: Boolean constant false (id_32[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_34[au](1): boolean)
+   PreCondition: Boolean constant true (id_34[au](1): boolean)
+   PostCondition: Boolean constant true (id_34[au](1): boolean)
+   RepeatCondition: (id_125[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_129[au](0): real)))
+   ActionCompleteCondition: repeater ack (id_117[au](1): boolean)
+   AbortCompleteCondition: repeater abortComplete (id_119[iu](UNKNOWN): boolean)
+   repeat-count: repeat-count (id_36[au](4): int)
+  }
+}
+
+[PlexilExec:printPlan]
+repeat8{
+ State: repeat8 (id_26[au](FINISHED): state) (0)
+ Outcome: repeat8 (id_28[au](SUCCESS): outcome)
+ repeat-count: repeat-count (id_36[iu](4): int)
+  repeater{
+   State: repeater (id_39[au](FINISHED): state) (0)
+   Outcome: repeater (id_41[au](SUCCESS): outcome)
+   repeat-count: repeat-count (id_36[iu](4): int)
+  }
+}
+

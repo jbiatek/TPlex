@@ -1,0 +1,29 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_17[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_23[au](0): boolean)
+ ActionCompleteCondition: (id_64[iu](UNKNOWN): isknown(Root command_handle (id_60[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: Root abortComplete (id_62[au](UNKNOWN): boolean)
+ Command handle: Root command_handle (id_60[au](UNKNOWN): command_handle)
+ CommandName: CommandName (id_27[au](foo): string)
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_17[au](FINISHED): state) (0)
+ Outcome: Root (id_19[au](SUCCESS): outcome)
+ Command handle: Root command_handle (id_60[iu](COMMAND_SUCCESS): command_handle)
+ CommandName: CommandName (id_27[iu](foo): string)
+}
+

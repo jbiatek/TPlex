@@ -1,0 +1,152 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_39[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_45[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_45[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_47[au](1): boolean)
+ SkipCondition: Boolean constant false (id_45[au](0): boolean)
+ StartCondition: Boolean constant true (id_47[au](1): boolean)
+ EndCondition: (id_185[au](0): childrenFinished(0:3))
+ ExitCondition: Boolean constant false (id_45[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_47[au](1): boolean)
+ PreCondition: Boolean constant true (id_47[au](1): boolean)
+ PostCondition: Boolean constant true (id_47[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_45[au](0): boolean)
+ ActionCompleteCondition: (id_178[iu](UNKNOWN): childrenWaitingOrFinished(0:3))
+ x: x (id_49[au](1): int)
+ y: y (id_51[au](0): int)
+  xy{
+   State: xy (id_54[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_185[au](0): childrenFinished(0:3))
+   AncestorExitCondition: Boolean constant false (id_45[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   SkipCondition: Boolean constant false (id_45[au](0): boolean)
+   StartCondition: Boolean constant true (id_47[au](1): boolean)
+   EndCondition: Boolean constant true (id_47[au](1): boolean)
+   ExitCondition: Boolean constant false (id_45[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   PreCondition: Boolean constant true (id_47[au](1): boolean)
+   PostCondition: Boolean constant true (id_47[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_45[au](0): boolean)
+   ActionCompleteCondition: xy ack (id_193[au](1): boolean)
+   AbortCompleteCondition: xy abortComplete (id_195[iu](UNKNOWN): boolean)
+   x: x (id_49[au](1): int)
+   y: y (id_51[au](0): int)
+  }
+  yx{
+   State: yx (id_85[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_185[au](0): childrenFinished(0:3))
+   AncestorExitCondition: Boolean constant false (id_45[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   SkipCondition: Boolean constant false (id_45[au](0): boolean)
+   StartCondition: Boolean constant true (id_47[au](1): boolean)
+   EndCondition: Boolean constant true (id_47[au](1): boolean)
+   ExitCondition: Boolean constant false (id_45[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   PreCondition: Boolean constant true (id_47[au](1): boolean)
+   PostCondition: Boolean constant true (id_47[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_45[au](0): boolean)
+   ActionCompleteCondition: yx ack (id_202[au](1): boolean)
+   AbortCompleteCondition: yx abortComplete (id_204[iu](UNKNOWN): boolean)
+   x: x (id_49[au](1): int)
+   y: y (id_51[au](0): int)
+  }
+  check{
+   State: check (id_116[au](WAITING): state) (0)
+   AncestorEndCondition: (id_185[au](0): childrenFinished(0:3))
+   AncestorExitCondition: Boolean constant false (id_45[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   SkipCondition: Boolean constant false (id_45[au](0): boolean)
+   StartCondition: (id_223[au](0): ((id_225[au](0): (id_229[au](0): (xy (id_54[au](EXECUTING): state) == NodeStateValue (id_227[au](FINISHED): state)))) && (id_231[au](0): (id_235[au](0): (yx (id_85[au](EXECUTING): state) == NodeStateValue (id_233[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_47[au](1): boolean)
+   ExitCondition: Boolean constant false (id_45[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   PreCondition: Boolean constant true (id_47[au](1): boolean)
+   PostCondition: Boolean constant true (id_47[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_45[au](0): boolean)
+   ActionCompleteCondition: (id_217[iu](UNKNOWN): isknown(check command_handle (id_213[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: check abortComplete (id_215[iu](UNKNOWN): boolean)
+   Command handle: check command_handle (id_213[iu](UNKNOWN): command_handle)
+   x: x (id_49[au](1): int)
+   y: y (id_51[au](0): int)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_39[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_45[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_45[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_47[au](1): boolean)
+ SkipCondition: Boolean constant false (id_45[au](0): boolean)
+ StartCondition: Boolean constant true (id_47[au](1): boolean)
+ EndCondition: (id_185[au](0): childrenFinished(2:3))
+ ExitCondition: Boolean constant false (id_45[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_47[au](1): boolean)
+ PreCondition: Boolean constant true (id_47[au](1): boolean)
+ PostCondition: Boolean constant true (id_47[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_45[au](0): boolean)
+ ActionCompleteCondition: (id_178[iu](UNKNOWN): childrenWaitingOrFinished(0:3))
+ x: x (id_49[au](1): int)
+ y: y (id_51[au](0): int)
+  xy{
+   State: xy (id_54[au](FINISHED): state) (0)
+   Outcome: xy (id_56[au](SUCCESS): outcome)
+   x: x (id_49[au](1): int)
+   y: y (id_51[au](0): int)
+  }
+  yx{
+   State: yx (id_85[au](FINISHED): state) (0)
+   Outcome: yx (id_87[au](SUCCESS): outcome)
+   x: x (id_49[au](1): int)
+   y: y (id_51[au](0): int)
+  }
+  check{
+   State: check (id_116[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_185[au](0): childrenFinished(2:3))
+   AncestorExitCondition: Boolean constant false (id_45[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   SkipCondition: Boolean constant false (id_45[au](0): boolean)
+   StartCondition: (id_223[iu](UNKNOWN): ((id_225[iu](UNKNOWN): (id_229[iu](UNKNOWN): (xy (id_54[au](FINISHED): state) == NodeStateValue (id_227[au](FINISHED): state)))) && (id_231[iu](UNKNOWN): (id_235[iu](UNKNOWN): (yx (id_85[au](FINISHED): state) == NodeStateValue (id_233[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_47[au](1): boolean)
+   ExitCondition: Boolean constant false (id_45[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_47[au](1): boolean)
+   PreCondition: Boolean constant true (id_47[au](1): boolean)
+   PostCondition: Boolean constant true (id_47[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_45[au](0): boolean)
+   ActionCompleteCondition: (id_217[iu](UNKNOWN): isknown(check command_handle (id_213[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: check abortComplete (id_215[au](UNKNOWN): boolean)
+   Command handle: check command_handle (id_213[au](UNKNOWN): command_handle)
+   x: x (id_49[au](1): int)
+   y: y (id_51[au](0): int)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_39[au](FINISHED): state) (0)
+ Outcome: Root (id_41[au](SUCCESS): outcome)
+ x: x (id_49[iu](1): int)
+ y: y (id_51[iu](0): int)
+  xy{
+   State: xy (id_54[au](FINISHED): state) (0)
+   Outcome: xy (id_56[au](SUCCESS): outcome)
+   x: x (id_49[iu](1): int)
+   y: y (id_51[iu](0): int)
+  }
+  yx{
+   State: yx (id_85[au](FINISHED): state) (0)
+   Outcome: yx (id_87[au](SUCCESS): outcome)
+   x: x (id_49[iu](1): int)
+   y: y (id_51[iu](0): int)
+  }
+  check{
+   State: check (id_116[au](FINISHED): state) (0)
+   Outcome: check (id_118[au](SUCCESS): outcome)
+   Command handle: check command_handle (id_213[iu](COMMAND_SUCCESS): command_handle)
+   x: x (id_49[iu](1): int)
+   y: y (id_51[iu](0): int)
+  }
+}
+

@@ -1,0 +1,158 @@
+
+[PlexilExec:printPlan]
+SimpleDrive{
+ State: SimpleDrive (id_51[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_57[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+ SkipCondition: Boolean constant false (id_57[au](0): boolean)
+ StartCondition: Boolean constant true (id_59[au](1): boolean)
+ EndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](WAITING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_57[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_59[au](1): boolean)
+ PreCondition: Boolean constant true (id_59[au](1): boolean)
+ PostCondition: (id_171[iu](UNKNOWN): (id_175[iu](UNKNOWN): (TakeSample (id_99[au](UNKNOWN): outcome) == NodeOutcomeValue (id_173[au](SUCCESS): outcome))))
+ RepeatCondition: Boolean constant false (id_57[au](0): boolean)
+ ActionCompleteCondition: (id_159[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+  Drive{
+   State: Drive (id_62[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](WAITING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   SkipCondition: Boolean constant false (id_57[au](0): boolean)
+   StartCondition: Boolean constant true (id_59[au](1): boolean)
+   EndCondition: Boolean constant true (id_59[au](1): boolean)
+   ExitCondition: Boolean constant false (id_57[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   PreCondition: (id_199[iu](UNKNOWN): ((id_201[iu](UNKNOWN): LookupNow(At(, StringValue (id_205[au](Rock): string)))) == BooleanValue (id_207[iu](0): boolean)))
+   PostCondition: Boolean constant true (id_59[au](1): boolean)
+   RepeatCondition: (id_210[iu](UNKNOWN): ((id_212[iu](UNKNOWN): LookupOnChange(At(, StringValue (id_216[au](Rock): string)), Real constant 0 (id_218[au](0): real))) != BooleanValue (id_220[iu](1): boolean)))
+   ActionCompleteCondition: (id_193[iu](UNKNOWN): isknown(Drive command_handle (id_189[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: Drive abortComplete (id_191[au](UNKNOWN): boolean)
+   Command handle: Drive command_handle (id_189[au](UNKNOWN): command_handle)
+  }
+  TakeSample{
+   State: TakeSample (id_97[au](WAITING): state) (0)
+   AncestorEndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](WAITING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   SkipCondition: Boolean constant false (id_57[au](0): boolean)
+   StartCondition: (id_236[au](0): (id_240[au](0): (Drive (id_62[au](EXECUTING): state) == NodeStateValue (id_238[au](FINISHED): state))))
+   EndCondition: Boolean constant true (id_59[au](1): boolean)
+   ExitCondition: Boolean constant false (id_57[au](0): boolean)
+   InvariantCondition: (id_243[iu](UNKNOWN): ((id_245[iu](UNKNOWN): LookupOnChange(At(, StringValue (id_249[au](Rock): string)), Real constant 0 (id_218[au](0): real))) == BooleanValue (id_251[iu](1): boolean)))
+   PreCondition: Boolean constant true (id_59[au](1): boolean)
+   PostCondition: Boolean constant true (id_59[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_57[au](0): boolean)
+   ActionCompleteCondition: (id_230[iu](UNKNOWN): isknown(TakeSample command_handle (id_226[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: TakeSample abortComplete (id_228[iu](UNKNOWN): boolean)
+   Command handle: TakeSample command_handle (id_226[iu](UNKNOWN): command_handle)
+  }
+}
+
+[PlexilExec:printPlan]
+SimpleDrive{
+ State: SimpleDrive (id_51[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_57[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+ SkipCondition: Boolean constant false (id_57[au](0): boolean)
+ StartCondition: Boolean constant true (id_59[au](1): boolean)
+ EndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](WAITING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_57[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_59[au](1): boolean)
+ PreCondition: Boolean constant true (id_59[au](1): boolean)
+ PostCondition: (id_171[iu](UNKNOWN): (id_175[iu](UNKNOWN): (TakeSample (id_99[au](UNKNOWN): outcome) == NodeOutcomeValue (id_173[au](SUCCESS): outcome))))
+ RepeatCondition: Boolean constant false (id_57[au](0): boolean)
+ ActionCompleteCondition: (id_159[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+  Drive{
+   State: Drive (id_62[au](FINISHING): state) (0)
+   AncestorEndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](WAITING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   SkipCondition: Boolean constant false (id_57[au](0): boolean)
+   StartCondition: Boolean constant true (id_59[au](1): boolean)
+   EndCondition: Boolean constant true (id_59[au](1): boolean)
+   ExitCondition: Boolean constant false (id_57[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   PreCondition: (id_199[iu](UNKNOWN): ((id_201[iu](UNKNOWN): LookupNow(At(, StringValue (id_205[au](Rock): string)))) == BooleanValue (id_207[iu](0): boolean)))
+   PostCondition: Boolean constant true (id_59[au](1): boolean)
+   RepeatCondition: (id_210[iu](UNKNOWN): ((id_212[iu](UNKNOWN): LookupOnChange(At(, StringValue (id_216[au](Rock): string)), Real constant 0 (id_218[au](0): real))) != BooleanValue (id_220[iu](1): boolean)))
+   ActionCompleteCondition: (id_193[au](0): isknown(Drive command_handle (id_189[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: Drive abortComplete (id_191[au](UNKNOWN): boolean)
+   Command handle: Drive command_handle (id_189[au](UNKNOWN): command_handle)
+  }
+  TakeSample{
+   State: TakeSample (id_97[au](WAITING): state) (0)
+   AncestorEndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](WAITING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   SkipCondition: Boolean constant false (id_57[au](0): boolean)
+   StartCondition: (id_236[au](0): (id_240[au](0): (Drive (id_62[au](FINISHING): state) == NodeStateValue (id_238[au](FINISHED): state))))
+   EndCondition: Boolean constant true (id_59[au](1): boolean)
+   ExitCondition: Boolean constant false (id_57[au](0): boolean)
+   InvariantCondition: (id_243[iu](UNKNOWN): ((id_245[iu](UNKNOWN): LookupOnChange(At(, StringValue (id_249[au](Rock): string)), Real constant 0 (id_218[au](0): real))) == BooleanValue (id_251[iu](1): boolean)))
+   PreCondition: Boolean constant true (id_59[au](1): boolean)
+   PostCondition: Boolean constant true (id_59[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_57[au](0): boolean)
+   ActionCompleteCondition: (id_230[iu](UNKNOWN): isknown(TakeSample command_handle (id_226[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: TakeSample abortComplete (id_228[iu](UNKNOWN): boolean)
+   Command handle: TakeSample command_handle (id_226[iu](UNKNOWN): command_handle)
+  }
+}
+
+[PlexilExec:printPlan]
+SimpleDrive{
+ State: SimpleDrive (id_51[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_57[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+ SkipCondition: Boolean constant false (id_57[au](0): boolean)
+ StartCondition: Boolean constant true (id_59[au](1): boolean)
+ EndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](EXECUTING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_57[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_59[au](1): boolean)
+ PreCondition: Boolean constant true (id_59[au](1): boolean)
+ PostCondition: (id_171[iu](UNKNOWN): (id_175[iu](UNKNOWN): (TakeSample (id_99[au](UNKNOWN): outcome) == NodeOutcomeValue (id_173[au](SUCCESS): outcome))))
+ RepeatCondition: Boolean constant false (id_57[au](0): boolean)
+ ActionCompleteCondition: (id_159[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+  Drive{
+   State: Drive (id_62[au](FINISHED): state) (0)
+   Outcome: Drive (id_64[au](SUCCESS): outcome)
+   Command handle: Drive command_handle (id_189[iu](COMMAND_SUCCESS): command_handle)
+  }
+  TakeSample{
+   State: TakeSample (id_97[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_178[au](0): (id_182[au](0): (TakeSample (id_97[au](EXECUTING): state) == NodeStateValue (id_180[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_57[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_59[au](1): boolean)
+   SkipCondition: Boolean constant false (id_57[au](0): boolean)
+   StartCondition: (id_236[iu](UNKNOWN): (id_240[iu](UNKNOWN): (Drive (id_62[au](FINISHED): state) == NodeStateValue (id_238[au](FINISHED): state))))
+   EndCondition: Boolean constant true (id_59[au](1): boolean)
+   ExitCondition: Boolean constant false (id_57[au](0): boolean)
+   InvariantCondition: (id_243[au](1): ((id_245[au](1): LookupOnChange(At(, StringValue (id_249[au](Rock): string)), Real constant 0 (id_218[au](0): real))) == BooleanValue (id_251[au](1): boolean)))
+   PreCondition: Boolean constant true (id_59[au](1): boolean)
+   PostCondition: Boolean constant true (id_59[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_57[au](0): boolean)
+   ActionCompleteCondition: (id_230[iu](UNKNOWN): isknown(TakeSample command_handle (id_226[au](UNKNOWN): command_handle)))
+   AbortCompleteCondition: TakeSample abortComplete (id_228[au](UNKNOWN): boolean)
+   Command handle: TakeSample command_handle (id_226[au](UNKNOWN): command_handle)
+  }
+}
+
+[PlexilExec:printPlan]
+SimpleDrive{
+ State: SimpleDrive (id_51[au](FINISHED): state) (0)
+ Outcome: SimpleDrive (id_53[au](SUCCESS): outcome)
+  Drive{
+   State: Drive (id_62[au](FINISHED): state) (0)
+   Outcome: Drive (id_64[au](SUCCESS): outcome)
+   Command handle: Drive command_handle (id_189[iu](COMMAND_SUCCESS): command_handle)
+  }
+  TakeSample{
+   State: TakeSample (id_97[au](FINISHED): state) (0)
+   Outcome: TakeSample (id_99[au](SUCCESS): outcome)
+   Command handle: TakeSample command_handle (id_226[iu](COMMAND_SUCCESS): command_handle)
+  }
+}
+

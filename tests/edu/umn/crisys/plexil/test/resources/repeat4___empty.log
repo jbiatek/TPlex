@@ -1,0 +1,125 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_32[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_38[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+ SkipCondition: Boolean constant false (id_38[au](0): boolean)
+ StartCondition: Boolean constant true (id_40[au](1): boolean)
+ EndCondition: done (id_42[au](0): boolean)
+ ExitCondition: Boolean constant false (id_38[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+ PreCondition: Boolean constant true (id_40[au](1): boolean)
+ PostCondition: Boolean constant true (id_40[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_38[au](0): boolean)
+ ActionCompleteCondition: (id_136[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+ done: done (id_42[au](0): boolean)
+ doset: doset (id_44[au](0): boolean)
+  A{
+   State: A (id_47[au](EXECUTING): state) (0)
+   AncestorEndCondition: done (id_42[au](0): boolean)
+   AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   SkipCondition: Boolean constant false (id_38[au](0): boolean)
+   StartCondition: doset (id_44[au](0): boolean)
+   EndCondition: Boolean constant true (id_40[au](1): boolean)
+   ExitCondition: Boolean constant false (id_38[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   PreCondition: Boolean constant true (id_40[au](1): boolean)
+   PostCondition: Boolean constant true (id_40[au](1): boolean)
+   RepeatCondition: BooleanValue (id_160[iu](1): boolean)
+   ActionCompleteCondition: A ack (id_151[au](1): boolean)
+   AbortCompleteCondition: A abortComplete (id_153[iu](UNKNOWN): boolean)
+   doset: doset (id_44[au](0): boolean)
+  }
+  B{
+   State: B (id_78[au](WAITING): state) (0)
+   AncestorEndCondition: done (id_42[au](0): boolean)
+   AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   SkipCondition: Boolean constant false (id_38[au](0): boolean)
+   StartCondition: (id_174[au](0): (id_178[au](0): (A (id_47[au](EXECUTING): state) == NodeStateValue (id_176[au](ITERATION_ENDED): state))))
+   EndCondition: Boolean constant true (id_40[au](1): boolean)
+   ExitCondition: Boolean constant false (id_38[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   PreCondition: Boolean constant true (id_40[au](1): boolean)
+   PostCondition: Boolean constant true (id_40[au](1): boolean)
+   RepeatCondition: BooleanValue (id_181[iu](1): boolean)
+   ActionCompleteCondition: B ack (id_166[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: B abortComplete (id_168[iu](UNKNOWN): boolean)
+   done: done (id_42[au](0): boolean)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_32[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_38[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+ SkipCondition: Boolean constant false (id_38[au](0): boolean)
+ StartCondition: Boolean constant true (id_40[au](1): boolean)
+ EndCondition: done (id_42[au](1): boolean)
+ ExitCondition: Boolean constant false (id_38[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+ PreCondition: Boolean constant true (id_40[au](1): boolean)
+ PostCondition: Boolean constant true (id_40[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_38[au](0): boolean)
+ ActionCompleteCondition: (id_136[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+ done: done (id_42[au](1): boolean)
+ doset: doset (id_44[au](0): boolean)
+  A{
+   State: A (id_47[au](WAITING): state) (0)
+   AncestorEndCondition: done (id_42[au](1): boolean)
+   AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   SkipCondition: Boolean constant false (id_38[au](0): boolean)
+   StartCondition: doset (id_44[au](0): boolean)
+   EndCondition: Boolean constant true (id_40[au](1): boolean)
+   ExitCondition: Boolean constant false (id_38[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   PreCondition: Boolean constant true (id_40[au](1): boolean)
+   PostCondition: Boolean constant true (id_40[au](1): boolean)
+   RepeatCondition: BooleanValue (id_160[iu](1): boolean)
+   ActionCompleteCondition: A ack (id_151[iu](UNKNOWN): boolean)
+   AbortCompleteCondition: A abortComplete (id_153[iu](UNKNOWN): boolean)
+   doset: doset (id_44[au](0): boolean)
+  }
+  B{
+   State: B (id_78[au](EXECUTING): state) (0)
+   AncestorEndCondition: done (id_42[au](1): boolean)
+   AncestorExitCondition: Boolean constant false (id_38[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   SkipCondition: Boolean constant false (id_38[au](0): boolean)
+   StartCondition: (id_174[iu](UNKNOWN): (id_178[iu](UNKNOWN): (A (id_47[au](WAITING): state) == NodeStateValue (id_176[au](ITERATION_ENDED): state))))
+   EndCondition: Boolean constant true (id_40[au](1): boolean)
+   ExitCondition: Boolean constant false (id_38[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_40[au](1): boolean)
+   PreCondition: Boolean constant true (id_40[au](1): boolean)
+   PostCondition: Boolean constant true (id_40[au](1): boolean)
+   RepeatCondition: BooleanValue (id_181[iu](1): boolean)
+   ActionCompleteCondition: B ack (id_166[au](1): boolean)
+   AbortCompleteCondition: B abortComplete (id_168[iu](UNKNOWN): boolean)
+   done: done (id_42[au](1): boolean)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_32[au](FINISHED): state) (0)
+ Outcome: Root (id_34[au](SUCCESS): outcome)
+ done: done (id_42[iu](1): boolean)
+ doset: doset (id_44[iu](0): boolean)
+  A{
+   State: A (id_47[au](FINISHED): state) (0)
+   Outcome: A (id_49[au](SKIPPED): outcome)
+   doset: doset (id_44[iu](0): boolean)
+  }
+  B{
+   State: B (id_78[au](FINISHED): state) (0)
+   Outcome: B (id_80[au](SUCCESS): outcome)
+   done: done (id_42[iu](1): boolean)
+  }
+}
+

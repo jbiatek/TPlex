@@ -1,0 +1,153 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_28[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ SkipCondition: Boolean constant false (id_34[au](0): boolean)
+ StartCondition: BooleanValue (id_115[iu](1): boolean)
+ EndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_34[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ PreCondition: Boolean constant true (id_36[au](1): boolean)
+ PostCondition: Boolean constant true (id_36[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+ ActionCompleteCondition: (id_99[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ count: count (id_38[au](1): int)
+  Inc{
+   State: Inc (id_41[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   SkipCondition: Boolean constant false (id_34[au](0): boolean)
+   StartCondition: Boolean constant true (id_36[au](1): boolean)
+   EndCondition: Boolean constant true (id_36[au](1): boolean)
+   ExitCondition: Boolean constant false (id_34[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   PreCondition: Boolean constant true (id_36[au](1): boolean)
+   PostCondition: Boolean constant true (id_36[au](1): boolean)
+   RepeatCondition: (id_131[iu](UNKNOWN): (count (id_38[au](1): int) < IntegerValue (id_133[au](4): int)))
+   ActionCompleteCondition: Inc ack (id_123[au](1): boolean)
+   AbortCompleteCondition: Inc abortComplete (id_125[iu](UNKNOWN): boolean)
+   count: count (id_38[au](1): int)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_28[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ SkipCondition: Boolean constant false (id_34[au](0): boolean)
+ StartCondition: BooleanValue (id_115[iu](1): boolean)
+ EndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_34[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ PreCondition: Boolean constant true (id_36[au](1): boolean)
+ PostCondition: Boolean constant true (id_36[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+ ActionCompleteCondition: (id_99[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ count: count (id_38[au](2): int)
+  Inc{
+   State: Inc (id_41[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   SkipCondition: Boolean constant false (id_34[au](0): boolean)
+   StartCondition: Boolean constant true (id_36[au](1): boolean)
+   EndCondition: Boolean constant true (id_36[au](1): boolean)
+   ExitCondition: Boolean constant false (id_34[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   PreCondition: Boolean constant true (id_36[au](1): boolean)
+   PostCondition: Boolean constant true (id_36[au](1): boolean)
+   RepeatCondition: (id_131[iu](UNKNOWN): (count (id_38[au](2): int) < IntegerValue (id_133[au](4): int)))
+   ActionCompleteCondition: Inc ack (id_123[au](1): boolean)
+   AbortCompleteCondition: Inc abortComplete (id_125[iu](UNKNOWN): boolean)
+   count: count (id_38[au](2): int)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_28[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ SkipCondition: Boolean constant false (id_34[au](0): boolean)
+ StartCondition: BooleanValue (id_115[iu](1): boolean)
+ EndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_34[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ PreCondition: Boolean constant true (id_36[au](1): boolean)
+ PostCondition: Boolean constant true (id_36[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+ ActionCompleteCondition: (id_99[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ count: count (id_38[au](3): int)
+  Inc{
+   State: Inc (id_41[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   SkipCondition: Boolean constant false (id_34[au](0): boolean)
+   StartCondition: Boolean constant true (id_36[au](1): boolean)
+   EndCondition: Boolean constant true (id_36[au](1): boolean)
+   ExitCondition: Boolean constant false (id_34[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   PreCondition: Boolean constant true (id_36[au](1): boolean)
+   PostCondition: Boolean constant true (id_36[au](1): boolean)
+   RepeatCondition: (id_131[iu](UNKNOWN): (count (id_38[au](3): int) < IntegerValue (id_133[au](4): int)))
+   ActionCompleteCondition: Inc ack (id_123[au](1): boolean)
+   AbortCompleteCondition: Inc abortComplete (id_125[iu](UNKNOWN): boolean)
+   count: count (id_38[au](3): int)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_28[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ SkipCondition: Boolean constant false (id_34[au](0): boolean)
+ StartCondition: BooleanValue (id_115[iu](1): boolean)
+ EndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_34[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ PreCondition: Boolean constant true (id_36[au](1): boolean)
+ PostCondition: Boolean constant true (id_36[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+ ActionCompleteCondition: (id_99[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ count: count (id_38[au](4): int)
+  Inc{
+   State: Inc (id_41[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_109[au](0): (id_113[au](0): (Inc (id_41[au](EXECUTING): state) == NodeStateValue (id_111[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   SkipCondition: Boolean constant false (id_34[au](0): boolean)
+   StartCondition: Boolean constant true (id_36[au](1): boolean)
+   EndCondition: Boolean constant true (id_36[au](1): boolean)
+   ExitCondition: Boolean constant false (id_34[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   PreCondition: Boolean constant true (id_36[au](1): boolean)
+   PostCondition: Boolean constant true (id_36[au](1): boolean)
+   RepeatCondition: (id_131[iu](UNKNOWN): (count (id_38[au](4): int) < IntegerValue (id_133[au](4): int)))
+   ActionCompleteCondition: Inc ack (id_123[au](1): boolean)
+   AbortCompleteCondition: Inc abortComplete (id_125[iu](UNKNOWN): boolean)
+   count: count (id_38[au](4): int)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_28[au](FINISHED): state) (0)
+ Outcome: Root (id_30[au](SUCCESS): outcome)
+ count: count (id_38[iu](4): int)
+  Inc{
+   State: Inc (id_41[au](FINISHED): state) (0)
+   Outcome: Inc (id_43[au](SUCCESS): outcome)
+   count: count (id_38[iu](4): int)
+  }
+}
+

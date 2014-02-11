@@ -1,0 +1,7 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_14[au](FINISHED): state) (0)
+ Outcome: Root (id_16[au](SUCCESS): outcome)
+}
+

@@ -1,0 +1,156 @@
+
+[PlexilExec:printPlan]
+AncestorReferenceTest{
+ State: AncestorReferenceTest (id_48[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_54[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_54[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_56[au](1): boolean)
+ SkipCondition: Boolean constant false (id_54[au](0): boolean)
+ StartCondition: Boolean constant true (id_56[au](1): boolean)
+ EndCondition: (id_192[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_54[au](0): boolean)
+ InvariantCondition: (id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_56[au](1): boolean)
+ PostCondition: Boolean constant true (id_56[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+ ActionCompleteCondition: (id_187[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ r: r (id_60[au](UNKNOWN): real)
+ run_start_time: run_start_time (id_58[au](0): real)
+  Sub{
+   State: Sub (id_63[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_192[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_54[au](0): boolean)
+   AncestorInvariantCondition: (id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_54[au](0): boolean)
+   StartCondition: Boolean constant true (id_56[au](1): boolean)
+   EndCondition: (id_218[au](0): childrenFinished(0:2))
+   ExitCondition: Boolean constant false (id_54[au](0): boolean)
+   InvariantCondition: (id_224[au](UNKNOWN): ((id_226[au](UNKNOWN): !(id_228[au](UNKNOWN): ((id_230[au](UNKNOWN): (id_234[au](UNKNOWN): (ASSIGNMENT__0 (id_72[au](UNKNOWN): outcome) == NodeOutcomeValue (id_232[au](FAILURE): outcome)))) || (id_236[au](UNKNOWN): (id_240[au](UNKNOWN): (ASSIGNMENT__1 (id_103[au](UNKNOWN): outcome) == NodeOutcomeValue (id_238[au](FAILURE): outcome)))))))))
+   PreCondition: Boolean constant true (id_56[au](1): boolean)
+   PostCondition: Boolean constant true (id_56[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+   ActionCompleteCondition: (id_212[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   r: r (id_60[au](UNKNOWN): real)
+   run_start_time: run_start_time (id_58[au](0): real)
+    ASSIGNMENT__0{
+     State: ASSIGNMENT__0 (id_70[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_243[au](0): ((id_192[au](0): childrenFinished(0:1)) || (id_218[au](0): childrenFinished(0:2))))
+     AncestorExitCondition: (id_245[au](0): (Boolean constant false (id_54[au](0): boolean) || Boolean constant false (id_54[au](0): boolean)))
+     AncestorInvariantCondition: (id_247[au](UNKNOWN): ((id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome))))))))) && (id_224[au](UNKNOWN): ((id_226[au](UNKNOWN): !(id_228[au](UNKNOWN): ((id_230[au](UNKNOWN): (id_234[au](UNKNOWN): (ASSIGNMENT__0 (id_72[au](UNKNOWN): outcome) == NodeOutcomeValue (id_232[au](FAILURE): outcome)))) || (id_236[au](UNKNOWN): (id_240[au](UNKNOWN): (ASSIGNMENT__1 (id_103[au](UNKNOWN): outcome) == NodeOutcomeValue (id_238[au](FAILURE): outcome)))))))))))
+     SkipCondition: Boolean constant false (id_54[au](0): boolean)
+     StartCondition: Boolean constant true (id_56[au](1): boolean)
+     EndCondition: Boolean constant true (id_56[au](1): boolean)
+     ExitCondition: Boolean constant false (id_54[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_56[au](1): boolean)
+     PreCondition: Boolean constant true (id_56[au](1): boolean)
+     PostCondition: Boolean constant true (id_56[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+     ActionCompleteCondition: ASSIGNMENT__0 ack (id_250[au](1): boolean)
+     AbortCompleteCondition: ASSIGNMENT__0 abortComplete (id_252[iu](UNKNOWN): boolean)
+     run_start_time: run_start_time (id_58[au](0): real)
+    }
+    ASSIGNMENT__1{
+     State: ASSIGNMENT__1 (id_101[au](WAITING): state) (0)
+     AncestorEndCondition: (id_243[au](0): ((id_192[au](0): childrenFinished(0:1)) || (id_218[au](0): childrenFinished(0:2))))
+     AncestorExitCondition: (id_245[au](0): (Boolean constant false (id_54[au](0): boolean) || Boolean constant false (id_54[au](0): boolean)))
+     AncestorInvariantCondition: (id_247[au](UNKNOWN): ((id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome))))))))) && (id_224[au](UNKNOWN): ((id_226[au](UNKNOWN): !(id_228[au](UNKNOWN): ((id_230[au](UNKNOWN): (id_234[au](UNKNOWN): (ASSIGNMENT__0 (id_72[au](UNKNOWN): outcome) == NodeOutcomeValue (id_232[au](FAILURE): outcome)))) || (id_236[au](UNKNOWN): (id_240[au](UNKNOWN): (ASSIGNMENT__1 (id_103[au](UNKNOWN): outcome) == NodeOutcomeValue (id_238[au](FAILURE): outcome)))))))))))
+     SkipCondition: Boolean constant false (id_54[au](0): boolean)
+     StartCondition: (id_267[au](0): ((id_269[au](0): (id_273[au](0): (ASSIGNMENT__0 (id_70[au](EXECUTING): state) == NodeStateValue (id_271[au](FINISHED): state))))))
+     EndCondition: Boolean constant true (id_56[au](1): boolean)
+     ExitCondition: Boolean constant false (id_54[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_56[au](1): boolean)
+     PreCondition: Boolean constant true (id_56[au](1): boolean)
+     PostCondition: Boolean constant true (id_56[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+     ActionCompleteCondition: ASSIGNMENT__1 ack (id_259[iu](UNKNOWN): boolean)
+     AbortCompleteCondition: ASSIGNMENT__1 abortComplete (id_261[iu](UNKNOWN): boolean)
+     r: r (id_60[au](UNKNOWN): real)
+     run_start_time: run_start_time (id_58[au](0): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+AncestorReferenceTest{
+ State: AncestorReferenceTest (id_48[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_54[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_54[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_56[au](1): boolean)
+ SkipCondition: Boolean constant false (id_54[au](0): boolean)
+ StartCondition: Boolean constant true (id_56[au](1): boolean)
+ EndCondition: (id_192[au](0): childrenFinished(0:1))
+ ExitCondition: Boolean constant false (id_54[au](0): boolean)
+ InvariantCondition: (id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_56[au](1): boolean)
+ PostCondition: Boolean constant true (id_56[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+ ActionCompleteCondition: (id_187[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ r: r (id_60[au](0): real)
+ run_start_time: run_start_time (id_58[au](0): real)
+  Sub{
+   State: Sub (id_63[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_192[au](0): childrenFinished(0:1))
+   AncestorExitCondition: Boolean constant false (id_54[au](0): boolean)
+   AncestorInvariantCondition: (id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_54[au](0): boolean)
+   StartCondition: Boolean constant true (id_56[au](1): boolean)
+   EndCondition: (id_218[au](0): childrenFinished(1:2))
+   ExitCondition: Boolean constant false (id_54[au](0): boolean)
+   InvariantCondition: (id_224[au](UNKNOWN): ((id_226[au](UNKNOWN): !(id_228[au](UNKNOWN): ((id_230[au](0): (id_234[au](0): (ASSIGNMENT__0 (id_72[au](SUCCESS): outcome) == NodeOutcomeValue (id_232[au](FAILURE): outcome)))) || (id_236[au](UNKNOWN): (id_240[au](UNKNOWN): (ASSIGNMENT__1 (id_103[au](UNKNOWN): outcome) == NodeOutcomeValue (id_238[au](FAILURE): outcome)))))))))
+   PreCondition: Boolean constant true (id_56[au](1): boolean)
+   PostCondition: Boolean constant true (id_56[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+   ActionCompleteCondition: (id_212[iu](UNKNOWN): childrenWaitingOrFinished(0:2))
+   r: r (id_60[au](0): real)
+   run_start_time: run_start_time (id_58[au](0): real)
+    ASSIGNMENT__0{
+     State: ASSIGNMENT__0 (id_70[au](FINISHED): state) (0)
+     Outcome: ASSIGNMENT__0 (id_72[au](SUCCESS): outcome)
+     run_start_time: run_start_time (id_58[au](0): real)
+    }
+    ASSIGNMENT__1{
+     State: ASSIGNMENT__1 (id_101[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_243[au](0): ((id_192[au](0): childrenFinished(0:1)) || (id_218[au](0): childrenFinished(1:2))))
+     AncestorExitCondition: (id_245[au](0): (Boolean constant false (id_54[au](0): boolean) || Boolean constant false (id_54[au](0): boolean)))
+     AncestorInvariantCondition: (id_247[au](UNKNOWN): ((id_197[au](UNKNOWN): ((id_199[au](UNKNOWN): !(id_201[au](UNKNOWN): ((id_203[au](UNKNOWN): (id_207[au](UNKNOWN): (Sub (id_65[au](UNKNOWN): outcome) == NodeOutcomeValue (id_205[au](FAILURE): outcome))))))))) && (id_224[au](UNKNOWN): ((id_226[au](UNKNOWN): !(id_228[au](UNKNOWN): ((id_230[au](0): (id_234[au](0): (ASSIGNMENT__0 (id_72[au](SUCCESS): outcome) == NodeOutcomeValue (id_232[au](FAILURE): outcome)))) || (id_236[au](UNKNOWN): (id_240[au](UNKNOWN): (ASSIGNMENT__1 (id_103[au](UNKNOWN): outcome) == NodeOutcomeValue (id_238[au](FAILURE): outcome)))))))))))
+     SkipCondition: Boolean constant false (id_54[au](0): boolean)
+     StartCondition: (id_267[iu](UNKNOWN): ((id_269[iu](UNKNOWN): (id_273[iu](UNKNOWN): (ASSIGNMENT__0 (id_70[au](FINISHED): state) == NodeStateValue (id_271[au](FINISHED): state))))))
+     EndCondition: Boolean constant true (id_56[au](1): boolean)
+     ExitCondition: Boolean constant false (id_54[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_56[au](1): boolean)
+     PreCondition: Boolean constant true (id_56[au](1): boolean)
+     PostCondition: Boolean constant true (id_56[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_54[au](0): boolean)
+     ActionCompleteCondition: ASSIGNMENT__1 ack (id_259[au](1): boolean)
+     AbortCompleteCondition: ASSIGNMENT__1 abortComplete (id_261[iu](UNKNOWN): boolean)
+     r: r (id_60[au](0): real)
+     run_start_time: run_start_time (id_58[au](0): real)
+    }
+  }
+}
+
+[PlexilExec:printPlan]
+AncestorReferenceTest{
+ State: AncestorReferenceTest (id_48[au](FINISHED): state) (0)
+ Outcome: AncestorReferenceTest (id_50[au](SUCCESS): outcome)
+ r: r (id_60[iu](0): real)
+ run_start_time: run_start_time (id_58[iu](0): real)
+  Sub{
+   State: Sub (id_63[au](FINISHED): state) (0)
+   Outcome: Sub (id_65[au](SUCCESS): outcome)
+   r: r (id_60[iu](0): real)
+   run_start_time: run_start_time (id_58[iu](0): real)
+    ASSIGNMENT__0{
+     State: ASSIGNMENT__0 (id_70[au](FINISHED): state) (0)
+     Outcome: ASSIGNMENT__0 (id_72[au](SUCCESS): outcome)
+     run_start_time: run_start_time (id_58[iu](0): real)
+    }
+    ASSIGNMENT__1{
+     State: ASSIGNMENT__1 (id_101[au](FINISHED): state) (0)
+     Outcome: ASSIGNMENT__1 (id_103[au](SUCCESS): outcome)
+     r: r (id_60[iu](0): real)
+     run_start_time: run_start_time (id_58[iu](0): real)
+    }
+  }
+}
+

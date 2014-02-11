@@ -1,0 +1,26 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_16[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_22[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_22[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_24[au](1): boolean)
+ SkipCondition: Boolean constant false (id_22[au](0): boolean)
+ StartCondition: Boolean constant true (id_24[au](1): boolean)
+ EndCondition: Root ack (id_54[au](UNKNOWN): boolean)
+ ExitCondition: Boolean constant false (id_22[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_24[au](1): boolean)
+ PreCondition: Boolean constant true (id_24[au](1): boolean)
+ PostCondition: Boolean constant true (id_24[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_22[au](0): boolean)
+ ActionCompleteCondition: Root ack (id_54[au](UNKNOWN): boolean)
+ src: src (id_26[au](Array: [5, 6]): array)
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_16[au](FINISHED): state) (0)
+ Outcome: Root (id_18[au](SUCCESS): outcome)
+ src: src (id_26[iu](Array: [5, 6]): array)
+}
+

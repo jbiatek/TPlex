@@ -1,0 +1,48 @@
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_20[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_26[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_26[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_28[au](1): boolean)
+ SkipCondition: Boolean constant false (id_26[au](0): boolean)
+ StartCondition: Boolean constant true (id_28[au](1): boolean)
+ EndCondition: done (id_30[au](1): boolean)
+ ExitCondition: Boolean constant false (id_26[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_28[au](1): boolean)
+ PreCondition: Boolean constant true (id_28[au](1): boolean)
+ PostCondition: Boolean constant true (id_28[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_26[au](0): boolean)
+ ActionCompleteCondition: (id_91[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ done: done (id_30[au](1): boolean)
+  set{
+   State: set (id_33[au](EXECUTING): state) (0)
+   AncestorEndCondition: done (id_30[au](1): boolean)
+   AncestorExitCondition: Boolean constant false (id_26[au](0): boolean)
+   AncestorInvariantCondition: Boolean constant true (id_28[au](1): boolean)
+   SkipCondition: Boolean constant false (id_26[au](0): boolean)
+   StartCondition: Boolean constant true (id_28[au](1): boolean)
+   EndCondition: Boolean constant true (id_28[au](1): boolean)
+   ExitCondition: Boolean constant false (id_26[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_28[au](1): boolean)
+   PreCondition: Boolean constant true (id_28[au](1): boolean)
+   PostCondition: Boolean constant true (id_28[au](1): boolean)
+   RepeatCondition: BooleanValue (id_112[iu](1): boolean)
+   ActionCompleteCondition: set ack (id_104[au](1): boolean)
+   AbortCompleteCondition: set abortComplete (id_106[iu](UNKNOWN): boolean)
+   done: done (id_30[au](1): boolean)
+  }
+}
+
+[PlexilExec:printPlan]
+Root{
+ State: Root (id_20[au](FINISHED): state) (0)
+ Outcome: Root (id_22[au](SUCCESS): outcome)
+ done: done (id_30[iu](1): boolean)
+  set{
+   State: set (id_33[au](FINISHED): state) (0)
+   Outcome: set (id_35[au](SUCCESS): outcome)
+   done: done (id_30[iu](1): boolean)
+  }
+}
+

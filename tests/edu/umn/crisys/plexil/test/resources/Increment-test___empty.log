@@ -1,0 +1,386 @@
+
+[PlexilExec:printPlan]
+LibraryCallTest{
+ State: LibraryCallTest (id_78[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_86[au](1): boolean)
+ SkipCondition: Boolean constant false (id_84[au](0): boolean)
+ StartCondition: Boolean constant true (id_86[au](1): boolean)
+ EndCondition: (id_336[au](0): childrenFinished(0:4))
+ ExitCondition: Boolean constant false (id_84[au](0): boolean)
+ InvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](UNKNOWN): (id_354[au](UNKNOWN): (LibraryCall__0 (id_93[au](UNKNOWN): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_86[au](1): boolean)
+ PostCondition: Boolean constant true (id_86[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+ ActionCompleteCondition: (id_328[iu](UNKNOWN): childrenWaitingOrFinished(0:4))
+ result: result (id_88[au](2): int)
+  LibraryCall__0{
+   State: LibraryCall__0 (id_91[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(0:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](UNKNOWN): (id_354[au](UNKNOWN): (LibraryCall__0 (id_93[au](UNKNOWN): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: Boolean constant true (id_86[au](1): boolean)
+   EndCondition: (id_382[au](0): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_377[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+   result: result (id_88[au](2): int)
+    Increment{
+     State: Increment (id_103[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_387[au](0): ((id_336[au](0): childrenFinished(0:4)) || (id_382[au](0): childrenFinished(0:1))))
+     AncestorExitCondition: (id_389[au](0): (Boolean constant false (id_84[au](0): boolean) || Boolean constant false (id_84[au](0): boolean)))
+     AncestorInvariantCondition: (id_391[au](UNKNOWN): ((id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](UNKNOWN): (id_354[au](UNKNOWN): (LibraryCall__0 (id_93[au](UNKNOWN): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome))))))))) && Boolean constant true (id_86[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_84[au](0): boolean)
+     StartCondition: Boolean constant true (id_86[au](1): boolean)
+     EndCondition: Boolean constant true (id_86[au](1): boolean)
+     ExitCondition: Boolean constant false (id_84[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+     PreCondition: Boolean constant true (id_86[au](1): boolean)
+     PostCondition: Boolean constant true (id_86[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+     ActionCompleteCondition: Increment ack (id_398[au](1): boolean)
+     AbortCompleteCondition: Increment abortComplete (id_400[iu](UNKNOWN): boolean)
+     result: result (id_88[au](2): int)
+     x: x (id_99[au](1): const AliasVariable for IntegerValue (id_97[au](1): int))
+    }
+  }
+  COMMAND__1{
+   State: COMMAND__1 (id_162[au](WAITING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(0:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](UNKNOWN): (id_354[au](UNKNOWN): (LibraryCall__0 (id_93[au](UNKNOWN): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_421[au](0): ((id_423[au](0): (id_427[au](0): (LibraryCall__0 (id_91[au](EXECUTING): state) == NodeStateValue (id_425[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_86[au](1): boolean)
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_415[iu](UNKNOWN): isknown(COMMAND__1 command_handle (id_411[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: COMMAND__1 abortComplete (id_413[iu](UNKNOWN): boolean)
+   Command handle: COMMAND__1 command_handle (id_411[iu](UNKNOWN): command_handle)
+   result: result (id_88[au](2): int)
+  }
+  LibraryCall__2{
+   State: LibraryCall__2 (id_197[au](WAITING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(0:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](UNKNOWN): (id_354[au](UNKNOWN): (LibraryCall__0 (id_93[au](UNKNOWN): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_442[au](0): ((id_444[au](0): (id_448[au](0): (COMMAND__1 (id_162[au](WAITING): state) == NodeStateValue (id_446[au](FINISHED): state))))))
+   EndCondition: (id_437[iu](UNKNOWN): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_432[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+   result: result (id_88[au](2): int)
+    Increment{
+     State: Increment (id_207[au](INACTIVE): state) (inf)
+    }
+  }
+  COMMAND__3{
+   State: COMMAND__3 (id_266[au](WAITING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(0:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](UNKNOWN): (id_354[au](UNKNOWN): (LibraryCall__0 (id_93[au](UNKNOWN): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_485[au](0): ((id_487[au](0): (id_491[au](0): (LibraryCall__2 (id_197[au](WAITING): state) == NodeStateValue (id_489[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_86[au](1): boolean)
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_479[iu](UNKNOWN): isknown(COMMAND__3 command_handle (id_475[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: COMMAND__3 abortComplete (id_477[iu](UNKNOWN): boolean)
+   Command handle: COMMAND__3 command_handle (id_475[iu](UNKNOWN): command_handle)
+   result: result (id_88[au](2): int)
+  }
+}
+
+Increment(1) = 2 
+[PlexilExec:printPlan]
+LibraryCallTest{
+ State: LibraryCallTest (id_78[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_86[au](1): boolean)
+ SkipCondition: Boolean constant false (id_84[au](0): boolean)
+ StartCondition: Boolean constant true (id_86[au](1): boolean)
+ EndCondition: (id_336[au](0): childrenFinished(1:4))
+ ExitCondition: Boolean constant false (id_84[au](0): boolean)
+ InvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_86[au](1): boolean)
+ PostCondition: Boolean constant true (id_86[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+ ActionCompleteCondition: (id_328[iu](UNKNOWN): childrenWaitingOrFinished(0:4))
+ result: result (id_88[au](2): int)
+  LibraryCall__0{
+   State: LibraryCall__0 (id_91[au](FINISHED): state) (0)
+   Outcome: LibraryCall__0 (id_93[au](SUCCESS): outcome)
+   result: result (id_88[au](2): int)
+    Increment{
+     State: Increment (id_103[au](FINISHED): state) (0)
+     Outcome: Increment (id_105[au](SUCCESS): outcome)
+     result: result (id_88[au](2): int)
+     x: x (id_99[iu](UNKNOWN): const AliasVariable for IntegerValue (id_97[au](1): int))
+    }
+  }
+  COMMAND__1{
+   State: COMMAND__1 (id_162[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(1:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_421[iu](UNKNOWN): ((id_423[iu](UNKNOWN): (id_427[iu](UNKNOWN): (LibraryCall__0 (id_91[au](FINISHED): state) == NodeStateValue (id_425[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_86[au](1): boolean)
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_415[iu](UNKNOWN): isknown(COMMAND__1 command_handle (id_411[au](COMMAND_SUCCESS): command_handle)))
+   AbortCompleteCondition: COMMAND__1 abortComplete (id_413[au](UNKNOWN): boolean)
+   Command handle: COMMAND__1 command_handle (id_411[au](COMMAND_SUCCESS): command_handle)
+   result: result (id_88[au](2): int)
+  }
+  LibraryCall__2{
+   State: LibraryCall__2 (id_197[au](WAITING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(1:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_442[au](0): ((id_444[au](0): (id_448[au](0): (COMMAND__1 (id_162[au](EXECUTING): state) == NodeStateValue (id_446[au](FINISHED): state))))))
+   EndCondition: (id_437[iu](UNKNOWN): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_432[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+   result: result (id_88[au](2): int)
+    Increment{
+     State: Increment (id_207[au](INACTIVE): state) (inf)
+    }
+  }
+  COMMAND__3{
+   State: COMMAND__3 (id_266[au](WAITING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(1:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](UNKNOWN): (id_360[au](UNKNOWN): (COMMAND__1 (id_164[au](UNKNOWN): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_485[au](0): ((id_487[au](0): (id_491[au](0): (LibraryCall__2 (id_197[au](WAITING): state) == NodeStateValue (id_489[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_86[au](1): boolean)
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_479[iu](UNKNOWN): isknown(COMMAND__3 command_handle (id_475[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: COMMAND__3 abortComplete (id_477[iu](UNKNOWN): boolean)
+   Command handle: COMMAND__3 command_handle (id_475[iu](UNKNOWN): command_handle)
+   result: result (id_88[au](2): int)
+  }
+}
+
+[PlexilExec:printPlan]
+LibraryCallTest{
+ State: LibraryCallTest (id_78[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_86[au](1): boolean)
+ SkipCondition: Boolean constant false (id_84[au](0): boolean)
+ StartCondition: Boolean constant true (id_86[au](1): boolean)
+ EndCondition: (id_336[au](0): childrenFinished(2:4))
+ ExitCondition: Boolean constant false (id_84[au](0): boolean)
+ InvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](0): (id_360[au](0): (COMMAND__1 (id_164[au](SUCCESS): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_86[au](1): boolean)
+ PostCondition: Boolean constant true (id_86[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+ ActionCompleteCondition: (id_328[iu](UNKNOWN): childrenWaitingOrFinished(0:4))
+ result: result (id_88[au](3): int)
+  LibraryCall__0{
+   State: LibraryCall__0 (id_91[au](FINISHED): state) (0)
+   Outcome: LibraryCall__0 (id_93[au](SUCCESS): outcome)
+   result: result (id_88[au](3): int)
+    Increment{
+     State: Increment (id_103[au](FINISHED): state) (0)
+     Outcome: Increment (id_105[au](SUCCESS): outcome)
+     result: result (id_88[au](3): int)
+     x: x (id_99[iu](UNKNOWN): const AliasVariable for IntegerValue (id_97[au](1): int))
+    }
+  }
+  COMMAND__1{
+   State: COMMAND__1 (id_162[au](FINISHED): state) (0)
+   Outcome: COMMAND__1 (id_164[au](SUCCESS): outcome)
+   Command handle: COMMAND__1 command_handle (id_411[iu](COMMAND_SUCCESS): command_handle)
+   result: result (id_88[au](3): int)
+  }
+  LibraryCall__2{
+   State: LibraryCall__2 (id_197[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(2:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](0): (id_360[au](0): (COMMAND__1 (id_164[au](SUCCESS): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_442[iu](UNKNOWN): ((id_444[iu](UNKNOWN): (id_448[iu](UNKNOWN): (COMMAND__1 (id_162[au](FINISHED): state) == NodeStateValue (id_446[au](FINISHED): state))))))
+   EndCondition: (id_437[au](0): childrenFinished(0:1))
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_432[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+   result: result (id_88[au](3): int)
+    Increment{
+     State: Increment (id_207[au](EXECUTING): state) (0)
+     AncestorEndCondition: (id_451[au](0): ((id_336[au](0): childrenFinished(2:4)) || (id_437[au](0): childrenFinished(0:1))))
+     AncestorExitCondition: (id_453[au](0): (Boolean constant false (id_84[au](0): boolean) || Boolean constant false (id_84[au](0): boolean)))
+     AncestorInvariantCondition: (id_455[au](UNKNOWN): ((id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](0): (id_360[au](0): (COMMAND__1 (id_164[au](SUCCESS): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome))))))))) && Boolean constant true (id_86[au](1): boolean)))
+     SkipCondition: Boolean constant false (id_84[au](0): boolean)
+     StartCondition: Boolean constant true (id_86[au](1): boolean)
+     EndCondition: Boolean constant true (id_86[au](1): boolean)
+     ExitCondition: Boolean constant false (id_84[au](0): boolean)
+     InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+     PreCondition: Boolean constant true (id_86[au](1): boolean)
+     PostCondition: Boolean constant true (id_86[au](1): boolean)
+     RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+     ActionCompleteCondition: Increment ack (id_462[au](1): boolean)
+     AbortCompleteCondition: Increment abortComplete (id_464[iu](UNKNOWN): boolean)
+     result: result (id_88[au](3): int)
+     x: x (id_203[au](2): const AliasVariable for result (id_88[au](3): int))
+    }
+  }
+  COMMAND__3{
+   State: COMMAND__3 (id_266[au](WAITING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(2:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](0): (id_360[au](0): (COMMAND__1 (id_164[au](SUCCESS): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](UNKNOWN): (id_366[au](UNKNOWN): (LibraryCall__2 (id_199[au](UNKNOWN): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_485[au](0): ((id_487[au](0): (id_491[au](0): (LibraryCall__2 (id_197[au](EXECUTING): state) == NodeStateValue (id_489[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_86[au](1): boolean)
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_479[iu](UNKNOWN): isknown(COMMAND__3 command_handle (id_475[iu](UNKNOWN): command_handle)))
+   AbortCompleteCondition: COMMAND__3 abortComplete (id_477[iu](UNKNOWN): boolean)
+   Command handle: COMMAND__3 command_handle (id_475[iu](UNKNOWN): command_handle)
+   result: result (id_88[au](3): int)
+  }
+}
+
+Increment(2) = 3 
+[PlexilExec:printPlan]
+LibraryCallTest{
+ State: LibraryCallTest (id_78[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_86[au](1): boolean)
+ SkipCondition: Boolean constant false (id_84[au](0): boolean)
+ StartCondition: Boolean constant true (id_86[au](1): boolean)
+ EndCondition: (id_336[au](0): childrenFinished(3:4))
+ ExitCondition: Boolean constant false (id_84[au](0): boolean)
+ InvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](0): (id_360[au](0): (COMMAND__1 (id_164[au](SUCCESS): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](0): (id_366[au](0): (LibraryCall__2 (id_199[au](SUCCESS): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+ PreCondition: Boolean constant true (id_86[au](1): boolean)
+ PostCondition: Boolean constant true (id_86[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+ ActionCompleteCondition: (id_328[iu](UNKNOWN): childrenWaitingOrFinished(0:4))
+ result: result (id_88[au](3): int)
+  LibraryCall__0{
+   State: LibraryCall__0 (id_91[au](FINISHED): state) (0)
+   Outcome: LibraryCall__0 (id_93[au](SUCCESS): outcome)
+   result: result (id_88[au](3): int)
+    Increment{
+     State: Increment (id_103[au](FINISHED): state) (0)
+     Outcome: Increment (id_105[au](SUCCESS): outcome)
+     result: result (id_88[au](3): int)
+     x: x (id_99[iu](UNKNOWN): const AliasVariable for IntegerValue (id_97[au](1): int))
+    }
+  }
+  COMMAND__1{
+   State: COMMAND__1 (id_162[au](FINISHED): state) (0)
+   Outcome: COMMAND__1 (id_164[au](SUCCESS): outcome)
+   Command handle: COMMAND__1 command_handle (id_411[iu](COMMAND_SUCCESS): command_handle)
+   result: result (id_88[au](3): int)
+  }
+  LibraryCall__2{
+   State: LibraryCall__2 (id_197[au](FINISHED): state) (0)
+   Outcome: LibraryCall__2 (id_199[au](SUCCESS): outcome)
+   result: result (id_88[au](3): int)
+    Increment{
+     State: Increment (id_207[au](FINISHED): state) (0)
+     Outcome: Increment (id_209[au](SUCCESS): outcome)
+     result: result (id_88[au](3): int)
+     x: x (id_203[iu](UNKNOWN): const AliasVariable for result (id_88[au](3): int))
+    }
+  }
+  COMMAND__3{
+   State: COMMAND__3 (id_266[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_336[au](0): childrenFinished(3:4))
+   AncestorExitCondition: Boolean constant false (id_84[au](0): boolean)
+   AncestorInvariantCondition: (id_344[au](UNKNOWN): ((id_346[au](UNKNOWN): !(id_348[au](UNKNOWN): ((id_350[au](0): (id_354[au](0): (LibraryCall__0 (id_93[au](SUCCESS): outcome) == NodeOutcomeValue (id_352[au](FAILURE): outcome)))) || (id_356[au](0): (id_360[au](0): (COMMAND__1 (id_164[au](SUCCESS): outcome) == NodeOutcomeValue (id_358[au](FAILURE): outcome)))) || (id_362[au](0): (id_366[au](0): (LibraryCall__2 (id_199[au](SUCCESS): outcome) == NodeOutcomeValue (id_364[au](FAILURE): outcome)))) || (id_368[au](UNKNOWN): (id_372[au](UNKNOWN): (COMMAND__3 (id_268[au](UNKNOWN): outcome) == NodeOutcomeValue (id_370[au](FAILURE): outcome)))))))))
+   SkipCondition: Boolean constant false (id_84[au](0): boolean)
+   StartCondition: (id_485[iu](UNKNOWN): ((id_487[iu](UNKNOWN): (id_491[iu](UNKNOWN): (LibraryCall__2 (id_197[au](FINISHED): state) == NodeStateValue (id_489[au](FINISHED): state))))))
+   EndCondition: Boolean constant true (id_86[au](1): boolean)
+   ExitCondition: Boolean constant false (id_84[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_86[au](1): boolean)
+   PreCondition: Boolean constant true (id_86[au](1): boolean)
+   PostCondition: Boolean constant true (id_86[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_84[au](0): boolean)
+   ActionCompleteCondition: (id_479[iu](UNKNOWN): isknown(COMMAND__3 command_handle (id_475[au](COMMAND_SUCCESS): command_handle)))
+   AbortCompleteCondition: COMMAND__3 abortComplete (id_477[au](UNKNOWN): boolean)
+   Command handle: COMMAND__3 command_handle (id_475[au](COMMAND_SUCCESS): command_handle)
+   result: result (id_88[au](3): int)
+  }
+}
+
+[PlexilExec:printPlan]
+LibraryCallTest{
+ State: LibraryCallTest (id_78[au](FINISHED): state) (0)
+ Outcome: LibraryCallTest (id_80[au](SUCCESS): outcome)
+ result: result (id_88[iu](3): int)
+  LibraryCall__0{
+   State: LibraryCall__0 (id_91[au](FINISHED): state) (0)
+   Outcome: LibraryCall__0 (id_93[au](SUCCESS): outcome)
+   result: result (id_88[iu](3): int)
+    Increment{
+     State: Increment (id_103[au](FINISHED): state) (0)
+     Outcome: Increment (id_105[au](SUCCESS): outcome)
+     result: result (id_88[iu](3): int)
+     x: x (id_99[iu](UNKNOWN): const AliasVariable for IntegerValue (id_97[au](1): int))
+    }
+  }
+  COMMAND__1{
+   State: COMMAND__1 (id_162[au](FINISHED): state) (0)
+   Outcome: COMMAND__1 (id_164[au](SUCCESS): outcome)
+   Command handle: COMMAND__1 command_handle (id_411[iu](COMMAND_SUCCESS): command_handle)
+   result: result (id_88[iu](3): int)
+  }
+  LibraryCall__2{
+   State: LibraryCall__2 (id_197[au](FINISHED): state) (0)
+   Outcome: LibraryCall__2 (id_199[au](SUCCESS): outcome)
+   result: result (id_88[iu](3): int)
+    Increment{
+     State: Increment (id_207[au](FINISHED): state) (0)
+     Outcome: Increment (id_209[au](SUCCESS): outcome)
+     result: result (id_88[iu](3): int)
+     x: x (id_203[iu](UNKNOWN): const AliasVariable for result (id_88[iu](3): int))
+    }
+  }
+  COMMAND__3{
+   State: COMMAND__3 (id_266[au](FINISHED): state) (0)
+   Outcome: COMMAND__3 (id_268[au](SUCCESS): outcome)
+   Command handle: COMMAND__3 command_handle (id_475[iu](COMMAND_SUCCESS): command_handle)
+   result: result (id_88[iu](3): int)
+  }
+}
+

@@ -1,0 +1,85 @@
+
+[PlexilExec:printPlan]
+Parent{
+ State: Parent (id_28[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ SkipCondition: Boolean constant false (id_34[au](0): boolean)
+ StartCondition: Boolean constant true (id_36[au](1): boolean)
+ EndCondition: (id_114[au](0): (id_118[au](0): (Child (id_41[au](EXECUTING): state) == NodeStateValue (id_116[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_34[au](0): boolean)
+ InvariantCondition: (id_109[au](0): (step_failed (id_38[au](1): boolean) == BooleanValue (id_111[au](0): boolean)))
+ PreCondition: Boolean constant true (id_36[au](1): boolean)
+ PostCondition: Boolean constant true (id_36[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+ ActionCompleteCondition: (id_99[iu](UNKNOWN): childrenWaitingOrFinished(0:1))
+ step_failed: step_failed (id_38[au](1): boolean)
+  Child{
+   State: Child (id_41[au](EXECUTING): state) (0)
+   AncestorEndCondition: (id_114[au](0): (id_118[au](0): (Child (id_41[au](EXECUTING): state) == NodeStateValue (id_116[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+   AncestorInvariantCondition: (id_109[au](0): (step_failed (id_38[au](1): boolean) == BooleanValue (id_111[au](0): boolean)))
+   SkipCondition: Boolean constant false (id_34[au](0): boolean)
+   StartCondition: Boolean constant true (id_36[au](1): boolean)
+   EndCondition: Boolean constant true (id_36[au](1): boolean)
+   ExitCondition: Boolean constant false (id_34[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   PreCondition: Boolean constant true (id_36[au](1): boolean)
+   PostCondition: Boolean constant true (id_36[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+   ActionCompleteCondition: Child ack (id_123[au](1): boolean)
+   AbortCompleteCondition: Child abortComplete (id_125[iu](UNKNOWN): boolean)
+   step_failed: step_failed (id_38[au](1): boolean)
+  }
+}
+
+[PlexilExec:printPlan]
+Parent{
+ State: Parent (id_28[au](FAILING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_36[au](1): boolean)
+ SkipCondition: Boolean constant false (id_34[au](0): boolean)
+ StartCondition: Boolean constant true (id_36[au](1): boolean)
+ EndCondition: (id_114[au](0): (id_118[au](0): (Child (id_41[au](FAILING): state) == NodeStateValue (id_116[au](FINISHED): state))))
+ ExitCondition: Boolean constant false (id_34[au](0): boolean)
+ InvariantCondition: (id_109[au](1): (step_failed (id_38[au](0): boolean) == BooleanValue (id_111[au](0): boolean)))
+ PreCondition: Boolean constant true (id_36[au](1): boolean)
+ PostCondition: Boolean constant true (id_36[au](1): boolean)
+ RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+ ActionCompleteCondition: (id_99[au](0): childrenWaitingOrFinished(0:1))
+ step_failed: step_failed (id_38[au](0): boolean)
+  Child{
+   State: Child (id_41[au](FAILING): state) (0)
+   AncestorEndCondition: (id_114[au](0): (id_118[au](0): (Child (id_41[au](FAILING): state) == NodeStateValue (id_116[au](FINISHED): state))))
+   AncestorExitCondition: Boolean constant false (id_34[au](0): boolean)
+   AncestorInvariantCondition: (id_109[au](1): (step_failed (id_38[au](0): boolean) == BooleanValue (id_111[au](0): boolean)))
+   SkipCondition: Boolean constant false (id_34[au](0): boolean)
+   StartCondition: Boolean constant true (id_36[au](1): boolean)
+   EndCondition: Boolean constant true (id_36[au](1): boolean)
+   ExitCondition: Boolean constant false (id_34[au](0): boolean)
+   InvariantCondition: Boolean constant true (id_36[au](1): boolean)
+   PreCondition: Boolean constant true (id_36[au](1): boolean)
+   PostCondition: Boolean constant true (id_36[au](1): boolean)
+   RepeatCondition: Boolean constant false (id_34[au](0): boolean)
+   ActionCompleteCondition: Child ack (id_123[iu](1): boolean)
+   AbortCompleteCondition: Child abortComplete (id_125[au](1): boolean)
+   step_failed: step_failed (id_38[au](0): boolean)
+  }
+}
+
+[PlexilExec:printPlan]
+Parent{
+ State: Parent (id_28[au](FINISHED): state) (0)
+ Outcome: Parent (id_30[au](FAILURE): outcome)
+ Failure type: Parent (id_32[au](INVARIANT_CONDITION_FAILED): failure)
+ step_failed: step_failed (id_38[iu](0): boolean)
+  Child{
+   State: Child (id_41[au](FINISHED): state) (0)
+   Outcome: Child (id_43[au](FAILURE): outcome)
+   Failure type: Child (id_45[au](PARENT_FAILED): failure)
+   step_failed: step_failed (id_38[iu](0): boolean)
+  }
+}
+

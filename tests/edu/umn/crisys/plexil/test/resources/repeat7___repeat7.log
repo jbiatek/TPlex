@@ -1,0 +1,141 @@
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](EXECUTING): state) (0)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[iu](UNKNOWN): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](FINISHING): state) (1)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[au](0): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](EXECUTING): state) (1)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[iu](UNKNOWN): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](EXECUTING): state) (1)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[iu](UNKNOWN): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](EXECUTING): state) (1)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[iu](UNKNOWN): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](EXECUTING): state) (1)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[iu](UNKNOWN): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](FINISHING): state) (1)
+ AncestorEndCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorExitCondition: Boolean constant false (id_23[au](0): boolean)
+ AncestorInvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ SkipCondition: Boolean constant false (id_23[au](0): boolean)
+ StartCondition: Boolean constant true (id_25[au](1): boolean)
+ EndCondition: Boolean constant true (id_25[au](1): boolean)
+ ExitCondition: Boolean constant false (id_23[au](0): boolean)
+ InvariantCondition: Boolean constant true (id_25[au](1): boolean)
+ PreCondition: Boolean constant true (id_25[au](1): boolean)
+ PostCondition: Boolean constant true (id_25[au](1): boolean)
+ RepeatCondition: (id_66[iu](UNKNOWN): LookupOnChange(continue(), Real constant 0 (id_70[au](0): real)))
+ ActionCompleteCondition: (id_62[au](0): isknown(repeat7 command_handle (id_58[au](UNKNOWN): command_handle)))
+ AbortCompleteCondition: repeat7 abortComplete (id_60[au](UNKNOWN): boolean)
+ Command handle: repeat7 command_handle (id_58[au](UNKNOWN): command_handle)
+}
+
+[PlexilExec:printPlan]
+repeat7{
+ State: repeat7 (id_17[au](FINISHED): state) (1)
+ Outcome: repeat7 (id_19[au](SUCCESS): outcome)
+ Command handle: repeat7 command_handle (id_58[iu](COMMAND_SUCCESS): command_handle)
+}
+
