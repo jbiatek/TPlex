@@ -31,8 +31,8 @@ import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 
 public class Plan {
 
-    public static boolean PRUNE_TIMEPOINTS = false;
-    public static boolean REMOVE_IMPOSSIBLE_TRANSITIONS = false;
+    public static boolean PRUNE_TIMEPOINTS = true;
+    public static boolean REMOVE_IMPOSSIBLE_TRANSITIONS = true;
 
     
 	private List<NodeStateMachine> stateMachines = new LinkedList<NodeStateMachine>(); 
