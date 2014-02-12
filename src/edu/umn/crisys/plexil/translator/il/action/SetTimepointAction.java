@@ -6,7 +6,7 @@ import com.sun.codemodel.JExpr;
 
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.translator.il.ILExprToJava;
+import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.translator.il.vars.NodeTimepointReference;
 
 public class SetTimepointAction implements PlexilAction {

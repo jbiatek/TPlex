@@ -8,7 +8,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.translator.il.ILExprToJava;
+import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.translator.il.vars.UpdateHandleReference;
 import edu.umn.crisys.util.Pair;
 

@@ -8,8 +8,8 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.ILExprToJava;
 import edu.umn.crisys.plexil.translator.il.vars.CommandHandleReference;
 
 public class CommandAction implements PlexilAction {

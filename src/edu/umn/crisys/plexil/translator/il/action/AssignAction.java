@@ -6,7 +6,7 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.translator.il.ILExprToJava;
+import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public class AssignAction implements PlexilAction {
