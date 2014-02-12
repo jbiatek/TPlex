@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JCase;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
@@ -20,29 +21,48 @@ import com.sun.codemodel.JSwitch;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.translator.il.NodeStateMachine;
 import edu.umn.crisys.plexil.translator.il.NodeUID;
 import edu.umn.crisys.plexil.translator.il.State;
 import edu.umn.crisys.plexil.translator.il.Transition;
 import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
-import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 
 public class StateMachineToJava {
 
 	private StateMachineToJava() {}
+	
+	public static void callStepFunction(NodeStateMachine nsm, JBlock block) {
+		block.invoke(getStepMethodName(nsm));
+	}
+	
+	public static String getMappingMethodName(NodeUID uid) {
+		return "STATE___"+uid.toCleanString();
+	}
 
 	public static void addStateMachineToClass(NodeStateMachine nsm, JDefinedClass clazz) {
 		JCodeModel cm = clazz.owner();
-
+	
 		// Create the variable to hold the current state
 		JClass stateClass = cm.ref(SimpleCurrentNext.class).narrow(cm.ref(Integer.class));
 		JFieldVar stateVar = clazz.field(JMod.PRIVATE, stateClass, NameUtils.clean(nsm.nsmId+".state"), 
 				JExpr._new(stateClass).arg(JExpr.lit(0)));
+	
+		// Now we make the step function.
+		addStepFunction(nsm, stateVar, clazz);
+		// And also the mapping function back to Plexil state.
+		addMappingFunctions(nsm, stateVar, clazz);
+	
+	}
 
-		// Now we start making the step function.
-		JMethod stepMethod = clazz.method(JMod.NONE, cm.VOID, nsm.getStepMethodName());
-		stepMethod.body().decl(cm.ref(PBoolean.class), "temp");
+	private static String getStepMethodName(NodeStateMachine nsm) {
+	    return NameUtils.clean("MicroStep___"+nsm.nsmId);
+	}
+
+	private static void addStepFunction(NodeStateMachine nsm, JFieldVar stateVar, JDefinedClass clazz) {
+		JCodeModel cm = clazz.owner();
+
+		JMethod stepMethod = clazz.method(JMod.NONE, cm.VOID, getStepMethodName(nsm));
+		
 		JSwitch sw = stepMethod.body()._switch(stateVar.invoke("getCurrent"));
 		// Now to go through the transitions. They need to be sorted by priority for this.
 		Collections.sort(nsm.transitions);
@@ -83,14 +103,17 @@ public class StateMachineToJava {
 			theCase.body()._break();
 		}
 
-
-		// That's all for the step function. Now we need to handle mapping back
-		// to Plexil states for the nodes that we're in charge of.
-		// The function is going to need to map the state integer into a NodeState.
-		for (NodeUID nodeId : nsm.nodeIds) {
+	}
+	
+	private static void addMappingFunctions(NodeStateMachine nsm, JFieldVar stateVar, JDefinedClass clazz) {
+		JCodeModel cm = clazz.owner();
+		
+		// Now we need to handle mapping back to Plexil states for the nodes 
+		// that we're in charge of.
+		// Each function is going to need to map the state integer into a NodeState.
+		for (NodeUID nodeId : nsm.getNodeIds()) {
 			// Make sure we put it where NodeStateReferences will be looking:
-			JMethod stateMethod = clazz.method(JMod.PUBLIC, cm.ref(NodeState.class), 
-					NodeStateReference.nameOfStateMethodForNode(nodeId));
+			JMethod stateMethod = clazz.method(JMod.PUBLIC, cm.ref(NodeState.class), getMappingMethodName(nodeId));
 
 			// Map from Plexil state to all States tagged with it.
 			Map<NodeState, List<Integer>> reverseMapping = new HashMap<NodeState, List<Integer>>();
@@ -107,7 +130,7 @@ public class StateMachineToJava {
 
 			// Big switch statement on all States. The tag for this nodeId tells
 			// us what to return. 
-			sw = stateMethod.body()._switch(stateVar.invoke("getCurrent"));
+			JSwitch sw = stateMethod.body()._switch(stateVar.invoke("getCurrent"));
 			for (NodeState ns : reverseMapping.keySet()) {
 				List<Integer> ints = reverseMapping.get(ns);
 				JCase lastCase = null;
@@ -120,5 +143,6 @@ public class StateMachineToJava {
 					.arg(JExpr.lit(
 							"No state mapping found for "+nodeId)));
 		}
+
 	}
 }

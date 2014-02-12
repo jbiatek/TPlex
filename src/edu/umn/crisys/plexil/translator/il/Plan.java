@@ -94,14 +94,14 @@ public class Plan {
             v.addVarToClass(clazz);
         }
         
-        // Give each node state machine a pass over our new class
+        // Put each node state machine into the class.
         for (NodeStateMachine nsm : stateMachines) {
             StateMachineToJava.addStateMachineToClass(nsm, clazz);
         }
         
         // Also make the doMicroStep method, using our root machine:
-        clazz.method(JMod.PUBLIC, cm.VOID, "doMicroStep").body()
-            .invoke(root.getStepMethodName());
+        JMethod doMicroStep = clazz.method(JMod.PUBLIC, cm.VOID, "doMicroStep"); 
+        StateMachineToJava.callStepFunction(root, doMicroStep.body());
         
         clazz.method(JMod.PUBLIC, cm.ref(NodeOutcome.class), "getRootNodeOutcome").body()
             ._return(rootOutcome.rhs(cm));

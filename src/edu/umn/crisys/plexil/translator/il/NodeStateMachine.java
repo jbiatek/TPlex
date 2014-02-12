@@ -34,7 +34,7 @@ public class NodeStateMachine {
 	/**
 	 * The list of node IDs that this state machine is in charge of.
 	 */
-	public List<NodeUID> nodeIds = new LinkedList<NodeUID>(); 
+	private List<NodeUID> nodeIds = new LinkedList<NodeUID>(); 
 	public String nsmId;
 	
 	public List<State> states = new ArrayList<State>();
@@ -45,8 +45,13 @@ public class NodeStateMachine {
         nsmId = nId.toString();
         this.thePlan = thePlan;
     }
-    public String toString() { return nodeIds.toString(); }	
-	public List<NodeUID> getNodeIds() { return nodeIds ; }
+    public String toString() { 
+    	return nodeIds.toString(); 
+    }	
+    
+	public List<NodeUID> getNodeIds() { 
+		return nodeIds ;
+	}
 	
 	// methods for adding states and transitions
 	public void addState(State s) {
@@ -57,23 +62,6 @@ public class NodeStateMachine {
 	public int indexOf(State s) {
 	    return states.indexOf(s);
 	}
-	
-	public State lookupState(int stateId) {
-		return states.get(stateId);
-	}
-
-	public List<Transition> lookupTransitions(State src, State dst) {
-		List<Transition> tl = new LinkedList<Transition>(); 
-		
-		for (Transition t : transitions) {
-			if (t.start == src && t.end == dst) {
-				tl.add(t);
-			}
-		}
-		
-		return tl;
-	}
-	
 	
 	public String toLongString() {
 	    String ret = "State machine for nodes: ";
@@ -95,49 +83,9 @@ public class NodeStateMachine {
 	    return ret;
 	}
 	
-	/**
-	 * Add a transition to this state chart. This takes NodeStates, not States,
-	 * and is meant for adding in the "real" PLEXIL rules. In particular, it assumes
-	 * that State 0 is INACTIVE, State 1 is WAITING, etc. Modifying/adding
-	 * new higher level transitions is still TBD.
-	 * @param priority
-	 * @param start
-	 * @param end
-	 * @param guards
-	 * @return the transition that was created, so that you can add actions to it.
-	 */
-/*	public Transition addTransition(NodeTranslateToIL node, int priority, NodeState start, NodeState end, TransitionGuard...guards) {
-	    if (nodeIds.size() != 1) {
-	        throw new RuntimeException("This method is only meant for simple nodes.");
-	    }
-	    
-	    
-	    State realStart = lookupState(start.ordinal());
-	    State realEnd = lookupState(end.ordinal());
-	    
-	    String description = node.nodeId +" : "+start+" ("+priority+") -> "+end;
-	    
-	    Transition t = new Transition(description, priority, realStart, realEnd, guards);
-	    // Add node timepoint assignment actions
-	    // Our starting node has ended at this time
-	    t.addAction(new SetTimepointAction(node.getTimepoint(start, NodeTimepoint.END)));
-	    // Our destination node is now starting.
-	    t.addAction(new SetTimepointAction(node.getTimepoint(end, NodeTimepoint.START)));
-	    
-	    transitions.add(t);
-	    
-	    return t;
-	}*/
-	
 	public Transition addTransition(Transition t) {
 	    transitions.add(t);
 	    return t;
 	}
-	
-    
 
-	public String getStepMethodName() {
-	    return NameUtils.clean("MicroStep___"+nsmId);
-	}
-	
 }
