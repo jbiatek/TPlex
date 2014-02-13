@@ -17,6 +17,7 @@ import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
 import edu.umn.crisys.plexil.test.java.RegressionTest.TestSuite;
@@ -71,7 +72,7 @@ public class CompileRegressionTest {
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
-        JDefinedClass javaCode = ilPlan.toJava(cm, pkg, true);
+        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, true);
         
         addGetSnapshotMethod(rootTranslator, javaCode);
         cm.build(dest);
@@ -88,7 +89,7 @@ public class CompileRegressionTest {
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
-        JDefinedClass javaCode = ilPlan.toJava(cm, pkg, false);
+        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, false);
         
         addGetSnapshotMethod(translator, javaCode);
         

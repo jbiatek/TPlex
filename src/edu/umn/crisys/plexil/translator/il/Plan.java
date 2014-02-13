@@ -32,8 +32,6 @@ import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 
 public class Plan {
 
-    public static boolean PRUNE_TIMEPOINTS = true;
-    public static boolean REMOVE_IMPOSSIBLE_TRANSITIONS = true;
 
     
 	private List<NodeStateMachine> stateMachines = new LinkedList<NodeStateMachine>(); 
@@ -41,10 +39,11 @@ public class Plan {
 	
     public Set<String> globalVarNameList = new HashSet<String>();
 	
-	private NodeStateMachine root;
-	private IntermediateVariable rootOutcome;
-	private NodeStateReference rootState;
-    private String planName;
+	public NodeStateMachine root;
+	public IntermediateVariable rootOutcome;
+	public NodeStateReference rootState;
+    public String planName;
+    
     public Plan(String planName) {
 	    this.planName = planName;
 	}
@@ -57,60 +56,7 @@ public class Plan {
     	return variables;
     }
 	
-	public JDefinedClass toJava(JCodeModel cm, String pkg, boolean library) {
-	    String realPkg = pkg.equals("") ? "" : pkg+".";
-	    JDefinedClass clazz;
-        try {
-            String name = NameUtils.clean(planName);
-            clazz = cm._class(realPkg + name);
-        } catch (JClassAlreadyExistsException e) {
-            throw new RuntimeException(e);
-        }
-        
-        clazz._extends(cm.ref(JavaPlan.class));
-        
 
-	    if (REMOVE_IMPOSSIBLE_TRANSITIONS) {
-	        RemoveDeadTransitions.optimize(this);
-	    }
-        
-        // Eliminate any start or end timepoints that aren't even read
-        if (PRUNE_TIMEPOINTS) {
-            PruneUnusedTimepoints.optimize(this);
-        }
-
-        if (library) {
-            // We're a library. Need to make some additions.
-            JMethod constructor = clazz.constructor(JMod.PUBLIC);
-            JVar inParent = constructor.param(cm.ref(LibraryInterface.class), "inParent");
-            constructor.body().invoke("setInterface").arg(inParent);
-            
-            clazz.method(JMod.PUBLIC, cm.ref(ExternalWorld.class), "getWorld")
-                .body()._return(JExpr.invoke("getInterface").invoke("getWorld"));
-        }
-        
-        // Variables! They need to add themselves to the class.
-        for (IntermediateVariable v : variables) {
-            v.addVarToClass(clazz);
-        }
-        
-        // Put each node state machine into the class.
-        for (NodeStateMachine nsm : stateMachines) {
-            StateMachineToJava.addStateMachineToClass(nsm, clazz);
-        }
-        
-        // Also make the doMicroStep method, using our root machine:
-        JMethod doMicroStep = clazz.method(JMod.PUBLIC, cm.VOID, "doMicroStep"); 
-        StateMachineToJava.callStepFunction(root, doMicroStep.body());
-        
-        clazz.method(JMod.PUBLIC, cm.ref(NodeOutcome.class), "getRootNodeOutcome").body()
-            ._return(rootOutcome.rhs(cm));
-        
-        clazz.method(JMod.PUBLIC, cm.ref(NodeState.class), "getRootNodeState").body()
-            ._return(rootState.rhs(cm));
-        
-	    return clazz;
-	}
 	
 
 	public void addVariable(IntermediateVariable var) {
