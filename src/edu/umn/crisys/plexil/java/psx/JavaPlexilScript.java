@@ -21,7 +21,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	
 	private Map<FunctionCall, StandardValue> lookup = 
 			new HashMap<FunctionCall, StandardValue>();
-	private List<CommandEvent> commandQueue = new ArrayList<CommandEvent>();
+	private List<ReceivedCommand> commandQueue = new ArrayList<ReceivedCommand>();
 	
 	private List<Event> events = new ArrayList<Event>();
     private List<UpdateHandler> updaters = new ArrayList<UpdateHandler>();
@@ -30,11 +30,11 @@ public class JavaPlexilScript implements ExternalWorld {
 		public void doEvent(JavaPlexilScript world);
 	}
 	
-	private static class CommandEvent {
+	private static class ReceivedCommand {
 		private CommandHandler handler;
 		private FunctionCall call;
 		
-		public CommandEvent(CommandHandler handler, FunctionCall call) {
+		public ReceivedCommand(CommandHandler handler, FunctionCall call) {
 			this.handler = handler;
 			this.call = call;
 			System.out.println("Command event created: "+handler+" "+call);
@@ -80,8 +80,8 @@ public class JavaPlexilScript implements ExternalWorld {
 		public void doEvent(JavaPlexilScript world) {
 			// Find the event
 			System.out.println("Returning "+value+" for "+call);
-			CommandEvent event = null;
-			for (CommandEvent e : world.commandQueue) {
+			ReceivedCommand event = null;
+			for (ReceivedCommand e : world.commandQueue) {
 				if (e.getCall().equals(call)) {
 					event = e;
 					break;
@@ -107,8 +107,8 @@ public class JavaPlexilScript implements ExternalWorld {
 		public void doEvent(JavaPlexilScript world) {
 			// Find the event
 			System.out.println("Acknowledging "+call + " with "+result);
-			CommandEvent event = null;
-			for (CommandEvent e : world.commandQueue) {
+			ReceivedCommand event = null;
+			for (ReceivedCommand e : world.commandQueue) {
 				if (e.getCall().equals(call)) {
 					event = e;
 					break;
@@ -239,7 +239,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	@Override
 	public void command(CommandHandler caller, PString name,
 			PValue... args) {
-		CommandEvent e = new CommandEvent(caller, 
+		ReceivedCommand e = new ReceivedCommand(caller, 
 				new FunctionCall(name.toString(), args));
 		// Handle utility commands right away
         if (e.getCall().getName().equals("print")

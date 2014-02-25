@@ -94,7 +94,7 @@ import java.util.Vector;
  *
  *
  */
-public class SymbolicSequenceListener extends PropertyListenerAdapter implements PublisherExtension {
+public class PsxSequenceListener extends PropertyListenerAdapter implements PublisherExtension {
 
 
 	// this set will store all the method sequences.
@@ -110,7 +110,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
  	// custom marker to mark error strings in method sequences
  	private final static String exceptionMarker = "##EXCEPTION## ";
 
-	public SymbolicSequenceListener(Config conf, JPF jpf) {
+	public PsxSequenceListener(Config conf, JPF jpf) {
 		jpf.addPublisherExtension(ConsolePublisher.class, this);
 	}
 
@@ -441,10 +441,6 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 		publisher.publishTopicStart("Method Sequences");
 		printMethodSequences(pw);
 
-		// print JUnit4.0 test class
-		publisher.publishTopicStart("JUnit 4.0 test class");
-		printJUnitTestClass(pw);
-
 	}
 
 
@@ -458,69 +454,6 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 		  while (it.hasNext()){
 			  pw.println(it.next());
 		  }
-	  }
-
-
-	  /**
-	   * @author Mithun Acharya
-	   * Dumb printing of JUnit 4.0 test class
-	   * FIXME: getting class name and object name is not smart.
-	   */
-	  private void printJUnitTestClass(PrintWriter pw){
-		  // imports
-		  pw.println("import static org.junit.Assert.*;");
-		  pw.println("import org.junit.Before;");
-		  pw.println("import org.junit.Test;");
-
-		  String objectName = (className.toLowerCase()).replace(".", "_");
-
-		  pw.println();
-		  pw.println("public class " + className.replace(".", "_") + "Test {"); // test class
-		  pw.println();
-		  pw.println("	private " + className + " " + objectName + ";"); // CUT object to be tested
-		  pw.println();
-		  pw.println("	@Before"); // setUp method annotation
-		  pw.println("	public void setUp() throws Exception {"); // setUp method
-		  pw.println("		" + objectName + " = new " + className + "();"); // create object for CUT
-		  pw.println("	}"); // setUp method end
-		  // Create a test method for each sequence
-		  int testIndex = 0;
-		  Iterator<Vector<String>> it = methodSequences.iterator();
-		  while (it.hasNext()){
-			  Vector<String> methodSequence = it.next();
-			  pw.println();
-			  Iterator<String> it1 = methodSequence.iterator();
-			  if (it1.hasNext()) {
-				  String errAnn = (String)(it1.next());
-
-				  if (errAnn.contains("expected")) {
-					  pw.println("	@Test"+errAnn); // Corina: added @Test annotation with exception expected
-				  }
-				  else {
-					  pw.println("	@Test"); // @Test annotation
-					  it1 = methodSequence.iterator();
-				  }
-			  }
-			  else
-				  it1 = methodSequence.iterator();
-
-			  //pw.println("	@Test"); // @Test annotation
-			  pw.println("	public void test" + testIndex + "() {"); // begin test method
-			  //Iterator<String> it1 = methodSequence.iterator();
-			  while(it1.hasNext()){
-				  String invokedMethod = it1.next();
-				  if (invokedMethod.contains(exceptionMarker)) { // error-string. not a method
-					  // add a comment about the exception
-					  pw.println("		" + "//should lead to " + invokedMethod);
-				  }
-				  else{ // normal method
-					  pw.println("		" + objectName + "." + invokedMethod + ";"); // invoke a method in the sequence
-				  }
-			  }
-			  pw.println("	}"); // end test method
-			  testIndex++;
-		  }
-		  pw.println("}"); // test class end
 	  }
 
 }
