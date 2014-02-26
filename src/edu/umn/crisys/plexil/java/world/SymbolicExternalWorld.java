@@ -20,9 +20,7 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
-import edu.umn.crisys.plexil.java.values.UnknownValue;
 import edu.umn.crisys.util.Pair;
-import gov.nasa.jpf.symbc.numeric.SymbolicReal;
 import gov.nasa.jpf.vm.Verify;
 
 /**
@@ -126,10 +124,6 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		return symb;
 	}
 	
-	private void psxLogEntry(int stepNum, String xml) {
-		// This is just a logging method. 
-	}
-		
 	/**
 	 * Create a Lookup which will return a symbolic value of the given
 	 * type. 
@@ -180,36 +174,9 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		cmdReturnEnums.put(name, Arrays.asList(values));
 	}
 	
-	@Override
-	public void waitForNextEvent() {
-		for (UpdateHandler handler : updateQueue) {
-			if (symbolicBoolean(true)) {
-				respondToUpdate(handler);
-			}
-		}
-		updateQueue.clear();
-
-		Iterator<Pair<CommandHandler, FunctionCall>> iter = cmdQueue.iterator();
-		while (iter.hasNext()) {
-			Pair<CommandHandler, FunctionCall> pair = iter.next();
-			if (symbolicBoolean(true)) {
-				respondToCommand(pair.first, pair.second);
-				iter.remove();
-			}
-		}
-		
-		// Give any lookup that was actually used a chance to change.
-		for (PString lookup : lookupsUsedThisStep) {
-			if (symbolicBoolean(true)) {
-				regenerateLookup(lookup.getString());
-			}
-		}
-		lookupsUsedThisStep.clear();
-	}
-	
 	private void respondToUpdate(UpdateHandler u) {
 		u.acknowledgeUpdate();
-		psxLogEntry(currentStep, "<UpdateAck name=\""+u.getNodeName()+"\" />");
+		psxUpdateAck(u.getNodeName());
 	}
 	
 	private void regenerateLookup(String lookup) {
@@ -258,17 +225,15 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	private void returnValueToCommand(CommandHandler handler, FunctionCall call, PValue v) {
 		handler.commandReturns((StandardValue) v);
-		psxLogEntry(currentStep, constructCommandXML(call, v, ""));
+		constructCommandXML(call, v, "");
 	}
 	
 	private void commandAck(CommandHandler handler, FunctionCall call, CommandHandleState status) {
 		handler.setCommandHandle(status);
-		psxLogEntry(currentStep, constructCommandXML(call, status, "Ack"));
+		constructCommandXML(call, status, "Ack");
 	}
 	
-	private String constructCommandXML(FunctionCall call, PValue result, String action) {
-		StringBuilder xml = new StringBuilder();
-		String tagName = "Command"+action;
+	private void constructCommandXML(FunctionCall call, PValue result, String action) {
 		String type;
 		if (result.getType() == PlexilType.COMMAND_HANDLE) {
 			// PLEXILScript treats command handles as strings. 
@@ -277,16 +242,60 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			type = toPsxTypeString(result.getType());
 		}
 		
-		xml.append("<"+tagName+" name=\""+call.getName()+"\" type=\""+type+"\">\n");
+		psxCommand(action, call.getName(), type);
 		for (PValue arg : call.getArgs()) {
-			xml.append("<Param type=\""+toPsxTypeString(arg.getType())+"\">");
-			xml.append(arg+"</Param>\n");
+			psxParam(toPsxTypeString(arg.getType()), unwrapValue(arg));
 		}
-		xml.append("<Result>"+result+"</Result>\n");
+		psxResultOrValue("Result", unwrapValue(result));
 		
-		xml.append("</"+tagName+">");
+		psxEndCommand(action);
+	}
+	
+	private void psxUpdateAck(Object node) {
+		// This gets parsed in the listener
+		// Should output <UpdateAck name="node" />
+	}
 
-		return xml.toString();
+	private void psxCommand(Object action, Object name, Object type) {
+		// Should output <Commmand(action) name="name" type="type">
+	}
+	
+	private void psxEndCommand(Object action) {
+		// Should output </Command(action)>
+	}
+	
+	private void psxResultOrValue(Object tag, Object result) {
+		// Should output <tag>result</tag>
+	}
+	
+	private void psxState(Object name, Object type) {
+		// Should output <State name="name" type="type">
+	}
+	
+	private void psxEndState() {
+		// Should output </State>
+	}
+	
+	private void psxParam(Object type, Object value) {
+		// Should output <Param type="type">value</Param>
+	}
+	
+	private void psxInitialStateEnd() {
+		// Should output </InitialState><Script>
+		
+		// Incidentally, the listener should start out by doing this:
+		// <PLEXILScript><InitialState>
+		
+		// And then whatever we said to do. Then, it should all be closed up
+		// by doing </State></PLEXILScript>. 
+	}
+	
+	private void psxSimultaneousStart() {
+		// Should output <Simultaneous>
+	}
+	
+	private void psxSimultaneousEnd() {
+		// Should output </Simultaneous>
 	}
 	
 	private String toPsxTypeString(PlexilType t) {
@@ -301,19 +310,66 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		}
 	}
 	
+	private Object unwrapValue(PValue p) {
+		if (p.isUnknown()) {
+			return "UNKNOWN";
+		}
+		else if(p instanceof CommandHandleState) {
+			return p.toString();
+		}
+		StandardValue v = (StandardValue) p;
+		return v.asNativeJava().toString();
+	}
+	
 	private void changeLookup(String lookup, PValue v) {
 		PlexilType t = v.getType();
 		if (t==PlexilType.UNKNOWN) {
 			t = lookupTypes.get(lookup);
 		}
 		currentLookupValues.put(StringValue.get(lookup), v);
-		psxLogEntry(currentStep, 
-				"<State name=\""+lookup+"\" type=\""+toPsxTypeString(t)+"\">"
-				+"\n<Value>"+v+"</Value>\n</State>");
+		psxState(lookup, toPsxTypeString(t));
+		psxResultOrValue("Value", unwrapValue(v));
+		psxEndState();
 	}
 	
 	
-	
+
+	@Override
+	public void waitForNextEvent() {
+		if (currentStep == -1) {
+			// Before we make anything new, make sure to close the InitialState
+			// tag.
+			psxInitialStateEnd();
+		}
+		psxSimultaneousStart();
+		
+		for (UpdateHandler handler : updateQueue) {
+			if (symbolicBoolean(true)) {
+				respondToUpdate(handler);
+			}
+		}
+		updateQueue.clear();
+
+		Iterator<Pair<CommandHandler, FunctionCall>> iter = cmdQueue.iterator();
+		while (iter.hasNext()) {
+			Pair<CommandHandler, FunctionCall> pair = iter.next();
+			if (symbolicBoolean(true)) {
+				respondToCommand(pair.first, pair.second);
+				iter.remove();
+			}
+		}
+		
+		// Give any lookup that was actually used a chance to change.
+		for (PString lookup : lookupsUsedThisStep) {
+			if (symbolicBoolean(true)) {
+				regenerateLookup(lookup.getString());
+			}
+		}
+		lookupsUsedThisStep.clear();
+		
+		psxSimultaneousEnd();
+		
+	}
 
 	@Override
 	public boolean stop() {

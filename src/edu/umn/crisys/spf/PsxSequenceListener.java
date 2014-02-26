@@ -38,53 +38,86 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		publisher.getOut().println("Wrote "+currentTest+" tests to "+testCaseDestination);
 		
 	}
-
+	
+	private String convertMethodToXML(String str) {
+		String[] args = splitMethod(str);
+		if (str.startsWith("psxUpdateAck")) {
+			return interpolate(args, "<UpdateAck name=\"", "\" />");
+		} else if (str.startsWith("psxCommand")) {
+			return interpolate(args, "<Command"," name=\"", "\" type=\"", "\">");
+		} else if (str.startsWith("psxEndCommand")) {
+			return interpolate(args, "</Command", ">");
+		} else if (str.startsWith("psxResultOrValue")) {
+			return "<"+args[0]+">"+args[1]+"</"+args[0]+">";
+		} else if (str.startsWith("psxState")) {
+			return interpolate(args, "<State name=\"", "\" type=\"", "\">");
+		} else if (str.startsWith("psxEndState")) {
+			return "</State>";
+		} else if (str.startsWith("psxParam")) {
+			return interpolate(args, "<Param type=\"", "\">", "</Param>");
+		} else if (str.startsWith("psxInitialStateEnd")) {
+			return "</InitialState>\n<Script>";
+		} else if (str.startsWith("psxSimultaneousStart")) {
+			return "<Simultaneous>";
+		} else if (str.startsWith("psxSimultaneousEnd")) {
+			return "</Simultaneous>";
+		} else {
+			throw new RuntimeException(str+" could not be converted.");
+		}
+	}
+	
+	private String[] splitMethod(String method) {
+		// Delete everything up to and including the open paren,
+		// then everything after the close paren.
+		String[] args = method.replaceFirst("^.*\\(", "")
+					 .replaceFirst("\\).*$", "")
+					 .split(",");
+		for (int i=0; i<args.length; i++) {
+			if (args[i].startsWith("\"")) {
+				args[i] = args[i].substring(1);
+			}
+			if (args[i].endsWith("\"")) {
+				args[i] = args[i].substring(0, args[i].length()-1);
+			}
+		}
+		return args;
+	}
+	
+	private String interpolate(String[] args, String...chunks) {
+		if (args.length != chunks.length
+				&& args.length != chunks.length-1) {
+			throw new RuntimeException("Wrong number of args and chunks");
+		}
+		
+		StringBuilder b = new StringBuilder("");
+		for (int i=0; i<args.length; i++) {
+			b.append(chunks[i]+args[i]);
+		}
+		if (chunks.length > args.length) {
+			b.append(chunks[chunks.length-1]);
+		}
+		return b.toString();
+	}
+	
 	private void writeTestToFile(int num, Vector<String> sequence) {
 		File newTestFile = new File(testCaseDestination, "test"+num+".psx");
-		Map<Integer, Set<String>> stepBucket = new HashMap<Integer, Set<String>>();
+		List<String> xmlToOutput = new ArrayList<String>();
 		for (String method : sequence) {
-			if (method.startsWith("psxLogEntry(")) {
-				putIntoBucket(method, stepBucket);
+			if (method.startsWith("psx")) {
+				xmlToOutput.add(convertMethodToXML(method));
 			}
 		}
 		
 		try {
 			PrintWriter pw = new PrintWriter(newTestFile);
 			pw.println("<PLEXILScript>");
-			// Handle initial state specially
-			if (stepBucket.containsKey(-1)) {
-				pw.println("<InitialState>");
-				for (String method : stepBucket.get(-1)) {
-					pw.println(extractXML(method));
-				}
-				pw.println("</InitialState>");
-				stepBucket.remove(-1);
-			}
-
-			pw.println("<Script>");
-			List<Integer> steps = new ArrayList<Integer>(stepBucket.keySet());
-			Collections.sort(steps);
+			pw.println("<InitialState>");
 			
-			
-			for (Integer i : steps) {
-				boolean simultaneous = false;
-				if (stepBucket.get(i).size() > 1) {
-					simultaneous = true;
-				}
-				
-				if (simultaneous) {
-					pw.println("<Simultaneous>");
-				}
-				
-				for (String method : stepBucket.get(i)) {
-					pw.println(extractXML(method));
-				}
-				
-				if (simultaneous) {
-					pw.println("</Simultaneous>");
-				}
+			for (String xml : xmlToOutput) {
+				pw.println(xml);
 			}
-			pw.println("</Script>\n</PLEXILScript>");
+			pw.println("</Script>");
+			pw.println("</PLEXILScript>");
 			
 			pw.close();
 			

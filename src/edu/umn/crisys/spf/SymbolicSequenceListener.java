@@ -19,14 +19,11 @@ package edu.umn.crisys.spf;
 
 // does not work well for static methods:summary not printed for errors
 import gov.nasa.jpf.symbc.sequences.*;
-
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.Property;
 import gov.nasa.jpf.PropertyListenerAdapter;
 import gov.nasa.jpf.vm.ChoiceGenerator;
-
-
 import gov.nasa.jpf.vm.DynamicElementInfo;
 import gov.nasa.jpf.vm.Instruction;
 import gov.nasa.jpf.vm.MethodInfo;
@@ -36,10 +33,7 @@ import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
-
-
 import gov.nasa.jpf.jvm.bytecode.InvokeInstruction;
-
 import gov.nasa.jpf.report.ConsolePublisher;
 import gov.nasa.jpf.report.Publisher;
 import gov.nasa.jpf.report.PublisherExtension;
@@ -48,13 +42,13 @@ import gov.nasa.jpf.symbc.SymbolicInstructionFactory;
 import gov.nasa.jpf.symbc.bytecode.BytecodeUtils;
 import gov.nasa.jpf.symbc.bytecode.INVOKESTATIC;
 import gov.nasa.jpf.symbc.concolic.PCAnalyzer;
-
 import gov.nasa.jpf.symbc.numeric.IntegerExpression;
 import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
 import gov.nasa.jpf.symbc.numeric.PathCondition;
 import gov.nasa.jpf.symbc.numeric.RealExpression;
 import gov.nasa.jpf.symbc.numeric.SymbolicConstraintsGeneral;
 import gov.nasa.jpf.symbc.string.StringSymbolic;
+
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -413,8 +407,12 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 			else { // parameter concrete - for a concrete parameter, the symbolic attribute is null
 			    if (argValues[i] instanceof DynamicElementInfo
 			            && ((DynamicElementInfo) argValues[i]).isStringObject()) {
-			        DynamicElementInfo element = (DynamicElementInfo) argValues[i];
-			        invokedMethod += "\""+element.asString()+"\"" + ",";
+			    	try {
+			    		DynamicElementInfo element = (DynamicElementInfo) argValues[i];
+				        invokedMethod += "\""+element.asString()+"\"" + ",";
+			    	} catch (NullPointerException e) {
+			    		invokedMethod += "something_bad_happened,";
+			    	}
 			    } else {
 			        invokedMethod += argValues[i] + ",";
 			    }
