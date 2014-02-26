@@ -1,13 +1,14 @@
 package edu.umn.crisys.plexil.psx2java;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 
 public class DelayEvent implements ScriptEvent {
 
     @Override
-    public void toJava(JBlock block, JCodeModel cm) {
-        block.invoke("addDelay");
+    public JExpression toJava(JCodeModel cm) {
+        return JExpr.invoke("delay");
     }
 
 }

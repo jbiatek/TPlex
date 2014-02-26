@@ -160,27 +160,31 @@ public class JavaPlexilScript implements ExternalWorld {
 	    
 	}
 	
-	public void addStateChange(StandardValue value, 
-			String name, StandardValue... args) {
-		events.add(new StateChange(new FunctionCall(name, args), value));
+	public void addEvent(Event e) {
+		events.add(e);
 	}
 	
-	public void addCommandAck(CommandHandleState response,
+	public StateChange stateChange(StandardValue value, 
+			String name, StandardValue... args) {
+		return new StateChange(new FunctionCall(name, args), value);
+	}
+	
+	public CommandAck commandAck(CommandHandleState response,
 			String name, StandardValue...args) {
-		events.add(new CommandAck(new FunctionCall(name, args), response));
+		return new CommandAck(new FunctionCall(name, args), response);
 	}
 	
-	public void addCommandReturn(StandardValue value, 
+	public CommandReturn commandReturn(StandardValue value, 
 			String name, StandardValue... args) {
-		events.add(new CommandReturn(new FunctionCall(name, args), value));
+		return new CommandReturn(new FunctionCall(name, args), value);
 	}
 	
-	public void addUpdateAck(String nodeName) {
-	    events.add(new UpdateAck(nodeName));
+	public UpdateAck updateAck(String nodeName) {
+	    return new UpdateAck(nodeName);
 	}
 	
-	public void addDelay() {
-	    events.add(new Delay());
+	public Delay delay() {
+	    return new Delay();
 	}
 	
 	public void performAllEventsInQueue() {
