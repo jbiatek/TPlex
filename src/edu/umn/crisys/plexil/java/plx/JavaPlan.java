@@ -9,7 +9,7 @@ import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
 import edu.umn.crisys.plexil.test.java.PlexilTestable;
 
-public abstract class JavaPlan implements PlexilTestable {
+public abstract class JavaPlan {
     
     public static final int QUIESCENCE_TIMEOUT = 1000;
     public static boolean DEBUG = false;
