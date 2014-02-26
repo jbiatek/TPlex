@@ -46,18 +46,19 @@ public class Main {
 	private Main() {}
 
 	public static void main(String[] args) {
+		if (args.length == 0) {
+			System.out.println("No arguments passed in.");
+			System.out.println(usage);
+			return;
+		}
+		
 		File outputDir = new File("tplex_out");
 		String pkg = "";
 		boolean optimize = true;
 		List<File> files = new ArrayList<File>();
 		
-		if (args.length <= 1 || args[1].equals("-h") || args[1].equals("--help")) {
-			System.out.println(usage);
-			return;
-		}
-		
 		// Some simple parsing of options.
-		for (int i=1; i<args.length; i++) {
+		for (int i=0; i<args.length; i++) {
 			if (args[i].startsWith("--")) {
 				if (args[i].equals("--package")) {
 					pkg = args[i+1];
@@ -69,6 +70,9 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--no-optimizations")) {
 					optimize = false;
+				} else if (args[i].equals("-h") || args[i].equals("--help")) {
+					System.out.println(usage);
+					return;
 				} else {
 					System.err.println("Error: Unrecognized option "+args[i]+". Try --help.");
 				}
@@ -90,7 +94,11 @@ public class Main {
 		
 		if (files.size() == 0) {
 			System.err.println("Error: No files specified for translation.");
+			for (String arg : args) {
+				System.out.println(arg);
+			}
 			System.err.println(usage);
+			return;
 		}
 		
 		// Now we can translate.
@@ -127,6 +135,7 @@ public class Main {
 			}
 		}
 		
+		outputDir.mkdirs();
 		try {
 			cm.build(outputDir);
 		} catch (IOException e) {
