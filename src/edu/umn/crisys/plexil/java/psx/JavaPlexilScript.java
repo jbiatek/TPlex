@@ -26,7 +26,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	private List<Event> events = new ArrayList<Event>();
     private List<UpdateHandler> updaters = new ArrayList<UpdateHandler>();
 	
-	private interface Event {
+	public static interface Event {
 		public void doEvent(JavaPlexilScript world);
 	}
 	
