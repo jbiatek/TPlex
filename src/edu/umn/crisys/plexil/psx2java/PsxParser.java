@@ -102,6 +102,12 @@ public class PsxParser {
             String name = attribute(start, "name");
             assertClosedTag(start, xml);
             return new UpdateAckEvent(name);
+        } else if (isTag(start, "Simultaneous")) {
+        	SimultaneousEvent sim = new SimultaneousEvent();
+        	for (StartElement child : new TagIterator(xml, start)) {
+        		sim.addEvent(parseScriptEvent(child, xml));
+        	}
+        	return sim;
         }
         
         throw new RuntimeException("I don't know how to handle these: "+printEvents(start, xml));

@@ -46,13 +46,13 @@ public class PlexilScript {
         JMethod constructor = clazz.constructor(JMod.PUBLIC);
         
         for (ScriptEvent e : initialEvents) {
-            e.toJava(constructor.body(), cm);
+        	constructor.body().invoke("addEvent").arg(e.toJava(cm));
         }
         // Those events happen immediately, so just do them in the constructor
         constructor.body().invoke("performAllEventsInQueue");
         
         for (ScriptEvent e : mainEvents) {
-            e.toJava(constructor.body(), cm);
+        	constructor.body().invoke("addEvent").arg(e.toJava(cm));
         }
         
     }

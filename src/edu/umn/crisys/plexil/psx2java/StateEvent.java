@@ -3,9 +3,9 @@ package edu.umn.crisys.plexil.psx2java;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
@@ -25,15 +25,15 @@ public class StateEvent implements ScriptEvent {
     }
     
     @Override
-    public void toJava(JBlock block, JCodeModel cm) {
+    public JExpression toJava(JCodeModel cm) {
         JInvocation invoke = 
-            block.invoke("addStateChange")
+            JExpr.invoke("stateChange")
                 .arg(ILExprToJava.toJava(returnValue, cm))
                 .arg(JExpr.lit(name));
         for (PValue param : params) {
             invoke.arg(ILExprToJava.PValueToJava(param, cm));
         }
-
+        return invoke;
     }
 
 }
