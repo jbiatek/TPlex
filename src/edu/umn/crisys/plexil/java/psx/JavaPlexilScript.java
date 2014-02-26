@@ -160,6 +160,21 @@ public class JavaPlexilScript implements ExternalWorld {
 	    
 	}
 	
+	private static class Simultaneous implements Event {
+		private Event[] events;
+		
+		public Simultaneous(Event...events) {
+			this.events = events;
+		}
+
+		@Override
+		public void doEvent(JavaPlexilScript world) {
+			for (Event e : events) {
+				e.doEvent(world);
+			}
+		}
+	}
+	
 	public void addEvent(Event e) {
 		events.add(e);
 	}
@@ -185,6 +200,10 @@ public class JavaPlexilScript implements ExternalWorld {
 	
 	public Delay delay() {
 	    return new Delay();
+	}
+	
+	public Simultaneous simultaneous(Event...events) {
+		return new Simultaneous(events);
 	}
 	
 	public void performAllEventsInQueue() {
