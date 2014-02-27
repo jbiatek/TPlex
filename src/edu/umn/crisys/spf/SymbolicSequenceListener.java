@@ -52,6 +52,7 @@ import gov.nasa.jpf.symbc.string.StringSymbolic;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -298,7 +299,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	//	}
 	}
     
-    private boolean firstIsPrefix(Vector<String> first, Vector<String> second) {
+    private boolean firstIsPrefix(List<String> first, List<String> second) {
         if (first.size() > second.size()) {
             return false;
         }
@@ -310,7 +311,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
         return true;
     }
 
-    private boolean isPrefix(Vector<String> methodSeq) {
+    private boolean isPrefix(List<String> methodSeq) {
         for (Vector<String> existing : methodSequences) {
             if (firstIsPrefix(methodSeq, existing)) {
                 return true;
@@ -319,7 +320,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
         return false;
     }
 
-    private void removePrefixesOf(Vector<String> methodSeq) {
+    private void removePrefixesOf(List<String> methodSeq) {
         Iterator<Vector<String>> iter = methodSequences.iterator();
         while (iter.hasNext()) {
             Vector<String> otherSeq = iter.next();
@@ -330,7 +331,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
             
         }
     }
-
+    
 	/**
 	 *
 	 * traverses the ChoiceGenerator chain to get the method sequence

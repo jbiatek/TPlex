@@ -341,6 +341,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			// tag.
 			psxInitialStateEnd();
 		}
+		currentStep++;
 		psxSimultaneousStart();
 		
 		for (UpdateHandler handler : updateQueue) {
@@ -368,7 +369,6 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		lookupsUsedThisStep.clear();
 		
 		psxSimultaneousEnd();
-		
 	}
 
 	@Override
