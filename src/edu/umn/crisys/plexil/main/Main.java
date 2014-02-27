@@ -33,12 +33,14 @@ public class Main {
 									  + "Options include:\n"
 									  + "    --package com.example.something\n"
 									  + "                                Put generated files in the given package\n"
-									  + "                                (instead of the default empty package)\n"
+									  + "                                (instead of the default empty package)\n\n"
+									  
 									  + "    --output-dir src/           Output files to the given directory. If a \n"
 									  + "                                package is specified, the package will be placed\n"
 									  + "                                in this directory \n"
 									  + "                                (e.g. src/com/example/something/)\n"
-									  + "                                If not specified, this defaults to \"tplex_out/\". \n"
+									  + "                                If not specified, this defaults to \"tplex_out/\".\n\n"
+									  
 									  + "    --no-optimizations          Disable removal of impossible transitions and \n"
 									  + "                                unused node timepoints.\n";
 
