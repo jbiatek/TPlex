@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="build/TPlex.jar">
+        <jar destfile="TPlex.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="edu.umn.crisys.plexil.main.Main"/>
@@ -17,4 +17,10 @@
             <zipfileset dir="lib" includes="codemodel-2.6.jar"/>
         </jar>
     </target>
+	<target name="build_for_distribution" depends="create_run_jar" > 
+		<zip destfile="release/TPlex.zip"> 
+			<fileset file="TPlex.jar"/>
+			<fileset file="jpf.properties"/>
+		</zip>
+	</target>
 </project>
