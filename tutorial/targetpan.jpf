@@ -1,0 +1,9 @@
+@using jpf-symbc
+@using tplex
+
+target=Main
+#listener=edu.umn.crisys.spf.SymbolicSequenceListener
+classpath=bin
+psxlistener.output_dir=TargetPanoramaScripts
+#psxlistener.output_all_tests=true
+search.depth_limit=30
