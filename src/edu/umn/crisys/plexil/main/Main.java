@@ -39,7 +39,8 @@ public class Main {
 									  + "                                package is specified, the package will be placed\n"
 									  + "                                in this directory \n"
 									  + "                                (e.g. src/com/example/something/)\n"
-									  + "                                If not specified, this defaults to \"tplex_out/\".\n\n"
+									  + "                                If not specified, this defaults to the current\n"
+									  + "                                directory.\n\n"
 									  
 									  + "    --no-optimizations          Disable removal of impossible transitions and \n"
 									  + "                                unused node timepoints.\n";
@@ -55,7 +56,7 @@ public class Main {
 			return;
 		}
 		
-		File outputDir = new File("tplex_out");
+		File outputDir = new File(System.getProperty("user.dir"));
 		String pkg = "";
 		boolean optimize = true;
 		List<File> files = new ArrayList<File>();
