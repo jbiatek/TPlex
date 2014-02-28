@@ -4,7 +4,7 @@ import edu.umn.crisys.plexil.java.world.*;
 import edu.umn.crisys.plexil.java.values.*;
 
 
-public class Main {
+public class SymbolicDriver {
 	public static void main(String[] args) {
 		JavaPlan plan = new TargetPanorama();
 		ExternalWorld world = configureSymbolicExternalWorld();
@@ -32,7 +32,7 @@ public class Main {
 		// The Lookup(target_in_view) should return a boolean.
 		world.addLookup("target_in_view", PlexilType.BOOLEAN);
 		// Time should be an integer.
-		world.addLookup("time", PlexilType.INTEGER);
+		world.addIncreasingLookup("time", PlexilType.INTEGER);
 		return world;
 	}
 }
