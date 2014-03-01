@@ -62,6 +62,9 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	 * chosen nondeterministically, one of these has to be what's actually used.
 	 */
 	private Map<String,List<PValue>> lookupEnums = new HashMap<String, List<PValue>>();
+	
+	private Set<String> increasingLookups = new HashSet<String>();
+	
 	/**
 	 * Types to return from commands. They aren't enumerated, so a symbolic
 	 * value of this type can be returned. 
@@ -146,6 +149,14 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		regenerateLookup(lookup);
 	}
 	
+	public void addIncreasingLookup(String lookup, PlexilType type) {
+		if ( ! type.isNumeric()) {
+			throw new RuntimeException("Cannot create non-numeric increasing lookup");
+		}
+		addLookup(lookup, type);
+		increasingLookups.add(lookup);
+	}
+	
 	/**
 	 * Create a Command which can respond with one of the given command handles.
 	 * If none are given, any command handle is valid. 
@@ -192,7 +203,14 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			if (lookupTypes.get(lookup) == null) {
 				throw new RuntimeException("Type not given for lookup "+lookup);
 			}
-			changeLookup(lookup, getSymbolicPValueOfType(lookupTypes.get(lookup)));
+			PValue newValue = getSymbolicPValueOfType(lookupTypes.get(lookup));
+			if (increasingLookups.contains(lookup)) {
+				// Need to make sure our new value is bigger
+				PNumeric oldValue = (PNumeric) currentLookupValues.get(lookup);
+				PNumeric newValNumeric = (PNumeric) newValue;
+				Verify.ignoreIf(oldValue.gt(newValNumeric).isTrue());
+			}
+			changeLookup(lookup, newValue);
 		}
 	}
 	
