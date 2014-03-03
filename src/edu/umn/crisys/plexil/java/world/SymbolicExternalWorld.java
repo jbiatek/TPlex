@@ -191,6 +191,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	private void regenerateLookup(String lookup) {
+		PValue oldValueCaptured = currentLookupValues.get(lookup);
 		if (lookupEnums.containsKey(lookup)) {
 			// We have to pick one of these values.
 			List<PValue> choices = lookupEnums.get(lookup);
@@ -204,14 +205,16 @@ public class SymbolicExternalWorld implements ExternalWorld {
 				throw new RuntimeException("Type not given for lookup "+lookup);
 			}
 			PValue newValue = getSymbolicPValueOfType(lookupTypes.get(lookup));
-			if (increasingLookups.contains(lookup)) {
-				// Need to make sure our new value is bigger
-				PNumeric oldValue = (PNumeric) currentLookupValues.get(lookup);
-				PNumeric newValNumeric = (PNumeric) newValue;
-				Verify.ignoreIf(oldValue.gt(newValNumeric).isTrue());
-			}
 			changeLookup(lookup, newValue);
 		}
+		
+		if (increasingLookups.contains(lookup)) {
+			// Need to make sure our new value is bigger
+			PNumeric oldValNumeric = (PNumeric) oldValueCaptured;
+			PNumeric newValNumeric = (PNumeric) currentLookupValues.get(lookup);
+			Verify.ignoreIf(oldValNumeric.gt(newValNumeric).isTrue());
+		}
+
 	}
 	
 	private void respondToCommand(CommandHandler handler, FunctionCall call) {
@@ -336,7 +339,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			return p.toString();
 		}
 		StandardValue v = (StandardValue) p;
-		return v.asNativeJava().toString();
+		return v.asNativeJava();
 	}
 	
 	private void changeLookup(String lookup, PValue v) {

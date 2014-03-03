@@ -191,7 +191,6 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 					return;
 
 				if ((BytecodeUtils.isMethodSymbolic(conf, mi.getFullName(), numberOfArgs, null))){
-
 					// FIXME: get the object name?
 					// VirtualInvocation virtualInvocation = (VirtualInvocation)insn;
 					// int ref = virtualInvocation.getThis(ti);
