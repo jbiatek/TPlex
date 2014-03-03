@@ -208,8 +208,8 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			changeLookup(lookup, newValue);
 		}
 		
-		if (increasingLookups.contains(lookup)) {
-			// Need to make sure our new value is bigger
+		if (oldValueCaptured != null && increasingLookups.contains(lookup)) {
+			// Need to make sure our new value is bigger, if it is new.
 			PNumeric oldValNumeric = (PNumeric) oldValueCaptured;
 			PNumeric newValNumeric = (PNumeric) currentLookupValues.get(lookup);
 			Verify.ignoreIf(oldValNumeric.gt(newValNumeric).isTrue());

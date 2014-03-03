@@ -5,4 +5,4 @@ target=SymbolicDriver
 classpath=bin
 psxlistener.output_dir=TargetPanoramaScripts
 #psxlistener.output_all_tests=true
-search.depth_limit=20
+search.depth_limit=30
