@@ -339,7 +339,10 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			return p.toString();
 		}
 		StandardValue v = (StandardValue) p;
-		return v.asNativeJava();
+		// It has to be a string because SymbolicSequenceListener doesn't
+		// currently unwrap Booleans to primitives. So we end up getting
+		// something useless like "java.lang.Integer@234". 
+		return v.asNativeJava().toString();
 	}
 	
 	private void changeLookup(String lookup, PValue v) {
