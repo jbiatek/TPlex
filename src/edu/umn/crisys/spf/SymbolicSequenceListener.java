@@ -223,8 +223,26 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 					// this is just to store the information
 					// regarding the executed method.
 					SequenceChoiceGenerator cg = new SequenceChoiceGenerator(shortName);
+					// Let's grab concrete strings now and not later. If the 
+					// system under test doesn't save this concrete string 
+					// somewhere, it'll be garbage collected (or something)
+					// and when we try to do getMethodSequence(), it won't be
+					// there for us to read. Right now, though, of course, it's
+					// available, since this instruction is just now executing.
+					for (int i=0; i<argValues.length; i++) {
+						if (attributes[i] == null &&
+								argValues[i] instanceof DynamicElementInfo
+					            && ((DynamicElementInfo) argValues[i]).isStringObject()) {
+							argValues[i] = getStringOfArg(argValues[i], null);
+						}
+					}
+					
+
+					
+					
 					cg.setArgValues(argValues);
 					cg.setArgAttributes(attributes);
+					
 					// Does not actually make any choice
 					ss.setNextChoiceGenerator(cg);
 					// nothing to do as there are no choices.
@@ -371,52 +389,12 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 		// get argument values
 		Object[] argValues = cg.getArgValues();
 
-		// get number of arguments
-		int numberOfArgs = argValues.length;
-
 		// get symbolic attributes
 		Object[] attributes = cg.getArgAttributes();
 
 		// get the solution
-		for(int i=0; i<numberOfArgs; i++){
-			Object attribute = attributes[i];
-			if (attribute != null){ // parameter symbolic
-				// here we should consider different types of symbolic arguments
-				//IntegerExpression e = (IntegerExpression)attributes[i];
-				Object e = attributes[i];
-				String solution = "";
-
-
-				if(e instanceof IntegerExpression) {
-					// trick to print bools correctly
-					if(argValues[i].toString()=="true" || argValues[i].toString()=="false") {
-						if(((IntegerExpression) e).solution() == 0)
-							solution = solution+ "false";
-						else
-							solution = solution+ "true";
-					}
-					else
-						solution = solution+ ((IntegerExpression) e).solution();
-				}
-				else if (e instanceof RealExpression)
-					solution = solution+ ((RealExpression) e).solution();
-				else
-					solution = solution+ ((StringSymbolic) e).solution();
-				invokedMethod += solution + ",";
-			}
-			else { // parameter concrete - for a concrete parameter, the symbolic attribute is null
-			    if (argValues[i] instanceof DynamicElementInfo
-			            && ((DynamicElementInfo) argValues[i]).isStringObject()) {
-			    	try {
-			    		DynamicElementInfo element = (DynamicElementInfo) argValues[i];
-				        invokedMethod += "\""+element.asString()+"\"" + ",";
-			    	} catch (NullPointerException e) {
-			    		invokedMethod += "something_bad_happened,";
-			    	}
-			    } else {
-			        invokedMethod += argValues[i] + ",";
-			    }
-			}
+		for(int i=0; i<argValues.length; i++){
+			invokedMethod += getStringOfArg(argValues[i], attributes[i]) + ",";
 		}
 
 		// remove the extra comma
@@ -427,6 +405,45 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 		return invokedMethod;
 	}
 
+	private String getStringOfArg(Object argValue, Object attribute) {
+		if (attribute != null){ // parameter symbolic
+			// here we should consider different types of symbolic arguments
+			//IntegerExpression e = (IntegerExpression)attributes[i];
+			String solution = "";
+
+
+			if(attribute instanceof IntegerExpression) {
+				// trick to print bools correctly
+				if(argValue.toString()=="true" || argValue.toString()=="false") {
+					if(((IntegerExpression) attribute).solution() == 0)
+						solution = solution+ "false";
+					else
+						solution = solution+ "true";
+				}
+				else
+					solution = solution+ ((IntegerExpression) attribute).solution();
+			}
+			else if (attribute instanceof RealExpression)
+				solution = solution+ ((RealExpression) attribute).solution();
+			else
+				solution = solution+ ((StringSymbolic) attribute).solution();
+			return solution;
+		}
+		else { // parameter concrete - for a concrete parameter, the symbolic attribute is null
+		    if (argValue instanceof DynamicElementInfo
+		            && ((DynamicElementInfo) argValue).isStringObject()) {
+		    	try {
+		    		DynamicElementInfo element = (DynamicElementInfo) argValue;
+			        return "\""+element.asString()+"\"";
+		    	} catch (NullPointerException e) {
+		    		return "object_removed_from_heap_before_i_could_grab_its_value";
+		    	}
+		    } else {
+		        return argValue+"";
+		    }
+		}
+
+	}
 
 
       //	-------- the publisher interface
