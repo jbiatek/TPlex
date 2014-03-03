@@ -123,7 +123,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	private int symbolicIntIndex(int maximum) {
 		int symb = symbolicInt(0);
-		Verify.ignoreIf(symb > maximum || symb < 0);
+		Verify.ignoreIf(symb >= maximum || symb < 0);
 		return symb;
 	}
 	
