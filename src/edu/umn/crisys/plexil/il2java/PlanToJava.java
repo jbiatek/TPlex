@@ -9,8 +9,6 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
-import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.LibraryInterface;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
@@ -22,10 +20,6 @@ import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public class PlanToJava {
 
-    public static boolean PRUNE_TIMEPOINTS = true;
-    public static boolean REMOVE_IMPOSSIBLE_TRANSITIONS = true;
-
-	
 	private PlanToJava() {}
 	
 	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, boolean library) {
@@ -41,15 +35,6 @@ public class PlanToJava {
         // Of course, we extend the JavaPlan class. 
         clazz._extends(cm.ref(JavaPlan.class));
         
-        // If optimizations are on, let's do them. 
-	    if (REMOVE_IMPOSSIBLE_TRANSITIONS) {
-	        RemoveDeadTransitions.optimize(p);
-	    }
-        
-        if (PRUNE_TIMEPOINTS) {
-            PruneUnusedTimepoints.optimize(p);
-        }
-
         if (library) {
             // We're a library. Need to make some additions.
             JMethod constructor = clazz.constructor(JMod.PUBLIC);

@@ -31,7 +31,6 @@ import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.JParens;
 import edu.umn.crisys.plexil.translator.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.translator.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.translator.il.expr.RootAncestorInvariantExpr;

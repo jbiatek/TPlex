@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.translator.il;
+package edu.umn.crisys.plexil.il2java;
 
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JExpressionImpl;
