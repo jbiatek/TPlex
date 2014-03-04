@@ -59,6 +59,80 @@ public class SimpleDrivingEnvironment implements ExternalWorld {
 		failing[sensorNumber] = isBroken;
 	}
 	
+	@Override
+	public void waitForNextEvent() {
+		// This method is called between macro steps. 
+		
+		runtimeOracle();
+		
+		// Deal with the command queue. Since one of our properties is that 
+		// the queue should never exceed 1, this for loop will run 0 or 1 time.
+		for (Pair<CommandHandler, Integer> command : commandQueue) {
+			// We'll just have every command successfully change the rover's
+			// position. 
+			position += command.second;
+			command.first.setCommandHandle(CommandHandleState.COMMAND_SUCCESS);
+		}
+	
+		// One more step completed.
+		stepNumber++;
+	}
+
+
+	private void runtimeOracle() {
+		// Throw an exception if any property has been violated
+		
+		if (commandQueue.size() > 1) {
+			throw new RuntimeException("Multiple commands issued at once");
+		}
+	}
+
+
+	/**
+	 * Perform a Lookup("POSITION_N") and return the value that the sensor
+	 * reads.
+	 * 
+	 * @param stateName
+	 */
+	private PValue lookup(PString stateName) {
+		String state = stateName.getString();
+		// Make sure this is something that we're expecting
+		if ( ! state.startsWith("POSITION_")) {
+			throw new RuntimeException("Unknown lookup");
+		}
+		// Get the sensor number
+		int sensor = Integer.parseInt(state.replaceAll("POSITION_", ""));
+		if (failing[sensor]) {
+			// This sensor is failing, it could get anything.
+			return getSymbolicIntegerValue();
+		} else {
+			// This sensor is operating correctly, return the real value.
+			return IntegerValue.get(position);
+		}
+	
+	}
+
+	@Override
+	public void command(CommandHandler caller, PString name, PValue... args) {
+		// Executed when the PLEXIL plan issues a Commmand.
+		// Ensure that this is a command that we expect.
+		if (name.getString().equals("Drive") && args.length == 1) {
+			PInteger driveArg = (PInteger) args[0].castTo(PlexilType.INTEGER);
+			if (driveArg.isUnknown()) {
+				throw new RuntimeException("Was told to Drive(UNKNOWN)");
+			}
+			// Add the command to the queue, to be executed when the macro step ends.
+			commandQueue.add(new Pair<CommandHandler, Integer>(caller, driveArg.getIntValue()));
+		} else {
+			throw new RuntimeException("Unknown command or wrong arguments: "
+					+name+", "+Arrays.toString(args));
+		}
+	}
+
+	/*
+	 * Most of the stuff past this point is not very interesting. -------------
+	 */
+	
 	
 	/**
 	 * Get a PInteger symbolically. Could be UNKNOWN, or any known integer.
@@ -93,33 +167,6 @@ public class SimpleDrivingEnvironment implements ExternalWorld {
 
 	
 	@Override
-	public void waitForNextEvent() {
-		// Called between macro steps. 
-		
-		runtimeOracle();
-		
-		// Deal with the command queue. Since one of our properties is that 
-		// the queue should never exceed 1, this for loop will run 0 or 1 time.
-		for (Pair<CommandHandler, Integer> command : commandQueue) {
-			// We'll just have every command successfully change the rover's
-			// position. 
-			position += command.second;
-			command.first.setCommandHandle(CommandHandleState.COMMAND_SUCCESS);
-		}
-
-		// One more step completed.
-		stepNumber++;
-	}
-	
-	private void runtimeOracle() {
-		// Throw an exception if any property has been violated
-		
-		if (commandQueue.size() > 1) {
-			throw new RuntimeException("Multiple commands issued at once");
-		}
-	}
-
-	@Override
 	public boolean stop() {
 		// Allow simulation to run indefinitely
 		return false;
@@ -135,42 +182,10 @@ public class SimpleDrivingEnvironment implements ExternalWorld {
 		return lookup(stateName);
 	}
 	
-	private PValue lookup(PString stateName) {
-		String state = stateName.getString();
-		if ( ! state.startsWith("POSITION_")) {
-			throw new RuntimeException("Unknown lookup");
-		}
-		int sensor = Integer.parseInt(state.replaceAll("POSITION_", ""));
-		if (failing[sensor]) {
-			// This sensor is failing, it could get anything.
-			return getSymbolicIntegerValue();
-		} else {
-			// This sensor is operating correctly, return the real value.
-			return IntegerValue.get(position);
-		}
-
-	}
-
 	@Override
 	public PValue lookupOnChange(PString stateName, PNumeric tolerance,
 			PValue... args) {
 		return lookup(stateName);
-	}
-
-	@Override
-	public void command(CommandHandler caller, PString name, PValue... args) {
-		// Ensure that this is a command that we expect.
-		if (name.getString().equals("Drive") && args.length == 1) {
-			PInteger driveArg = (PInteger) args[0].castTo(PlexilType.INTEGER);
-			if (driveArg.isUnknown()) {
-				throw new RuntimeException("Was told to Drive(UNKNOWN)");
-			}
-			// Add the command to the queue, to be executed when the macro step ends.
-			commandQueue.add(new Pair<CommandHandler, Integer>(caller, driveArg.getIntValue()));
-		} else {
-			throw new RuntimeException("Unknown command or wrong arguments: "
-					+name+", "+Arrays.toString(args));
-		}
 	}
 
 }
