@@ -22,11 +22,13 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 	private boolean writeRedundantCasesToo = false;
 	private Set<List<String>> testCases = new HashSet<List<String>>();
 	private Set<List<String>> redundantTestCases = new HashSet<List<String>>();
+	private boolean outputDebugComments = false;
 	
 	public PsxSequenceListener(Config conf, JPF jpf) {
 		super(conf, jpf);
 		String dest = conf.getString("psxlistener.output_dir", "psx_output");
 		writeRedundantCasesToo = conf.getBoolean("psxlistener.output_all_tests", false);
+		outputDebugComments  = conf.getBoolean("output_debug_comments", false);
 		testCaseDestination = new File(dest);
 	}
 
@@ -306,7 +308,11 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		} else if (str.startsWith("psx")) {
 			throw new RuntimeException(str+" could not be converted.");
 		} else {
-			return "<!--"+str+"-->";
+			if (outputDebugComments) {
+				return "<!--"+str+"-->";
+			} else {
+				return "";
+			}
 		}
 	}
 	
