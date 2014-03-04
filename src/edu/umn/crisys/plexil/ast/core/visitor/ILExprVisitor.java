@@ -1,9 +1,9 @@
 package edu.umn.crisys.plexil.ast.core.visitor;
 
-import edu.umn.crisys.plexil.translator.il.expr.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.translator.il.expr.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.translator.il.expr.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.translator.il.expr.RootParentStateExpr;
+import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
+import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
+import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
+import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public interface ILExprVisitor<Param, Return> extends CommonExprVisitor<Param, Return>{
