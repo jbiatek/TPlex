@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.translator.il;
+package edu.umn.crisys.plexil.il.statemachine;
 
 import java.util.Arrays;
 import java.util.LinkedList;

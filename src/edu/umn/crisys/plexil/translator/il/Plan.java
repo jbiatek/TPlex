@@ -21,6 +21,7 @@ import com.sun.codemodel.JVar;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
+import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.LibraryInterface;

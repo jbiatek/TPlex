@@ -8,8 +8,8 @@ import java.util.Set;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JCodeModel;
 
+import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
-import edu.umn.crisys.plexil.translator.il.NodeStateMachine;
 import edu.umn.crisys.plexil.translator.il.NodeUID;
 import edu.umn.crisys.plexil.translator.il.Plan;
 

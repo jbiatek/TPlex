@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.translator.il;
+package edu.umn.crisys.plexil.il.statemachine;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +22,8 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.PBoolean;
+import edu.umn.crisys.plexil.translator.il.NodeUID;
+import edu.umn.crisys.plexil.translator.il.Plan;
 import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
 import edu.umn.crisys.plexil.translator.il.action.SetTimepointAction;
 import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;

@@ -9,12 +9,12 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.LibraryInterface;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
-import edu.umn.crisys.plexil.translator.il.NodeStateMachine;
 import edu.umn.crisys.plexil.translator.il.Plan;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
