@@ -7,9 +7,9 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 
 public class NodeStateReference extends RHSVariable {
 

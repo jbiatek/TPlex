@@ -17,11 +17,11 @@ import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
 import edu.umn.crisys.plexil.test.java.RegressionTest.TestSuite;
-import edu.umn.crisys.plexil.translator.il.Plan;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public class CompileRegressionTest {

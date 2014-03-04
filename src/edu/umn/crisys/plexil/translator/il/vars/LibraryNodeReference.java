@@ -15,6 +15,7 @@ import com.sun.codemodel.JVar;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.LibraryInterface;
@@ -22,7 +23,6 @@ import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 import edu.umn.crisys.plexil.translator.il.action.AssignAction;
 
 /**

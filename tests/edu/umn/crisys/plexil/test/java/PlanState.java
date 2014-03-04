@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
@@ -19,7 +20,6 @@ import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 
 public class PlanState {
 	

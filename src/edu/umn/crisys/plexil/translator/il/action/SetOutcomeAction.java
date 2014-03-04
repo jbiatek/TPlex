@@ -4,9 +4,9 @@ import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
 
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.java.values.NodeFailureType;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 import edu.umn.crisys.plexil.translator.il.vars.VariableReference;
 
 public class SetOutcomeAction implements PlexilAction {

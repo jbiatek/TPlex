@@ -13,8 +13,8 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JFieldVar;
 
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
 
 /**

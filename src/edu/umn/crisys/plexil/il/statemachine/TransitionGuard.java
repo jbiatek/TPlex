@@ -5,11 +5,11 @@ import com.sun.codemodel.JExpression;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 
 public class TransitionGuard {
     

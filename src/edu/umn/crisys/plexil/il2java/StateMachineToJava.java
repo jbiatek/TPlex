@@ -19,12 +19,12 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JSwitch;
 
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
 
 public class StateMachineToJava {

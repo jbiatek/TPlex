@@ -3,7 +3,7 @@
  *
  */
 
-package edu.umn.crisys.plexil.translator.il;
+package edu.umn.crisys.plexil.il;
 
 import java.util.HashSet;
 import java.util.LinkedList;

@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.ast2il;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
-import edu.umn.crisys.plexil.translator.il.Plan;
+import edu.umn.crisys.plexil.il.Plan;
 
 public class PlexilPlanToILPlan {
 

@@ -11,6 +11,7 @@ import com.sun.codemodel.JMod;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
@@ -18,7 +19,6 @@ import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 
 public class NodeTimepointReference extends RHSVariable {
 
