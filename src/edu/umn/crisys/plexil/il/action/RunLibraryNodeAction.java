@@ -1,7 +1,4 @@
-package edu.umn.crisys.plexil.translator.il.action;
-
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCodeModel;
+package edu.umn.crisys.plexil.il.action;
 
 import edu.umn.crisys.plexil.translator.il.vars.LibraryNodeReference;
 
@@ -12,14 +9,18 @@ public class RunLibraryNodeAction implements PlexilAction {
     public RunLibraryNodeAction(LibraryNodeReference node) {
         this.node = node;
     }
-
-    @Override
-    public void addActionToBlock(JBlock block, JCodeModel cm) {
-        block.add(node.directReference(cm).invoke("doMicroStep"));
+    
+    public LibraryNodeReference getLibNode() {
+    	return node;
     }
 
     @Override
     public String toString() {
         return "Run library node "+node;
     }
+
+	@Override
+	public <P, R> R accept(ILActionVisitor<P, R> visitor, P param) {
+		return visitor.visitRunLibraryNode(this, param);
+	}
 }

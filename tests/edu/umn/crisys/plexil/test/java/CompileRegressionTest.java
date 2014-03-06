@@ -18,6 +18,8 @@ import com.sun.codemodel.JVar;
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
+import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
@@ -85,6 +87,10 @@ public class CompileRegressionTest {
         NodeToIL translator = new NodeToIL(planXml.getRootNode());
         Plan ilPlan = new Plan(suite.planFile);
         translator.translate(ilPlan);
+        
+        PruneUnusedTimepoints.optimize(ilPlan);
+        RemoveDeadTransitions.optimize(ilPlan);
+
         
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";

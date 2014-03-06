@@ -13,6 +13,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
@@ -20,12 +21,15 @@ import com.sun.codemodel.JSwitch;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
+import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
 
 public class StateMachineToJava {
 
@@ -80,7 +84,8 @@ public class StateMachineToJava {
 				caseMap.put(t.start, sw._case(JExpr.lit(nsm.indexOf(t.start))));
 			}
 			// Let the transition do its thing
-			JConditional cond = t.addTransition(caseMap.get(t.start).body(), cm, stateVar, lastCondition.get(t.start));
+			JConditional cond = addTransition(t, nsm.thePlan,
+					caseMap.get(t.start).body(), cm, stateVar, lastCondition.get(t.start));
 			// This is now the latest if statement for this state
 			lastCondition.put(t.start, cond);
 		}
@@ -97,8 +102,9 @@ public class StateMachineToJava {
 			if (state.inActions.size() == 0) continue;
 
 			JCase theCase = inActionSwitch._case(JExpr.lit(nsm.indexOf(state)));
+			ActionToJava a2j = new ActionToJava(cm, nsm.thePlan);
 			for (PlexilAction a : state.inActions) {
-				a.addActionToBlock(theCase.body(), cm);
+				a.accept(a2j, theCase.body());
 			}
 			theCase.body()._break();
 		}
@@ -145,4 +151,93 @@ public class StateMachineToJava {
 		}
 
 	}
+	
+	
+	
+	/**
+     * Add this transition on to the previous one. If this is the first, 
+     * pass in null.
+     * 
+     * @param block The block of code we're adding to
+     * @param cm
+     * @param prev The conditional returned by the last transition
+     * @return The JConditional for this transition. Pass it to the next Transition.
+     */
+	public static JConditional addTransition(Transition t, Plan ilPlan, 
+			JBlock block, JCodeModel cm, JFieldVar stateVar, JConditional prev) {
+		// Is this our start state?
+//	    JExpression condExp = JExpr.invoke("getState").eq(
+//				cm.ref(NodeState.class).staticRef(start.toString()));
+		
+	    
+	    
+		// Is each of our guards satisfied?
+	    JExpression condExp = null;
+		for (TransitionGuard guard : t.guards) {
+		    if (guard.isAlwaysActive()) {
+		        // We can skip this, it's just going to be true
+		        continue;
+		    }
+		    if (condExp != null) {
+		        condExp = condExp.cand(guard.getJavaExpression(cm));
+		    } else {
+		        condExp = guard.getJavaExpression(cm);
+		    }
+		}
+		
+		// Figure out if we're doing if, else if, nothing at all...
+		JConditional current;
+		JBlock thenBlock;
+		if (condExp == null ) {
+		    // There are no guards, so we don't need an if statement.
+		    if (prev == null) {
+		        // No previous if statements either. We're the first and last
+		        // transition. Let's just put it in directly then!
+		        current = null;
+		        thenBlock = block;
+		    } else {
+		        // There's a previous if statement. We'll add ourselves on
+		        // as an else.
+		        current = null;
+		        thenBlock = prev._else();
+		    }
+		    
+		} else if (prev == null) {
+		    // We have guards, and we're first in line. We'll make an if:
+			current = block._if(condExp);
+			thenBlock = current._then().block();
+		} else {
+		    // We have guards, but we're not first. We'll daisy chain:
+			current = prev._elseif(condExp);
+			thenBlock = current._then().block();
+		}
+		
+		// Now for the action, which goes into thenBlock.
+		// Add a readable comment:
+		thenBlock.directStatement("/*\n"+t.toString()+"\n*/");
+		// Some debug code to print what's happening if desired
+		thenBlock._if(cm.ref(JavaPlan.class).staticRef("DEBUG"))
+			._then()
+				.invoke(cm.ref(System.class).staticRef("out"), "println")
+					.arg(JExpr.lit(t.description));
+		
+		// Perform the actions, if any, then move to the destination state.
+		ActionToJava a2j = new ActionToJava(cm, ilPlan);
+		for (PlexilAction action : t.actions) {
+			action.accept(a2j, thenBlock);
+		}
+
+		for (PlexilAction action : t.end.entryActions) {
+			action.accept(a2j, thenBlock);
+		}
+
+		thenBlock.invoke(stateVar, "setNext").arg(JExpr.lit(t.end.getIndex()));
+		thenBlock.invoke("commitAfterMicroStep").arg(stateVar);
+		thenBlock.invoke("changeOccurred");
+		
+		// Return our if statement to be daisy chained off of
+		return current;
+	}
 }
+
+

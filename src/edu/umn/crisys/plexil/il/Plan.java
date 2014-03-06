@@ -10,24 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.codemodel.JClassAlreadyExistsException;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JVar;
-
-import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
-import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
-import edu.umn.crisys.plexil.il2java.StateMachineToJava;
-import edu.umn.crisys.plexil.java.plx.JavaPlan;
-import edu.umn.crisys.plexil.java.plx.LibraryInterface;
-import edu.umn.crisys.plexil.java.values.NodeOutcome;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.world.ExternalWorld;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 

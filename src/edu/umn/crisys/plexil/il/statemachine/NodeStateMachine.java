@@ -1,32 +1,11 @@
 package edu.umn.crisys.plexil.il.statemachine;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import com.sun.codemodel.JCase;
-import com.sun.codemodel.JClass;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JConditional;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JFieldVar;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JSwitch;
-
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.PBoolean;
-import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
-import edu.umn.crisys.plexil.translator.il.action.SetTimepointAction;
-import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 
 public class NodeStateMachine {
     

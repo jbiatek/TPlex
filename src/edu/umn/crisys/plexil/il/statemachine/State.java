@@ -8,14 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JFieldVar;
-
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.translator.il.action.PlexilAction;
 
 /**
  * @author Whalen
@@ -51,22 +46,6 @@ public class State {
 	
 	public void addInAction(PlexilAction a) {
 		inActions.add(a);
-	}
-	
-	/**
-	 * Add code to this block that enters this state properly.
-	 * 
-	 * @param cm
-	 * @param block
-	 */
-	public void addEntranceToBlock(JCodeModel cm, JBlock block, JFieldVar stateVar) {
-        for (PlexilAction action : entryActions) {
-            action.addActionToBlock(block, cm);
-        }
-        
-        block.invoke(stateVar, "setNext").arg(JExpr.lit(getIndex()));
-        block.invoke("commitAfterMicroStep").arg(stateVar);
-        block.invoke("changeOccurred");
 	}
 	
 }
