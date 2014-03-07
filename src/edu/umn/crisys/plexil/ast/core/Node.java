@@ -8,111 +8,78 @@ import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.nodebody.AssignmentBody;
+import edu.umn.crisys.plexil.ast.core.nodebody.CommandBody;
+import edu.umn.crisys.plexil.ast.core.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeBody;
+import edu.umn.crisys.plexil.ast.core.nodebody.NodeListBody;
+import edu.umn.crisys.plexil.ast.core.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class Node {
-
-    /**
-     * @return this node's parent, or null if it is the root node
-     */
-    public Node getParent() {
-        return parent;
-    }
+	
     private Node parent = null;
-
-    /**
-     * @return The native Plexil node ID. Can be null.
-     */
-    public String getPlexilID() {
-        return plexilId;
-    }
-    public void setPlexilID(String id) { plexilId = id; }
     private String plexilId;
 
-
     private NodeBody body = new NodeBody();
-    public NodeBody getNodeBody() { return body; }
-    public void setNodeBody(NodeBody b) { body = b; }
-
     // Node conditions:
     private ASTExpression startCondition = PValueExpression.TRUE;
-    public ASTExpression getStartCondition() { return startCondition; }
-    public void setStartCondition(ASTExpression e) { startCondition = e; }
-
     private ASTExpression skipCondition = PValueExpression.FALSE;
-    public ASTExpression getSkipCondition() { return skipCondition; }
-    public void setSkipCondition(ASTExpression e) { skipCondition = e; }
-
     private ASTExpression preCondition = PValueExpression.TRUE;
-    public ASTExpression getPreCondition() { return preCondition; }
-    public void setPreCondition(ASTExpression e) { preCondition = e; }
-
     private ASTExpression invariantCondition = PValueExpression.TRUE;
-    public ASTExpression getInvariantCondition() { return invariantCondition; }
-    public void setInvariantCondition(ASTExpression e) { invariantCondition = e; }
-
     private ASTExpression repeatCondition = PValueExpression.FALSE;
-    public ASTExpression getRepeatCondition() { return repeatCondition; }
-    public void setRepeatCondition(ASTExpression e) { repeatCondition = e; }
-
     private ASTExpression postCondition = PValueExpression.TRUE;
-    public ASTExpression getPostCondition() { return postCondition; }
-    public void setPostCondition(ASTExpression e) { postCondition = e; }
-
     private ASTExpression endCondition = DefaultEndExpr.get();
-    public ASTExpression getEndCondition() { return endCondition; }
-    public void setEndCondition(ASTExpression e) { endCondition = e; }
-
     private ASTExpression exitCondition = PValueExpression.FALSE;
-    public ASTExpression getExitCondition() { return exitCondition; }
-    public void setExitCondition(ASTExpression e) { exitCondition = e; }
-
+    
     private int priority = Integer.MAX_VALUE;
-    public int getPriority() { return priority; }
-    public void setPriority(int p) { priority = p; }
-
     // Variables declared in this node
     private Map<String, PlexilType> vars = new HashMap<String, PlexilType>();
     private Map<String, PValueExpression> varInitial = new HashMap<String, PValueExpression>();
     private Map<String, ArrayLiteralExpr> arrayInitial = new HashMap<String, ArrayLiteralExpr>();
     private Map<String, Integer> arraySizes = new HashMap<String, Integer>();
 
-    public Set<String> getVarNames() { 
-        return vars.keySet(); 
-    }
-    public PlexilType getVarType(String name) { 
-        return vars.get(name); 
-    }
-    public PValueExpression getInitVariable(String varName) { 
-        return varInitial.get(varName); 
-    }
-    public ArrayLiteralExpr getInitArray(String arrayName) {
-        return arrayInitial.get(arrayName);
+    // Variable interface
+    private boolean hasDefinedInterface = false;
+    private Map<String, PlexilType> varsIn = new HashMap<String, PlexilType>();
+    private Map<String, PlexilType> varsInOut = new HashMap<String, PlexilType>();
+
+    /**
+     * Construct a root Node.
+     */
+    public Node() {
+        this(null);
     }
     
-    public boolean containsVar(String name) {
-        return vars.containsKey(name); 
+    /** Construct a Node with a parent.
+     * 
+     * @param parent
+     */
+    public Node(Node parent) {
+        this.parent = parent;
     }
+    
+    
+    /**
+	 * @return this node's parent, or null if it is the root node
+	 */
+	public Node getParent() {
+	    return parent;
+	}
 
-    public int getArraySize(String name) {
-        if (! arraySizes.containsKey(name)) {
-            throw new RuntimeException(name+" is not an array");
-        }
-        return arraySizes.get(name);
-    }
+	public void addVar(String name, PlexilType type) { 
+	    if (type.isArrayType()) {
+	        throw new RuntimeException("Must include size for array type");
+	    }
+	    vars.put(name, type); 
+	}
 
-    public void addVar(String name, PlexilType type) { 
-        if (type.isArrayType()) {
-            throw new RuntimeException("Must include size for array type");
-        }
-        vars.put(name, type); 
-    }
-    public void addVar(String name, PlexilType type, PValueExpression init) {
-        addVar(name, type);
-        varInitial.put(name, init);
-    }
-    public void addArray(String name, PlexilType t, int maxSize) {
+	public void addVar(String name, PlexilType type, PValueExpression init) {
+	    addVar(name, type);
+	    varInitial.put(name, init);
+	}
+
+	public void addArray(String name, PlexilType t, int maxSize) {
         if (! t.isArrayType()) {
             throw new RuntimeException(t+" is not an array type");
         }
@@ -127,11 +94,33 @@ public class Node {
         addArray(name, t, maxSize);
         arrayInitial.put(name, init);
     }
+    
+    public boolean containsVar(String name) {
+        return vars.containsKey(name); 
+    }
 
-    // Variable interface
-    private boolean hasDefinedInterface = false;
-    private Map<String, PlexilType> varsIn = new HashMap<String, PlexilType>();
-    private Map<String, PlexilType> varsInOut = new HashMap<String, PlexilType>();
+    public int getArraySize(String name) {
+        if (! arraySizes.containsKey(name)) {
+            throw new RuntimeException(name+" is not an array");
+        }
+        return arraySizes.get(name);
+    }
+    
+
+    public ArrayLiteralExpr getInitArray(String arrayName) {
+        return arrayInitial.get(arrayName);
+    }
+    public PValueExpression getInitVariable(String varName) { 
+        return varInitial.get(varName); 
+    }
+
+    public Set<String> getVarNames() { 
+        return vars.keySet(); 
+    }
+
+    public PlexilType getVarType(String name) { 
+        return vars.get(name); 
+    }
 
     /**
      * If true, access to non-local variables is restricted. There is a 
@@ -143,46 +132,132 @@ public class Node {
     public boolean hasInterface() {
         return hasDefinedInterface;
     }
+    
     /**
-     * If this node hasInterface(), this is the list of variables that are 
-     * allowed through that interface as read only. Trying to assign to any of
-     * these should be an error.
+     * Enable this Node's interface. The default PLEXIL interface allows all
+     * variables through, this turns the interface into a whitelist. The only
+     * accessible variables will be the ones that are added to it.
      */
-    public Set<String> getInterfaceReadOnlyVars() { return varsIn.keySet(); }
-
     public void restrictInterface() {
         hasDefinedInterface = true;
     }
-    
+
     public void addToInterfaceReadOnly(String varName, PlexilType t) {
-        hasDefinedInterface = true;
-        varsIn.put(varName, t);
-    }
+	    hasDefinedInterface = true;
+	    varsIn.put(varName, t);
+	}
 
-    public void addToInterfaceWriteable(String varName, PlexilType t) {
-        hasDefinedInterface = true;
-        varsInOut.put(varName, t);
-    }
+	public void addToInterfaceWriteable(String varName, PlexilType t) {
+	    hasDefinedInterface = true;
+	    varsInOut.put(varName, t);
+	}
 
+	/**
+     * If this node hasInterface(), this is the list of variables that are 
+     * allowed through that interface as read only. Trying to assign to any of
+     * these should be an error. 
+     */
+    public Set<String> getInterfaceReadOnlyVars() { return varsIn.keySet(); }
+    
     /**
      * If this node hasInterface(), this is the list of variables that are 
      * allowed through that interface as readable and writeable. 
      */
     public Set<String> getInterfaceWriteableVars() { return varsInOut.keySet(); }
 
-    /** Construct a Node with a parent.
-     * 
-     * @param parent
+    
+    /**
+     * Check this node's Interface to see if the variable is explicitly 
+     * removed from the interface. Note that nodes inherit their interfaces
+     * from their parents, but this method doesn't check any of that. It's just
+     * what this node says about its own interface. 
+     * @param varName
+     * @return
      */
-    public Node(Node parent) {
-        this.parent = parent;
+    public boolean isReadable(String varName) {
+        if (hasInterface()) {
+            return getInterfaceReadOnlyVars().contains(varName)
+                    || getInterfaceWriteableVars().contains(varName);
+        }
+        return true;
+    }
+    /**
+     * Check this node's Interface to see if the variable is explicitly 
+     * set as read-only (or not visible at all). Note that nodes inherit their 
+     * interfaces from their parents, but this method doesn't check any of that.
+     * It's just what this node says about its own interface. 
+     * @param varName
+     * @return
+     */
+
+    public boolean isWritable(String varName) {
+        if (hasInterface()) {
+            return getInterfaceWriteableVars().contains(varName);
+        }
+        return true;
     }
 
-    /**
-     * Construct a root Node.
-     */
-    public Node() {
-        this(null);
+
+    public NodeBody getNodeBody() { return body; }
+
+	public void setNodeBody(NodeBody b) { body = b; }
+    
+
+    public boolean isEmptyNode() {
+        return getNodeBody().getClass().equals(NodeBody.class);
     }
+    
+    public boolean isAssignmentNode() {
+        return getNodeBody() instanceof AssignmentBody;
+    }
+    
+    public boolean isUpdateNode() {
+        return getNodeBody() instanceof UpdateBody;
+    }
+    
+    public boolean isCommandNode() {
+        return getNodeBody() instanceof CommandBody;
+    }
+
+    public boolean isListNode() {
+        return getNodeBody() instanceof NodeListBody;
+    }
+    
+    public boolean isLibraryNode() {
+        return getNodeBody() instanceof LibraryBody;
+    }
+
+	
+    
+    /**
+     * @return The native Plexil node ID. Can be null.
+     */
+    public String getPlexilID() {
+        return plexilId;
+    }
+    public void setPlexilID(String id) { plexilId = id; }
+
+    public void setPriority(int p) { priority = p; }
+    public int getPriority() { return priority; }
+    
+    // Condition getters and setters.
+    public void setStartCondition(ASTExpression e) { startCondition = e; }
+    public void setSkipCondition(ASTExpression e) { skipCondition = e; }
+    public void setPreCondition(ASTExpression e) { preCondition = e; }
+    public void setInvariantCondition(ASTExpression e) { invariantCondition = e; }
+    public void setRepeatCondition(ASTExpression e) { repeatCondition = e; }
+    public void setPostCondition(ASTExpression e) { postCondition = e; }
+    public void setEndCondition(ASTExpression e) { endCondition = e; }
+    public void setExitCondition(ASTExpression e) { exitCondition = e; }
+    
+    public ASTExpression getRepeatCondition() { return repeatCondition; }
+    public ASTExpression getStartCondition() { return startCondition; }
+    public ASTExpression getSkipCondition() { return skipCondition; }
+    public ASTExpression getPreCondition() { return preCondition; }
+    public ASTExpression getInvariantCondition() { return invariantCondition; }
+    public ASTExpression getPostCondition() { return postCondition; }
+    public ASTExpression getEndCondition() { return endCondition; }
+    public ASTExpression getExitCondition() { return exitCondition; }
+
 
 }

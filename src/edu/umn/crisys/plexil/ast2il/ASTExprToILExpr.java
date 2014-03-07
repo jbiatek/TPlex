@@ -45,7 +45,7 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
 
     @Override
     public ILExpression visitDefaultEnd(DefaultEndExpr end, Void param) {
-        return context.getNodeBody().accept(new DefaultEndMaker(), context);
+        return context.getASTNodeBody().accept(new DefaultEndMaker(), context);
     }
     
 

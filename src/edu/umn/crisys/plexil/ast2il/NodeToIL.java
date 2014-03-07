@@ -159,7 +159,7 @@ public class NodeToIL {
     }
     
     private void checkForChildren() {
-        if (isListNode()) {
+        if (myNode.isListNode()) {
             NodeListBody body = (NodeListBody) myNode.getNodeBody();
             for (Node child : body) {
                 children.add(new NodeToIL(child, this));
@@ -174,7 +174,7 @@ public class NodeToIL {
         
         // Special variables based on the type of node this is.
         NodeBody body = myNode.getNodeBody();
-        if (isCommandNode()) {
+        if (myNode.isCommandNode()) {
             CommandBody cmd = (CommandBody) body;
             CommandHandleReference handle;
             int priority = myNode.getPriority();
@@ -185,10 +185,10 @@ public class NodeToIL {
                 handle = new CommandHandleReference(myUid, priority, returnTo);
             }
             ilVars.put(COMMAND_HANDLE, handle);
-        } else if (isUpdateNode()) {
+        } else if (myNode.isUpdateNode()) {
             ilVars.put(UPDATE_HANDLE, new UpdateHandleReference(myUid));
-        } else if (isLibraryNode()) {
-            LibraryBody lib = (LibraryBody) getNodeBody();
+        } else if (myNode.isLibraryNode()) {
+            LibraryBody lib = (LibraryBody) myNode.getNodeBody();
             Map<String,ILExpression> aliases = new HashMap<String, ILExpression>();
             
             for (String alias : lib.getAliases()) {
@@ -204,7 +204,7 @@ public class NodeToIL {
             libRef.setLibAndAncestorsInvariants(getThisAndAncestorsInvariants());
             libRef.setLibOrAncestorsEnds(getThisOrAncestorsEnds());
             libRef.setLibOrAncestorsExits(getThisOrAncestorsExits());
-        } else if (isAssignmentNode()) {
+        } else if (myNode.isAssignmentNode()) {
             ilVars.put(PREVIOUS_VALUE, new PreviousValueReference(getUID()));
         }
         
@@ -223,6 +223,10 @@ public class NodeToIL {
             ret.add(toIL(e));
         }
         return ret;
+    }
+    
+    public NodeBody getASTNodeBody() {
+    	return myNode.getNodeBody();
     }
     
     public NodeStateReference getState() {
@@ -329,71 +333,6 @@ public class NodeToIL {
         return ilVars.get(varName);
     }
     
-    NodeBody getNodeBody() {
-        return myNode.getNodeBody();
-    }
-    
-    private boolean isEmptyNode() {
-        return getNodeBody().getClass().equals(NodeBody.class);
-    }
-    
-    private boolean isAssignmentNode() {
-        return getNodeBody() instanceof AssignmentBody;
-    }
-    
-    private boolean isUpdateNode() {
-        return getNodeBody() instanceof UpdateBody;
-    }
-    
-    private boolean isCommandNode() {
-        return getNodeBody() instanceof CommandBody;
-    }
-
-    private boolean isListNode() {
-        return getNodeBody() instanceof NodeListBody;
-    }
-    
-    private boolean isLibraryNode() {
-        return getNodeBody() instanceof LibraryBody;
-    }
-
-
-    
-    public boolean hasInterface() {
-        return myNode.hasInterface();
-    }
-    
-    /**
-     * Check this node's Interface to see if the variable is explicitly 
-     * removed from the interface. Note that nodes inherit their interfaces
-     * from their parents, but this method doesn't check any of that. It's just
-     * what this node says about its own interface. 
-     * @param varName
-     * @return
-     */
-    public boolean isReadable(String varName) {
-        if (hasInterface()) {
-            return myNode.getInterfaceReadOnlyVars().contains(varName)
-                    || myNode.getInterfaceWriteableVars().contains(varName);
-        }
-        return true;
-    }
-    /**
-     * Check this node's Interface to see if the variable is explicitly 
-     * set as read-only (or not visible at all). Note that nodes inherit their 
-     * interfaces from their parents, but this method doesn't check any of that.
-     * It's just what this node says about its own interface. 
-     * @param varName
-     * @return
-     */
-
-    public boolean isWritable(String varName) {
-        if (hasInterface()) {
-            return myNode.getInterfaceWriteableVars().contains(varName);
-        }
-        return true;
-    }
-    
     private IntermediateVariable resolveVariable(String name, boolean writing) {
         // Variables have lexical scope, which mean they are visible only 
         // within the action and any descendants of the action. Scope can be 
@@ -406,12 +345,12 @@ public class NodeToIL {
         
         // It's not here. We need to make sure that our interface
         // allows us to look further.
-        if (! isReadable(name)) {
+        if (! myNode.isReadable(name)) {
             // There's no such thing as a "write-only" variable, so we don't
             // have access to this variable at all. 
             throw new RuntimeException("Variable "+name+" does not exist " +
                     "in the interface of "+getUID());
-        } else if (writing && ! isWritable(name)) {
+        } else if (writing && ! myNode.isWritable(name)) {
             throw new RuntimeException("Cannot write to variable "+name+" in "+getUID());
         }
         
@@ -527,8 +466,8 @@ public class NodeToIL {
 
         // And of course, node actions. 
         
-        if (isAssignmentNode()) {
-            AssignmentBody body = (AssignmentBody) getNodeBody();
+        if (myNode.isAssignmentNode()) {
+            AssignmentBody body = (AssignmentBody) myNode.getNodeBody();
             IntermediateVariable lhs = resolveVariableforWriting(body.getLeftHandSide());
             AssignAction assign = new AssignAction(lhs, 
                     toIL(body.getRightHandSide()), myNode.getPriority());
@@ -538,8 +477,8 @@ public class NodeToIL {
             
             SetVarToPreviousValueAction revert = new SetVarToPreviousValueAction(lhs, getPreviousValue(), myNode.getPriority());
             map.get(NodeState.FAILING).addEntryAction(revert);
-        } else if (isCommandNode()) {
-            CommandBody body = (CommandBody) getNodeBody();
+        } else if (myNode.isCommandNode()) {
+            CommandBody body = (CommandBody) myNode.getNodeBody();
             ILExpression name = toIL(body.getCommandName());
             List<ILExpression> args = toIL(body.getCommandArguments());
             CommandAction issueCmd = new CommandAction(getCommandHandle(), name, args);
@@ -549,14 +488,14 @@ public class NodeToIL {
 //            AbortCommandAction abort = new AbortCommandAction(getCommandHandle());
 //            map.get(NodeState.FAILING).addEntryAction(abort);
             
-        } else if (isUpdateNode()) {
-            UpdateBody update = (UpdateBody) getNodeBody();
+        } else if (myNode.isUpdateNode()) {
+            UpdateBody update = (UpdateBody) myNode.getNodeBody();
             UpdateAction doUpdate = new UpdateAction(getUpdateHandle());
             for ( Pair<String, ASTExpression> pair : update.getUpdates()) {
                 doUpdate.addUpdatePair(pair.first, toIL(pair.second));
             }
             map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
-        } else if (isListNode()) {
+        } else if (myNode.isListNode()) {
             // Each child needs to be told to transition in all states but INACTIVE.
             List<NodeUID> childIds = new ArrayList<NodeUID>();
             for (NodeToIL child : children) {
@@ -567,7 +506,7 @@ public class NodeToIL {
                 if (state == NodeState.INACTIVE) continue;
                 map.get(state).addInAction(runChildren);
             }
-        } else if (isLibraryNode()) {
+        } else if (myNode.isLibraryNode()) {
             // Similar deal here, we need to run the library node when not INACTIVE.
             RunLibraryNodeAction runLib = new RunLibraryNodeAction(getLibraryHandle());
             for (NodeState state : NodeState.values()) {
@@ -640,11 +579,11 @@ public class NodeToIL {
     }
 
     private void addExecutingTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
-        if (isEmptyNode()) {
+        if (myNode.isEmptyNode()) {
             addEmptyExecutingTransitions(nsm, map);
-        } else if (isAssignmentNode() || isUpdateNode()) {
+        } else if (myNode.isAssignmentNode() || myNode.isUpdateNode()) {
             addSimpleExecutingTransitions(nsm, map);
-        } else if (isCommandNode() || isLibraryNode() || isListNode()) {
+        } else if (myNode.isCommandNode() || myNode.isLibraryNode() || myNode.isListNode()) {
             addComplexExecutingTransitions(nsm, map);
         } else {
             throw new RuntimeException("No transitions found for EXECUTING");
@@ -692,11 +631,11 @@ public class NodeToIL {
     }
     
     private void addFinishingTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
-        if (isCommandNode()) {
+        if (myNode.isCommandNode()) {
             addFinishingTransitions(commandHandleKnown(Condition.TRUE), nsm, map);
-        } else if (isListNode()) {
+        } else if (myNode.isListNode()) {
             addFinishingTransitions(allChildrenWaitingOrFinished(Condition.TRUE), nsm, map);
-        } else if (isLibraryNode()) {
+        } else if (myNode.isLibraryNode()) {
             addFinishingTransitions(libraryChildWaitingOrFinished(Condition.TRUE), nsm, map);
         }
     }
@@ -719,23 +658,23 @@ public class NodeToIL {
         Transition myFault = makeTransition(map, 3, NodeState.FAILING, NodeState.ITERATION_ENDED);
         
         // There are additional guards that have to be met for some nodes:
-        if (isCommandNode()) {
+        if (myNode.isCommandNode()) {
             TransitionGuard abortComplete = abortComplete(Condition.TRUE);
             parentExited.addGuard(abortComplete);
             parentFailed.addGuard(abortComplete);
             myFault.addGuard(abortComplete);
-        } else if (isUpdateNode()) {
+        } else if (myNode.isUpdateNode()) {
             TransitionGuard updateComplete = new TransitionGuard(
                     Description.UPDATE_INVOCATION_SUCCESS, getUpdateHandle(), Condition.TRUE);
             parentExited.addGuard(updateComplete);
             parentFailed.addGuard(updateComplete);
             myFault.addGuard(updateComplete);
-        } else if (isListNode()) {
+        } else if (myNode.isListNode()) {
             TransitionGuard childrenWaitingOrFinished = allChildrenWaitingOrFinished(Condition.TRUE);
             parentExited.addGuard(childrenWaitingOrFinished);
             parentFailed.addGuard(childrenWaitingOrFinished);
             myFault.addGuard(childrenWaitingOrFinished);
-        } else if (isLibraryNode()) {
+        } else if (myNode.isLibraryNode()) {
             TransitionGuard childWaitingOrFinished = libraryChildWaitingOrFinished(Condition.TRUE);
             parentExited.addGuard(childWaitingOrFinished);
             parentFailed.addGuard(childWaitingOrFinished);
