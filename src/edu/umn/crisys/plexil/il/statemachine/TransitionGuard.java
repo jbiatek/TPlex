@@ -1,17 +1,11 @@
-package edu.umn.crisys.plexil.translator.il;
-
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JExpression;
+package edu.umn.crisys.plexil.il.statemachine;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
+import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class TransitionGuard {
-    
-    public static boolean BIASING = true;
     
     public static enum Description {
         START_CONDITION,
@@ -50,14 +44,12 @@ public class TransitionGuard {
     }
 
     private Description description;
-    private NodeUID nodeId;
     private ILExpression expr;
     private Condition cond;
     
-    public TransitionGuard(NodeUID nodeId, Description description, 
+    public TransitionGuard(Description description, 
             ILExpression expression, Condition condition) {
         this.description = description;
-        this.nodeId = nodeId;
         this.expr = expression;
         this.cond = condition;
     }
@@ -66,27 +58,24 @@ public class TransitionGuard {
         return expr;
     }
     
-    public JExpression getJavaExpression(JCodeModel cm) {
-        // Generate the code, then add .isTrue() or .isFalse() or whatever
-        // the correct Condition is.
-        
-        return cond.wrap(expr, cm);
+    public Condition getCondition() {
+    	return cond;
     }
-
+    
     public boolean isAlwaysActive() {
-        if ( ! ILExprToJava.isConstant(expr) ) {
+        if ( ! ILEval.isConstant(expr) ) {
             return false; // There's no way to say this is always active.
         }
         // Check against the value it's supposed to return:
-        return cond.checkValue(ILExprToJava.eval(expr));
+        return cond.checkValue(ILEval.eval(expr));
     }
     
     public boolean isNeverActive() {
-        if ( ! ILExprToJava.isConstant(expr) ) {
+        if ( ! ILEval.isConstant(expr) ) {
             return false; // There's no way to say this is never active.
         }
         // Does it always fail to return the right value?
-        return ! cond.checkValue(ILExprToJava.eval(expr));
+        return ! cond.checkValue(ILEval.eval(expr));
    
     }
     
@@ -123,50 +112,6 @@ public class TransitionGuard {
                 return value.isKnown();
             }
             throw new RuntimeException("Add this case to checkValue(): "+this);
-        }
-        
-        /**
-         * Create a Java boolean expression indicating whether this Plexil
-         * expression has this Condition.
-         * @param expr
-         * @return
-         */
-        public JExpression wrap(ILExpression expr, JCodeModel cm) {
-            if (BIASING) {
-                switch (this) {
-                case TRUE:
-                    return ILExprToJava.toJavaBiased(expr, cm, true);
-                case FALSE:
-                    return ILExprToJava.toJavaBiased(expr, cm, false);
-                case UNKNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
-                case NOTTRUE:
-                    return ILExprToJava.toJavaBiased(expr, cm, true).not();
-                case NOTFALSE:
-                    return ILExprToJava.toJavaBiased(expr, cm, false).not();
-                case KNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isKnown");
-                }
-                throw new RuntimeException("Add this case to wrap(): "+this);
-            } else {
-                switch (this) {
-                case TRUE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isTrue");
-                case FALSE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isFalse");
-                case UNKNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
-                case NOTTRUE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isNotTrue");
-                case NOTFALSE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isNotFalse");
-                case KNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isKnown");
-                }
-                throw new RuntimeException("Add this case to wrap(): "+this);
-
-            }
-
         }
         
         @Override

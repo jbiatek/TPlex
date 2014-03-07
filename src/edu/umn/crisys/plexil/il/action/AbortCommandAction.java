@@ -1,8 +1,4 @@
-package edu.umn.crisys.plexil.translator.il.action;
-
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JExpr;
+package edu.umn.crisys.plexil.il.action;
 
 import edu.umn.crisys.plexil.translator.il.vars.CommandHandleReference;
 
@@ -15,13 +11,13 @@ public class AbortCommandAction implements PlexilAction {
     }
 
     @Override
-    public void addActionToBlock(JBlock block, JCodeModel cm) {
-        block._throw(JExpr._new(cm.ref(RuntimeException.class)).arg("Aborting commands isn't supported yet"));
-    }
-    
-    @Override
     public String toString() {
         return "Action: Abort command for handle "+handle;
     }
+
+	@Override
+	public <P, R> R accept(ILActionVisitor<P, R> visitor, P param) {
+		return visitor.visitAbortCommand(this, param);
+	}
     
 }

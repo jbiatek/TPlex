@@ -1,9 +1,9 @@
-package edu.umn.crisys.plexil.translator.il.expr;
+package edu.umn.crisys.plexil.il.expr;
 
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
-public class RootAncestorExitExpr extends ILExprBase {
+public class RootAncestorInvariantExpr extends ILExprBase {
 
     @Override
     public PlexilType getType() {
@@ -12,7 +12,7 @@ public class RootAncestorExitExpr extends ILExprBase {
 
     @Override
     public String toString() {
-        return "<root node's ancestor exit condition>";
+        return "<root node's ancestor invariant condition>";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class RootAncestorExitExpr extends ILExprBase {
 
     @Override
     public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-        return visitor.visitRootParentExit(this, param);
+        return visitor.visitRootParentInvariant(this, param);
     }
 
 }

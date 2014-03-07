@@ -7,8 +7,9 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
+import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
 
 public class NodeStateReference extends RHSVariable {
 
@@ -18,10 +19,6 @@ public class NodeStateReference extends RHSVariable {
         this.nodeUniquePath = nodeId;
     }
 
-    public static String nameOfStateMethodForNode(NodeUID nodeId) {
-        return "STATE___"+nodeId.toCleanString();
-    }
-    
     @Override
     public String toString() {
         return nodeUniquePath+".state";
@@ -45,7 +42,7 @@ public class NodeStateReference extends RHSVariable {
 
     @Override
     public JExpression rhs(JCodeModel cm) {
-        return JExpr.invoke(nameOfStateMethodForNode(nodeUniquePath));
+        return JExpr.invoke(StateMachineToJava.getMappingMethodName(nodeUniquePath));
     }
 
     @Override

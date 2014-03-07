@@ -17,11 +17,12 @@ import com.sun.codemodel.JCodeModel;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
+import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
-import edu.umn.crisys.plexil.translator.il.Plan;
 
 public class Main {
 	
@@ -170,7 +171,7 @@ public class Main {
 		Plan ilPlan = PlxToIL(f, optimize);
 		// We're going to Java. (This will be more complicated once Java output
 		// is separated from the IL.)
-        ilPlan.toJava(cm, pkg, false);
+		PlanToJava.toJava(ilPlan, cm, pkg, false);
 	}
 	
 	public static void PsxToJava(File f, String pkg, JCodeModel cm) throws FileNotFoundException, XMLStreamException, JClassAlreadyExistsException {

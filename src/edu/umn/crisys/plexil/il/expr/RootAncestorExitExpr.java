@@ -1,18 +1,18 @@
-package edu.umn.crisys.plexil.translator.il.expr;
+package edu.umn.crisys.plexil.il.expr;
 
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
-public class RootParentStateExpr extends ILExprBase {
+public class RootAncestorExitExpr extends ILExprBase {
 
     @Override
     public PlexilType getType() {
-        return PlexilType.STATE;
+        return PlexilType.BOOLEAN;
     }
-    
+
     @Override
     public String toString() {
-        return "<root node's parent state>";
+        return "<root node's ancestor exit condition>";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class RootParentStateExpr extends ILExprBase {
 
     @Override
     public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-        return visitor.visitRootParentState(this, param);
+        return visitor.visitRootParentExit(this, param);
     }
 
 }

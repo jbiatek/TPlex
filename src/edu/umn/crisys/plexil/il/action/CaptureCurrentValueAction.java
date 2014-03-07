@@ -1,7 +1,4 @@
-package edu.umn.crisys.plexil.translator.il.action;
-
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCodeModel;
+package edu.umn.crisys.plexil.il.action;
 
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 import edu.umn.crisys.plexil.translator.il.vars.PreviousValueReference;
@@ -21,10 +18,17 @@ public class CaptureCurrentValueAction implements PlexilAction {
         return "Capture current value of "+var;
     }
     
-    @Override
-    public void addActionToBlock(JBlock block, JCodeModel cm) {
-        // Capture the old value for possibly reverting later
-        block.assign(prev.directReference(cm), var.rhs(cm));
+    public IntermediateVariable getVar() {
+    	return var;
+    }
+    
+    public PreviousValueReference getPreviousRef() {
+    	return prev;
     }
 
+	@Override
+	public <P, R> R accept(ILActionVisitor<P, R> visitor, P param) {
+		return visitor.visitCaptureCurrentValue(this, param);
+	}
+    
 }

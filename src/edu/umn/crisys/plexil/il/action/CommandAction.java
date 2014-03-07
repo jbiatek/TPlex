@@ -1,15 +1,9 @@
-package edu.umn.crisys.plexil.translator.il.action;
+package edu.umn.crisys.plexil.il.action;
 
 import java.util.List;
 
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JInvocation;
-
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.ILExprToJava;
 import edu.umn.crisys.plexil.translator.il.vars.CommandHandleReference;
 
 public class CommandAction implements PlexilAction {
@@ -30,6 +24,14 @@ public class CommandAction implements PlexilAction {
         return args;
     }
     
+    public ILExpression getName() {
+    	return name;
+    }
+    
+    public CommandHandleReference getHandle() {
+    	return handle;
+    }
+    
     @Override
     public String toString() {
         String ret = "Issue command: ";
@@ -40,17 +42,9 @@ public class CommandAction implements PlexilAction {
         return ret.substring(0, ret.length() - 2) +")";
     }
 
-    @Override
-    public void addActionToBlock(JBlock block, JCodeModel cm) {
-        //ex.command(caller, name, args);
-        JInvocation cmdCall = 
-        block.invoke(JExpr.invoke("getWorld"), "command")
-            .arg(handle.directReference(cm))
-            .arg(ILExprToJava.toJava(name, cm));
-        block.invoke("endMacroStep");
-        for (ILExpression arg : args) {
-            cmdCall.arg(ILExprToJava.toJava(arg, cm));
-        }
-    }
-    
+	@Override
+	public <P, R> R accept(ILActionVisitor<P, R> visitor, P param) {
+		return visitor.visitCommand(this, param);
+	}
+
 }

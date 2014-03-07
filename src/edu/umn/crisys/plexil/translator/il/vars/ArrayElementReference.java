@@ -7,8 +7,8 @@ import com.sun.codemodel.JExpression;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
+import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.ILExprToJava;
 
 public class ArrayElementReference extends RHSVariable {
 

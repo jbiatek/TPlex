@@ -5,10 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import edu.umn.crisys.plexil.translator.il.NodeStateMachine;
-import edu.umn.crisys.plexil.translator.il.Plan;
-import edu.umn.crisys.plexil.translator.il.State;
-import edu.umn.crisys.plexil.translator.il.Transition;
+import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
+import edu.umn.crisys.plexil.il.statemachine.State;
+import edu.umn.crisys.plexil.il.statemachine.Transition;
 
 public class RemoveDeadTransitions {
 	

@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.translator.il.expr;
+package edu.umn.crisys.plexil.il.expr;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;

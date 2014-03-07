@@ -21,34 +21,34 @@ import edu.umn.crisys.plexil.ast.core.node.Node;
 import edu.umn.crisys.plexil.ast.core.node.NodeBody;
 import edu.umn.crisys.plexil.ast.core.node.NodeListBody;
 import edu.umn.crisys.plexil.ast.core.node.UpdateBody;
+import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
+import edu.umn.crisys.plexil.il.action.AssignAction;
+import edu.umn.crisys.plexil.il.action.CaptureCurrentValueAction;
+import edu.umn.crisys.plexil.il.action.CommandAction;
+import edu.umn.crisys.plexil.il.action.ResetNodeAction;
+import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
+import edu.umn.crisys.plexil.il.action.SetOutcomeAction;
+import edu.umn.crisys.plexil.il.action.SetTimepointAction;
+import edu.umn.crisys.plexil.il.action.SetVarToPreviousValueAction;
+import edu.umn.crisys.plexil.il.action.UpdateAction;
+import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
+import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
+import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
+import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
+import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
+import edu.umn.crisys.plexil.il.statemachine.State;
+import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
+import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Condition;
+import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Description;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.NodeFailureType;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.NodeStateMachine;
-import edu.umn.crisys.plexil.translator.il.NodeUID;
-import edu.umn.crisys.plexil.translator.il.Plan;
-import edu.umn.crisys.plexil.translator.il.State;
-import edu.umn.crisys.plexil.translator.il.Transition;
-import edu.umn.crisys.plexil.translator.il.TransitionGuard;
-import edu.umn.crisys.plexil.translator.il.TransitionGuard.Condition;
-import edu.umn.crisys.plexil.translator.il.TransitionGuard.Description;
-import edu.umn.crisys.plexil.translator.il.action.AlsoRunNodesAction;
-import edu.umn.crisys.plexil.translator.il.action.AssignAction;
-import edu.umn.crisys.plexil.translator.il.action.CaptureCurrentValueAction;
-import edu.umn.crisys.plexil.translator.il.action.CommandAction;
-import edu.umn.crisys.plexil.translator.il.action.ResetNodeAction;
-import edu.umn.crisys.plexil.translator.il.action.RunLibraryNodeAction;
-import edu.umn.crisys.plexil.translator.il.action.SetOutcomeAction;
-import edu.umn.crisys.plexil.translator.il.action.SetTimepointAction;
-import edu.umn.crisys.plexil.translator.il.action.SetVarToPreviousValueAction;
-import edu.umn.crisys.plexil.translator.il.action.UpdateAction;
-import edu.umn.crisys.plexil.translator.il.expr.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.translator.il.expr.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.translator.il.expr.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.translator.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.translator.il.vars.AliasedVariableReference;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayElementReference;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayReference;
@@ -725,7 +725,7 @@ public class NodeToIL {
             parentFailed.addGuard(abortComplete);
             myFault.addGuard(abortComplete);
         } else if (isUpdateNode()) {
-            TransitionGuard updateComplete = new TransitionGuard(getUID(), 
+            TransitionGuard updateComplete = new TransitionGuard(
                     Description.UPDATE_INVOCATION_SUCCESS, getUpdateHandle(), Condition.TRUE);
             parentExited.addGuard(updateComplete);
             parentFailed.addGuard(updateComplete);
@@ -789,7 +789,7 @@ public class NodeToIL {
         if ( ! ilExprCache.containsKey(d)) {
             throw new RuntimeException("Expression was not ready: "+d);
         }
-        return new TransitionGuard(getUID(), d, ilExprCache.get(d), cond);
+        return new TransitionGuard(d, ilExprCache.get(d), cond);
     }
     
     private ResetNodeAction getResetNodeAction() {
@@ -1035,7 +1035,7 @@ public class NodeToIL {
     
     
     private TransitionGuard commandHandleKnown(Condition cond) {
-        return new TransitionGuard(getUID(), Description.COMMAND_ACCEPTED, 
+        return new TransitionGuard(Description.COMMAND_ACCEPTED, 
                 Operation.isKnown(getCommandHandle()), cond);
     }
 
