@@ -13,8 +13,6 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class TransitionGuard {
     
-    public static boolean BIASING = true;
-    
     public static enum Description {
         START_CONDITION,
         SKIP_CONDITION,
@@ -68,13 +66,10 @@ public class TransitionGuard {
         return expr;
     }
     
-    public JExpression getJavaExpression(JCodeModel cm) {
-        // Generate the code, then add .isTrue() or .isFalse() or whatever
-        // the correct Condition is.
-        
-        return cond.wrap(expr, cm);
+    public Condition getCondition() {
+    	return cond;
     }
-
+    
     public boolean isAlwaysActive() {
         if ( ! ILExprToJava.isConstant(expr) ) {
             return false; // There's no way to say this is always active.
@@ -125,50 +120,6 @@ public class TransitionGuard {
                 return value.isKnown();
             }
             throw new RuntimeException("Add this case to checkValue(): "+this);
-        }
-        
-        /**
-         * Create a Java boolean expression indicating whether this Plexil
-         * expression has this Condition.
-         * @param expr
-         * @return
-         */
-        public JExpression wrap(ILExpression expr, JCodeModel cm) {
-            if (BIASING) {
-                switch (this) {
-                case TRUE:
-                    return ILExprToJava.toJavaBiased(expr, cm, true);
-                case FALSE:
-                    return ILExprToJava.toJavaBiased(expr, cm, false);
-                case UNKNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
-                case NOTTRUE:
-                    return ILExprToJava.toJavaBiased(expr, cm, true).not();
-                case NOTFALSE:
-                    return ILExprToJava.toJavaBiased(expr, cm, false).not();
-                case KNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isKnown");
-                }
-                throw new RuntimeException("Add this case to wrap(): "+this);
-            } else {
-                switch (this) {
-                case TRUE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isTrue");
-                case FALSE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isFalse");
-                case UNKNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
-                case NOTTRUE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isNotTrue");
-                case NOTFALSE:
-                    return ILExprToJava.toJava(expr, cm).invoke("isNotFalse");
-                case KNOWN:
-                    return ILExprToJava.toJava(expr, cm).invoke("isKnown");
-                }
-                throw new RuntimeException("Add this case to wrap(): "+this);
-
-            }
-
         }
         
         @Override

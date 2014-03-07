@@ -20,6 +20,7 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JSwitch;
 
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
@@ -27,12 +28,15 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
+import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Condition;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
 
 public class StateMachineToJava {
 
+    public static boolean BIASING = true;
+	
 	private StateMachineToJava() {}
 	
 	public static void callStepFunction(NodeStateMachine nsm, JBlock block) {
@@ -179,9 +183,9 @@ public class StateMachineToJava {
 		        continue;
 		    }
 		    if (condExp != null) {
-		        condExp = condExp.cand(guard.getJavaExpression(cm));
+		        condExp = condExp.cand(wrap(guard, cm));
 		    } else {
-		        condExp = guard.getJavaExpression(cm);
+		        condExp = wrap(guard, cm);
 		    }
 		}
 		
@@ -238,6 +242,54 @@ public class StateMachineToJava {
 		// Return our if statement to be daisy chained off of
 		return current;
 	}
+	
+	
+
+    /**
+     * Create a Java boolean expression indicating whether this Plexil
+     * expression has this Condition.
+     * @param expr
+     * @return
+     */
+    private static JExpression wrap(TransitionGuard guard, JCodeModel cm) {
+    	ILExpression expr = guard.getExpression();
+    	Condition cond = guard.getCondition();
+        if (BIASING) {
+            switch (cond) {
+            case TRUE:
+                return ILExprToJava.toJavaBiased(expr, cm, true);
+            case FALSE:
+                return ILExprToJava.toJavaBiased(expr, cm, false);
+            case UNKNOWN:
+                return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
+            case NOTTRUE:
+                return ILExprToJava.toJavaBiased(expr, cm, true).not();
+            case NOTFALSE:
+                return ILExprToJava.toJavaBiased(expr, cm, false).not();
+            case KNOWN:
+                return ILExprToJava.toJava(expr, cm).invoke("isKnown");
+            }
+            throw new RuntimeException("Add this case to wrap(): "+cond);
+        } else {
+            switch (cond) {
+            case TRUE:
+                return ILExprToJava.toJava(expr, cm).invoke("isTrue");
+            case FALSE:
+                return ILExprToJava.toJava(expr, cm).invoke("isFalse");
+            case UNKNOWN:
+                return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
+            case NOTTRUE:
+                return ILExprToJava.toJava(expr, cm).invoke("isNotTrue");
+            case NOTFALSE:
+                return ILExprToJava.toJava(expr, cm).invoke("isNotFalse");
+            case KNOWN:
+                return ILExprToJava.toJava(expr, cm).invoke("isKnown");
+            }
+            throw new RuntimeException("Add this case to wrap(): "+cond);
+
+        }
+
+    }
 }
 
 
