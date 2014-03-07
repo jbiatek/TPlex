@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.IntegerValue;

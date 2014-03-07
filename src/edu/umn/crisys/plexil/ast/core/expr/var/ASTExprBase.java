@@ -1,8 +1,8 @@
 package edu.umn.crisys.plexil.ast.core.expr.var;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 
 public abstract class ASTExprBase implements ASTExpression {
 

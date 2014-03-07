@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.il.expr;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 
 public abstract class ILExprBase implements ILExpression {

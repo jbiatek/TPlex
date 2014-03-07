@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.core.expr;
 
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public interface Expression {

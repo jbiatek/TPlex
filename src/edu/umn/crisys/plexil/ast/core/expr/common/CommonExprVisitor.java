@@ -1,12 +1,5 @@
-package edu.umn.crisys.plexil.ast.core.visitor;
+package edu.umn.crisys.plexil.ast.core.expr.common;
 
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 
 public interface CommonExprVisitor<Param, Return> {
 

@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.ast.core.visitor;
 
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;

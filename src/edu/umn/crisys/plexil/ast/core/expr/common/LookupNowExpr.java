@@ -5,7 +5,6 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class LookupNowExpr extends CompositeExpr {

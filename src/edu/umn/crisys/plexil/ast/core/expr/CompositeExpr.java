@@ -2,8 +2,8 @@ package edu.umn.crisys.plexil.ast.core.expr;
 
 import java.util.List;
 
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 
 /**
