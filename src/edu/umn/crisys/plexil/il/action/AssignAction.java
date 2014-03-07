@@ -1,8 +1,5 @@
 package edu.umn.crisys.plexil.il.action;
 
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JExpression;
-
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
@@ -10,14 +7,10 @@ public class AssignAction implements PlexilAction {
 
     private IntermediateVariable lhs;
     private ILExpression rhs;
-    private JExpression priority;
+    private int priority;
     
     
     public AssignAction(IntermediateVariable vr, ILExpression rhs, int priority) {
-        this(vr, rhs, JExpr.lit(priority));
-    }
-    
-    public AssignAction(IntermediateVariable vr, ILExpression rhs, JExpression priority) {
         this.lhs = vr;
         this.rhs = rhs;
         this.priority = priority;
@@ -36,7 +29,7 @@ public class AssignAction implements PlexilAction {
 		return lhs;
 	}
 
-	public JExpression getPriority() {
+	public int getPriority() {
 		return priority;
 	}
 

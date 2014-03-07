@@ -67,7 +67,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	public Void visitAssign(AssignAction assign, JBlock block) {
         addAssignmentToBlock(block, assign.getLHS(), 
         		ILExprToJava.toJava(assign.getRHS(), cm), 
-        		assign.getPriority(), cm);
+        		JExpr.lit(assign.getPriority()), cm);
 		return null;
 	}
 
