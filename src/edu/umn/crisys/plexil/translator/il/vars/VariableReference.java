@@ -10,8 +10,8 @@ import com.sun.codemodel.JMod;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
-import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il2java.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.Variable;
 import edu.umn.crisys.plexil.java.values.PlexilType;

@@ -13,7 +13,6 @@ import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
-import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
