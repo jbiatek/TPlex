@@ -1,6 +1,5 @@
-package edu.umn.crisys.plexil.ast.core.node;
+package edu.umn.crisys.plexil.ast.core.nodebody;
 
-import edu.umn.crisys.plexil.ast.core.visitor.NodeBodyVisitor;
 
 /**
  * Base for node body. This one is an empty node, so no other information is 

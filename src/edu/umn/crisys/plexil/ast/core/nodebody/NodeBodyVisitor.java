@@ -1,11 +1,5 @@
-package edu.umn.crisys.plexil.ast.core.visitor;
+package edu.umn.crisys.plexil.ast.core.nodebody;
 
-import edu.umn.crisys.plexil.ast.core.node.AssignmentBody;
-import edu.umn.crisys.plexil.ast.core.node.CommandBody;
-import edu.umn.crisys.plexil.ast.core.node.LibraryBody;
-import edu.umn.crisys.plexil.ast.core.node.NodeBody;
-import edu.umn.crisys.plexil.ast.core.node.NodeListBody;
-import edu.umn.crisys.plexil.ast.core.node.UpdateBody;
 
 public interface NodeBodyVisitor<Param,Return> {
 

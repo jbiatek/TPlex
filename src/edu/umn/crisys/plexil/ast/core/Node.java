@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.ast.core.node;
+package edu.umn.crisys.plexil.ast.core;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +8,7 @@ import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.nodebody.NodeBody;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class Node {

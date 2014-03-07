@@ -1,9 +1,8 @@
-package edu.umn.crisys.plexil.ast.core.node;
+package edu.umn.crisys.plexil.ast.core.nodebody;
 
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.ast.core.visitor.NodeBodyVisitor;
 
 public class AssignmentBody extends NodeBody {
 

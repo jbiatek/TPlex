@@ -1,11 +1,10 @@
-package edu.umn.crisys.plexil.ast.core.node;
+package edu.umn.crisys.plexil.ast.core.nodebody;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
-import edu.umn.crisys.plexil.ast.core.visitor.NodeBodyVisitor;
 
 public class LibraryBody extends NodeBody {
 

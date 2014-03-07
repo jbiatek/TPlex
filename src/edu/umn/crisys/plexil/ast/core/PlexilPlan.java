@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.ast.core;
 
-import edu.umn.crisys.plexil.ast.core.node.Node;
 
 public class PlexilPlan {
 
