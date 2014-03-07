@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.core.expr;
 
-import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
 
 public interface ASTExpression extends Expression {
 

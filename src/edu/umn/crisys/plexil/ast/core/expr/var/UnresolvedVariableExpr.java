@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.ast.core.expr.var;
 
-import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 /**
