@@ -118,4 +118,9 @@ public class PValueExpression implements ASTExpression, ILExpression {
         return accept((CommonExprVisitor<P,R>) visitor, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

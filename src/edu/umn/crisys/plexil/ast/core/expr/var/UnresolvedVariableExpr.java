@@ -41,4 +41,9 @@ public class UnresolvedVariableExpr extends ASTExprBase {
     public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
         return visitor.visitVariable(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return true;
+	}
 }

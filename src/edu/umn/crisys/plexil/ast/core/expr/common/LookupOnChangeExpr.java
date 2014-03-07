@@ -83,4 +83,9 @@ public class LookupOnChangeExpr extends CompositeExpr {
         return visitor.visitLookupOnChange(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

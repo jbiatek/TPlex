@@ -70,4 +70,9 @@ public class LookupNowExpr extends CompositeExpr {
         return visitor.visitLookupNow(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

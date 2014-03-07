@@ -15,4 +15,10 @@ public interface Expression {
      * return it. 
      */
     public String asString();
+    
+    /**
+     * @return whether this expression is a valid left-hand side of 
+     * an assignment.
+     */
+    public boolean isAssignable();
 }

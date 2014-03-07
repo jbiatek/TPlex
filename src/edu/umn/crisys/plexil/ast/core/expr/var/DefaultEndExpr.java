@@ -37,4 +37,9 @@ public class DefaultEndExpr extends ASTExprBase {
         return visitor.visitDefaultEnd(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

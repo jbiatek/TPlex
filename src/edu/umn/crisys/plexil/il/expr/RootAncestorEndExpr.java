@@ -24,4 +24,9 @@ public class RootAncestorEndExpr extends ILExprBase {
         return visitor.visitRootParentEnd(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

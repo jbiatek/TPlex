@@ -57,4 +57,9 @@ public class ArrayIndexExpr extends CompositeExpr {
         return visitor.visitArrayIndex(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return true;
+	}
+
 }

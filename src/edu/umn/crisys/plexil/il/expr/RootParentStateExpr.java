@@ -24,4 +24,9 @@ public class RootParentStateExpr extends ILExprBase {
         return visitor.visitRootParentState(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

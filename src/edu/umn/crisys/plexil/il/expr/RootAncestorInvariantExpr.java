@@ -24,4 +24,9 @@ public class RootAncestorInvariantExpr extends ILExprBase {
         return visitor.visitRootParentInvariant(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

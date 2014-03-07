@@ -19,5 +19,10 @@ public abstract class RHSVariable implements ILExpression, IntermediateVariable 
     public PlexilType getType() {
         return PlexilType.UNKNOWN;
     }
+    
+    @Override
+    public boolean isAssignable() {
+    	return true;
+    }
 
 }

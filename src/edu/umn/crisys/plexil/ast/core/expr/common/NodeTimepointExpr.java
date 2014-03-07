@@ -64,4 +64,9 @@ public class NodeTimepointExpr extends CompositeExpr {
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitNodeTimepoint(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
 }

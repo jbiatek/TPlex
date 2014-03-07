@@ -72,4 +72,10 @@ public class ArrayLiteralExpr extends CompositeExpr {
         return visitor.visitArrayLiteral(this, param);
     }
 
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }

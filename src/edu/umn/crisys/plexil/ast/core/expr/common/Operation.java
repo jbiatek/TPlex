@@ -407,4 +407,9 @@ public class Operation extends CompositeExpr {
         return visitor.visitOperation(this, param);
     }
 
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 }
