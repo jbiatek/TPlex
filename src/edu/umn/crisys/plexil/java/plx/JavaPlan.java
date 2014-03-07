@@ -7,7 +7,6 @@ import java.util.List;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
-import edu.umn.crisys.plexil.test.java.PlexilTestable;
 
 public abstract class JavaPlan {
     
