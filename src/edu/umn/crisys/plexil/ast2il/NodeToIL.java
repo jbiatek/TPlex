@@ -725,7 +725,7 @@ public class NodeToIL {
             parentFailed.addGuard(abortComplete);
             myFault.addGuard(abortComplete);
         } else if (isUpdateNode()) {
-            TransitionGuard updateComplete = new TransitionGuard(getUID(), 
+            TransitionGuard updateComplete = new TransitionGuard(
                     Description.UPDATE_INVOCATION_SUCCESS, getUpdateHandle(), Condition.TRUE);
             parentExited.addGuard(updateComplete);
             parentFailed.addGuard(updateComplete);
@@ -789,7 +789,7 @@ public class NodeToIL {
         if ( ! ilExprCache.containsKey(d)) {
             throw new RuntimeException("Expression was not ready: "+d);
         }
-        return new TransitionGuard(getUID(), d, ilExprCache.get(d), cond);
+        return new TransitionGuard(d, ilExprCache.get(d), cond);
     }
     
     private ResetNodeAction getResetNodeAction() {
@@ -1035,7 +1035,7 @@ public class NodeToIL {
     
     
     private TransitionGuard commandHandleKnown(Condition cond) {
-        return new TransitionGuard(getUID(), Description.COMMAND_ACCEPTED, 
+        return new TransitionGuard(Description.COMMAND_ACCEPTED, 
                 Operation.isKnown(getCommandHandle()), cond);
     }
 

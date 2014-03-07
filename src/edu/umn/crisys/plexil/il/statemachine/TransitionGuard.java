@@ -1,15 +1,9 @@
 package edu.umn.crisys.plexil.il.statemachine;
 
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JExpression;
-
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.il2java.ILExprToJava;
+import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class TransitionGuard {
     
@@ -50,14 +44,12 @@ public class TransitionGuard {
     }
 
     private Description description;
-    private NodeUID nodeId;
     private ILExpression expr;
     private Condition cond;
     
-    public TransitionGuard(NodeUID nodeId, Description description, 
+    public TransitionGuard(Description description, 
             ILExpression expression, Condition condition) {
         this.description = description;
-        this.nodeId = nodeId;
         this.expr = expression;
         this.cond = condition;
     }
@@ -71,19 +63,19 @@ public class TransitionGuard {
     }
     
     public boolean isAlwaysActive() {
-        if ( ! ILExprToJava.isConstant(expr) ) {
+        if ( ! ILEval.isConstant(expr) ) {
             return false; // There's no way to say this is always active.
         }
         // Check against the value it's supposed to return:
-        return cond.checkValue(ILExprToJava.eval(expr));
+        return cond.checkValue(ILEval.eval(expr));
     }
     
     public boolean isNeverActive() {
-        if ( ! ILExprToJava.isConstant(expr) ) {
+        if ( ! ILEval.isConstant(expr) ) {
             return false; // There's no way to say this is never active.
         }
         // Does it always fail to return the right value?
-        return ! cond.checkValue(ILExprToJava.eval(expr));
+        return ! cond.checkValue(ILEval.eval(expr));
    
     }
     
