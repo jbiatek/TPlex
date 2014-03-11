@@ -15,14 +15,22 @@ import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.expr.ILEval;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
+import edu.umn.crisys.plexil.java.values.CommandHandleState;
+import edu.umn.crisys.plexil.java.values.IntegerValue;
+import edu.umn.crisys.plexil.java.values.NodeFailureType;
+import edu.umn.crisys.plexil.java.values.NodeOutcome;
+import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.RealValue;
+import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
@@ -51,7 +59,7 @@ import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
  * @author jbiatek
  *
  */
-class IL2JavaBiased extends IL2Java {
+class IL2JavaBiased implements ILExprVisitor<JCodeModel, JExpression> {
 	private boolean isThis;
 	public IL2JavaBiased(boolean isThis) {
 		this.isThis = isThis;
@@ -240,5 +248,41 @@ class IL2JavaBiased extends IL2Java {
 	public JExpression visitVariable(IntermediateVariable var,
 			JCodeModel cm) {
 		return wrap(ILExprToJava.toJava(ensureBool(var), cm));
+	}
+
+	@Override
+	public JExpression visitIntegerValue(IntegerValue integer, JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+integer);
+	}
+
+	@Override
+	public JExpression visitRealValue(RealValue real, JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+real);
+	}
+
+	@Override
+	public JExpression visitStringValue(StringValue string, JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+string);
+	}
+
+	@Override
+	public JExpression visitCommandHandleState(CommandHandleState state,
+			JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+state);
+	}
+
+	@Override
+	public JExpression visitNodeFailure(NodeFailureType type, JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+type);
+	}
+
+	@Override
+	public JExpression visitNodeOutcome(NodeOutcome outcome, JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+outcome);
+	}
+
+	@Override
+	public JExpression visitNodeState(NodeState state, JCodeModel param) {
+		throw new RuntimeException("Not a boolean: "+state);
 	}
 }

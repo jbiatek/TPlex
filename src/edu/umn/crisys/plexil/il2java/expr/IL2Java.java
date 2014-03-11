@@ -10,7 +10,6 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JOp;
 
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
@@ -35,8 +34,6 @@ import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.vars.ArrayElementReference;
-import edu.umn.crisys.plexil.translator.il.vars.ArrayReference;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
@@ -44,11 +41,9 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
     @Override
     public JExpression visitArrayIndex(ArrayIndexExpr array,
             JCodeModel cm) {
-        // For now, the ArrayElementRef class knows how to do this, not us.
-        ArrayElementReference elem = new ArrayElementReference(
-                (ArrayReference) array.getArray(), 
-                (ILExpression) array.getIndex());
-        return elem.rhs(cm);
+    	return array.getArray().accept(this, cm)
+    			.invoke("get")
+    			.arg(array.getIndex().accept(this, cm));
     }
     
     @Override
