@@ -11,11 +11,11 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 
-public class TypelessPlexilArray implements PValue {
+public class DebugOutputPlexilArray implements PValue {
 
     private String[] values;
     
-    public TypelessPlexilArray(String valStr) {
+    public DebugOutputPlexilArray(String valStr) {
         String justArray = valStr.replaceFirst("Array: \\[", "")
                                 .replaceFirst("\\]$", "");
         values = justArray.split(", ");
@@ -45,8 +45,8 @@ public class TypelessPlexilArray implements PValue {
             }
             
             return true;
-        } else if (o instanceof TypelessPlexilArray) {
-            return Arrays.equals(values, ((TypelessPlexilArray) o).values);
+        } else if (o instanceof DebugOutputPlexilArray) {
+            return Arrays.equals(values, ((DebugOutputPlexilArray) o).values);
         }
         return false;
     }
