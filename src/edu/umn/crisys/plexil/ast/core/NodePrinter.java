@@ -49,7 +49,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
         str.append("{"); newLine(str, indent);
         
         // Variables and the Interface must come first
-        if (n.hasInterface()) {
+        if (n.getInterface().isDefined()) {
             str.append(doInterface());
         }
         
@@ -135,19 +135,19 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
         StringBuilder str = new StringBuilder();
         
         
-        if (n.getInterfaceReadOnlyVars().size() != 0) {
+        if (n.getInterface().getInterfaceReadOnlyVars().size() != 0) {
             str.append(tab(TAB));
             str.append("In ");
-            for (String v : n.getInterfaceReadOnlyVars()) {
+            for (String v : n.getInterface().getInterfaceReadOnlyVars()) {
                 str.append(v+", ");
             }
             trim(str, 2);
             str.append(";"); newLine(str, indent); 
         }
-        if (n.getInterfaceWriteableVars().size() != 0) {
+        if (n.getInterface().getInterfaceWriteableVars().size() != 0) {
             str.append(tab(TAB));
             str.append("InOut ");
-            for (String v : n.getInterfaceWriteableVars()) {
+            for (String v : n.getInterface().getInterfaceWriteableVars()) {
                 str.append(v+", ");
             }
             trim(str, 2);

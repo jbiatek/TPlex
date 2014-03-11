@@ -363,6 +363,8 @@ public class NodeParser {
     private static void parseInterface(StartElement start, XMLEventReader xml, Node n) {
         assertStart("Interface", start);
         
+        n.getInterface().restrictInterface();
+        
         for (StartElement inOrOut : new TagIterator(xml, start)) {
             boolean writeable = false;
             if (isTag(inOrOut, "InOut")) {
@@ -382,9 +384,9 @@ public class NodeParser {
                     DeclaredVarInfo info = parseDeclareVariable(declare, xml);
 
                     if (writeable) {
-                        n.addToInterfaceWriteable(info.name, info.type);
+                        n.getInterface().addInOutVariable(info.name, info.type);
                     } else {
-                        n.addToInterfaceReadOnly(info.name, info.type);
+                        n.getInterface().addInVariable(info.name, info.type);
                     }
                 } else {
                     throw new UnexpectedTagException(declare, "DeclareVariable");

@@ -337,12 +337,12 @@ public class NodeToIL {
         
         // It's not here. We need to make sure that our interface
         // allows us to look further.
-        if (! myNode.isReadable(name)) {
+        if (! myNode.getInterface().isReadable(name)) {
             // There's no such thing as a "write-only" variable, so we don't
             // have access to this variable at all. 
             throw new RuntimeException("Variable "+name+" does not exist " +
                     "in the interface of "+getUID());
-        } else if (writing && ! myNode.isWritable(name)) {
+        } else if (writing && ! myNode.getInterface().isWritable(name)) {
             throw new RuntimeException("Cannot write to variable "+name+" in "+getUID());
         }
         

@@ -8,6 +8,7 @@ import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.core.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.LibraryBody;
@@ -40,10 +41,9 @@ public class Node {
     private Map<String, Integer> arraySizes = new HashMap<String, Integer>();
 
     // Variable interface
-    private boolean hasDefinedInterface = false;
-    private Map<String, PlexilType> varsIn = new HashMap<String, PlexilType>();
-    private Map<String, PlexilType> varsInOut = new HashMap<String, PlexilType>();
-
+    private PlexilInterface iface = new PlexilInterface();
+    
+    
     /**
      * Construct a root Node.
      */
@@ -58,7 +58,6 @@ public class Node {
     public Node(Node parent) {
         this.parent = parent;
     }
-    
     
     /**
 	 * @return this node's parent, or null if it is the root node
@@ -122,86 +121,12 @@ public class Node {
         return vars.get(name); 
     }
 
-    /**
-     * If true, access to non-local variables is restricted. There is a 
-     * whitelist, as returned by getInterfaceReadOnlyVars() and 
-     * getInterfaceWriteableVars(). Access to other variables above this node
-     * is not allowed. 
-     * @return
-     */
-    public boolean hasInterface() {
-        return hasDefinedInterface;
-    }
-    
-    /**
-     * Enable this Node's interface. The default PLEXIL interface allows all
-     * variables through, this turns the interface into a whitelist. The only
-     * accessible variables will be the ones that are added to it.
-     */
-    public void restrictInterface() {
-        hasDefinedInterface = true;
-    }
-
-    public void addToInterfaceReadOnly(String varName, PlexilType t) {
-	    hasDefinedInterface = true;
-	    varsIn.put(varName, t);
-	}
-
-	public void addToInterfaceWriteable(String varName, PlexilType t) {
-	    hasDefinedInterface = true;
-	    varsInOut.put(varName, t);
-	}
-
-	/**
-     * If this node hasInterface(), this is the list of variables that are 
-     * allowed through that interface as read only. Trying to assign to any of
-     * these should be an error. 
-     */
-    public Set<String> getInterfaceReadOnlyVars() { return varsIn.keySet(); }
-    
-    /**
-     * If this node hasInterface(), this is the list of variables that are 
-     * allowed through that interface as readable and writeable. 
-     */
-    public Set<String> getInterfaceWriteableVars() { return varsInOut.keySet(); }
-
-    
-    /**
-     * Check this node's Interface to see if the variable is explicitly 
-     * removed from the interface. Note that nodes inherit their interfaces
-     * from their parents, but this method doesn't check any of that. It's just
-     * what this node says about its own interface. 
-     * @param varName
-     * @return
-     */
-    public boolean isReadable(String varName) {
-        if (hasInterface()) {
-            return getInterfaceReadOnlyVars().contains(varName)
-                    || getInterfaceWriteableVars().contains(varName);
-        }
-        return true;
-    }
-    /**
-     * Check this node's Interface to see if the variable is explicitly 
-     * set as read-only (or not visible at all). Note that nodes inherit their 
-     * interfaces from their parents, but this method doesn't check any of that.
-     * It's just what this node says about its own interface. 
-     * @param varName
-     * @return
-     */
-
-    public boolean isWritable(String varName) {
-        if (hasInterface()) {
-            return getInterfaceWriteableVars().contains(varName);
-        }
-        return true;
-    }
-
 
     public NodeBody getNodeBody() { return body; }
 
 	public void setNodeBody(NodeBody b) { body = b; }
     
+	public PlexilInterface getInterface() { return iface; }
 
     public boolean isEmptyNode() {
         return getNodeBody().getClass().equals(NodeBody.class);
