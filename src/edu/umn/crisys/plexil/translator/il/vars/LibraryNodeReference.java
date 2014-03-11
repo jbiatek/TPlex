@@ -17,7 +17,7 @@ import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il2java.ActionToJava;
-import edu.umn.crisys.plexil.il2java.ILExprToJava;
+import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.LibraryInterface;
 import edu.umn.crisys.plexil.java.values.NodeState;
