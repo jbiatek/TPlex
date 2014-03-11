@@ -40,7 +40,7 @@ public class PlexilInterface {
 	}
 
 	/**
-     * If this node hasInterface(), this is the list of variables that are 
+     * If this interface isDefined(), this is the list of variables that are 
      * allowed through that interface as read only. Trying to assign to any of
      * these should be an error. 
      */
@@ -49,7 +49,7 @@ public class PlexilInterface {
     }
     
     /**
-     * If this node hasInterface(), this is the list of variables that are 
+     * If this interface isDefined(), this is the list of variables that are 
      * allowed through that interface as readable and writeable. 
      */
     public Set<String> getInterfaceWriteableVars() { 
