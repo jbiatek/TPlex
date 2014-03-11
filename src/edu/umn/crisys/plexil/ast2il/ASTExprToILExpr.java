@@ -7,12 +7,10 @@ import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
@@ -23,8 +21,17 @@ import edu.umn.crisys.plexil.ast.core.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.java.values.BooleanValue;
+import edu.umn.crisys.plexil.java.values.CommandHandleState;
+import edu.umn.crisys.plexil.java.values.IntegerValue;
+import edu.umn.crisys.plexil.java.values.NodeFailureType;
+import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.RealValue;
+import edu.umn.crisys.plexil.java.values.StringValue;
+import edu.umn.crisys.plexil.java.values.UnknownValue;
 
 public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
     
@@ -54,7 +61,7 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
         @Override
         public ILExpression visitEmpty(NodeBody empty, NodeToIL node) {
             // This one is simple: False.
-            return PValueExpression.FALSE;
+            return BooleanValue.get(false);
         }
 
         @Override
@@ -65,7 +72,7 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
             // there's an error evaluating the right hand side. Somehow. I'm
             // guessing an error like that is a showstopper, so it's safe to
             // just say that they always complete. 
-            return PValueExpression.TRUE;
+            return BooleanValue.get(true);
         }
 
         @Override
@@ -80,7 +87,7 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
         public ILExpression visitLibrary(LibraryBody lib, NodeToIL node) {
             // Same as a list: "All children FINISHED". But there's just
             // one child, so it's easy.
-            return Operation.eq(new PValueExpression(NodeState.FINISHED), 
+            return Operation.eq(NodeState.FINISHED, 
                                 node.getLibraryHandle());
         }
 
@@ -90,7 +97,7 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
             List<Expression> childStates = new ArrayList<Expression>();
             for (NodeToIL child : node.getChildren()) {
                 childStates.add(
-                        Operation.eq(new PValueExpression(NodeState.FINISHED),
+                        Operation.eq(NodeState.FINISHED,
                                      child.getState()));
             }
             return Operation.and(childStates);
@@ -155,11 +162,6 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
     }
 
     @Override
-    public ILExpression visitArrayLiteral(ArrayLiteralExpr array, Void param) {
-        return translateComposite(array);
-    }
-
-    @Override
     public ILExpression visitLookupNow(LookupNowExpr lookup, Void param) {
         return translateComposite(lookup);
     }
@@ -170,8 +172,55 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
         return translateComposite(lookup);
     }
 
-    @Override
-    public ILExpression visitPValue(PValueExpression value, Void param) {
-        return value;
-    }
+	@Override
+	public ILExpression visitBooleanValue(BooleanValue bool, Void param) {
+		return bool;
+	}
+
+	@Override
+	public ILExpression visitIntegerValue(IntegerValue integer, Void param) {
+		return integer;
+	}
+
+	@Override
+	public ILExpression visitRealValue(RealValue real, Void param) {
+		return real;
+	}
+
+	@Override
+	public ILExpression visitStringValue(StringValue string, Void param) {
+		return string;
+	}
+
+	@Override
+	public ILExpression visitUnknownValue(UnknownValue unk, Void param) {
+		return unk;
+	}
+
+	@Override
+	public ILExpression visitPValueList(PValueList<?> list, Void param) {
+		return list;
+	}
+
+	@Override
+	public ILExpression visitCommandHandleState(CommandHandleState state,
+			Void param) {
+		return state;
+	}
+
+	@Override
+	public ILExpression visitNodeFailure(NodeFailureType type, Void param) {
+		return type;
+	}
+
+	@Override
+	public ILExpression visitNodeOutcome(NodeOutcome outcome, Void param) {
+		return outcome;
+	}
+
+	@Override
+	public ILExpression visitNodeState(NodeState state, Void param) {
+		return state;
+	}
+
 }

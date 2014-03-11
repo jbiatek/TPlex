@@ -11,9 +11,7 @@ import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.core.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.CommandBody;
@@ -37,6 +35,8 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.NodeTimepoint;
+import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.translator.il.vars.AliasedVariableReference;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayElementReference;
@@ -126,19 +126,19 @@ public class NodeToIL {
             PlexilType type = myNode.getVarType(varName);
             if (type.isArrayType()) {
                 // Array variables.
-                ArrayLiteralExpr init = myNode.getInitArray(varName);
+                PValueList<?> init = myNode.getInitArray(varName);
                 int arraySize = myNode.getArraySize(varName);
                 
                 // Get the initial value, if any. If not, just initialize to an
                 // empty array. 
                 if (init == null) {
-                    init = new ArrayLiteralExpr(type);
+                    init = new PValueList<PValue>(type);
                 }
                 
                 ilVars.put(varName, new ArrayReference(myUid, varName, type, arraySize, init));
             } else {
                 // Standard variables.
-                PValueExpression init = myNode.getInitVariable(varName);
+                PValue init = myNode.getInitVariable(varName);
                 ilVars.put(varName, new VariableReference(myUid, varName, type, init));
             }
         }

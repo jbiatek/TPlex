@@ -16,10 +16,10 @@ import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.ast.core.expr.var.NodeIDExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
@@ -121,7 +121,7 @@ public class ExprParser {
         return false;
     }
 
-    private static Operation parseOperation(StartElement start, XMLEventReader xml) {
+    public static Operation parseOperation(StartElement start, XMLEventReader xml) {
         return Operation.construct(localNameOf(start), 
                 parseMultiple(start, xml, Operation.getArgType(localNameOf(start))));
     }
@@ -130,7 +130,7 @@ public class ExprParser {
         return tag.endsWith("RHS");
     }
 
-    private static ASTExpression parseRHS(StartElement start, XMLEventReader xml) {
+    public static ASTExpression parseRHS(StartElement start, XMLEventReader xml) {
         // These are all just wrappers around expressions. 
         // Go in, get the expression, check the end tag, and move on.
         PlexilType type = PlexilType.UNKNOWN;
@@ -147,7 +147,7 @@ public class ExprParser {
         return tag.endsWith("Variable") && ! tag.startsWith("Node");
     }
 
-    private static UnresolvedVariableExpr parseRegularVariable(StartElement start, XMLEventReader xml) {
+    public static UnresolvedVariableExpr parseRegularVariable(StartElement start, XMLEventReader xml) {
         String typeStr = localNameOf(start).replaceFirst("Variable$", "");
         PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
         return new UnresolvedVariableExpr(getStringContent(start, xml), type);
@@ -165,9 +165,10 @@ public class ExprParser {
         || tag.equals("NodeCommandHandleValue"); 
     }
 
-    private static PValueExpression parsePValue(StartElement start, XMLEventReader xml) {
+    public static PValue parsePValue(StartElement start, XMLEventReader xml) {
         String type = localNameOf(start).replaceAll("(Node|Value)", "");
-        return new PValueExpression(type, getStringContent(start, xml));
+        PlexilType pType = PlexilType.fuzzyValueOf(type);
+        return pType.parseValue(getStringContent(start, xml));
     }
 
 
@@ -175,7 +176,7 @@ public class ExprParser {
         return tag.equals("NodeId") || tag.equals("NodeRef");
     }
 
-    private static ASTExpression parseNodeReference(StartElement start, XMLEventReader xml) {
+    public static ASTExpression parseNodeReference(StartElement start, XMLEventReader xml) {
         if (localNameOf(start).equals("NodeId")) {
             return new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
@@ -190,7 +191,7 @@ public class ExprParser {
         return tag.equals("NodeStateVariable");
     }
 
-    private static Operation parseNodeStateVar(StartElement start, XMLEventReader xml) {
+    public static Operation parseNodeStateVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
@@ -202,7 +203,7 @@ public class ExprParser {
         return tag.equals("NodeOutcomeVariable");
     }
 
-    private static Operation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
+    public static Operation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
@@ -214,7 +215,7 @@ public class ExprParser {
         return tag.equals("NodeFailureVariable");
     }
 
-    private static Operation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
+    public static Operation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
@@ -226,7 +227,7 @@ public class ExprParser {
         return tag.equals("NodeCommandHandleVariable");
     }
 
-    private static Operation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
+    public static Operation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
@@ -238,7 +239,7 @@ public class ExprParser {
         return tag.equals("NodeTimepointValue");
     }
 
-    private static NodeTimepointExpr parseNodeTimepoint(StartElement start, XMLEventReader xml) {
+    public static NodeTimepointExpr parseNodeTimepoint(StartElement start, XMLEventReader xml) {
         String state = null;
         String timepoint = null;
         String nodeId = null;
@@ -270,7 +271,7 @@ public class ExprParser {
         return tag.startsWith("EQ") || tag.startsWith("NE");
     }
 
-    private static Operation parseEqOrNe(StartElement start, XMLEventReader xml) {
+    public static Operation parseEqOrNe(StartElement start, XMLEventReader xml) {
         boolean negate = isTagStartingWith(start, "NE");
         // Slice off the "NE" or "EQ" to get the expected type.
         PlexilType type = PlexilType.fuzzyValueOf(localNameOf(start).substring(2));
@@ -293,9 +294,9 @@ public class ExprParser {
     }
 
 
-    private static ASTExpression parseLookup(StartElement start, XMLEventReader xml) {
+    public static ASTExpression parseLookup(StartElement start, XMLEventReader xml) {
         Expression name = null;
-        Expression tolerance = new PValueExpression(RealValue.get(0.0));
+        Expression tolerance = RealValue.get(0.0);
         List<Expression> args = new ArrayList<Expression>();
 
         for (StartElement e : new TagIterator(xml, start)) {
@@ -330,7 +331,7 @@ public class ExprParser {
         return tag.equals("ArrayElement");
     }
 
-    private static ArrayIndexExpr parseArrayElement(StartElement start, XMLEventReader xml) {
+    public static ArrayIndexExpr parseArrayElement(StartElement start, XMLEventReader xml) {
         UnresolvedVariableExpr array = null;
         Expression index = null;
 

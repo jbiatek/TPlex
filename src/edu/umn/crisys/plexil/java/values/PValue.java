@@ -1,11 +1,14 @@
 package edu.umn.crisys.plexil.java.values;
 
+import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+
 /**
  * The interface defining what all PlexilValues can do.
  * @author jbiatek
  *
  */
-public interface PValue {
+public interface PValue extends ASTExpression, ILExpression {
 
 	public abstract boolean isKnown();
 

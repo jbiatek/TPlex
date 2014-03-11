@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.core.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.core.nodebody.AssignmentBody;
@@ -15,6 +13,9 @@ import edu.umn.crisys.plexil.ast.core.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.java.values.BooleanValue;
+import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class Node {
@@ -24,20 +25,19 @@ public class Node {
 
     private NodeBody body = new NodeBody();
     // Node conditions:
-    private ASTExpression startCondition = PValueExpression.TRUE;
-    private ASTExpression skipCondition = PValueExpression.FALSE;
-    private ASTExpression preCondition = PValueExpression.TRUE;
-    private ASTExpression invariantCondition = PValueExpression.TRUE;
-    private ASTExpression repeatCondition = PValueExpression.FALSE;
-    private ASTExpression postCondition = PValueExpression.TRUE;
+    private ASTExpression startCondition = BooleanValue.get(true);
+    private ASTExpression skipCondition = BooleanValue.get(false);
+    private ASTExpression preCondition = BooleanValue.get(true);
+    private ASTExpression invariantCondition = BooleanValue.get(true);
+    private ASTExpression repeatCondition = BooleanValue.get(false);
+    private ASTExpression postCondition = BooleanValue.get(true);
     private ASTExpression endCondition = DefaultEndExpr.get();
-    private ASTExpression exitCondition = PValueExpression.FALSE;
+    private ASTExpression exitCondition = BooleanValue.get(false);
     
     private int priority = Integer.MAX_VALUE;
     // Variables declared in this node
     private Map<String, PlexilType> vars = new HashMap<String, PlexilType>();
-    private Map<String, PValueExpression> varInitial = new HashMap<String, PValueExpression>();
-    private Map<String, ArrayLiteralExpr> arrayInitial = new HashMap<String, ArrayLiteralExpr>();
+    private Map<String, PValue> varInitial = new HashMap<String, PValue>();
     private Map<String, Integer> arraySizes = new HashMap<String, Integer>();
 
     // Variable interface
@@ -73,7 +73,10 @@ public class Node {
 	    vars.put(name, type); 
 	}
 
-	public void addVar(String name, PlexilType type, PValueExpression init) {
+	public void addVar(String name, PlexilType type, PValue init) {
+		if (type.isArrayType()) {
+			throw new RuntimeException(type+" is an array, it needs a max size");
+		}
 	    addVar(name, type);
 	    varInitial.put(name, init);
 	}
@@ -89,9 +92,9 @@ public class Node {
         arraySizes.put(name, maxSize);
     }
 
-    public void addArray(String name, PlexilType t, int maxSize, ArrayLiteralExpr init) {
+    public void addArray(String name, PlexilType t, int maxSize, PValueList<?> init) {
         addArray(name, t, maxSize);
-        arrayInitial.put(name, init);
+        varInitial.put(name, init);
     }
     
     public boolean containsVar(String name) {
@@ -106,10 +109,10 @@ public class Node {
     }
     
 
-    public ArrayLiteralExpr getInitArray(String arrayName) {
-        return arrayInitial.get(arrayName);
+    public PValueList<?> getInitArray(String arrayName) {
+        return (PValueList<?>) varInitial.get(arrayName);
     }
-    public PValueExpression getInitVariable(String varName) { 
+    public PValue getInitVariable(String varName) { 
         return varInitial.get(varName); 
     }
 

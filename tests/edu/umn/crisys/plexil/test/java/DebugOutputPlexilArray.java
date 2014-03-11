@@ -3,6 +3,9 @@ package edu.umn.crisys.plexil.test.java;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.PBoolean;
@@ -100,6 +103,33 @@ public class DebugOutputPlexilArray implements PValue {
 	@Override
 	public PValue castTo(PlexilType type) {
 		return PValue.Util.defaultCastTo(this, type);
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		throw new RuntimeException("Why are you visiting this? It's an internal testing class.");
 	}
     
 }

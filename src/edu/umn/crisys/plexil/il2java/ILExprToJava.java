@@ -13,13 +13,11 @@ import com.sun.codemodel.JOp;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
@@ -27,12 +25,19 @@ import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
+import edu.umn.crisys.plexil.java.values.CommandHandleState;
+import edu.umn.crisys.plexil.java.values.IntegerValue;
+import edu.umn.crisys.plexil.java.values.NodeFailureType;
+import edu.umn.crisys.plexil.java.values.NodeOutcome;
+import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.RealValue;
+import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayElementReference;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayReference;
@@ -209,7 +214,7 @@ public class ILExprToJava {
 		}
 
 		@Override
-		public JExpression visitArrayLiteral(ArrayLiteralExpr array,
+		public JExpression visitPValueList(PValueList<? >array,
 				JCodeModel cm) {
 			throw new RuntimeException("Arrays aren't booleans.");
 		}
@@ -232,10 +237,17 @@ public class ILExprToJava {
 		}
 
 		@Override
-		public JExpression visitPValue(PValueExpression value, JCodeModel cm) {
-			return wrap(toJava(ensureBool(value), cm));
+		public JExpression visitBooleanValue(BooleanValue value, JCodeModel cm) {
+			// These should probably be filtered out by an optimization. 
+			return wrap(toJava(value, cm));
 		}
-
+		
+		@Override
+		public JExpression visitUnknownValue(UnknownValue value, JCodeModel cm) {
+			// These should probably be filtered out by an optimization. 
+			return wrap(toJava(value, cm));
+		}
+		
 		@Override
 		public JExpression visitRootParentState(RootParentStateExpr state,
 				JCodeModel cm) {
@@ -277,24 +289,6 @@ public class ILExprToJava {
                     (ArrayReference) array.getArray(), 
                     (ILExpression) array.getIndex());
             return elem.rhs(cm);
-        }
-
-        @Override
-        public JExpression visitArrayLiteral(ArrayLiteralExpr array,
-                JCodeModel cm) {
-        	PlexilType elements = array.getType().elementType();
-        	// We need a PValueList<ElementType>.
-        	JClass narrowed = cm.ref(PValueList.class).narrow(elements.getTypeClass());
-        	// All we need for the constructor are the array type, and then each 
-        	// element in the array.
-        	JExpression type = plexilTypeAsJava(array.getType(), cm);
-        	JInvocation constructor = JExpr._new(narrowed);
-        	constructor.arg(type);
-        	for (Expression e : array.getArguments()) {
-        		constructor.arg(e.accept(this, cm));
-        	}
-        	
-        	return constructor;
         }
         
         @Override
@@ -482,11 +476,6 @@ public class ILExprToJava {
 
 
         @Override
-        public JExpression visitPValue(PValueExpression value, JCodeModel cm) {
-            return PValueToJava(value.getValue(), cm);
-        }
-
-        @Override
         public JExpression visitRootParentState(RootParentStateExpr state,
                 JCodeModel cm) {
             return JExpr.invoke("getInterface").invoke("evalParentState");
@@ -515,6 +504,60 @@ public class ILExprToJava {
         public JExpression visitVariable(IntermediateVariable var, JCodeModel cm) {
             return var.rhs(cm);
         }
+
+		@Override
+		public JExpression visitBooleanValue(BooleanValue bool, JCodeModel cm) {
+			return PValueToJava(bool, cm);
+		}
+
+		@Override
+		public JExpression visitIntegerValue(IntegerValue integer,
+				JCodeModel cm) {
+			return PValueToJava(integer, cm);
+		}
+
+		@Override
+		public JExpression visitRealValue(RealValue real, JCodeModel cm) {
+			return PValueToJava(real, cm);
+		}
+
+		@Override
+		public JExpression visitStringValue(StringValue string, JCodeModel cm) {
+			return PValueToJava(string, cm);
+		}
+
+		@Override
+		public JExpression visitUnknownValue(UnknownValue unk, JCodeModel cm) {
+			return PValueToJava(unk, cm);
+		}
+
+		@Override
+		public JExpression visitPValueList(PValueList<?> list, JCodeModel cm) {
+			return PValueToJava(list, cm);
+		}
+
+		@Override
+		public JExpression visitCommandHandleState(CommandHandleState state,
+				JCodeModel cm) {
+			return PValueToJava(state, cm);
+		}
+
+		@Override
+		public JExpression visitNodeFailure(NodeFailureType type,
+				JCodeModel cm) {
+			return PValueToJava(type, cm);
+		}
+
+		@Override
+		public JExpression visitNodeOutcome(NodeOutcome outcome,
+				JCodeModel cm) {
+			return PValueToJava(outcome, cm);
+		}
+
+		@Override
+		public JExpression visitNodeState(NodeState state, JCodeModel cm) {
+			return PValueToJava(state, cm);
+		}
         
     }
     
@@ -542,8 +585,20 @@ public class ILExprToJava {
         
         // Is it an array?
         if (type.isArrayType()) {
-        	// Plexil arrays aren't PValues anymore, so something's wrong.
-        	throw new RuntimeException("Plexil arrays aren't PValues, so why is "+v.getClass()+" saying it is one?");
+        	PValueList<?> array = (PValueList<?>) v;
+        	PlexilType elements = array.getType().elementType();
+        	// We need a PValueList<ElementType>.
+        	JClass narrowed = cm.ref(PValueList.class).narrow(elements.getTypeClass());
+        	// All we need for the constructor are the array type, and then each 
+        	// element in the array.
+        	JExpression jtype = plexilTypeAsJava(array.getType(), cm);
+        	JInvocation constructor = JExpr._new(narrowed);
+        	constructor.arg(jtype);
+        	for (PValue e : array) {
+        		constructor.arg(toJava(e, cm));
+        	}
+        	
+        	return constructor;
         }
         
         // Not unknown, an enum, or an array. Must just be a standard type.

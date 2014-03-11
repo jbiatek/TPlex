@@ -9,7 +9,6 @@ import edu.umn.crisys.plexil.ast.core.Node;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.il.action.ResetNodeAction;
 import edu.umn.crisys.plexil.il.action.SetOutcomeAction;
 import edu.umn.crisys.plexil.il.action.SetTimepointAction;
@@ -440,13 +439,13 @@ public class StateMachineBuilder {
                 ilExprCache.put(d, 
                         Operation.eq(
                                 new RootParentStateExpr(),
-                                new PValueExpression(state)
+                                state
                         ));
             } else {
                 ilExprCache.put(d,
                         Operation.eq(
                         		translator.getParent().getState(), 
-                                new PValueExpression(state)));
+                                state));
             }
 
         }
@@ -458,7 +457,7 @@ public class StateMachineBuilder {
             ilExprCache.put(Description.FAILURE_IS_PARENT_FAIL,
                     Operation.eq(
                     		translator.getFailure(), 
-                            new PValueExpression(NodeFailureType.PARENT_FAILED)));
+                            NodeFailureType.PARENT_FAILED));
         }
         
         return makeGuard(Description.FAILURE_IS_PARENT_FAIL, cond);
@@ -469,7 +468,7 @@ public class StateMachineBuilder {
             ilExprCache.put(Description.FAILURE_IS_PARENT_EXIT,
                     Operation.eq(
                     		translator.getFailure(), 
-                            new PValueExpression(NodeFailureType.PARENT_EXITED)));
+                            NodeFailureType.PARENT_EXITED));
         }
         
         return makeGuard(Description.FAILURE_IS_PARENT_EXIT, cond);
@@ -487,8 +486,8 @@ public class StateMachineBuilder {
             for (NodeToIL child : translator.getChildren()) {
                 clauses.add(
                         Operation.or(
-                                Operation.eq(child.getState(), new PValueExpression(NodeState.WAITING)),
-                                Operation.eq(child.getState(), new PValueExpression(NodeState.FINISHED))
+                                Operation.eq(child.getState(), NodeState.WAITING),
+                                Operation.eq(child.getState(), NodeState.FINISHED)
                             )
                         );
             }
@@ -501,8 +500,8 @@ public class StateMachineBuilder {
         if ( ! ilExprCache.containsKey(Description.ALL_CHILDREN_WAITING_OR_FINISHED)) {
             ilExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, 
                     Operation.or(
-                            Operation.eq(translator.getLibraryHandle(), new PValueExpression(NodeState.WAITING)),
-                            Operation.eq(translator.getLibraryHandle(), new PValueExpression(NodeState.FINISHED))
+                            Operation.eq(translator.getLibraryHandle(), NodeState.WAITING),
+                            Operation.eq(translator.getLibraryHandle(), NodeState.FINISHED)
                     ));
         }
         return makeGuard(Description.ALL_CHILDREN_WAITING_OR_FINISHED, cond);
@@ -512,7 +511,7 @@ public class StateMachineBuilder {
     private TransitionGuard abortComplete(Condition cond) {
         if ( ! ilExprCache.containsKey(Description.COMMAND_ABORT_COMPLETE)) {
             ilExprCache.put(Description.COMMAND_ABORT_COMPLETE, 
-                    Operation.eq(translator.getCommandHandle(), new PValueExpression(CommandHandleState.COMMAND_ABORTED)));
+                    Operation.eq(translator.getCommandHandle(), CommandHandleState.COMMAND_ABORTED));
         }
         return makeGuard(Description.COMMAND_ABORT_COMPLETE, cond);
     }

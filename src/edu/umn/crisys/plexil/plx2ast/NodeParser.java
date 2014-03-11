@@ -20,8 +20,6 @@ import javax.xml.stream.events.XMLEvent;
 import edu.umn.crisys.plexil.ast.core.Node;
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.core.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.CommandBody;
@@ -29,6 +27,8 @@ import edu.umn.crisys.plexil.ast.core.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
 import edu.umn.crisys.util.xml.XMLUtils.TagIterator;
@@ -258,19 +258,17 @@ public class NodeParser {
                 if (varInfo.varInit == null) {
                     node.addVar(varInfo.name, varInfo.type);
                 } else {
-                    node.addVar(varInfo.name, varInfo.type, (PValueExpression) varInfo.varInit);
+                    node.addVar(varInfo.name, varInfo.type, varInfo.varInit);
                 }
                 
             } else if (isTag(e, "DeclareArray")) {
                 DeclaredVarInfo arrayInfo = parseDeclareArray(e, xml);
-                if (arrayInfo.arrayInit == null) {
+                if (arrayInfo.varInit == null) {
                     node.addArray(arrayInfo.name, arrayInfo.type, 
                             arrayInfo.maxSize);
                 } else {
-                    ASTExpression initExpr = new ArrayLiteralExpr(
-                            arrayInfo.type, arrayInfo.arrayInit);
                     node.addArray(arrayInfo.name, arrayInfo.type, 
-                            arrayInfo.maxSize, (ArrayLiteralExpr) initExpr);
+                            arrayInfo.maxSize, (PValueList<?>)arrayInfo.varInit);
                 }
                 
             } else {
@@ -283,8 +281,7 @@ public class NodeParser {
         public String name = null;
         public PlexilType type = null;
         public int maxSize = -1;
-        public List<ASTExpression> arrayInit = null;
-        public ASTExpression varInit = null;
+        public PValue varInit = null;
     }
 
     
@@ -295,7 +292,7 @@ public class NodeParser {
         String name = null;
         String type = null;
         String maxSize = null;
-        List<ASTExpression> init = null;
+        List<PValue> init = null;
         
         for (StartElement e : new TagIterator(xml, "DeclareArray")) {
             if (isTag(e, "Name")) {
@@ -305,9 +302,9 @@ public class NodeParser {
             } else if (isTag(e, "MaxSize")) {
                 maxSize = getStringContent(e, xml);
             } else if (isTag(e, "InitialValue")) {
-                init = new ArrayList<ASTExpression>();
+                init = new ArrayList<PValue>();
                 for (StartElement v : new TagIterator(xml, "InitialValue")) {
-                    init.add(ExprParser.parse(v, xml, PlexilType.UNKNOWN));
+                    init.add(ExprParser.parsePValue(v, xml));
                 }
             } else {
                 throw new UnexpectedTagException(e);
@@ -321,7 +318,9 @@ public class NodeParser {
         info.name = name;
         info.type = PlexilType.valueOf(type.toUpperCase()).toArrayType();
         info.maxSize = Integer.parseInt(maxSize); 
-        info.arrayInit = init;
+        if (init != null) {
+        	info.varInit = new PValueList<PValue>(info.type, init);
+        }
         
         return info;
     }
@@ -333,7 +332,7 @@ public class NodeParser {
         
         String name = null;
         String type = null;
-        ASTExpression init = null;
+        PValue init = null;
         
         for (StartElement e : new TagIterator(xml, "DeclareVariable")) {
             if (isTag(e, "Name")) {
@@ -341,7 +340,7 @@ public class NodeParser {
             } else if (isTag(e, "Type")) {
                 type = getStringContent(e, xml);
             } else if (isTag(e, "InitialValue")) {
-                init = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+                init = ExprParser.parsePValue(nextTag(xml).asStartElement(), xml);
                 assertClosedTag(e, xml);
             } else {
                 throw new UnexpectedTagException(e);
@@ -355,7 +354,7 @@ public class NodeParser {
         info.name = name;
         info.type = PlexilType.valueOf(type.toUpperCase());
         if (init != null) {
-            info.varInit = ExprParser.ensureType(init, info.type);
+            info.varInit = init;
         }
         return info;
     }

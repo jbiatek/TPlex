@@ -25,7 +25,7 @@ public class LookupOnChangeExpr extends CompositeExpr {
 	}
 	
 	public LookupOnChangeExpr(Expression name, List<Expression> args) {
-	    this(name, new PValueExpression(RealValue.get(0.0)), args);
+	    this(name, RealValue.get(0.0), args);
 	}
 	
 	@Override

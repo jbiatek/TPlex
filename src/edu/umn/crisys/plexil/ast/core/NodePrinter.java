@@ -2,7 +2,6 @@ package edu.umn.crisys.plexil.ast.core;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.core.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.CommandBody;
@@ -11,7 +10,9 @@ import edu.umn.crisys.plexil.ast.core.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.core.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.core.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.util.Pair;
 
 public class NodePrinter implements NodeBodyVisitor<Void, String> {
@@ -57,27 +58,27 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
             str.append(doVariable(variable));
         }
         
-        if ( n.getStartCondition() != PValueExpression.TRUE) {
+        if ( n.getStartCondition() != BooleanValue.get(true)) {
             str.append(tab(TAB)+"StartCondition "+n.getStartCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getSkipCondition() != PValueExpression.FALSE) {
+        if ( n.getSkipCondition() != BooleanValue.get(false)) {
             str.append(tab(TAB)+"SkipCondition "+n.getSkipCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getPreCondition() != PValueExpression.TRUE) {
+        if ( n.getPreCondition() != BooleanValue.get(true)) {
             str.append(tab(TAB)+"PreCondition "+n.getPreCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getInvariantCondition() != PValueExpression.TRUE) {
+        if ( n.getInvariantCondition() != BooleanValue.get(true)) {
             str.append(tab(TAB)+"InvariantCondition "+n.getInvariantCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getRepeatCondition() != PValueExpression.FALSE) {
+        if ( n.getRepeatCondition() != BooleanValue.get(false)) {
             str.append(tab(TAB)+"RepeatCondition "+n.getRepeatCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getPostCondition() != PValueExpression.TRUE) {
+        if ( n.getPostCondition() != BooleanValue.get(true)) {
             str.append(tab(TAB)+"PostCondition "+n.getPostCondition()+";");
             newLine(str, indent);
         }
@@ -85,7 +86,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
             str.append(tab(TAB)+"EndCondition "+n.getEndCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getExitCondition() != PValueExpression.FALSE) {
+        if ( n.getExitCondition() != BooleanValue.get(false)) {
             str.append(tab(TAB)+"ExitCondition "+n.getExitCondition()+";");
             newLine(str, indent);
         }
@@ -173,10 +174,9 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
         if (cmd.getVarToAssign() != null) {
             str.append(cmd.getVarToAssign()+" = ");
         }
-        if (cmd.getCommandName() instanceof PValueExpression) {
-            // We want to avoid the quotes if it's just a single value.
-            PValueExpression expr = (PValueExpression) cmd.getCommandName();
-            str.append(expr.getValue() + "(");
+        if (cmd.getCommandName() instanceof StringValue) {
+            // We want to avoid the parens if it's just a single value.
+            str.append(cmd.getCommandName() + "(");
         } else {
             // Yes, it's possible for the command being called to be an 
             // expression. The spec says it just has to be parenthesized.

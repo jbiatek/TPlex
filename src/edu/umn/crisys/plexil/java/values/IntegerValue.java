@@ -1,5 +1,9 @@
 package edu.umn.crisys.plexil.java.values;
 
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+
 public class IntegerValue implements PInteger {
 	
 	private final int value;
@@ -240,6 +244,31 @@ public class IntegerValue implements PInteger {
 	@Override
 	public String toString() {
 		return value+"";
+	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		return visitor.visitIntegerValue(this, param);
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+	
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
 	}
 	
 }
