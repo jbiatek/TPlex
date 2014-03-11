@@ -11,7 +11,6 @@ import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
 import edu.umn.crisys.plexil.java.world.CommandHandler;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
@@ -180,17 +179,17 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 	
 	public StateChange stateChange(PValue value, 
-			String name, StandardValue... args) {
+			String name, PValue... args) {
 		return new StateChange(new FunctionCall(name, args), value);
 	}
 	
 	public CommandAck commandAck(CommandHandleState response,
-			String name, StandardValue...args) {
+			String name, PValue...args) {
 		return new CommandAck(new FunctionCall(name, args), response);
 	}
 	
 	public CommandReturn commandReturn(PValue value, 
-			String name, StandardValue... args) {
+			String name, PValue... args) {
 		return new CommandReturn(new FunctionCall(name, args), value);
 	}
 	

@@ -18,7 +18,6 @@ import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.util.Pair;
 import gov.nasa.jpf.vm.Verify;
@@ -245,7 +244,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	private void returnValueToCommand(CommandHandler handler, FunctionCall call, PValue v) {
-		handler.commandReturns((StandardValue) v);
+		handler.commandReturns(v);
 		constructCommandXML(call, v, "");
 	}
 	
@@ -335,14 +334,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		if (p.isUnknown()) {
 			return "UNKNOWN";
 		}
-		else if(p instanceof CommandHandleState) {
-			return p.toString();
-		}
-		StandardValue v = (StandardValue) p;
-		// It has to be a string because SymbolicSequenceListener doesn't
-		// currently unwrap Booleans to primitives. So we end up getting
-		// something useless like "java.lang.Integer@234". 
-		return v.asNativeJava().toString();
+		return p.toString();
 	}
 	
 	private void changeLookup(String lookup, PValue v) {

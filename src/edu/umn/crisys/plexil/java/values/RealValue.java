@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class RealValue extends StandardValue implements PReal {
+public class RealValue implements PReal {
 	
 	private final double value;
 	
@@ -12,17 +12,23 @@ public class RealValue extends StandardValue implements PReal {
 		this.value = value;
 	}
 	
+
+	@Override
+	public boolean isKnown() {
+		return true;
+	}
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
 	@Override
 	public PValue castTo(PlexilType type) {
 		if (type == PlexilType.INTEGER) {
 			return castToInteger();
 		}
-		return super.castTo(type);
-	}
-
-	@Override
-	public Object asNativeJava() {
-	    return value;
+		return PValue.Util.defaultCastTo(this, type);
 	}
 
 

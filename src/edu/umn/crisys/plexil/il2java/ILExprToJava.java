@@ -33,7 +33,6 @@ import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayElementReference;
 import edu.umn.crisys.plexil.translator.il.vars.ArrayReference;
@@ -548,12 +547,12 @@ public class ILExprToJava {
         }
         
         // Not unknown, an enum, or an array. Must just be a standard type.
-        Object nativeJava = ((StandardValue) v).asNativeJava();
-        if (nativeJava instanceof String) {
-        	// We're dumping this string directly, so it needs quotes.
+        String nativeJava = v.toString();
+        if (v.getType() == PlexilType.STRING) {
+        	// We're dumping this directly, so it needs quotes.
             nativeJava = "\"" + nativeJava + "\"";
         }
-        return cm.ref(type.getConcreteTypeClass()).staticInvoke("get").arg(JExpr.direct(nativeJava.toString()));
+        return cm.ref(type.getConcreteTypeClass()).staticInvoke("get").arg(JExpr.direct(nativeJava));
 
     }
     

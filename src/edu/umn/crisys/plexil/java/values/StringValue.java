@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class StringValue extends StandardValue implements PString {
+public class StringValue implements PString {
 
 	private final String value;
 
@@ -21,10 +21,20 @@ public class StringValue extends StandardValue implements PString {
 	}
 
 	@Override
-	public Object asNativeJava() {
-	    return value;
+	public boolean isKnown() {
+		return true;
 	}
-
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
+	@Override
+	public PValue castTo(PlexilType type) {
+		return PValue.Util.defaultCastTo(this, type);
+	}
+	
 	@Override
 	public PBoolean equalTo(PValue o) {
 		if (o.isUnknown()) {

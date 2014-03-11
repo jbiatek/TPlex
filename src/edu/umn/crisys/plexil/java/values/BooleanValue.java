@@ -6,7 +6,7 @@ package edu.umn.crisys.plexil.java.values;
  * @author Jason Biatek
  *
  */
-public class BooleanValue extends StandardValue implements PBoolean {
+public class BooleanValue implements PBoolean {
 	public static boolean SINGLETON = true;
 
     /**
@@ -33,11 +33,6 @@ public class BooleanValue extends StandardValue implements PBoolean {
 	 */
 	private BooleanValue(boolean value) {
 		this.bool = value;
-	}
-	
-	@Override
-	public Object asNativeJava() {
-	    return bool;
 	}
 	
 	@Override
@@ -110,6 +105,21 @@ public class BooleanValue extends StandardValue implements PBoolean {
 	@Override
 	public PlexilType getType() {
 		return PlexilType.BOOLEAN;
+	}
+	
+	@Override
+	public boolean isKnown() {
+		return true;
+	}
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
+	@Override
+	public PValue castTo(PlexilType type) {
+		return PValue.Util.defaultCastTo(this, type);
 	}
 	
 	@Override

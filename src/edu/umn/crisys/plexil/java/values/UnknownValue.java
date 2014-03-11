@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class UnknownValue extends StandardValue implements PBoolean, PInteger, PReal, PString {
+public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 
 	private static UnknownValue singleton = new UnknownValue();
     public static boolean SINGLETON = true;

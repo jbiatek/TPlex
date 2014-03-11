@@ -9,10 +9,9 @@ import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 
-public class TypelessPlexilArray extends StandardValue {
+public class TypelessPlexilArray implements PValue {
 
     private String[] values;
     
@@ -86,6 +85,21 @@ public class TypelessPlexilArray extends StandardValue {
 	@Override
 	public PlexilType getType() {
 		return PlexilType.UNKNOWN;
+	}
+
+	@Override
+	public boolean isKnown() {
+		return true;
+	}
+
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+
+	@Override
+	public PValue castTo(PlexilType type) {
+		return PValue.Util.defaultCastTo(this, type);
 	}
     
 }

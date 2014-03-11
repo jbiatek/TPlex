@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class IntegerValue extends StandardValue implements PInteger {
+public class IntegerValue implements PInteger {
 	
 	private final int value;
 	
@@ -13,16 +13,21 @@ public class IntegerValue extends StandardValue implements PInteger {
 	}
 	
 	@Override
+	public boolean isKnown() {
+		return true;
+	}
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
+	@Override
 	public PValue castTo(PlexilType type) {
 		if (type == PlexilType.REAL) {
 			return castToReal();
 		}
-		return super.castTo(type);
-	}
-
-	@Override
-	public Object asNativeJava() {
-	    return value;
+		return PValue.Util.defaultCastTo(this, type);
 	}
 
 	
