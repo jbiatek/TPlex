@@ -38,7 +38,7 @@ public class ArrayElementReference extends RHSVariable {
 
     @Override
     public JExpression rhs(JCodeModel cm) {
-        return directReference(cm).invoke("getValue");
+        return arrayRef.rhs(cm).invoke("get").arg(ILExprToJava.toJava(index, cm));
     }
 
     @Override
@@ -50,13 +50,15 @@ public class ArrayElementReference extends RHSVariable {
     public void addAssignment(JExpression rhs, JExpression priority, JBlock block,
             JCodeModel cm) {
         block.add(
-                arrayRef.rhs(cm).invoke("get").arg(ILExprToJava.toJava(index, cm))
-                    .invoke("setValue").arg(rhs).arg(priority));
+                arrayRef.directReference(cm).invoke("indexAssign")
+                .arg(ILExprToJava.toJava(index, cm))
+                .arg(rhs));
     }
 
     @Override
     public JExpression directReference(JCodeModel cm) {
-        return arrayRef.directReference(cm).invoke("get").arg(ILExprToJava.toJava(index, cm));
+    	// Instead, return a direct ref to the array
+        return arrayRef.directReference(cm);
     }
     
 

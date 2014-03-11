@@ -19,8 +19,8 @@ import edu.umn.crisys.plexil.java.world.UpdateHandler;
 
 public class JavaPlexilScript implements ExternalWorld {
 	
-	private Map<FunctionCall, StandardValue> lookup = 
-			new HashMap<FunctionCall, StandardValue>();
+	private Map<FunctionCall, PValue> lookup = 
+			new HashMap<FunctionCall, PValue>();
 	private List<ReceivedCommand> commandQueue = new ArrayList<ReceivedCommand>();
 	
 	private List<Event> events = new ArrayList<Event>();
@@ -52,9 +52,9 @@ public class JavaPlexilScript implements ExternalWorld {
 	
 	private static class StateChange implements Event {
 		private FunctionCall call;
-		private StandardValue value;
+		private PValue value;
 		
-		public StateChange(FunctionCall call, StandardValue value) {
+		public StateChange(FunctionCall call, PValue value) {
 			this.call = call;
 			this.value = value;
 		}
@@ -69,9 +69,9 @@ public class JavaPlexilScript implements ExternalWorld {
 	
 	private static class CommandReturn implements Event {
 		private FunctionCall call;
-		private StandardValue value;
+		private PValue value;
 		
-		public CommandReturn(FunctionCall call, StandardValue value) {
+		public CommandReturn(FunctionCall call, PValue value) {
 			this.call = call;
 			this.value = value;
 		}
@@ -179,7 +179,7 @@ public class JavaPlexilScript implements ExternalWorld {
 		events.add(e);
 	}
 	
-	public StateChange stateChange(StandardValue value, 
+	public StateChange stateChange(PValue value, 
 			String name, StandardValue... args) {
 		return new StateChange(new FunctionCall(name, args), value);
 	}
@@ -189,7 +189,7 @@ public class JavaPlexilScript implements ExternalWorld {
 		return new CommandAck(new FunctionCall(name, args), response);
 	}
 	
-	public CommandReturn commandReturn(StandardValue value, 
+	public CommandReturn commandReturn(PValue value, 
 			String name, StandardValue... args) {
 		return new CommandReturn(new FunctionCall(name, args), value);
 	}
@@ -233,17 +233,17 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 
 	@Override
-	public StandardValue lookupNow(PString stateName, PValue... args) {
+	public PValue lookupNow(PString stateName, PValue... args) {
 		return lookup(stateName, args);
 	}
 
 	@Override
-	public StandardValue lookupOnChange(PString stateName,
+	public PValue lookupOnChange(PString stateName,
 			PNumeric tolerance, PValue... args) {
 		return lookup(stateName, args);
 	}
 	
-	private StandardValue lookup(PString stateName, PValue...args ) {
+	private PValue lookup(PString stateName, PValue...args ) {
 		FunctionCall key = new FunctionCall(stateName.toString(), args);
 		if (lookup.containsKey(key)) {
 		    return lookup.get(key);

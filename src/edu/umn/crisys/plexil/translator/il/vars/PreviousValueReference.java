@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.translator.il.vars;
 
 import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
@@ -17,9 +18,11 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 public class PreviousValueReference extends RHSVariable {
 
     private NodeUID nodeId;
+    private PlexilType type;
     
-    public PreviousValueReference(NodeUID node) {
+    public PreviousValueReference(NodeUID node, PlexilType type) {
         nodeId = node;
+        this.type = type;
     }
     
     @Override
@@ -38,7 +41,11 @@ public class PreviousValueReference extends RHSVariable {
     
     @Override
     public void addVarToClass(JDefinedClass clazz) {
-        clazz.field(JMod.PRIVATE, clazz.owner().ref(PValue.class), getFieldName());
+    	JClass typeClass = clazz.owner().ref(PValue.class);
+    	if (type != PlexilType.UNKNOWN) {
+    		typeClass = clazz.owner().ref(type.getTypeClass());
+    	}
+        clazz.field(JMod.PRIVATE, typeClass, getFieldName());
     }
 
     @Override

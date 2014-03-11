@@ -26,13 +26,12 @@ import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
-import edu.umn.crisys.plexil.java.plx.VariableArray;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
@@ -53,6 +52,11 @@ public class ILExprToJava {
     public static JExpression toJavaBiased(ILExpression expr, JCodeModel cm, boolean isThis) {
         return expr.accept(new IL2JavaBiased(isThis), cm);
     }
+    
+    public static JExpression plexilTypeAsJava(PlexilType type, JCodeModel cm) {
+    	return cm.ref(PlexilType.class).staticRef(type.toString());
+    }
+
     
     /**
      * Translate a boolean Expression with biasing. If you pass this to 
@@ -279,10 +283,21 @@ public class ILExprToJava {
         @Override
         public JExpression visitArrayLiteral(ArrayLiteralExpr array,
                 JCodeModel cm) {
-        	// This should only be used by PlexilScript.
-        	return newArrayExpression("anon", array.getType(), array.getArguments().size(), cm, array.getArguments().toArray());
+        	PlexilType elements = array.getType().elementType();
+        	// We need a PValueList<ElementType>.
+        	JClass narrowed = cm.ref(PValueList.class).narrow(elements.getTypeClass());
+        	// All we need for the constructor are the array type, and then each 
+        	// element in the array.
+        	JExpression type = plexilTypeAsJava(array.getType(), cm);
+        	JInvocation constructor = JExpr._new(narrowed);
+        	constructor.arg(type);
+        	for (Expression e : array.getArguments()) {
+        		constructor.arg(e.accept(this, cm));
+        	}
+        	
+        	return constructor;
         }
-
+        
         @Override
         public JExpression visitLookupNow(LookupNowExpr lookup, JCodeModel cm) {
             JInvocation jlookup = 
@@ -504,45 +519,6 @@ public class ILExprToJava {
         
     }
     
-    /**
-     * Create an expression for making a new VariableArray. This will return
-     * <pre>new VariableArray&lt;Type&gt;(name, maxSize, type, Type... inits)</pre>
-     * @param name The name of the array
-     * @param type The ARRAY type, e.g. BOOLEAN_ARRAY
-     * @param maxSize The max size of the array
-     * @param cm
-     * @param inits Anything to represent the initial values. The toString() method
-     * will be called on them, and this will be used directly as the argument to
-     * "IntegerValue.get()" or whatever the correct class is. For StringValue,
-     * they will be wrapped in quotes.
-     * @return
-     */
-    public static JInvocation newArrayExpression(String name, PlexilType type, int maxSize, JCodeModel cm, Object...inits) {
-        if ( ! type.isArrayType()) {
-            throw new RuntimeException(type+" is not an array type");
-        }
-        
-        String elementTypeName = type.elementType().toString();
-        Class<? extends PValue> elementClass = type.elementType().getConcreteTypeClass();
-
-        
-        // Create JClass for VariableArray<PBooleanOrPIntOrPWhatever>:
-        JClass parameterized = cm.ref(VariableArray.class).narrow(type.elementType().getTypeClass());
-
-        
-        JInvocation init = JExpr._new(parameterized)
-            .arg(JExpr.lit(name))
-            .arg(JExpr.lit(maxSize))
-            .arg(cm.ref(PlexilType.class).staticRef(elementTypeName));
-        // And the initial values:
-        for (Object o : inits) {
-            init.arg(cm.ref(elementClass).staticInvoke("get")
-                    .arg(JExpr.direct(o.toString())));
-        }
-        
-        return init;
-    }
-    
     
     public static JExpression PValueToJava(PValue v, JCodeModel cm) {
         PlexilType type = v.getType();
@@ -550,39 +526,34 @@ public class ILExprToJava {
         // Handle an UNKNOWN expression
         if (v.isUnknown()) {
             if (type.isEnumeratedType()) {
+            	// These look like SomeTypeClass.UNKNOWN:
                 JClass clazz = cm.ref(type.getConcreteTypeClass());
                 return clazz.staticRef(type.getUnknown().toString());
             } else {
+            	// Everything else uses the singleton.
                 return cm.ref(UnknownValue.class).staticInvoke("get");
             }
         }
         
         // It's a known value. Is it an enum?
         if (type.isEnumeratedType()) {
+        	// So we want ConcreteTypeClass.VALUE
             return cm.ref(type.getConcreteTypeClass()).staticRef(v.toString());
         }
         
         // Is it an array?
         if (type.isArrayType()) {
-            // Time to build up an array expression.
-            @SuppressWarnings("unchecked")
-            VariableArray<? extends StandardValue> arr = (VariableArray<? extends StandardValue>) v;
-            
-            // Let's get the invocation, but do our own initial values since newArrayExpression
-            // expects Java natives, not the PValues that we have in this array.
-            JInvocation arrayExpr = newArrayExpression(arr.getName(), type, arr.size(), cm);
-            for (int i = 0; i < arr.size(); i++) {
-                arrayExpr.arg(PValueToJava(arr.get(IntegerValue.get(i)).getValue(), cm));
-            }
-            return arrayExpr;
+        	// Plexil arrays aren't PValues anymore, so something's wrong.
+        	throw new RuntimeException("Plexil arrays aren't PValues, so why is "+v.getClass()+" saying it is one?");
         }
         
         // Not unknown, an enum, or an array. Must just be a standard type.
-        Object native_ = ((StandardValue) v).asNativeJava();
-        if (native_ instanceof String) {
-            native_ = "\"" + native_ + "\"";
+        Object nativeJava = ((StandardValue) v).asNativeJava();
+        if (nativeJava instanceof String) {
+        	// We're dumping this string directly, so it needs quotes.
+            nativeJava = "\"" + nativeJava + "\"";
         }
-        return cm.ref(type.getConcreteTypeClass()).staticInvoke("get").arg(JExpr.direct(native_.toString()));
+        return cm.ref(type.getConcreteTypeClass()).staticInvoke("get").arg(JExpr.direct(nativeJava.toString()));
 
     }
     

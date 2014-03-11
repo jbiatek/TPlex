@@ -1,8 +1,8 @@
 package edu.umn.crisys.plexil.test.java;
 
 import java.util.Arrays;
+import java.util.List;
 
-import edu.umn.crisys.plexil.java.plx.VariableArray;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.PBoolean;
@@ -26,8 +26,8 @@ public class TypelessPlexilArray extends StandardValue {
     }
     
     public boolean equals(Object o) {
-        if (o instanceof VariableArray) {
-            VariableArray arr = (VariableArray) o;
+        if (o instanceof List<?>) {
+            List<?> arr = (List<?>) o;
             if (arr.size() != values.length) {
                 System.out.println(arr.size());
                 System.out.println(values.length);
@@ -35,8 +35,12 @@ public class TypelessPlexilArray extends StandardValue {
             }
             
             for (int i=0; i<values.length; i++) {
+            	Object valueObj = arr.get(i);
+            	if (! (valueObj instanceof PValue )) {
+            		return false;
+            	}
                 if (!checkIndividual(values[i], 
-                        arr.get(IntegerValue.get(i)).getValue())) {
+                        (PValue) arr.get(i))) {
                     return false;
                 }
             }

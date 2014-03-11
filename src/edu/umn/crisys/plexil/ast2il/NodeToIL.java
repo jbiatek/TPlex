@@ -190,9 +190,7 @@ public class NodeToIL {
             libRef.setLibAndAncestorsInvariants(getThisAndAncestorsInvariants());
             libRef.setLibOrAncestorsEnds(getThisOrAncestorsEnds());
             libRef.setLibOrAncestorsExits(getThisOrAncestorsExits());
-        } else if (myNode.isAssignmentNode()) {
-            ilVars.put(PREVIOUS_VALUE, new PreviousValueReference(getUID()));
-        }
+        } 
         
         for (NodeToIL child : children) {
             child.parentsAreReady();
@@ -466,6 +464,10 @@ public class NodeToIL {
             IntermediateVariable lhs = resolveVariableforWriting(body.getLeftHandSide());
             AssignAction assign = new AssignAction(lhs, 
                     toIL(body.getRightHandSide()), myNode.getPriority());
+            // Add the previous value now that we have the IL left hand side
+            ilVars.put(PREVIOUS_VALUE, new PreviousValueReference(getUID(), lhs.getType()));
+            ilPlan.addVariable(getPreviousValue());
+            
             CaptureCurrentValueAction capture = new CaptureCurrentValueAction(lhs, getPreviousValue());
             map.get(NodeState.EXECUTING).addEntryAction(assign);
             map.get(NodeState.EXECUTING).addEntryAction(capture);

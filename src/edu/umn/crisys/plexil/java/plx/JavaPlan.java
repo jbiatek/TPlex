@@ -26,9 +26,9 @@ public abstract class JavaPlan {
     @SuppressWarnings("rawtypes")
     private List<Variable> commitVarsAfterMacroStep = new LinkedList<Variable>();
     @SuppressWarnings("rawtypes")
-    private List<VariableArray> commitArraysAfterMicroStep = new LinkedList<VariableArray>();
+    private List<SimplePArray> commitArraysAfterMicroStep = new LinkedList<SimplePArray>();
     @SuppressWarnings("rawtypes")
-    private List<VariableArray> commitArraysAfterMacroStep = new LinkedList<VariableArray>();
+    private List<SimplePArray> commitArraysAfterMacroStep = new LinkedList<SimplePArray>();
     
     private List<SimpleCurrentNext<?>> commitSimpleAfterMicroStep = 
         new LinkedList<SimpleCurrentNext<?>>();
@@ -111,7 +111,7 @@ public abstract class JavaPlan {
         for (Variable v : commitVarsAfterMicroStep) {
             v.commit();
         }
-        for (VariableArray a : commitArraysAfterMicroStep) {
+        for (SimplePArray a : commitArraysAfterMicroStep) {
             a.commit();
         }
         for (SimpleCurrentNext<?> s : commitSimpleAfterMicroStep) {
@@ -131,7 +131,7 @@ public abstract class JavaPlan {
         for (Variable v : commitVarsAfterMacroStep) {
             v.commit();
         }
-        for (VariableArray a : commitArraysAfterMacroStep) {
+        for (SimplePArray a : commitArraysAfterMacroStep) {
             a.commit();
         }
         for (JavaPlan lib : commitLibraryAfterMacroStep) {
@@ -184,13 +184,13 @@ public abstract class JavaPlan {
     }
     
     @SuppressWarnings("rawtypes")
-    public void commitAfterMicroStep(VariableArray a) {
+    public void commitAfterMicroStep(SimplePArray a) {
         askForCommitAfterMicro();
         commitArraysAfterMicroStep.add(a);
     }
     
     @SuppressWarnings("rawtypes")
-    public void commitAfterMacroStep(VariableArray a) {
+    public void commitAfterMacroStep(SimplePArray a) {
         askForCommitAfterMacro();
         commitArraysAfterMacroStep.add(a);
     }

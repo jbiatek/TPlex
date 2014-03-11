@@ -13,8 +13,8 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.java.plx.CommandHandle;
+import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 
 public class CommandHandleReference extends RHSVariable {
 
@@ -56,7 +56,7 @@ public class CommandHandleReference extends RHSVariable {
             // Override the return method to do the assignment when it comes in
             JDefinedClass anonClass = cm.anonymousClass(CommandHandle.class);
             JMethod ret = anonClass.method(JMod.PUBLIC, cm.VOID, "commandReturns");
-            JVar value = ret.param(cm.ref(StandardValue.class), "value");
+            JVar value = ret.param(cm.ref(PValue.class), "value");
             
             
             assignReturnTo.addAssignment(value, JExpr.lit(priority), ret.body(), cm);
