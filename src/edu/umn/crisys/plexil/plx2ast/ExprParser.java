@@ -22,6 +22,8 @@ import edu.umn.crisys.plexil.ast.core.expr.var.NodeIDExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.NodeRefExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.NodeRefExpr.NodeRef;
+import edu.umn.crisys.plexil.java.values.NodeState;
+import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
@@ -244,17 +246,15 @@ public class ExprParser {
     private static NodeTimepointExpr parseNodeTimepoint(StartElement start, XMLEventReader xml) {
         String state = null;
         String timepoint = null;
-        String nodeId = null;
+        Expression nodeId = null;
 
         for (StartElement e : new TagIterator(xml, start)) {
-            String content = getStringContent(e, xml);
-
-            if (isTag(e, "NodeId")) {
-                nodeId = content;
+            if (isNodeReference(localNameOf(e))) {
+                nodeId = parseNodeReference(e, xml);
             } else if (isTag(e, "NodeStateValue")) {
-                state = content;
+                state = getStringContent(e, xml);;
             } else if (isTag(e, "Timepoint")) {
-                timepoint = content;
+                timepoint = getStringContent(e, xml);;
             } else {
                 throw new UnexpectedTagException(e);
             }
@@ -264,7 +264,10 @@ public class ExprParser {
                     state+", "+timepoint+", and "+nodeId+".");
         }
 
-        return new NodeTimepointExpr(state, timepoint, nodeId);    
+        return new NodeTimepointExpr(
+        		NodeState.valueOf(state.toUpperCase()), 
+        		NodeTimepoint.valueOf(timepoint.toUpperCase()), 
+        		nodeId);    
     }
 
 
