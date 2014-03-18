@@ -225,6 +225,10 @@ public class NodeToIL {
         return ret;
     }
     
+    public NodeToIL getParent() {
+    	return parent;
+    }
+    
     public NodeStateReference getState() {
         return (NodeStateReference) ilVars.get(STATE);
     }

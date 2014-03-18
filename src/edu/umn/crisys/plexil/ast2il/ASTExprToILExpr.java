@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.expr.var.NodeRefExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.core.node.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.node.CommandBody;
@@ -44,6 +45,11 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
     }
 
     @Override
+	public ILExpression visitNodeReference(NodeRefExpr ref, Void param) {
+		throw new RuntimeException("This reference should have been resolved by the operation that used it");
+	}
+
+	@Override
     public ILExpression visitDefaultEnd(DefaultEndExpr end, Void param) {
         return context.getNodeBody().accept(new DefaultEndMaker(), context);
     }
@@ -105,9 +111,39 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
     }
 
     private NodeToIL resolveNode(Expression e) {
-        // Right now, we only support direct node references.
-        UnresolvedVariableExpr nodeName = (UnresolvedVariableExpr) e;
-        return context.resolveNode(nodeName.getName());
+    	if (e instanceof UnresolvedVariableExpr) {
+    		UnresolvedVariableExpr nodeName = (UnresolvedVariableExpr) e;
+    		return context.resolveNode(nodeName.getName());
+    	} else if (e instanceof NodeRefExpr) {
+    		NodeRefExpr ref = (NodeRefExpr) e;
+    		switch (ref.getNodeRef()) {
+    		case PARENT: 
+    			if (context.getParent() == null) throw new NullPointerException();
+    			return context.getParent();
+    		case CHILD: 
+    			if (context.getChildren().size() != 1) {
+    				throw new RuntimeException("Which child?");
+    			}
+    			return context.getChildren().get(0);
+    		case SIBLING:
+    			if (context.getParent().getChildren().size() != 2) {
+    				throw new RuntimeException("Which sibling?");
+    			}
+    			NodeToIL sibling0 = context.getParent().getChildren().get(0);
+    			NodeToIL sibling1 = context.getParent().getChildren().get(1);
+    			if (sibling0 == context) {
+    				return sibling1;
+    			} else {
+    				return sibling0;
+    			}
+    		case SELF:
+    			return context;
+    		}
+    		throw new RuntimeException("Missing case: "+ref.getNodeRef());
+    	}
+    	else {
+    		throw new RuntimeException("How do you resolve a node given a "+e.getClass()+"?");
+    	}
     }
     
     @Override

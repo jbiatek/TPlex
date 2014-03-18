@@ -19,7 +19,9 @@ import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.ast.core.expr.var.NodeIDExpression;
+import edu.umn.crisys.plexil.ast.core.expr.var.NodeRefExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.ast.core.expr.var.NodeRefExpr.NodeRef;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
@@ -179,7 +181,8 @@ public class ExprParser {
         if (localNameOf(start).equals("NodeId")) {
             return new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
-            throw new RuntimeException("Time to learn what NodeRef tags are");
+        	return NodeRefExpr.get(
+        			NodeRef.valueOf(attribute(start, "dir").toUpperCase()));
         } else {
             throw new RuntimeException("Was expecting a node reference, not a "+start);
         }
