@@ -96,7 +96,6 @@ public enum PlexilType {
         
         String name = originalName.replaceAll("-", "_").toUpperCase();
         
-        
         if (name.startsWith("BOOL")) {
             if (name.contains("ARRAY")) {
                 return BOOLEAN_ARRAY;
@@ -122,7 +121,8 @@ public enum PlexilType {
         
         // Just look for an easy match
         for (PlexilType type : values()) {
-            if (name.equalsIgnoreCase(type.toString())) {
+        	String thisOnesName = type.toString().replaceAll("_", "");
+            if (thisOnesName.equalsIgnoreCase(type.toString())) {
                 return type;
             } 
         }
