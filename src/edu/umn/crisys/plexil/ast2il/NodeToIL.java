@@ -471,11 +471,15 @@ public class NodeToIL {
         // TODO: I'm going to check them in that order. Is that right? 
         // TODO: Also, I'm taking "children" to mean "immediate children", which
         // I think is right but [citation needed]. 
+    	
+    	if (plexilId.equals(this.myNode.getPlexilID())) {
+    		// Well, that was easy.
+    		return this;
+    	}
         
+    	// Expand the search to siblings.
         if (parent != null) {
             List<NodeToIL> siblings = parent.getChildren();
-            // This also includes ourself, and since siblings must have unique
-            // names, we don't have to worry about doing us first.
             for (NodeToIL sibling : siblings) {
                 if (sibling.myNode.getPlexilID().equals(plexilId)) {
                     return sibling;
