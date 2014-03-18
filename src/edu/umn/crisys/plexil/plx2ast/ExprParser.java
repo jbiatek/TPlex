@@ -180,14 +180,17 @@ public class ExprParser {
     }
 
     private static ASTExpression parseNodeReference(StartElement start, XMLEventReader xml) {
+    	ASTExpression toReturn;
         if (localNameOf(start).equals("NodeId")) {
-            return new NodeIDExpression(getStringContent(start, xml));
+            toReturn = new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
-        	return NodeRefExpr.get(
+        	toReturn = NodeRefExpr.get(
         			NodeRef.valueOf(attribute(start, "dir").toUpperCase()));
+            assertClosedTag(start, xml);
         } else {
             throw new RuntimeException("Was expecting a node reference, not a "+start);
         }
+        return toReturn;
     }
 
 
