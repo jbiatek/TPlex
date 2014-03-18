@@ -9,6 +9,7 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 
+import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.java.psx.JavaPlexilScript;
 
 public class PlexilScript {
@@ -39,7 +40,8 @@ public class PlexilScript {
     }
     
     public void toJava(JCodeModel cm, String pkg) throws JClassAlreadyExistsException {
-        String fullName = pkg.equals("") ? scriptName : pkg+"."+scriptName;
+    	String cleanName = NameUtils.clean(scriptName);
+        String fullName = pkg.equals("") ? cleanName : pkg+"."+ cleanName;
         
         JDefinedClass clazz = cm._class(fullName);
         clazz._extends(cm.ref(JavaPlexilScript.class));
