@@ -149,8 +149,16 @@ public class LibraryNodeReference extends RHSVariable {
                         ILExprToJava.toJava(aliases.get(alias), cm));
 
             }
-            condAssign._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
-                    .arg(JExpr.lit("I don't know where to assign for ").plus(varNamePA)));
+            if (condAssign == null) {
+            	// We never set one, so make the body just an exception throw.
+            	performAssignment.body()._throw(JExpr._new(cm.ref(RuntimeException.class))
+            			.arg(JExpr.lit("No variables were specified as writable")));
+            } else {
+            	condAssign._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
+            			.arg(JExpr.lit("I don't know where to assign for ").plus(varNamePA)));
+            }
+            // That shouldn't be a problem here, though, since there must have
+            // been at least 1 alias.
             condGetter._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
                     .arg(JExpr.lit("I don't know about a var named ").plus(varNameGV)));
         }
