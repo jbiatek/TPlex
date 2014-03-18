@@ -353,7 +353,11 @@ public class NodeParser {
         // Now we have all the info
         DeclaredVarInfo info = new DeclaredVarInfo();
         info.name = name;
-        info.type = PlexilType.valueOf(type.toUpperCase());
+        if (type.equalsIgnoreCase("Duration") || type.equalsIgnoreCase("Date")) {
+        	info.type = PlexilType.REAL;
+        } else {
+        	info.type = PlexilType.valueOf(type.toUpperCase());
+        }
         if (init != null) {
             info.varInit = ExprParser.ensureType(init, info.type);
         }
