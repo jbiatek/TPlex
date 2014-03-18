@@ -74,7 +74,7 @@ public class CompileRegressionTest {
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
-        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, true);
+        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg);
         
         addGetSnapshotMethod(rootTranslator, javaCode);
         cm.build(dest);
@@ -95,7 +95,7 @@ public class CompileRegressionTest {
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
-        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, false);
+        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg);
         
         addGetSnapshotMethod(translator, javaCode);
         

@@ -13,6 +13,7 @@ import org.junit.*;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.java.world.ExternalWorld;
 
 
 /**
@@ -223,11 +224,8 @@ public class RegressionTest {
         
 	    String pkg = "generated";
 	    String script = NameUtils.clean(scriptName);
-		// Need to find the root node
-		Class<?> main = Class.forName(pkg+"."+NameUtils.clean(planName));
-		PlexilTestable root = (PlexilTestable) main.getConstructor().newInstance();
 //		root.fullReset();
-		// And get the script
+		// Get the script
 		JavaPlexilScript world;
 		if (scriptName.equals("empty")) {
 		    world = new JavaPlexilScript();
@@ -236,15 +234,17 @@ public class RegressionTest {
 		    world = (JavaPlexilScript) 
 		        scriptClass.getConstructor().newInstance();
 		}
+		// Need to find the root node
+		Class<?> main = Class.forName(pkg+"."+NameUtils.clean(planName));
+		PlexilTestable root = (PlexilTestable) main.getConstructor(ExternalWorld.class).newInstance(world);
+		
 		// And finally the log file
 		File resources = new File("tests/edu/umn/crisys/plexil/test/resources");
 		List<PlanState> expected = parseLogFile(
 		        new File(resources, planName+"___"+scriptName+".log"));
 		
 		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
-		
         
-        root.setWorld(world);
         System.out.println("World set, ready to go");
         for (int i = 0; i < expected.size(); i++) {
             System.out.println("==> Starting step "+(i+1));

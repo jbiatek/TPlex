@@ -171,7 +171,7 @@ public class Main {
 		Plan ilPlan = PlxToIL(f, optimize);
 		// We're going to Java. (This will be more complicated once Java output
 		// is separated from the IL.)
-		PlanToJava.toJava(ilPlan, cm, pkg, false);
+		PlanToJava.toJava(ilPlan, cm, pkg);
 	}
 	
 	public static void PsxToJava(File f, String pkg, JCodeModel cm) throws FileNotFoundException, XMLStreamException, JClassAlreadyExistsException {

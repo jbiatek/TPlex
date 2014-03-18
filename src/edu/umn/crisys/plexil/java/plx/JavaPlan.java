@@ -15,6 +15,7 @@ public abstract class JavaPlan {
 
     private ExternalWorld world;
     private LibraryInterface parent = new LibraryInterface();
+    private boolean isLibrary = false;
     private boolean askedForCommitAfterMicro = false;
     private boolean askedForCommitAfterMacro = false;
     
@@ -36,6 +37,15 @@ public abstract class JavaPlan {
     private List<JavaPlan> commitLibraryAfterMicroStep = new LinkedList<JavaPlan>();
     private List<JavaPlan> commitLibraryAfterMacroStep = new LinkedList<JavaPlan>();
     
+    public JavaPlan(ExternalWorld world) {
+    	this.world = world;
+    }
+    
+    public JavaPlan(LibraryInterface parentInterface) {
+    	this.parent = parentInterface;
+    	this.isLibrary = true;
+    }
+    
     public NodeOutcome runPlanToCompletion() {
         while ( ! world.stop() && getRootNodeOutcome().isUnknown()) {
             doMacroStep();
@@ -52,7 +62,7 @@ public abstract class JavaPlan {
     
     private void askForCommitAfterMicro() {
         if (askedForCommitAfterMicro) return;
-        if (parent.getParentPlan() != null && parent.getParentPlan() != this) {
+        if (isLibrary) {
             parent.getParentPlan().commitAfterMicroStep(this);
         }
         askedForCommitAfterMicro = true; // Don't do it again until commit
@@ -60,7 +70,7 @@ public abstract class JavaPlan {
     
     private void askForCommitAfterMacro() {
         if (askedForCommitAfterMacro) return;
-        if (parent.getParentPlan() != null && parent.getParentPlan() != this) {
+        if (isLibrary) {
             parent.getParentPlan().commitAfterMacroStep(this);
         }
         askedForCommitAfterMacro = true; // Don't do it again until commit
@@ -143,15 +153,13 @@ public abstract class JavaPlan {
     }
     
     public ExternalWorld getWorld() {
+    	if (isLibrary) {
+    		// We are part of a larger plan, so we will use whatever they
+    		// want us to use.
+    		return parent.getWorld();
+    	}
+    	// We are the root plan, so we must have the actual one to use.
         return world;
-    }
-    
-    public void setWorld(ExternalWorld world) {
-        this.world = world;
-    }
-    
-    public void setInterface(LibraryInterface iface) {
-        this.parent = iface;
     }
     
     public LibraryInterface getInterface() {
@@ -165,8 +173,8 @@ public abstract class JavaPlan {
     public void changeOccurred() {
         changeOccurred = true;
         
-        if (parent.getParentPlan() != null && parent.getParentPlan() != this) {
-            // Notify our parent that a change occurred if it's not us.
+        if (isLibrary) {
+            // Notify our parent that a change occurred too.
             parent.getParentPlan().changeOccurred();
         }
     }

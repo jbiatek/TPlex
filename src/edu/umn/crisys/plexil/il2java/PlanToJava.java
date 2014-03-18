@@ -22,7 +22,7 @@ public class PlanToJava {
 
 	private PlanToJava() {}
 	
-	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, boolean library) {
+	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg) {
 	    String realPkg = pkg.equals("") ? "" : pkg+".";
 	    // Try to create a class for this Plan.
 	    JDefinedClass clazz;
@@ -35,15 +35,16 @@ public class PlanToJava {
         // Of course, we extend the JavaPlan class. 
         clazz._extends(cm.ref(JavaPlan.class));
         
-        if (library) {
-            // We're a library. Need to make some additions.
-            JMethod constructor = clazz.constructor(JMod.PUBLIC);
-            JVar inParent = constructor.param(cm.ref(LibraryInterface.class), "inParent");
-            constructor.body().invoke("setInterface").arg(inParent);
-            
-            clazz.method(JMod.PUBLIC, cm.ref(ExternalWorld.class), "getWorld")
-                .body()._return(JExpr.invoke("getInterface").invoke("getWorld"));
-        }
+        // JavaPlan has two constructors to override.
+        JMethod basicConstructor = clazz.constructor(JMod.PUBLIC);
+        basicConstructor.param(cm.ref(ExternalWorld.class), "world");
+        basicConstructor.body().invoke("super").arg(JExpr.ref("world"));
+        
+        // If we're being used as a library, this one will be invoked. It contains
+        // an interface for talking to our parent.
+        JMethod libConstructor = clazz.constructor(JMod.PUBLIC);
+        JVar inParent = libConstructor.param(cm.ref(LibraryInterface.class), "inParent");
+        libConstructor.body().invoke("super").arg(inParent);
         
         // Variables! They need to add themselves to the class.
         for (IntermediateVariable v : p.getVariables()) {

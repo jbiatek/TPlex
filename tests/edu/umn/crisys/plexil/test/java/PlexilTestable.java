@@ -7,8 +7,6 @@ public interface PlexilTestable {
     
     public PlanState getSnapshot();
 
-    public void setWorld(ExternalWorld world);
-
     public void doMacroStep();
     
     public NodeOutcome getRootNodeOutcome();
