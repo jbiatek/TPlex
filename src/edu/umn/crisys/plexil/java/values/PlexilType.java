@@ -94,7 +94,8 @@ public enum PlexilType {
      */
     public static PlexilType fuzzyValueOf(String originalName) {
         
-        String name = originalName.replaceAll("-", "_").toUpperCase();
+    	// Strip all symbols, make it all upper case
+        String name = originalName.replaceAll("[^A-Za-z]", "").toUpperCase();
         
         if (name.startsWith("BOOL")) {
             if (name.contains("ARRAY")) {
@@ -121,8 +122,9 @@ public enum PlexilType {
         
         // Just look for an easy match
         for (PlexilType type : values()) {
+        	// Strip symbols here too
         	String thisOnesName = type.toString().replaceAll("_", "");
-            if (thisOnesName.equalsIgnoreCase(type.toString())) {
+            if (thisOnesName.equalsIgnoreCase(name)) {
                 return type;
             } 
         }
