@@ -22,6 +22,7 @@ import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.core.node.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.node.CommandBody;
 import edu.umn.crisys.plexil.ast.core.node.LibraryBody;
@@ -87,7 +88,7 @@ public class NodeParser {
                 node.setPriority(Integer.parseInt(getStringContent(e, xml)));
             }
             else if (isTag(e, "Interface")) {
-                parseInterface(e, xml, node);
+            	node.setInterface(parseInterface(e, xml));
             }
             else if (isTag(e, "NodeBody")) {
                 node.setNodeBody(parseNodeBody(nextTag(xml).asStartElement(), xml, node));
@@ -364,8 +365,11 @@ public class NodeParser {
         return info;
     }
 
-    private static void parseInterface(StartElement start, XMLEventReader xml, Node n) {
+    public static PlexilInterface parseInterface(StartElement start, XMLEventReader xml) {
         assertStart("Interface", start);
+        PlexilInterface iface = new PlexilInterface();
+        // Obviously, this one has been defined.
+        iface.isDefined();
         
         for (StartElement inOrOut : new TagIterator(xml, start)) {
             boolean writeable = false;
@@ -386,15 +390,17 @@ public class NodeParser {
                     DeclaredVarInfo info = parseDeclareVariable(declare, xml);
 
                     if (writeable) {
-                        n.addToInterfaceWriteable(info.name, info.type);
+                        iface.addInOutVariable(info.name, info.type);
                     } else {
-                        n.addToInterfaceReadOnly(info.name, info.type);
+                        iface.addInVariable(info.name, info.type);
                     }
                 } else {
                     throw new UnexpectedTagException(declare, "DeclareVariable");
                 }
             }
         }
+        
+        return iface;
     }
     
     

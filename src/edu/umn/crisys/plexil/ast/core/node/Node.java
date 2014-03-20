@@ -148,6 +148,10 @@ public class Node {
     	vars.add(new VariableDecl(name, maxSize, t, init));
     }
 
+    public void setInterface(PlexilInterface iface) {
+    	this.iface = iface;
+    }
+    
     /**
      * If true, access to non-local variables is restricted. There is a 
      * whitelist, as returned by getInterfaceReadOnlyVars() and 

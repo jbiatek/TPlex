@@ -18,6 +18,9 @@ import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast.core.globaldecl.CommandDecl;
+import edu.umn.crisys.plexil.ast.core.globaldecl.LibraryDecl;
+import edu.umn.crisys.plexil.ast.core.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.ast.core.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
@@ -75,9 +78,9 @@ public class PlxParser {
         		if (isTag(child, "CommandDeclaration")) {
         			p.getCommandDeclarations().add(parseCommandDecl(xml, child));
         		} else if (isTag(child, "StateDeclaration")) {
-        			while (! isEndTag(nextEvent(xml), "StateDeclaration")) {}
+        			p.getStateDeclarations().add(parseStateDeclaration(xml, child));
         		} else if (isTag(child, "LibraryNodeDeclaration")) {
-        			while (! isEndTag(nextEvent(xml), "LibraryNodeDeclaration")) {}
+        			p.getLibraryDeclarations().add(parseLibraryDeclaration(xml, child));
         		} else if (isTag(child, "TimeScalingUnitsSubunits")) {
         			// I have ZERO idea what this means. But it's a simple
         			// integer.
@@ -99,25 +102,25 @@ public class PlxParser {
     }
     
     private static CommandDecl parseCommandDecl(XMLEventReader xml, StartElement start) {
-    	List<VariableDecl> returns = new ArrayList<VariableDecl>();
-    	List<VariableDecl> params = new ArrayList<VariableDecl>();
-    	
     	// First is supposed to be the name.
     	String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
     	// Now we can make the actual object.
     	CommandDecl cmd = new CommandDecl(name);
     	
     	// Next there may be return value(s????). 
+    	List<VariableDecl> returns = new ArrayList<VariableDecl>();
     	while (nextTagIsStartOf("Return", xml)) {
     		returns.add(parseReturnOrParam(xml, nextTag(xml).asStartElement()));
     	}
     	if (returns.size() > 1) {
     		throw new RuntimeException("What does it mean to have multiple return tags???");
+    	} else if (returns.size() == 1) {
+    		cmd.setReturnValue(returns.get(0));
     	}
     	
     	// After that, any number of parameters.
     	while (nextTagIsStartOf("Parameter", xml)) {
-    		params.add(parseReturnOrParam(xml, nextTag(xml).asStartElement()));
+    		cmd.addParameter(parseReturnOrParam(xml, nextTag(xml).asStartElement()));
     	}
     	
     	// Then finally, an optional resource list.
@@ -128,9 +131,40 @@ public class PlxParser {
     	
     	// That should close it out.
     	assertClosedTag(start, xml);
-    	
-    	
     	return cmd;
+    }
+    
+    private static LookupDecl parseStateDeclaration(XMLEventReader xml, StartElement start) {
+    	// This is very similar to command declarations, but not quite the same.
+    	// First is supposed to be the name.
+    	String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
+    	// Now we can make the actual object.
+    	LookupDecl lookup = new LookupDecl(name);
+    	
+    	// Next is a mandatory return value. 
+    	lookup.setReturnValue(parseReturnOrParam(xml, assertStart("Return", nextTag(xml))));
+    	
+    	// After that, any number of parameters.
+    	while (nextTagIsStartOf("Parameter", xml)) {
+    		lookup.addParameter(parseReturnOrParam(xml, nextTag(xml).asStartElement()));
+    	}
+    	
+    	// That should close it out.
+    	assertClosedTag(start, xml);
+    	return lookup;
+    }
+    
+    private static LibraryDecl parseLibraryDeclaration(XMLEventReader xml, StartElement start) {
+    	// First is supposed to be the name.
+    	String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
+
+    	// Then an interface.
+    	PlexilInterface iface = NodeParser.parseInterface(assertStart("Interface", nextTag(xml)), xml);
+    	
+    	// That's all!
+    	assertClosedTag(start, xml);
+    	
+    	return new LibraryDecl(name, iface);
     }
     
     private static VariableDecl parseReturnOrParam(XMLEventReader xml, StartElement start) {
