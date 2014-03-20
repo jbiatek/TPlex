@@ -4,6 +4,7 @@ import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.core.node.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.node.CommandBody;
 import edu.umn.crisys.plexil.ast.core.node.LibraryBody;
@@ -54,8 +55,8 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
             str.append(doInterface());
         }
         
-        for (String variable : n.getVarNames()) {
-            str.append(doVariable(variable));
+        for (VariableDecl v : n.getVariableList()) {
+            str.append(doVariable(v));
         }
         
         if ( n.getStartCondition() != PValueExpression.TRUE) {
@@ -102,28 +103,28 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
         return str.toString();
     }
     
-    private String doVariable(String variable) {
+    private String doVariable(VariableDecl v) {
         StringBuilder str = new StringBuilder(tab(TAB));
-        PlexilType type = n.getVarType(variable);
+        PlexilType type = v.getType();
         int arraySize = -1;
         if (type.isArrayType()) {
             type = type.elementType();
-            arraySize = n.getArraySize(variable);
+            arraySize = v.getArraySize();
         }
         
         // Uncapitalize the type.
         String typeStr = type.toString().charAt(0) 
             + type.toString().substring(1).toLowerCase();
         
-        str.append(typeStr+" "+variable);
+        str.append(typeStr+" "+v);
         if (arraySize != -1) {
             str.append("["+arraySize+"]");
-            if (n.getInitArray(variable) != null) {
-                str.append(" = "+n.getInitArray(variable));
+            if (v.getInitialValue() != null) {
+                str.append(" = "+v.getInitialValue());
             }
         } else {
-            if (n.getInitVariable(variable) != null) {
-                str.append(" = "+n.getInitVariable(variable));
+            if (v.getInitialValue() != null) {
+                str.append(" = "+v.getInitialValue());
             }
         }
         

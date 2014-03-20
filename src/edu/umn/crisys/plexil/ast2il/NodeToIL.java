@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.core.node.AssignmentBody;
 import edu.umn.crisys.plexil.ast.core.node.CommandBody;
 import edu.umn.crisys.plexil.ast.core.node.LibraryBody;
@@ -136,7 +137,8 @@ public class NodeToIL {
         }
         
         // Variables defined by the programmer in the node
-        for (String varName : myNode.getVarNames()) {
+        for (VariableDecl v : myNode.getVariableList()) {
+        	String varName = v.getName();
             PlexilType type = myNode.getVarType(varName);
             if (type.isArrayType()) {
                 // Array variables.

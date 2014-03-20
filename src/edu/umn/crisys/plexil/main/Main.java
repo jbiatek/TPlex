@@ -46,7 +46,9 @@ public class Main {
 									  + "                                directory.\n\n"
 									  
 									  + "    --no-optimizations          Disable removal of impossible transitions and \n"
-									  + "                                unused node timepoints.\n";
+									  + "                                unused node timepoints.\n"
+									  + "    --print-type-info           Print an analysis of Lookup and Command types\n"
+									  + "                                using some basic heuristics.";
 
 	
 	
@@ -62,6 +64,7 @@ public class Main {
 		File outputDir = new File(System.getProperty("user.dir"));
 		String pkg = "";
 		boolean optimize = true;
+		boolean analyzeTypes = false;
 		List<File> files = new ArrayList<File>();
 		
 		// Some simple parsing of options.
@@ -77,6 +80,8 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--no-optimizations")) {
 					optimize = false;
+				} else if (args[i].equals("--print-type-info")) {
+					analyzeTypes = true;
 				} else if (args[i].equals("-h") || args[i].equals("--help")) {
 					System.out.println(usage);
 					return;
@@ -172,6 +177,13 @@ public class Main {
 			cm.build(outputDir);
 		} catch (IOException e) {
 			System.err.println("Error writing Java code to output directory: "+e.getMessage());
+		}
+		
+		// Yay, all done. Did they ask for a type analysis?
+		if (analyzeTypes) {
+			for (String filename : asts.keySet()) {
+				
+			}
 		}
 		
 	}

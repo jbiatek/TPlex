@@ -1,6 +1,8 @@
 package edu.umn.crisys.plexil.ast.core.node;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,6 +10,7 @@ import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class Node {
@@ -72,45 +75,62 @@ public class Node {
     public void setPriority(int p) { priority = p; }
 
     // Variables declared in this node
-    private Map<String, PlexilType> vars = new HashMap<String, PlexilType>();
-    private Map<String, PValueExpression> varInitial = new HashMap<String, PValueExpression>();
-    private Map<String, ArrayLiteralExpr> arrayInitial = new HashMap<String, ArrayLiteralExpr>();
-    private Map<String, Integer> arraySizes = new HashMap<String, Integer>();
+    private List<VariableDecl> vars = new ArrayList<VariableDecl>();
 
-    public Set<String> getVarNames() { 
-        return vars.keySet(); 
-    }
-    public PlexilType getVarType(String name) { 
-        return vars.get(name); 
-    }
-    public PValueExpression getInitVariable(String varName) { 
-        return varInitial.get(varName); 
-    }
-    public ArrayLiteralExpr getInitArray(String arrayName) {
-        return arrayInitial.get(arrayName);
+    public List<VariableDecl> getVariableList() {
+        return vars;
     }
     
+    public VariableDecl getVariable(String name) {
+    	for (VariableDecl v : vars) {
+    		if (v.getName().equals(name)) {
+    			return v;
+    		}
+    	}
+    	return null;
+    }
+    
+    @Deprecated
+    public PlexilType getVarType(String name) { 
+        return getVariable(name).getType(); 
+    }
+    
+    @Deprecated
+    public PValueExpression getInitVariable(String varName) { 
+    	if ( ! getVariable(varName).hasInitialValue()) { return null; }
+    	
+        return (PValueExpression) getVariable(varName).getInitialValue(); 
+    }
+    @Deprecated
+    public ArrayLiteralExpr getInitArray(String arrayName) {
+    	if ( ! getVariable(arrayName).hasInitialValue()) { return null; }
+    	
+        return (ArrayLiteralExpr) getVariable(arrayName).getInitialValue();
+    }
+    
+    @Deprecated
     public boolean containsVar(String name) {
-        return vars.containsKey(name); 
+        return getVariable(name) != null; 
     }
 
+    @Deprecated
     public int getArraySize(String name) {
-        if (! arraySizes.containsKey(name)) {
-            throw new RuntimeException(name+" is not an array");
-        }
-        return arraySizes.get(name);
+    	return getVariable(name).getArraySize();
     }
 
+    @Deprecated
     public void addVar(String name, PlexilType type) { 
         if (type.isArrayType()) {
             throw new RuntimeException("Must include size for array type");
         }
-        vars.put(name, type); 
+        vars.add(new VariableDecl(name, type)); 
     }
+    
+    @Deprecated
     public void addVar(String name, PlexilType type, PValueExpression init) {
-        addVar(name, type);
-        varInitial.put(name, init);
+    	vars.add(new VariableDecl(name, type, init));
     }
+    @Deprecated
     public void addArray(String name, PlexilType t, int maxSize) {
         if (! t.isArrayType()) {
             throw new RuntimeException(t+" is not an array type");
@@ -118,13 +138,12 @@ public class Node {
         if (maxSize < 0) { 
             throw new RuntimeException("Array cannot have negative size: "+maxSize);
         }
-        vars.put(name, t);
-        arraySizes.put(name, maxSize);
+        vars.add(new VariableDecl(name, maxSize, t));
     }
 
+    @Deprecated
     public void addArray(String name, PlexilType t, int maxSize, ArrayLiteralExpr init) {
-        addArray(name, t, maxSize);
-        arrayInitial.put(name, init);
+    	vars.add(new VariableDecl(name, maxSize, t, init));
     }
 
     // Variable interface
