@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.translator.il.vars;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.codemodel.JBlock;
@@ -38,6 +39,7 @@ public class LibraryNodeReference extends RHSVariable {
     private ILExpression libOrAncestorsEnds;
     private ILExpression libOrAncestorsExits;
     private Map<String,ILExpression> aliases;
+    private Map<String,String> idToClassName = new HashMap<String, String>();
     private String libPlexilID;
     private NodeUID nodeUID;
     
@@ -73,6 +75,10 @@ public class LibraryNodeReference extends RHSVariable {
     @Override
     public String toString() {
         return "Library node call to ID "+libPlexilID;
+    }
+    
+    public void setIdToClassNameMap(Map<String,String> newMap) {
+    	this.idToClassName = newMap;
     }
 
     @Override
@@ -163,9 +169,14 @@ public class LibraryNodeReference extends RHSVariable {
                     .arg(JExpr.lit("I don't know about a var named ").plus(varNameGV)));
         }
 
+        String className = NameUtils.clean(libPlexilID);
+        if (idToClassName.containsKey(libPlexilID)) {
+        	className = idToClassName.get(libPlexilID);
+        }
+        
         clazz.field(JMod.PRIVATE, clazz.owner().ref(JavaPlan.class), 
                 getFieldName(),
-                JExpr._new(cm.directClass((NameUtils.clean(libPlexilID))))
+                JExpr._new(cm.directClass(className))
                 .arg(JExpr._new(anonClass))); 
     }
 

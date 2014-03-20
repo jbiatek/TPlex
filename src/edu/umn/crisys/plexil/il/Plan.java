@@ -8,10 +8,12 @@ package edu.umn.crisys.plexil.il;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
+import edu.umn.crisys.plexil.translator.il.vars.LibraryNodeReference;
 import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
 
 public class Plan {
@@ -49,6 +51,14 @@ public class Plan {
 	
 	public void addVariables(List<? extends IntermediateVariable> vars) {
 	    variables.addAll(vars);
+	}
+	
+	public void setLibraryMap(Map<String,String> plexilIdToClass) {
+		for (IntermediateVariable v : variables) {
+			if (v instanceof LibraryNodeReference) {
+				((LibraryNodeReference) v).setIdToClassNameMap(plexilIdToClass);
+			}
+		}
 	}
 	
 	public void addStateMachine(NodeStateMachine nsm) {

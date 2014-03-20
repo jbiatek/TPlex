@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
@@ -107,11 +109,12 @@ public class Main {
 		}
 		
 		// Now we can translate.
+		Map<String,PlexilPlan> asts = new HashMap<String, PlexilPlan>();
 		JCodeModel cm = new JCodeModel();
 		for (File f : files) {
 			if (f.getName().endsWith(".plx")) {
 				try {
-					PlxToJava(f, pkg, cm, optimize);
+					asts.put(f.getName().replaceAll("\\.plx$", ""), PlxParser.parseFile(f));
 				} catch (FileNotFoundException e) {
 					// This should have been checked before, but okay.
 					System.err.println("Error: File not found: "+f);
@@ -139,7 +142,31 @@ public class Main {
 				}
 			}
 		}
+		// Now we can map file names to root node IDs. Since file names become 
+		// Java class names, libraries need these to find the correct object
+		// to create.
+		Map<String,String> idToFile = new HashMap<String, String>();
+		for (String filename : asts.keySet()) {
+			idToFile.put(asts.get(filename).getRootNode().getPlexilID(), filename);
+		}
 		
+		// Finally, we translate each file into our JCodeModel.
+		for (String filename : asts.keySet()) {
+			PlexilPlan plan = asts.get(filename);
+			NodeToIL toIl = new NodeToIL(plan.getRootNode());
+			Plan ilPlan = new Plan(filename);
+			toIl.translate(ilPlan);
+			ilPlan.setLibraryMap(idToFile);
+			
+			if (optimize) {
+				PruneUnusedTimepoints.optimize(ilPlan);
+				RemoveDeadTransitions.optimize(ilPlan);
+			}
+			
+			PlanToJava.toJava(ilPlan, cm, pkg);
+		}
+		
+		// Now try to output the actual files
 		outputDir.mkdirs();
 		try {
 			cm.build(outputDir);
@@ -148,7 +175,7 @@ public class Main {
 		}
 		
 	}
-	
+	/*
 	public static Plan PlxToIL(File f, boolean optimize) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
 		// Parse to AST
         PlexilPlan planXml = PlxParser.parseFile(f);
@@ -173,6 +200,7 @@ public class Main {
 		// is separated from the IL.)
 		PlanToJava.toJava(ilPlan, cm, pkg);
 	}
+	*/
 	
 	public static void PsxToJava(File f, String pkg, JCodeModel cm) throws FileNotFoundException, XMLStreamException, JClassAlreadyExistsException {
         XMLInputFactory factory = XMLInputFactory.newFactory();
