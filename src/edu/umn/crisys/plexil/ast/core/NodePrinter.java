@@ -117,16 +117,13 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
             + type.toString().substring(1).toLowerCase();
         
         str.append(typeStr+" "+v);
-        if (arraySize != -1) {
+        if (v.isArray()) {
             str.append("["+arraySize+"]");
-            if (v.getInitialValue() != null) {
-                str.append(" = "+v.getInitialValue());
-            }
-        } else {
-            if (v.getInitialValue() != null) {
-                str.append(" = "+v.getInitialValue());
-            }
         }
+        if (v.hasInitialValue()) {
+        	str.append(" = "+v.getInitialValue());
+        }
+
         
         str.append(";"); newLine(str, indent);
 

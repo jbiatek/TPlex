@@ -1,15 +1,14 @@
 package edu.umn.crisys.plexil.ast.core.node;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
@@ -73,6 +72,9 @@ public class Node {
     private int priority = Integer.MAX_VALUE;
     public int getPriority() { return priority; }
     public void setPriority(int p) { priority = p; }
+    
+    // Our variable interface
+    private PlexilInterface iface = new PlexilInterface();
 
     // Variables declared in this node
     private List<VariableDecl> vars = new ArrayList<VariableDecl>();
@@ -146,11 +148,6 @@ public class Node {
     	vars.add(new VariableDecl(name, maxSize, t, init));
     }
 
-    // Variable interface
-    private boolean hasDefinedInterface = false;
-    private Map<String, PlexilType> varsIn = new HashMap<String, PlexilType>();
-    private Map<String, PlexilType> varsInOut = new HashMap<String, PlexilType>();
-
     /**
      * If true, access to non-local variables is restricted. There is a 
      * whitelist, as returned by getInterfaceReadOnlyVars() and 
@@ -158,35 +155,43 @@ public class Node {
      * is not allowed. 
      * @return
      */
+    @Deprecated
     public boolean hasInterface() {
-        return hasDefinedInterface;
+        return iface.isDefined();
     }
     /**
      * If this node hasInterface(), this is the list of variables that are 
      * allowed through that interface as read only. Trying to assign to any of
      * these should be an error.
      */
-    public Set<String> getInterfaceReadOnlyVars() { return varsIn.keySet(); }
+    @Deprecated
+    public Set<String> getInterfaceReadOnlyVars() { 
+    	return iface.getInterfaceReadOnlyVars(); 
+    }
 
+    @Deprecated
     public void restrictInterface() {
-        hasDefinedInterface = true;
+    	iface.restrictInterface();
     }
     
+    @Deprecated
     public void addToInterfaceReadOnly(String varName, PlexilType t) {
-        hasDefinedInterface = true;
-        varsIn.put(varName, t);
+    	iface.addInVariable(varName, t);
     }
 
+    @Deprecated
     public void addToInterfaceWriteable(String varName, PlexilType t) {
-        hasDefinedInterface = true;
-        varsInOut.put(varName, t);
+    	iface.addInOutVariable(varName, t);
     }
 
     /**
      * If this node hasInterface(), this is the list of variables that are 
      * allowed through that interface as readable and writeable. 
      */
-    public Set<String> getInterfaceWriteableVars() { return varsInOut.keySet(); }
+    @Deprecated
+    public Set<String> getInterfaceWriteableVars() { 
+    	return iface.getInterfaceWriteableVars();
+    }
 
     /** Construct a Node with a parent.
      * 
