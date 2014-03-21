@@ -94,7 +94,7 @@ public class PlxParser {
         assertStart("Node", nextTag);
         
         // Parse all the nodes.
-        p.setRootNode(NodeParser.parsePlexilNode(nextTag, xml));
+        p.setRootNode(NodeParser.parsePlexilNode(nextTag, xml, p));
         
         // Parse parse parse, and finally close it all out.
         assertEnd("PlexilPlan", nextTag(xml));

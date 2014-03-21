@@ -21,6 +21,10 @@ public abstract class FunctionDeclaration {
 		this.name = name;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public boolean hasReturnValue() {
 		return ret != null;
 	}

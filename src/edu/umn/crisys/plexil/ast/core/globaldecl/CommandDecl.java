@@ -11,5 +11,4 @@ public class CommandDecl extends FunctionDeclaration {
 	public CommandDecl(String name) {
 		super(name);
 	}
-
 }

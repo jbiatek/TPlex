@@ -17,6 +17,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
@@ -39,70 +40,69 @@ public class NodeParser {
     private NodeParser() {}
     
 
-    public static Node parsePlexilNode(XMLEvent start, XMLEventReader xml) {
-        return parsePlexilNode(start, xml, null);
+    public static Node parsePlexilNode(XMLEvent start, XMLEventReader xml, PlexilPlan thePlan) {
+        return parsePlexilNode(start, xml, new Node(thePlan));
     }
     
-    private static Node parsePlexilNode(XMLEvent start, XMLEventReader xml, Node parent) {
+    private static Node parsePlexilNode(XMLEvent start, XMLEventReader xml, Node nodeToFill) {
         assertStart("Node", start);
-        Node node = new Node(parent);
         
         // Process child tags of <Node>
         for (StartElement e : new TagIterator(xml, "Node")) {
             if (isTag(e, "NodeId")) {
-                node.setPlexilID(getStringContent(e, xml));
+                nodeToFill.setPlexilID(getStringContent(e, xml));
             }
             else if (isTag(e, "StartCondition")) {
-                node.setStartCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setStartCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "RepeatCondition")) {
-                node.setRepeatCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setRepeatCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "PreCondition")) {
-                node.setPreCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setPreCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "PostCondition")) {
-                node.setPostCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setPostCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "InvariantCondition")) {
-                node.setInvariantCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setInvariantCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "EndCondition")) {
-                node.setEndCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setEndCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "ExitCondition")) {
-                node.setExitCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setExitCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "SkipCondition")) {
-                node.setSkipCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setSkipCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "Priority" )) {
-                node.setPriority(Integer.parseInt(getStringContent(e, xml)));
+                nodeToFill.setPriority(Integer.parseInt(getStringContent(e, xml)));
             }
             else if (isTag(e, "Interface")) {
-            	node.setInterface(parseInterface(e, xml));
+            	nodeToFill.setInterface(parseInterface(e, xml));
             }
             else if (isTag(e, "NodeBody")) {
-                node.setNodeBody(parseNodeBody(nextTag(xml).asStartElement(), xml, node));
+                nodeToFill.setNodeBody(parseNodeBody(nextTag(xml).asStartElement(), xml, nodeToFill));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "VariableDeclarations")) {
-                parseVariableDeclarations(node, e, xml);
+                parseVariableDeclarations(nodeToFill, e, xml);
                 // That method takes care of the end tag for us
             } 
             else {     
                 throw new UnexpectedTagException(e);
             }
         }
-        return node;
+        return nodeToFill;
     }
     
     private static NodeBody parseNodeBody(StartElement start, XMLEventReader xml, Node theNode)  {
@@ -125,7 +125,7 @@ public class NodeParser {
     private static NodeListBody parseNodeListBody(StartElement start, XMLEventReader xml, Node theNode) {
         NodeListBody list = new NodeListBody();
         for (StartElement e : new TagIterator(xml, "NodeList")) {
-            list.getChildList().add(parsePlexilNode(e, xml, theNode));
+            list.getChildList().add(parsePlexilNode(e, xml, new Node(theNode)));
         }
         return list;
     }

@@ -423,10 +423,13 @@ public class NodeToIL {
         
         // We are allowed to look further. Is there a parent?
         if (parent == null) {
-            // Nope, we are the root node. At this point, we have to assume
-            // that we are a library node. Maybe they mistyped a name though.
-            // I guess they'll figure that out on their own... 
-            // TODO: See if there's a way to statically check this.
+            // Nope, we are the root node. It's either an alias or an error.
+        	if ( ! myNode.getInterface().isDefined()) {
+        		// No defined interface? Technically, this is okay, but 
+        		// something is probably wrong.
+        		System.err.println("Warning: Variable "+name+" is not clearly defined in node "+myNode.getPlexilID()+".");
+        		System.err.println("If this plan isn't used as a library inside of a plan that defines "+name+", it will crash.");
+        	}
             return new AliasedVariableReference(name);
         } else {
             // This is their problem now.

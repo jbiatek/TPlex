@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
@@ -21,6 +22,21 @@ public class Node {
         return parent;
     }
     private Node parent = null;
+    
+    
+    private PlexilPlan plan;
+    public PlexilPlan getPlan() {
+    	return plan;
+    }
+    
+    public Node(PlexilPlan plan) { 
+    	this.plan = plan;
+    }
+    
+    public Node(Node parent) {
+    	this(parent.getPlan());
+    	this.parent = parent;
+    }
 
     /**
      * @return The native Plexil node ID. Can be null.
@@ -152,6 +168,10 @@ public class Node {
     	this.iface = iface;
     }
     
+    public PlexilInterface getInterface() {
+    	return iface;
+    }
+    
     /**
      * If true, access to non-local variables is restricted. There is a 
      * whitelist, as returned by getInterfaceReadOnlyVars() and 
@@ -195,21 +215,6 @@ public class Node {
     @Deprecated
     public Set<String> getInterfaceWriteableVars() { 
     	return iface.getInterfaceWriteableVars();
-    }
-
-    /** Construct a Node with a parent.
-     * 
-     * @param parent
-     */
-    public Node(Node parent) {
-        this.parent = parent;
-    }
-
-    /**
-     * Construct a root Node.
-     */
-    public Node() {
-        this(null);
     }
 
 }
