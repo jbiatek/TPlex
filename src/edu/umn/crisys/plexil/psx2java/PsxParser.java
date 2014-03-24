@@ -17,9 +17,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayLiteralExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
 import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class PsxParser {
@@ -203,16 +202,16 @@ public class PsxParser {
         return PlexilType.fuzzyValueOf(paramType).parseValue(value);
     }
 
-    private static ILExpression parseValueOrResult(XMLEvent current, XMLEventReader xml, PlexilType type, String expectedTagName) throws XMLStreamException {
+    private static PValue parseValueOrResult(XMLEvent current, XMLEventReader xml, PlexilType type, String expectedTagName) throws XMLStreamException {
         assertStart(expectedTagName, current);
         if (type.isArrayType()) {
             // Expect a few value tags then.
-            List<PValueExpression> values = new ArrayList<PValueExpression>();
+            List<PValue> values = new ArrayList<PValue>();
             PlexilType elementType = type.elementType();
             
             //As long as we keep seeing our tags, keep adding values in.
             while ( isTag(current, expectedTagName) ) {
-                values.add(new PValueExpression(elementType.parseValue(getStringContent(current, xml))));
+                values.add(elementType.parseValue(getStringContent(current, xml)));
                 
                 if ( ! nextTagIsStartOf(expectedTagName, xml)) {
                     break;
@@ -220,12 +219,12 @@ public class PsxParser {
                     current = xml.nextTag();
                 }
             }
-            return new ArrayLiteralExpr(type, values);
+            return new PValueList<PValue>(type, values);
             
         } else {
         	// Should just be a single value.
             String valueStr = getStringContent(current, xml);
-            return new PValueExpression(type.parseValue(valueStr));
+            return type.parseValue(valueStr);
         }
     }
 }

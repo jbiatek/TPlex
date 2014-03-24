@@ -5,7 +5,6 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class ArrayIndexExpr extends CompositeExpr {
@@ -57,5 +56,10 @@ public class ArrayIndexExpr extends CompositeExpr {
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitArrayIndex(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return true;
+	}
 
 }

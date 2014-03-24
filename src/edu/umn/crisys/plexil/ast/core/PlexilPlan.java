@@ -6,7 +6,6 @@ import java.util.List;
 import edu.umn.crisys.plexil.ast.core.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.core.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.core.globaldecl.LookupDecl;
-import edu.umn.crisys.plexil.ast.core.node.Node;
 
 public class PlexilPlan {
 
@@ -21,7 +20,6 @@ public class PlexilPlan {
 
     
     // Time scaling units subunits???
-	
 	private int timeScalingUnitsSubunits;
     
     private String name;

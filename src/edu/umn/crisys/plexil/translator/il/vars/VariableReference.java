@@ -9,11 +9,11 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMod;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
-import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.il2java.ILExprToJava;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.Variable;
+import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class VariableReference extends RHSVariable {
@@ -25,9 +25,9 @@ public class VariableReference extends RHSVariable {
 	// optional: an initial value. This shouldn't be listed as unknown here,
 	// because if it's uninitialized we're going to be initializing with the
 	// type variable instead of an Expression.
-	public PValueExpression initialValue = null;
+	public PValue initialValue = null;
 	
-	public VariableReference(NodeUID nodePath, String varName, PlexilType type, PValueExpression initial) {
+	public VariableReference(NodeUID nodePath, String varName, PlexilType type, PValue initial) {
 	    this.varName = varName;
 	    this.nodePath = nodePath;
 	    this.type = type;
@@ -51,7 +51,7 @@ public class VariableReference extends RHSVariable {
 	    this.nodePath = nodeId;
 	    this.varName = nodeId.getShortName()+"."+(type.toString().toLowerCase());
 	    this.type = type;
-	    this.initialValue = new PValueExpression(type, initialValue);
+	    this.initialValue = type.parseValue(initialValue);
 	}
 	
 	@Override

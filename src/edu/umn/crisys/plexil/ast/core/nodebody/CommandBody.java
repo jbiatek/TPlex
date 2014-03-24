@@ -1,11 +1,10 @@
-package edu.umn.crisys.plexil.ast.core.node;
+package edu.umn.crisys.plexil.ast.core.nodebody;
 
 import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.ast.core.visitor.NodeBodyVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class CommandBody extends NodeBody {

@@ -1,6 +1,10 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class IntegerValue extends StandardValue implements PInteger {
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+
+public class IntegerValue implements PInteger {
 	
 	private final int value;
 	
@@ -13,16 +17,21 @@ public class IntegerValue extends StandardValue implements PInteger {
 	}
 	
 	@Override
+	public boolean isKnown() {
+		return true;
+	}
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
+	@Override
 	public PValue castTo(PlexilType type) {
 		if (type == PlexilType.REAL) {
 			return castToReal();
 		}
-		return super.castTo(type);
-	}
-
-	@Override
-	public Object asNativeJava() {
-	    return value;
+		return PValue.Util.defaultCastTo(this, type);
 	}
 
 	
@@ -235,6 +244,31 @@ public class IntegerValue extends StandardValue implements PInteger {
 	@Override
 	public String toString() {
 		return value+"";
+	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		return visitor.visitIntegerValue(this, param);
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+	
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
 	}
 	
 }

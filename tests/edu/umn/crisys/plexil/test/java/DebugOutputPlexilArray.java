@@ -1,22 +1,24 @@
 package edu.umn.crisys.plexil.test.java;
 
 import java.util.Arrays;
+import java.util.List;
 
-import edu.umn.crisys.plexil.java.plx.VariableArray;
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StandardValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 
-public class TypelessPlexilArray extends StandardValue {
+public class DebugOutputPlexilArray implements PValue {
 
     private String[] values;
     
-    public TypelessPlexilArray(String valStr) {
+    public DebugOutputPlexilArray(String valStr) {
         String justArray = valStr.replaceFirst("Array: \\[", "")
                                 .replaceFirst("\\]$", "");
         values = justArray.split(", ");
@@ -26,8 +28,8 @@ public class TypelessPlexilArray extends StandardValue {
     }
     
     public boolean equals(Object o) {
-        if (o instanceof VariableArray) {
-            VariableArray arr = (VariableArray) o;
+        if (o instanceof List<?>) {
+            List<?> arr = (List<?>) o;
             if (arr.size() != values.length) {
                 System.out.println(arr.size());
                 System.out.println(values.length);
@@ -35,15 +37,19 @@ public class TypelessPlexilArray extends StandardValue {
             }
             
             for (int i=0; i<values.length; i++) {
+            	Object valueObj = arr.get(i);
+            	if (! (valueObj instanceof PValue )) {
+            		return false;
+            	}
                 if (!checkIndividual(values[i], 
-                        arr.get(IntegerValue.get(i)).getValue())) {
+                        (PValue) arr.get(i))) {
                     return false;
                 }
             }
             
             return true;
-        } else if (o instanceof TypelessPlexilArray) {
-            return Arrays.equals(values, ((TypelessPlexilArray) o).values);
+        } else if (o instanceof DebugOutputPlexilArray) {
+            return Arrays.equals(values, ((DebugOutputPlexilArray) o).values);
         }
         return false;
     }
@@ -82,6 +88,48 @@ public class TypelessPlexilArray extends StandardValue {
 	@Override
 	public PlexilType getType() {
 		return PlexilType.UNKNOWN;
+	}
+
+	@Override
+	public boolean isKnown() {
+		return true;
+	}
+
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+
+	@Override
+	public PValue castTo(PlexilType type) {
+		return PValue.Util.defaultCastTo(this, type);
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		throw new RuntimeException("Why are you visiting this? It's an internal testing class.");
 	}
     
 }

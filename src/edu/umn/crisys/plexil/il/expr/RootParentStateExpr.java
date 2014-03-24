@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.il.expr;
 
-import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class RootParentStateExpr extends ILExprBase {
@@ -24,5 +23,10 @@ public class RootParentStateExpr extends ILExprBase {
     public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
         return visitor.visitRootParentState(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
 
 }

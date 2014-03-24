@@ -1,8 +1,6 @@
-package edu.umn.crisys.plexil.ast.core.visitor;
+package edu.umn.crisys.plexil.ast.core.expr.var;
 
-import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
-import edu.umn.crisys.plexil.ast.core.expr.var.NodeRefExpr;
-import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
 
 public interface ASTExprVisitor<Param, Return> extends CommonExprVisitor<Param, Return>{
 

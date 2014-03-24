@@ -9,15 +9,15 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JMod;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.core.expr.common.PValueExpression;
-import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
 import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.il2java.ILExprToJava;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
 
 public class NodeTimepointReference extends RHSVariable {
@@ -86,7 +86,7 @@ public class NodeTimepointReference extends RHSVariable {
     public void reset(JBlock block, JCodeModel cm) {
         if (used) {
             // Looks like the exec sets the back to 0.
-            addAssignment(ILExprToJava.toJava(new PValueExpression(0.0), cm), JExpr.lit(0), block, cm);
+            addAssignment(ILExprToJava.toJava(RealValue.get(0.0), cm), JExpr.lit(0), block, cm);
         }
     }
 

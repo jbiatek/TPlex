@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.java.plx;
 
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
-import edu.umn.crisys.plexil.java.values.StandardValue;
+import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.world.CommandHandler;
 
 public class CommandHandle implements CommandHandler {
@@ -18,7 +18,7 @@ public class CommandHandle implements CommandHandler {
     }
 
     @Override
-    public void commandReturns(StandardValue value) {
+    public void commandReturns(PValue value) {
         
     }
     

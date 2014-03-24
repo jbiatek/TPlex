@@ -1,6 +1,10 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class StringValue extends StandardValue implements PString {
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+
+public class StringValue implements PString {
 
 	private final String value;
 
@@ -21,10 +25,20 @@ public class StringValue extends StandardValue implements PString {
 	}
 
 	@Override
-	public Object asNativeJava() {
-	    return value;
+	public boolean isKnown() {
+		return true;
 	}
-
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
+	@Override
+	public PValue castTo(PlexilType type) {
+		return PValue.Util.defaultCastTo(this, type);
+	}
+	
 	@Override
 	public PBoolean equalTo(PValue o) {
 		if (o.isUnknown()) {
@@ -71,5 +85,30 @@ public class StringValue extends StandardValue implements PString {
 	@Override
 	public String toString() {
 		return value;
+	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		return visitor.visitStringValue(this, param);
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
 	}
 }

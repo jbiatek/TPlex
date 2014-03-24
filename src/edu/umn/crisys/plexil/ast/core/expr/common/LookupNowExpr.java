@@ -5,8 +5,8 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.java.values.StringValue;
 
 public class LookupNowExpr extends CompositeExpr {
 	
@@ -15,7 +15,7 @@ public class LookupNowExpr extends CompositeExpr {
 	private List<Expression> args;
 	
 	public LookupNowExpr(String state) {
-	    this(new PValueExpression(state), new ArrayList<Expression>());
+	    this(StringValue.get(state), new ArrayList<Expression>());
 	}
 	
 	public LookupNowExpr(Expression state, List<Expression> args) {
@@ -70,5 +70,10 @@ public class LookupNowExpr extends CompositeExpr {
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitLookupNow(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
 
 }

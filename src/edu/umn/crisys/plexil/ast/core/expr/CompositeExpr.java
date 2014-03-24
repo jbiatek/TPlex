@@ -2,9 +2,9 @@ package edu.umn.crisys.plexil.ast.core.expr;
 
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.core.visitor.ILExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 
 /**
  * A CompositeExpression is an Expression that contains other expressions. 

@@ -52,6 +52,12 @@ public enum PlexilType {
         case OUTCOME: return NodeOutcome.class;
         case FAILURE: return NodeFailureType.class;
         case COMMAND_HANDLE: return CommandHandleState.class;
+        case ARRAY:
+        case BOOLEAN_ARRAY:
+        case INTEGER_ARRAY: 
+        case REAL_ARRAY: 
+        case STRING_ARRAY:
+        	return PValueList.class;
         default:
         	throw new RuntimeException(this+" does not have a type class."); 
         }

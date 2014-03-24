@@ -1,6 +1,10 @@
 package edu.umn.crisys.plexil.java.values;
 
-public class RealValue extends StandardValue implements PReal {
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+
+public class RealValue implements PReal {
 	
 	private final double value;
 	
@@ -12,17 +16,23 @@ public class RealValue extends StandardValue implements PReal {
 		this.value = value;
 	}
 	
+
+	@Override
+	public boolean isKnown() {
+		return true;
+	}
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
 	@Override
 	public PValue castTo(PlexilType type) {
 		if (type == PlexilType.INTEGER) {
 			return castToInteger();
 		}
-		return super.castTo(type);
-	}
-
-	@Override
-	public Object asNativeJava() {
-	    return value;
+		return PValue.Util.defaultCastTo(this, type);
 	}
 
 
@@ -185,5 +195,30 @@ public class RealValue extends StandardValue implements PReal {
 	@Override
 	public String toString() {
 		return value+"";
+	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		return visitor.visitRealValue(this, param);
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
 	}
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 
@@ -26,7 +25,7 @@ public class LookupOnChangeExpr extends CompositeExpr {
 	}
 	
 	public LookupOnChangeExpr(Expression name, List<Expression> args) {
-	    this(name, new PValueExpression(RealValue.get(0.0)), args);
+	    this(name, RealValue.get(0.0), args);
 	}
 	
 	@Override
@@ -83,5 +82,10 @@ public class LookupOnChangeExpr extends CompositeExpr {
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitLookupOnChange(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
 
 }

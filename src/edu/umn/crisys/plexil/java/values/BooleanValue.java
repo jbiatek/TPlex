@@ -1,12 +1,16 @@
 package edu.umn.crisys.plexil.java.values;
 
+import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
+
 /**
  * Implements a known boolean value.
  * 
  * @author Jason Biatek
  *
  */
-public class BooleanValue extends StandardValue implements PBoolean {
+public class BooleanValue implements PBoolean {
 	public static boolean SINGLETON = true;
 
     /**
@@ -33,11 +37,6 @@ public class BooleanValue extends StandardValue implements PBoolean {
 	 */
 	private BooleanValue(boolean value) {
 		this.bool = value;
-	}
-	
-	@Override
-	public Object asNativeJava() {
-	    return bool;
 	}
 	
 	@Override
@@ -113,6 +112,21 @@ public class BooleanValue extends StandardValue implements PBoolean {
 	}
 	
 	@Override
+	public boolean isKnown() {
+		return true;
+	}
+	
+	@Override
+	public boolean isUnknown() {
+		return false;
+	}
+	
+	@Override
+	public PValue castTo(PlexilType type) {
+		return PValue.Util.defaultCastTo(this, type);
+	}
+	
+	@Override
 	public int hashCode() {
 		return bool? 1 : 0;
 	}
@@ -132,5 +146,31 @@ public class BooleanValue extends StandardValue implements PBoolean {
 	public String toString() {
 		return bool+"";
 	}
+
+	@Override
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+		return visitor.visitBooleanValue(this, param);
+	}
+	
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+		return accept((CommonExprVisitor<P, R>) visitor, param);
+	}
+
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
+
 	
 }

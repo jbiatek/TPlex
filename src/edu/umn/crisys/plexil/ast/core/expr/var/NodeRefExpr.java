@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.ast.core.expr.var;
 
-import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class NodeRefExpr extends ASTExprBase {
@@ -66,6 +65,11 @@ public class NodeRefExpr extends ASTExprBase {
 	@Override
 	public String asString() {
 		return myRef.toString().toLowerCase();
+	}
+
+	@Override
+	public boolean isAssignable() {
+		return false;
 	}
 
 }

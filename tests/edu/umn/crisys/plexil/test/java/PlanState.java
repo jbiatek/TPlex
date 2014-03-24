@@ -151,7 +151,7 @@ public class PlanState {
     					value = StringValue.get(valStr);
     				}
     			} else if (line.endsWith("array)")) {
-    			    value = new TypelessPlexilArray(valStr);
+    			    value = new DebugOutputPlexilArray(valStr);
     			} else {
     			    System.out.println("Warning: I don't think this is a variable: "+line);
     			}

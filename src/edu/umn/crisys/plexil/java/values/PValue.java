@@ -1,11 +1,14 @@
 package edu.umn.crisys.plexil.java.values;
 
+import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+
 /**
  * The interface defining what all PlexilValues can do.
  * @author jbiatek
  *
  */
-public interface PValue {
+public interface PValue extends ASTExpression, ILExpression {
 
 	public abstract boolean isKnown();
 
@@ -15,6 +18,20 @@ public interface PValue {
 	
 	public abstract PlexilType getType();
 	
+	/**
+	 * Attempt to change this value to the given value type. If nothing bad
+	 * happens, you can safely cast it to the given type. If this is unknown,
+	 * a new unknown of the given type will be created.
+	 * 
+	 * Subclasses can override this to implement casting to another type
+	 * (independent of Java's actual casting behavior). Just check to see
+	 * if the given class is one you'd like to cast to, return the new value,
+	 * and otherwise return super.castTo(c).
+	 * 
+	 * @param type The type that you'd like to cast to
+	 * @return an object that can be safely cast, or an exception if it can't
+	 * be done.
+	 */
 	public abstract PValue castTo(PlexilType type);
 
 	public static class Util {

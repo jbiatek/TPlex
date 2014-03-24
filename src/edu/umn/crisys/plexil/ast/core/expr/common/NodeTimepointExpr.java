@@ -6,7 +6,6 @@ import java.util.List;
 import edu.umn.crisys.plexil.ast.core.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.var.NodeIDExpression;
-import edu.umn.crisys.plexil.ast.core.visitor.CommonExprVisitor;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PlexilType;
@@ -65,4 +64,9 @@ public class NodeTimepointExpr extends CompositeExpr {
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitNodeTimepoint(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
 }

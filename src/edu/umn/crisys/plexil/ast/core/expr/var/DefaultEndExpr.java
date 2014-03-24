@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.ast.core.expr.var;
 
-import edu.umn.crisys.plexil.ast.core.visitor.ASTExprVisitor;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 /**
@@ -37,5 +36,10 @@ public class DefaultEndExpr extends ASTExprBase {
     public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
         return visitor.visitDefaultEnd(this, param);
     }
+
+	@Override
+	public boolean isAssignable() {
+		return false;
+	}
 
 }
