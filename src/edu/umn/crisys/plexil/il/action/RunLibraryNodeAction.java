@@ -1,16 +1,16 @@
 package edu.umn.crisys.plexil.il.action;
 
-import edu.umn.crisys.plexil.translator.il.vars.LibraryNodeReference;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
 
 public class RunLibraryNodeAction implements PlexilAction {
     
-    private LibraryNodeReference node;
+    private LibraryVar node;
     
-    public RunLibraryNodeAction(LibraryNodeReference node) {
+    public RunLibraryNodeAction(LibraryVar node) {
         this.node = node;
     }
     
-    public LibraryNodeReference getLibNode() {
+    public LibraryVar getLibNode() {
     	return node;
     }
 

@@ -16,8 +16,7 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
-import edu.umn.crisys.plexil.translator.il.vars.NodeTimepointReference;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.util.Pair;
 
 public class PruneUnusedTimepoints {
@@ -31,7 +30,8 @@ public class PruneUnusedTimepoints {
 
             @Override
             public boolean accept(ILExpression obj) {
-                return obj instanceof NodeTimepointReference;
+            	// TODO: This used to return whether the variable was a NodeTimepoint. 
+                return false;
             }};
             
 	    // Save any that are being read in a guard or action
@@ -56,11 +56,13 @@ public class PruneUnusedTimepoints {
 	    }
 	    
 	    // Okay, everything not on the list is being told to leave itself out.
+	    /*
 	    for (IntermediateVariable v : ilPlan.getVariables()) {
 	        if (v instanceof NodeTimepointReference && ! safeList.contains(v) ) {
 	            ((NodeTimepointReference) v).markAsUnused();
 	        }
 	    }
+	    */
 	}
 
 	private static void pruneTimepointActionHelper(PlexilAction a, Set<ILExpression> safeList) {
@@ -68,7 +70,8 @@ public class PruneUnusedTimepoints {
 
 	        @Override
 	        public boolean accept(ILExpression obj) {
-	            return obj instanceof NodeTimepointReference;
+	        	// TODO: This used to be, um, the same thing as above. Wtf.
+	            return false;
 	        }};
 	        
         if (a instanceof AssignAction) {

@@ -11,23 +11,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
-import edu.umn.crisys.plexil.translator.il.vars.LibraryNodeReference;
-import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
+import edu.umn.crisys.plexil.il.vars.ILVariable;
 
 public class Plan {
 
 
     
 	private List<NodeStateMachine> stateMachines = new LinkedList<NodeStateMachine>(); 
-	private Set<IntermediateVariable> variables = new HashSet<IntermediateVariable>();
+	private Set<ILVariable> variables = new HashSet<ILVariable>();
 	
     public Set<String> globalVarNameList = new HashSet<String>();
 	
 	public NodeStateMachine root;
-	public IntermediateVariable rootOutcome;
-	public NodeStateReference rootState;
+	public ILExpression rootOutcome;
+	public ILExpression rootState;
     public String planName;
     
     public Plan(String planName) {
@@ -38,34 +37,26 @@ public class Plan {
     	return stateMachines;
     }
     
-    public Set<IntermediateVariable> getVariables() {
+    public Set<ILVariable> getVariables() {
     	return variables;
     }
 	
 
 	
 
-	public void addVariable(IntermediateVariable var) {
+	public void addVariable(ILVariable var) {
 	    variables.add(var);
 	}
 	
-	public void addVariables(List<? extends IntermediateVariable> vars) {
+	public void addVariables(List<? extends ILVariable> vars) {
 	    variables.addAll(vars);
-	}
-	
-	public void setLibraryMap(Map<String,String> plexilIdToClass) {
-		for (IntermediateVariable v : variables) {
-			if (v instanceof LibraryNodeReference) {
-				((LibraryNodeReference) v).setIdToClassNameMap(plexilIdToClass);
-			}
-		}
 	}
 	
 	public void addStateMachine(NodeStateMachine nsm) {
 	    stateMachines.add(nsm);
 	}
 	
-	public void setRoot(NodeStateMachine nsm, NodeStateReference state, IntermediateVariable outcome) {
+	public void setRoot(NodeStateMachine nsm, ILExpression state, ILExpression outcome) {
 	    root = nsm;
 	    rootOutcome = outcome;
 	    rootState = state;

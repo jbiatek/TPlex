@@ -6,24 +6,21 @@ import edu.umn.crisys.plexil.java.world.CommandHandler;
 
 public class CommandHandle implements CommandHandler {
 
-    private CommandHandleState currentHandle = CommandHandleState.UNKNOWN;
+    private SimpleCurrentNext<CommandHandleState> handleValue;
     
-    public CommandHandleState getCommandHandle() {
-        return currentHandle;
+    public CommandHandle(SimpleCurrentNext<CommandHandleState> wrappedValue) {
+    	this.handleValue = wrappedValue;
     }
     
     @Override
     public void setCommandHandle(CommandHandleState state) {
-        currentHandle = state;
+        handleValue.setNext(state);
+        handleValue.commit();
     }
 
     @Override
     public void commandReturns(PValue value) {
-        
-    }
-    
-    public void reset() {
-        currentHandle = CommandHandleState.UNKNOWN;
+        throw new RuntimeException("A target for returning a value from this Command was not specified");
     }
     
 }

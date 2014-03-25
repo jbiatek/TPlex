@@ -1,28 +1,24 @@
 package edu.umn.crisys.plexil.java.plx;
 
+import edu.umn.crisys.plexil.java.values.BooleanValue;
+import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.world.UpdateHandler;
 
 
 public class UpdateHandle implements UpdateHandler {
 
-    private boolean updateComplete = false;
+    private SimpleCurrentNext<PBoolean> wrappedVar;
     private String nodeName;
     
-    public UpdateHandle(String nodeName) {
+    public UpdateHandle(SimpleCurrentNext<PBoolean> varToWrap, String nodeName) {
         this.nodeName = nodeName;
+        this.wrappedVar = varToWrap;
     }
     
     @Override
     public void acknowledgeUpdate() {
-        updateComplete = true;
-    }
-    
-    public boolean isUpdateComplete() {
-        return updateComplete;
-    }
-    
-    public void reset() {
-        updateComplete = false;
+        wrappedVar.setNext(BooleanValue.get(true));
+        wrappedVar.commit();
     }
 
     @Override

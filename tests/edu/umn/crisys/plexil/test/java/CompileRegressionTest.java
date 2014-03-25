@@ -20,11 +20,12 @@ import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
+import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
+import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
 import edu.umn.crisys.plexil.test.java.RegressionTest.TestSuite;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public class CompileRegressionTest {
     
@@ -74,7 +75,7 @@ public class CompileRegressionTest {
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
-        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg);
+        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, null);
         
         addGetSnapshotMethod(rootTranslator, javaCode);
         cm.build(dest);
@@ -95,7 +96,7 @@ public class CompileRegressionTest {
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
-        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg);
+        JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, null);
         
         addGetSnapshotMethod(translator, javaCode);
         
@@ -149,10 +150,15 @@ public class CompileRegressionTest {
         JVar ps = b.decl(cm.ref(PlanState.class), translator.getUID().toCleanString(), planStateInit);
         
         for (String varName : translator.getAllVariables()) {
-            IntermediateVariable v = translator.getVariable(varName);
+            ILVariable v = translator.getVariable(varName);
             
-            if (v.getNameForTesting() == null) continue;
-            b.invoke(ps, "addVariable").arg(v.getNameForTesting()).arg(v.rhs(cm));
+            String name = v.getName();
+            if (name.startsWith(".")) {
+            	// Internal variables are named "ShortName.command_handle", etc.
+            	name = v.getNodeUID().getShortName()+name;
+            }
+            
+            b.invoke(ps, "addVariable").arg(name).arg(ILExprToJava.toJava(v, cm));
         }
         
         for (NodeToIL child : translator.getChildren()) {
@@ -161,9 +167,10 @@ public class CompileRegressionTest {
         }
         
         if (translator.hasLibraryHandle()) {
+        	// We need direct access to the field here.
             b.invoke(ps, "addChild").arg(
                     JExpr.invoke(JExpr.cast(cm.ref(PlexilTestable.class), 
-                    translator.getLibraryHandle().directReference(cm)), "getSnapshot"));
+                    JExpr.ref(ILExprToJava.getLibraryFieldName(translator.getUID()))), "getSnapshot"));
 
         }
         

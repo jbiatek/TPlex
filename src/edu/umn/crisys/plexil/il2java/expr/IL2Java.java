@@ -15,12 +15,18 @@ import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
+import edu.umn.crisys.plexil.il.expr.AliasExpr;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il2java.JParens;
+import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
@@ -34,10 +40,9 @@ import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
-    
+	
     @Override
     public JExpression visitArrayIndex(ArrayIndexExpr array,
             JCodeModel cm) {
@@ -255,10 +260,31 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
         return JExpr.invoke("getInterface").invoke("evalAncestorInvariant");
     }
 
-    @Override
-    public JExpression visitVariable(IntermediateVariable var, JCodeModel cm) {
-        return var.rhs(cm);
-    }
+	@Override
+	public JExpression visitAlias(AliasExpr alias, JCodeModel param) {
+        return JExpr.invoke("getInterface").invoke("getValue").arg(alias.getName());
+	}
+
+	@Override
+	public JExpression visitSimple(SimpleVar var, JCodeModel param) {
+		return JExpr.ref(ILExprToJava.getFieldName(var.getNodeUID(), var.getName())).invoke("getCurrent");
+	}
+
+	@Override
+	public JExpression visitArray(ArrayVar array, JCodeModel param) {
+		return JExpr.ref(ILExprToJava.getFieldName(array.getNodeUID(), array.getName())).invoke("getCurrent");
+	}
+
+	@Override
+	public JExpression visitLibrary(LibraryVar lib, JCodeModel param) {
+		return JExpr.ref(ILExprToJava.getLibraryFieldName(lib.getNodeUID())).invoke("getRootNodeState");
+	}
+
+	@Override
+	public JExpression visitGetNodeState(GetNodeStateExpr state,
+			JCodeModel param) {
+		return JExpr.invoke(StateMachineToJava.getMappingMethodName(state.getNodeUid()));
+	}
 
 	@Override
 	public JExpression visitBooleanValue(BooleanValue bool, JCodeModel cm) {

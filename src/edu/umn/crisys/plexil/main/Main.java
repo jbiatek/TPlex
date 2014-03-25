@@ -161,14 +161,13 @@ public class Main {
 			NodeToIL toIl = new NodeToIL(plan.getRootNode());
 			Plan ilPlan = new Plan(filename);
 			toIl.translate(ilPlan);
-			ilPlan.setLibraryMap(idToFile);
 			
 			if (optimize) {
 				PruneUnusedTimepoints.optimize(ilPlan);
 				RemoveDeadTransitions.optimize(ilPlan);
 			}
 			
-			PlanToJava.toJava(ilPlan, cm, pkg);
+			PlanToJava.toJava(ilPlan, cm, pkg, idToFile);
 		}
 		
 		// Now try to output the actual files

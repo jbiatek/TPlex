@@ -24,32 +24,27 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
-import edu.umn.crisys.plexil.il.action.CaptureCurrentValueAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
+import edu.umn.crisys.plexil.il.action.EndMacroStep;
 import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
-import edu.umn.crisys.plexil.il.action.SetVarToPreviousValueAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
+import edu.umn.crisys.plexil.il.expr.AliasExpr;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.vars.ILVariable;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.vars.AliasedVariableReference;
-import edu.umn.crisys.plexil.translator.il.vars.ArrayElementReference;
-import edu.umn.crisys.plexil.translator.il.vars.ArrayReference;
-import edu.umn.crisys.plexil.translator.il.vars.CommandHandleReference;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
-import edu.umn.crisys.plexil.translator.il.vars.LibraryNodeReference;
-import edu.umn.crisys.plexil.translator.il.vars.NodeStateReference;
-import edu.umn.crisys.plexil.translator.il.vars.NodeTimepointReference;
-import edu.umn.crisys.plexil.translator.il.vars.PreviousValueReference;
-import edu.umn.crisys.plexil.translator.il.vars.UpdateHandleReference;
-import edu.umn.crisys.plexil.translator.il.vars.VariableReference;
 import edu.umn.crisys.util.Pair;
 
 /**
@@ -70,7 +65,7 @@ import edu.umn.crisys.util.Pair;
  */
 public class NodeToIL {
     
-    private static final String STATE = ".state";
+    //private static final String STATE = ".state";
     private static final String OUTCOME = ".outcome";
     private static final String FAILURE = ".failure";
     private static final String COMMAND_HANDLE = ".command_handle";
@@ -85,8 +80,8 @@ public class NodeToIL {
     
     private List<NodeToIL> children = new ArrayList<NodeToIL>();
     
-    private Map<String, IntermediateVariable> ilVars = 
-        new HashMap<String, IntermediateVariable>();
+    private Map<String, ILVariable> ilVars = 
+        new HashMap<String, ILVariable>();
     
     public NodeToIL(Node node) {
         this(node, null);
@@ -112,13 +107,14 @@ public class NodeToIL {
     
     private void createILVars() {
         // Internal vars for all nodes
-        ilVars.put(STATE, new NodeStateReference(myUid));
-        ilVars.put(OUTCOME, new VariableReference(myUid, PlexilType.OUTCOME, "UNKNOWN"));
-        ilVars.put(FAILURE, new VariableReference(myUid, PlexilType.FAILURE, "UNKNOWN"));
+        ilVars.put(OUTCOME, new SimpleVar(OUTCOME, myUid, PlexilType.OUTCOME));
+        ilVars.put(FAILURE, new SimpleVar(FAILURE, myUid, PlexilType.FAILURE));
         // Node timepoints
         for (NodeState state : NodeState.values()) {
             for (NodeTimepoint tpt : NodeTimepoint.values()) {
-                ilVars.put("."+state+"."+tpt, new NodeTimepointReference(myUid, state, tpt));
+            	String name = "."+state+"."+tpt;
+            	
+                ilVars.put(name, new SimpleVar(name, myUid, PlexilType.REAL));
             }
         }
         
@@ -140,14 +136,14 @@ public class NodeToIL {
                     init = new PValueList<PValue>(type);
                 }
                 
-                ilVars.put(varName, new ArrayReference(myUid, varName, type, arraySize, init));
+                ilVars.put(varName, new ArrayVar(varName, arraySize, type, myUid, init));
             } else {
                 // Standard variables.
             	PValue init = null;
             	if (v.hasInitialValue()) {
             		init = (PValue) v.getInitialValue();
             	}
-                ilVars.put(varName, new VariableReference(myUid, varName, type, init));
+                ilVars.put(varName, new SimpleVar(varName, myUid, type, init));
             }
         }
     }
@@ -167,20 +163,10 @@ public class NodeToIL {
         // the message along to our children.
         
         // Special variables based on the type of node this is.
-        NodeBody body = myNode.getNodeBody();
         if (myNode.isCommandNode()) {
-            CommandBody cmd = (CommandBody) body;
-            CommandHandleReference handle;
-            int priority = myNode.getPriority();
-            if (cmd.getVarToAssign() == null) {
-                handle = new CommandHandleReference(myUid, priority);
-            } else {
-                IntermediateVariable returnTo = resolveVariableforWriting(cmd.getVarToAssign());
-                handle = new CommandHandleReference(myUid, priority, returnTo);
-            }
-            ilVars.put(COMMAND_HANDLE, handle);
+            ilVars.put(COMMAND_HANDLE, new SimpleVar(COMMAND_HANDLE, myUid, PlexilType.COMMAND_HANDLE));
         } else if (myNode.isUpdateNode()) {
-            ilVars.put(UPDATE_HANDLE, new UpdateHandleReference(myUid));
+            ilVars.put(UPDATE_HANDLE, new SimpleVar(UPDATE_HANDLE, myUid, PlexilType.BOOLEAN, BooleanValue.get(false)));
         } else if (myNode.isLibraryNode()) {
             LibraryBody lib = (LibraryBody) myNode.getNodeBody();
             Map<String,ILExpression> aliases = new HashMap<String, ILExpression>();
@@ -189,8 +175,8 @@ public class NodeToIL {
                 aliases.put(alias, toIL(lib.getAlias(alias)));
             }
             
-            LibraryNodeReference libRef = new LibraryNodeReference(
-                    getUID(), lib.getNodeId(), getState(), aliases);
+            LibraryVar libRef = new LibraryVar(
+                    lib.getNodeId(), getUID(), getState(), aliases);
             ilVars.put(LIBRARY_HANDLE, libRef);
             
             // We have to set these after making the library reference, because
@@ -229,65 +215,65 @@ public class NodeToIL {
     	return parent;
     }
     
-    public NodeStateReference getState() {
-        return (NodeStateReference) ilVars.get(STATE);
+    public ILExpression getState() {
+        return new GetNodeStateExpr(myUid);
     }
     
-    public VariableReference getOutcome() {
-        return (VariableReference) ilVars.get(OUTCOME);
+    public ILVariable getOutcome() {
+        return ilVars.get(OUTCOME);
     }
     
-    public VariableReference getFailure() {
-        return (VariableReference) ilVars.get(FAILURE);
+    public ILVariable getFailure() {
+        return ilVars.get(FAILURE);
     }
     
     public boolean hasCommandHandle() {
         return ilVars.containsKey(COMMAND_HANDLE);
     }
     
-    public CommandHandleReference getCommandHandle() {
+    public SimpleVar getCommandHandle() {
         if (! hasCommandHandle()) {
             throw new RuntimeException("Not a command node: "+myNode.getNodeBody());
         }
-        return (CommandHandleReference) ilVars.get(COMMAND_HANDLE);
+        return (SimpleVar) ilVars.get(COMMAND_HANDLE);
     }
     
     public boolean hasLibraryHandle() {
         return ilVars.containsKey(LIBRARY_HANDLE);
     }
 
-    public LibraryNodeReference getLibraryHandle() {
+    public LibraryVar getLibraryHandle() {
         if (! hasLibraryHandle()) {
             throw new RuntimeException("Not a library node: "+myNode.getNodeBody());
         }
-        return (LibraryNodeReference) ilVars.get(LIBRARY_HANDLE);
+        return (LibraryVar) ilVars.get(LIBRARY_HANDLE);
     }
     
     private boolean hasUpdateHandle() {
         return ilVars.containsKey(UPDATE_HANDLE);
     }
     
-    public UpdateHandleReference getUpdateHandle() {
+    public SimpleVar getUpdateHandle() {
         if (! hasUpdateHandle()) {
             throw new RuntimeException("Not an update node: "+myNode.getNodeBody());
         }
-        return (UpdateHandleReference) ilVars.get(UPDATE_HANDLE);
+        return (SimpleVar) ilVars.get(UPDATE_HANDLE);
     }
     
-    private PreviousValueReference getPreviousValue() {
+    private ILVariable getPreviousValue() {
         if ( ! ilVars.containsKey(PREVIOUS_VALUE)) {
             throw new RuntimeException("Doesn't contain previous value: "+this);
         }
         
-        return (PreviousValueReference) ilVars.get(PREVIOUS_VALUE);
+        return ilVars.get(PREVIOUS_VALUE);
     }
 
-    public NodeTimepointReference getNodeTimepoint(NodeState state, NodeTimepoint time) {
-        IntermediateVariable tpt = ilVars.get("."+state+"."+time);
-        if (tpt == null || ! (tpt instanceof NodeTimepointReference)) {
+    public ILVariable getNodeTimepoint(NodeState state, NodeTimepoint time) {
+        ILVariable tpt = ilVars.get("."+state+"."+time);
+        if (tpt == null) {
             throw new RuntimeException("Went looking for "+time+" of "+state+", got "+tpt);
         }
-        return (NodeTimepointReference) tpt;
+        return tpt;
     }
     
     ILExpression getThisOrAncestorsExits() {
@@ -329,11 +315,20 @@ public class NodeToIL {
         return ilVars.keySet();
     }
 
-    public IntermediateVariable getVariable(String varName) {
+    public ILVariable getVariable(String varName) {
         return ilVars.get(varName);
     }
     
-    private IntermediateVariable resolveVariable(String name, boolean writing) {
+    /**
+     * Find the node containing an ILVariable with the given name, and return
+     * that ILVariable. Nothing is done about aliases, but it does check the
+     * Interfaces as it goes up. 
+     * 
+     * @param name
+     * @param writing
+     * @return
+     */
+    private ILVariable resolveVariableInternal(String name, boolean writing) {
         // Variables have lexical scope, which mean they are visible only 
         // within the action and any descendants of the action. Scope can be 
         // explicitly limited using the Interface clause. 
@@ -357,48 +352,99 @@ public class NodeToIL {
         // We are allowed to look further. Is there a parent?
         if (parent == null) {
             // Nope, we are the root node. It's either an alias or an error.
-        	if ( ! myNode.getInterface().isDefined()) {
-        		// No defined interface? Technically, this is okay, but 
-        		// something is probably wrong.
-        		System.err.println("Warning: Variable "+name+" is not clearly defined in node "+myNode.getPlexilID()+".");
-        		System.err.println("If this plan isn't used as a library inside of a plan that defines "+name+", it will crash.");
-        	}
-            return new AliasedVariableReference(name);
+        	return null;
         } else {
             // This is their problem now.
-            return parent.resolveVariable(name, writing);
+            return parent.resolveVariableInternal(name, writing);
         }
     }
 
+    /**
+     * Given a variable name, resolves it into an ILExpression. Don't use this
+     * if you're going to be assigning to it! 
+     * 
+     * @param name
+     * @param type
+     * @return
+     */
     public ILExpression resolveVariable(String name, PlexilType type) {
-        ILExpression expr = resolveVariable(name, false);
-        if (expr instanceof AliasedVariableReference) {
-            // We should try to cast this to the right type.
+        ILExpression expr = resolveVariableInternal(name, false);
+        if (expr == null) {
+        	// We went all the way up to the root, and no one claimed this
+        	// variable as their own. It could be that this PLEXIL plan is a 
+        	// library, and this variable is a part of our Interface.
+        	// It could also be the case that someone messed up. 
+        	
+        	ILExpression alias = createAlias(name, false);
+        	
+        	// Since it's an alias, we should cast it if we know the type.
             if (type == PlexilType.BOOLEAN) {
-                return Operation.castToBoolean(expr);
+                return Operation.castToBoolean(alias);
             } else if (type.isNumeric()) {
-                return Operation.castToNumeric(expr);
+                return Operation.castToNumeric(alias);
             } else if (type == PlexilType.STRING) {
-                return Operation.castToString(expr);
+                return Operation.castToString(alias);
+            } else {
+            	return alias;
             }
+
+        	
         }
         return expr;
     }
     
-    public IntermediateVariable resolveVariableforWriting(Expression e) {
-        if (e instanceof UnresolvedVariableExpr) {
-            UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
-            return resolveVariable(var.getName(), true);
-        } else if (e instanceof ArrayIndexExpr) {
-            ArrayIndexExpr arr = (ArrayIndexExpr) e;
-            return new ArrayElementReference(
-                    (ArrayReference) resolveVariableforWriting(arr.getArray()), toIL(arr.getIndex()));
-        }
-        throw new RuntimeException(e+" does not look like a left-hand variable.");
+    private ILExpression createAlias(String name, boolean writeable) {
+    	// Since a variable typo is indistinguishable from an alias
+    	// when there isn't an explicit Interface, we want to do some basic
+    	// checking, and print a warning if they probably didn't mean it. 
+    	// Let's go back up the parent tree, and see if someone has an
+    	// Interface. 
+    	NodeToIL pointer = this;
+    	boolean foundInterface = false;
+    	while (pointer != null) {
+    		if (pointer.myNode.getInterface().isDefined() &&
+    				pointer.myNode.getInterface().isReadable(name)) {
+    			if (writeable && ! pointer.myNode.getInterface().isWritable(name)) {
+    				throw new RuntimeException("Trying to write to read-only alias: "+name);
+    			}
+    			// Here we go. They probably didn't typo this, so don't bug 
+    			// them.
+    			foundInterface = true;
+    			break;
+    		} else {
+    			pointer = pointer.parent;
+    		}
+    	}
+    	if ( ! foundInterface) {
+    		// No interfaces explicitly mention this variable. Technically,
+    		// this is still valid PLEXIL code. But it's not written well,
+    		// and it's possible that this is a variable that got typo'd.
+    		System.err.println("Warning: Variable "+name+" is not clearly defined in node "+myNode.getPlexilID()+".");
+    		System.err.println("If this plan isn't used as a library inside of a plan that defines "+name+", it will crash.");
+    	}
+    	
+    	return new AliasExpr(name, PlexilType.UNKNOWN, writeable);
     }
     
-    public IntermediateVariable resolveVariableForWriting(String name, PlexilType type) {
-        return resolveVariable(name, true);
+    public ILExpression resolveVariableforWriting(Expression e) {
+    	if ( ! e.isAssignable()) {
+    		throw new RuntimeException(e+" is not a valid LHS");
+    	}
+    	
+        if (e instanceof UnresolvedVariableExpr) {
+            UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
+            ILVariable expr = resolveVariableInternal(var.getName(), true);
+            if (expr == null) {
+            	// Must be an alias then. Or a typo.
+            	return createAlias(var.getName(), true);
+            }
+            return expr;
+        } else if (e instanceof ArrayIndexExpr) {
+            ArrayIndexExpr arr = (ArrayIndexExpr) e;
+            return new ArrayIndexExpr(
+                    (ArrayVar) resolveVariableforWriting(arr.getArray()), toIL(arr.getIndex()));
+        }
+        throw new RuntimeException(e+" says it's assignable, but I don't know how to read it.");
     }
     
     public NodeToIL resolveNode(String plexilId) {
@@ -476,25 +522,55 @@ public class NodeToIL {
         
         if (myNode.isAssignmentNode()) {
             AssignmentBody body = (AssignmentBody) myNode.getNodeBody();
-            IntermediateVariable lhs = resolveVariableforWriting(body.getLeftHandSide());
-            AssignAction assign = new AssignAction(lhs, 
-                    toIL(body.getRightHandSide()), myNode.getPriority());
+            Expression lhsUntranslated = body.getLeftHandSide();
+            ILExpression lhsExpr = resolveVariableforWriting(lhsUntranslated);
+            ILExpression rhs = toIL(body.getRightHandSide());
+            AssignAction assign = new AssignAction(lhsExpr, rhs, myNode.getPriority());
             // Add the previous value now that we have the IL left hand side
-            ilVars.put(PREVIOUS_VALUE, new PreviousValueReference(getUID(), lhs.getType()));
+            PlexilType type = lhsUntranslated.getType();
+            if (type == PlexilType.UNKNOWN) {
+            	// If it's an array element, the type info isn't stored in the
+            	// original XML (at least, not here.) Let's try the translated
+            	// version:
+            	if (lhsExpr.getType() != PlexilType.UNKNOWN) {
+            		// Here we go. 
+            		type = lhsExpr.getType();
+            	} else if (rhs.getType() != PlexilType.UNKNOWN) {
+            		type = rhs.getType();
+            	} else {
+            		throw new RuntimeException("Find the type of this assignment."); 
+            	}
+            }
+            if (type.isArrayType()) {
+            	// We need an initial value for it, but it'll be overwritten anyway.
+            	// An empty array should be just fine.
+            	ilVars.put(PREVIOUS_VALUE, new SimpleVar(PREVIOUS_VALUE, getUID(), type, new PValueList<PValue>(type)));
+            } else {
+            	// Just create an UNKNOWN one. 
+            	ilVars.put(PREVIOUS_VALUE, new SimpleVar(PREVIOUS_VALUE, getUID(), type));
+            }
             ilPlan.addVariable(getPreviousValue());
             
-            CaptureCurrentValueAction capture = new CaptureCurrentValueAction(lhs, getPreviousValue());
+            AssignAction capture = new AssignAction(getPreviousValue(), lhsExpr, myNode.getPriority());
+            AssignAction revert = new AssignAction(lhsExpr, getPreviousValue(), myNode.getPriority());
+            
             map.get(NodeState.EXECUTING).addEntryAction(assign);
             map.get(NodeState.EXECUTING).addEntryAction(capture);
-            
-            SetVarToPreviousValueAction revert = new SetVarToPreviousValueAction(lhs, getPreviousValue(), myNode.getPriority());
+            map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
             map.get(NodeState.FAILING).addEntryAction(revert);
+            map.get(NodeState.FAILING).addEntryAction(EndMacroStep.get());
+            
         } else if (myNode.isCommandNode()) {
             CommandBody body = (CommandBody) myNode.getNodeBody();
             ILExpression name = toIL(body.getCommandName());
+            ILExpression returnTo = null;
+            if (body.getVarToAssign() != null) {
+            	returnTo = resolveVariableforWriting(body.getVarToAssign());
+            }
             List<ILExpression> args = toIL(body.getCommandArguments());
-            CommandAction issueCmd = new CommandAction(getCommandHandle(), name, args);
+            CommandAction issueCmd = new CommandAction(getCommandHandle(), name, args, returnTo);
             map.get(NodeState.EXECUTING).addEntryAction(issueCmd);
+            map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
             
             // TODO: Implement aborting commands.
 //            AbortCommandAction abort = new AbortCommandAction(getCommandHandle());
@@ -502,11 +578,13 @@ public class NodeToIL {
             
         } else if (myNode.isUpdateNode()) {
             UpdateBody update = (UpdateBody) myNode.getNodeBody();
-            UpdateAction doUpdate = new UpdateAction(getUpdateHandle());
+            UpdateAction doUpdate = new UpdateAction(getUpdateHandle(), myNode.getPlexilID());
             for ( Pair<String, ASTExpression> pair : update.getUpdates()) {
                 doUpdate.addUpdatePair(pair.first, toIL(pair.second));
             }
             map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
+            map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
+            
         } else if (myNode.isListNode()) {
             // Each child needs to be told to transition in all states but INACTIVE.
             List<NodeUID> childIds = new ArrayList<NodeUID>();

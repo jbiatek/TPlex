@@ -3,8 +3,6 @@ package edu.umn.crisys.plexil.ast.core.nodebody;
 import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class CommandBody extends NodeBody {
@@ -20,14 +18,10 @@ public class CommandBody extends NodeBody {
         this.args = args;
     }
     
-    public CommandBody(UnresolvedVariableExpr varToAssign, ASTExpression cmdName, List<ASTExpression> args) {
-        this.varToAssign = varToAssign;
-        PlexilType.STRING.typeCheck(cmdName.getType());
-        this.cmdName = cmdName;
-        this.args = args;
-    }
-    
-    public CommandBody(ArrayIndexExpr varToAssign, ASTExpression cmdName, List<ASTExpression> args) {
+    public CommandBody(ASTExpression varToAssign, ASTExpression cmdName, List<ASTExpression> args) {
+    	if ( ! varToAssign.isAssignable()) {
+    		throw new RuntimeException(varToAssign + " is not assignable.");
+    	}
         this.varToAssign = varToAssign;
         PlexilType.STRING.typeCheck(cmdName.getType());
         this.cmdName = cmdName;

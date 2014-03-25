@@ -8,10 +8,12 @@ import java.util.Map;
 import edu.umn.crisys.plexil.ast.core.Node;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
+import edu.umn.crisys.plexil.il.action.AssignAction;
+import edu.umn.crisys.plexil.il.action.CompositeAction;
+import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.ResetNodeAction;
-import edu.umn.crisys.plexil.il.action.SetOutcomeAction;
-import edu.umn.crisys.plexil.il.action.SetTimepointAction;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
@@ -225,9 +227,11 @@ public class StateMachineBuilder {
         
         // Timepoints get set for every single transition
         // The starting state is now ending
-        t.addAction(new SetTimepointAction(translator.getNodeTimepoint(start, NodeTimepoint.END)));
+        t.addAction(new AssignAction(translator.getNodeTimepoint(start, NodeTimepoint.END), 
+        		Operation.castToNumeric(new LookupNowExpr("time")), 0));
         // And the destination state is now starting.
-        t.addAction(new SetTimepointAction(translator.getNodeTimepoint(end, NodeTimepoint.START)));
+        t.addAction(new AssignAction(translator.getNodeTimepoint(end, NodeTimepoint.START), 
+        		Operation.castToNumeric(new LookupNowExpr("time")), 0));
         
         return t;
     }
@@ -247,13 +251,15 @@ public class StateMachineBuilder {
         return reset;
     }
     
-    private SetOutcomeAction setOutcome(NodeOutcome outcome) {
+    private PlexilAction setOutcome(NodeOutcome outcome) {
         return setOutcome(outcome, NodeFailureType.UNKNOWN);
     }
     
-    private SetOutcomeAction setOutcome(NodeOutcome outcome, NodeFailureType failure) {
-        return new SetOutcomeAction(translator.getUID(), translator.getOutcome(), 
-        		outcome, translator.getFailure(), failure);
+    private PlexilAction setOutcome(NodeOutcome outcome, NodeFailureType failure) {
+    	return new CompositeAction(
+    			new AssignAction(translator.getOutcome(), outcome, 0),
+    			new AssignAction(translator.getFailure(), failure, 0)
+    			);
     }
     
     /**

@@ -17,25 +17,14 @@ public abstract class JavaPlan {
     private LibraryInterface parent = new LibraryInterface();
     private boolean isLibrary = false;
     private boolean askedForCommitAfterMicro = false;
-    private boolean askedForCommitAfterMacro = false;
     
     
     public boolean changeOccurred = true;
     public boolean endMacroStep = false;
-    @SuppressWarnings("rawtypes")
-    private List<Variable> commitVarsAfterMicroStep = new LinkedList<Variable>();
-    @SuppressWarnings("rawtypes")
-    private List<Variable> commitVarsAfterMacroStep = new LinkedList<Variable>();
-    @SuppressWarnings("rawtypes")
-    private List<SimplePArray> commitArraysAfterMicroStep = new LinkedList<SimplePArray>();
-    @SuppressWarnings("rawtypes")
-    private List<SimplePArray> commitArraysAfterMacroStep = new LinkedList<SimplePArray>();
-    
+    private List<SimplePArray<?>> commitArraysAfterMicroStep = new LinkedList<SimplePArray<?>>();
     private List<SimpleCurrentNext<?>> commitSimpleAfterMicroStep = 
         new LinkedList<SimpleCurrentNext<?>>();
-    
     private List<JavaPlan> commitLibraryAfterMicroStep = new LinkedList<JavaPlan>();
-    private List<JavaPlan> commitLibraryAfterMacroStep = new LinkedList<JavaPlan>();
     
     public JavaPlan(ExternalWorld world) {
     	this.world = world;
@@ -66,14 +55,6 @@ public abstract class JavaPlan {
             parent.getParentPlan().commitAfterMicroStep(this);
         }
         askedForCommitAfterMicro = true; // Don't do it again until commit
-    }
-    
-    private void askForCommitAfterMacro() {
-        if (askedForCommitAfterMacro) return;
-        if (isLibrary) {
-            parent.getParentPlan().commitAfterMacroStep(this);
-        }
-        askedForCommitAfterMacro = true; // Don't do it again until commit
     }
     
     public void doMacroStep() {
@@ -110,17 +91,12 @@ public abstract class JavaPlan {
                 System.out.println("Quiescence reached in "+counter+" microsteps.");
             }
         }
-        
-        commitMacroStepVars();
         return counter;
         
     }
 
     @SuppressWarnings("rawtypes")
     public void commitMicroStepVars() {
-        for (Variable v : commitVarsAfterMicroStep) {
-            v.commit();
-        }
         for (SimplePArray a : commitArraysAfterMicroStep) {
             a.commit();
         }
@@ -130,26 +106,9 @@ public abstract class JavaPlan {
         for (JavaPlan lib : commitLibraryAfterMicroStep) {
             lib.commitMicroStepVars();
         }
-        commitVarsAfterMicroStep.clear();
         commitArraysAfterMicroStep.clear();
         commitSimpleAfterMicroStep.clear();
         askedForCommitAfterMicro = false;
-    }
-    
-    @SuppressWarnings("rawtypes")
-    public void commitMacroStepVars() {
-        for (Variable v : commitVarsAfterMacroStep) {
-            v.commit();
-        }
-        for (SimplePArray a : commitArraysAfterMacroStep) {
-            a.commit();
-        }
-        for (JavaPlan lib : commitLibraryAfterMacroStep) {
-            lib.commitMacroStepVars();
-        }
-        commitVarsAfterMacroStep.clear();
-        commitArraysAfterMacroStep.clear();
-        askedForCommitAfterMacro = false;
     }
     
     public ExternalWorld getWorld() {
@@ -180,37 +139,14 @@ public abstract class JavaPlan {
     }
     
     @SuppressWarnings("rawtypes")
-    public void commitAfterMicroStep(Variable v) {
-        askForCommitAfterMicro();
-        commitVarsAfterMicroStep.add(v);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void commitAfterMacroStep(Variable v) {
-        askForCommitAfterMacro();
-        commitVarsAfterMacroStep.add(v);
-    }
-    
-    @SuppressWarnings("rawtypes")
     public void commitAfterMicroStep(SimplePArray a) {
         askForCommitAfterMicro();
         commitArraysAfterMicroStep.add(a);
     }
     
-    @SuppressWarnings("rawtypes")
-    public void commitAfterMacroStep(SimplePArray a) {
-        askForCommitAfterMacro();
-        commitArraysAfterMacroStep.add(a);
-    }
-    
     public void commitAfterMicroStep(JavaPlan lib) {
         askForCommitAfterMicro();
         commitLibraryAfterMicroStep.add(lib);
-    }
-    
-    public void commitAfterMacroStep(JavaPlan lib) {
-        askForCommitAfterMacro();
-        commitLibraryAfterMacroStep.add(lib);
     }
     
     public void commitAfterMicroStep(SimpleCurrentNext<?> v) {

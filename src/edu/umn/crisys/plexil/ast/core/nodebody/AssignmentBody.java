@@ -1,20 +1,17 @@
 package edu.umn.crisys.plexil.ast.core.nodebody;
 
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.var.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
 
 public class AssignmentBody extends NodeBody {
 
     private Expression leftHandSide;
     private Expression rightHandSide;
     
-    public AssignmentBody(UnresolvedVariableExpr leftHandSide, Expression rightHandSide) {
-        this.leftHandSide = leftHandSide;
-        this.rightHandSide = rightHandSide;
-    }
-    
-    public AssignmentBody(ArrayIndexExpr leftHandSide, Expression rightHandSide) {
+    public AssignmentBody(Expression leftHandSide, Expression rightHandSide) {
+    	if ( ! leftHandSide.isAssignable()) {
+    		throw new RuntimeException(leftHandSide +" is not assignable.");
+    	}
         this.leftHandSide = leftHandSide;
         this.rightHandSide = rightHandSide;
     }

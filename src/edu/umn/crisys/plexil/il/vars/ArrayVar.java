@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.il.vars;
 
-import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PValueList;
@@ -8,14 +7,14 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class ArrayVar extends ILVariable {
 	
-	private ILExpression init;
+	private PValueList<?> init;
 	private int size;
 	
 	public ArrayVar(String name, int size, PlexilType type, NodeUID uid) {
 		this(name, size, type, uid, new PValueList<PValue>(type));
 	}
 	
-	public ArrayVar(String name, int size, PlexilType type, NodeUID uid, ILExpression init) {
+	public ArrayVar(String name, int size, PlexilType type, NodeUID uid, PValueList<?> init) {
 		super(name, uid, type);
 		this.size = size;
 		if ( ! getType().isArrayType()) {
@@ -24,7 +23,7 @@ public class ArrayVar extends ILVariable {
 		this.init = init;
 	}
 	
-	public ILExpression getInitialValue() {
+	public PValueList<?> getInitialValue() {
 		return init;
 	}
 
@@ -35,11 +34,6 @@ public class ArrayVar extends ILVariable {
 	@Override
 	public <P, R> R accept(ILVarVisitor<P, R> visitor, P param) {
 		return visitor.visitArray(this, param);
-	}
-
-	@Override
-	public String toString() {
-		return getName()+"[]";
 	}
 
 	@Override

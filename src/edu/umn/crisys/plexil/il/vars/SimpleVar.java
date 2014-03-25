@@ -2,6 +2,8 @@ package edu.umn.crisys.plexil.il.vars;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class SimpleVar extends ILVariable {
@@ -15,7 +17,12 @@ public class SimpleVar extends ILVariable {
 	public SimpleVar(String name, NodeUID uid, PlexilType type, ILExpression init) {
 		super(name, uid, type);
 		if (init == null) {
-			this.init = type.getUnknown();
+			if (type.isArrayType()) {
+				// Just use an empty array
+				init = new PValueList<PValue>(type);
+			} else {
+				this.init = type.getUnknown();
+			}
 		} else {
 			this.init = init;
 		}

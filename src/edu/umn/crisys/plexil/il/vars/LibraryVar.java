@@ -13,7 +13,6 @@ public class LibraryVar extends ILVariable {
     private ILExpression libOrAncestorsEnds;
     private ILExpression libOrAncestorsExits;
     private Map<String,ILExpression> aliases;
-    private String libPlexilID;
 
 	public LibraryVar(String libID, NodeUID uid, ILExpression libNodeState,
             Map<String,ILExpression> aliases) {
@@ -59,7 +58,7 @@ public class LibraryVar extends ILVariable {
     }
     
     public String getLibraryPlexilID() {
-    	return libPlexilID;
+    	return getName();
     }
 	
 	@Override

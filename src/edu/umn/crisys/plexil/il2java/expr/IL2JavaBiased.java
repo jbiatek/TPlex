@@ -14,12 +14,17 @@ import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
+import edu.umn.crisys.plexil.il.expr.AliasExpr;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
@@ -32,7 +37,6 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 /**
  * Translate a boolean Expression with biasing. If you pass this to 
@@ -130,8 +134,10 @@ class IL2JavaBiased implements ILExprVisitor<JCodeModel, JExpression> {
     	List<ILExpression> children = new ArrayList<ILExpression>();
         for (Expression childExpr : op.getArguments()) {
         	ILExpression child = (ILExpression) childExpr;
-        	if (ILEval.isConstant(child)) {
-        		// Can we drop this entirely?
+        	// Should we remove this child?
+        	if ((op.getOperator() == Operator.AND || op.getOperator() == Operator.OR) 
+        			&& ILEval.isConstant(child)) {
+        		// Maybe. It's a constant, and we're using a known operator.
         		PBoolean eval = (PBoolean) ILEval.eval(child);
         		if (op.getOperator() == Operator.AND && eval.isTrue()) {
         			continue;
@@ -245,9 +251,28 @@ class IL2JavaBiased implements ILExprVisitor<JCodeModel, JExpression> {
 	}
 
 	@Override
-	public JExpression visitVariable(IntermediateVariable var,
-			JCodeModel cm) {
+	public JExpression visitAlias(AliasExpr alias, JCodeModel cm) {
+		return wrap(ILExprToJava.toJava(ensureBool(alias), cm));
+	}
+
+	@Override
+	public JExpression visitSimple(SimpleVar var, JCodeModel cm) {
 		return wrap(ILExprToJava.toJava(ensureBool(var), cm));
+	}
+
+	@Override
+	public JExpression visitArray(ArrayVar array, JCodeModel cm) {
+		throw new RuntimeException("Not a boolean: "+array);
+	}
+
+	@Override
+	public JExpression visitLibrary(LibraryVar lib, JCodeModel cm) {
+		throw new RuntimeException("Not a boolean: "+lib);
+	}
+
+	@Override
+	public JExpression visitGetNodeState(GetNodeStateExpr state, JCodeModel cm) {
+		throw new RuntimeException("Not a boolean: "+state);
 	}
 
 	@Override

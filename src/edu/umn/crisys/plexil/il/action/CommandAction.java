@@ -3,21 +3,24 @@ package edu.umn.crisys.plexil.il.action;
 import java.util.List;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.translator.il.vars.CommandHandleReference;
 
 public class CommandAction implements PlexilAction {
 
-    private CommandHandleReference handle;
+    private SimpleVar handle;
     private ILExpression name;
     private List<ILExpression> args;
+    private ILExpression assignResultTo;
     
-    public CommandAction(CommandHandleReference handle, ILExpression name, 
-            List<ILExpression> args) {
-        this.handle = handle;
-        this.name = name;
+    public CommandAction(SimpleVar handle, ILExpression name, 
+            List<ILExpression> args, ILExpression assignResultTo) {
+        PlexilType.COMMAND_HANDLE.typeCheck(handle.getType());
         PlexilType.STRING.typeCheck(name.getType());
+    	this.handle = handle;
+        this.name = name;
         this.args = args;
+        this.assignResultTo = assignResultTo;
     }
     
     public List<ILExpression> getArgs() {
@@ -28,8 +31,12 @@ public class CommandAction implements PlexilAction {
     	return name;
     }
     
-    public CommandHandleReference getHandle() {
+    public SimpleVar getHandle() {
     	return handle;
+    }
+    
+    public ILExpression getPossibleLeftHandSide() {
+    	return assignResultTo;
     }
     
     @Override

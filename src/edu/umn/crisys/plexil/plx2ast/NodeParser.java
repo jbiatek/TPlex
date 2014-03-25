@@ -278,6 +278,7 @@ public class NodeParser {
         }
     }
     
+    
     private static class DeclaredVarInfo {
         public String name = null;
         public PlexilType type = null;

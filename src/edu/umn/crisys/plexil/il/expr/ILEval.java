@@ -11,6 +11,9 @@ import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
@@ -22,7 +25,6 @@ import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
 import edu.umn.crisys.plexil.java.values.UnknownValue;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public class ILEval implements ILExprVisitor<Void, PValue> {
 
@@ -103,11 +105,32 @@ public class ILEval implements ILExprVisitor<Void, PValue> {
 		return UnknownValue.get();
 	}
 
+
 	@Override
-	public PValue visitVariable(IntermediateVariable var, Void param) {
+	public PValue visitSimple(SimpleVar var, Void param) {
 		return UnknownValue.get();
 	}
 
+	@Override
+	public PValue visitArray(ArrayVar array, Void param) {
+		return UnknownValue.get();
+	}
+
+	@Override
+	public PValue visitLibrary(LibraryVar lib, Void param) {
+		return UnknownValue.get();
+	}
+
+	@Override
+	public PValue visitAlias(AliasExpr alias, Void param) {
+		return UnknownValue.get();
+	}
+
+	@Override
+	public PValue visitGetNodeState(GetNodeStateExpr state, Void param) {
+		return UnknownValue.get();
+	}
+	
 	@Override
 	public PValue visitBooleanValue(BooleanValue bool, Void param) {
 		return bool;
@@ -157,5 +180,6 @@ public class ILEval implements ILExprVisitor<Void, PValue> {
 	public PValue visitNodeState(NodeState state, Void param) {
 		return state;
 	}
+
 	
 }

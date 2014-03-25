@@ -3,26 +3,26 @@ package edu.umn.crisys.plexil.il.action;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
+import edu.umn.crisys.plexil.il.vars.ILVariable;
 
 public class ResetNodeAction implements PlexilAction {
     
-    private List<IntermediateVariable> varsToReset = new LinkedList<IntermediateVariable>();
+    private List<ILVariable> varsToReset = new LinkedList<ILVariable>();
     
-    public void addVariableToReset(IntermediateVariable var) {
+    public void addVariableToReset(ILVariable var) {
         varsToReset.add(var);
     }
     
     @Override
     public String toString() {
         String ret = "Reset variables: ";
-        for (IntermediateVariable v : varsToReset) {
+        for (ILVariable v : varsToReset) {
             ret += v + ", ";
         }
         return ret.substring(0, ret.length() - 1);
     }
 
-	public List<IntermediateVariable> getVars() {
+	public List<ILVariable> getVars() {
 		return varsToReset;
 	}
 

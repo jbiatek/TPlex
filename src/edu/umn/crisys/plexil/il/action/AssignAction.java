@@ -1,17 +1,19 @@
 package edu.umn.crisys.plexil.il.action;
 
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
-import edu.umn.crisys.plexil.translator.il.vars.IntermediateVariable;
 
 public class AssignAction implements PlexilAction {
 
-    private IntermediateVariable lhs;
+    private ILExpression lhs;
     private ILExpression rhs;
     private int priority;
     
     
-    public AssignAction(IntermediateVariable vr, ILExpression rhs, int priority) {
-        this.lhs = vr;
+    public AssignAction(ILExpression lhs, ILExpression rhs, int priority) {
+    	if ( ! lhs.isAssignable()) {
+    		throw new RuntimeException(lhs+" is not assignable!");
+    	}
+        this.lhs = lhs;
         this.rhs = rhs;
         this.priority = priority;
     }
@@ -25,7 +27,7 @@ public class AssignAction implements PlexilAction {
         return "Assignment: "+lhs+" = "+rhs;
     }
 
-	public IntermediateVariable getLHS() {
+	public ILExpression getLHS() {
 		return lhs;
 	}
 
