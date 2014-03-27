@@ -277,6 +277,13 @@ public class NodeToIL {
     }
     
     ILExpression getThisOrAncestorsExits() {
+        if (myNode.getExitCondition() instanceof BooleanValue && 
+        		((BooleanValue) myNode.getExitCondition()).isFalse()) {
+        	// We don't even need it.
+        	if (parent != null) return parent.getThisOrAncestorsExits();
+        	else return new RootAncestorExitExpr();
+        }
+    	
         ILExpression myExit = toIL(myNode.getExitCondition());
         if (parent != null) {
             return Operation.or(myExit, parent.getThisOrAncestorsExits());
@@ -286,6 +293,14 @@ public class NodeToIL {
     }
 
     ILExpression getThisOrAncestorsEnds() {
+        if (myNode.getEndCondition() instanceof BooleanValue && 
+        		((BooleanValue) myNode.getEndCondition()).isFalse()) {
+        	// We don't even need it.
+        	if (parent != null) return parent.getThisOrAncestorsEnds();
+        	else return new RootAncestorEndExpr();
+        }
+
+    	
         ILExpression myEnd = toIL(myNode.getEndCondition());
         if (parent != null) {
             return Operation.or(myEnd, parent.getThisOrAncestorsEnds());
@@ -295,6 +310,14 @@ public class NodeToIL {
     }
 
     ILExpression getThisAndAncestorsInvariants() {
+        if (myNode.getInvariantCondition() instanceof BooleanValue && 
+        		((BooleanValue) myNode.getInvariantCondition()).isTrue()) {
+        	// We don't even need it.
+        	if (parent != null) return parent.getThisAndAncestorsInvariants();
+        	else return new RootAncestorInvariantExpr();
+        }
+
+    	
         ILExpression myInv = toIL(myNode.getInvariantCondition());
         if (parent != null) {
             return Operation.and(myInv, parent.getThisAndAncestorsInvariants());
