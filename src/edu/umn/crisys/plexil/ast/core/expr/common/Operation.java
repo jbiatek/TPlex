@@ -71,6 +71,15 @@ public class Operation extends CompositeExpr {
         return new Operation(Operator.NE, one, two);
     }
     
+    public static Operation eq(Expression one, Expression two, PlexilType extraInfo) {
+        return new Operation(Operator.EQ, extraInfo, one, two);
+    }
+    
+    public static Operation ne(Expression one, Expression two, PlexilType extraInfo) {
+        return new Operation(Operator.NE, extraInfo, one, two);
+    }
+
+    
     public static Operation ge(Expression one, Expression two) {
         return new Operation(Operator.GE, one, two);
     }
@@ -185,9 +194,9 @@ public class Operation extends CompositeExpr {
         ISKNOWN(1, "isKnown(", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
                 
         // TODO: Do we need casting?
-        CAST_BOOL(1, "(PBoolean) (", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
-        CAST_NUMERIC(1, "(PNumeric) (", PlexilType.UNKNOWN, PlexilType.NUMERIC),
-        CAST_STRING(1, "(PString) (", PlexilType.UNKNOWN, PlexilType.STRING),
+        CAST_BOOL(1, "(PBoolean) (", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
+        CAST_NUMERIC(1, "(PNumeric) (", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        CAST_STRING(1, "(PString) (", PlexilType.STRING, PlexilType.STRING),
         
         ABS(1, "abs(", PlexilType.NUMERIC, PlexilType.NUMERIC),
         ADD(-1, "+", PlexilType.NUMERIC, PlexilType.NUMERIC),
@@ -342,44 +351,60 @@ public class Operation extends CompositeExpr {
             return ret+args.get(args.size()-1)+end;
         }
         
-        private void checkArgs(List<Expression>args) {
-            if (args.size() == 0) {
-                throw new RuntimeException("No arguments at all to "+this+"?");
-            } else if (expectedArgs != -1 && expectedArgs != args.size()) {
-                throw new RuntimeException("Expected "+expectedArgs+" args, not "+args.size());
-            }
-            
-            for (Expression e : args) {
-                argType.typeCheck(e.getType());
-            }
-        }
-        
     }
     
-    private Operator myOperator;
+    private Operator op;
     private List<Expression> args;
+    private PlexilType argType = null;
+    
+    private Operation(Operator op, PlexilType newArgType, List<Expression> args) {
+        this.op = op;
+        this.args = args;
+        this.argType = newArgType == null ? op.argType : newArgType;
+        checkArgs();
+    }
     
     private Operation(Operator op, List<Expression> args) {
-        this.myOperator = op;
-        this.args = args;
-        op.checkArgs(args);
+    	this(op, null, args);
     }
     
     private Operation(Operator op, Expression... args) {
-        this(op, Arrays.asList(args));
+        this(op, null, Arrays.asList(args));
     }
     
+    private Operation(Operator op, PlexilType argType, Expression... args) {
+        this(op, argType, Arrays.asList(args));
+    }
+    
+    private void checkArgs() {
+        if (args.size() == 0) {
+            throw new RuntimeException("No arguments at all to "+this+"?");
+        } else if (op.expectedArgs != -1 && op.expectedArgs != args.size()) {
+            throw new RuntimeException("Expected "+op.expectedArgs+" args, not "+args.size());
+        }
+        // For casts, we're obviously skipping this. Everything else should 
+        // check out, though. 
+        if (op != Operator.CAST_BOOL && 
+        		op != Operator.CAST_NUMERIC &&
+        		op != Operator.CAST_STRING) {
+	        for (Expression e : args) {
+	            argType.typeCheck(e.getType());
+	        }
+        }
+    }
+
+    
     public Operator getOperator() {
-        return myOperator;
+        return op;
     }
     
     @Override
     public PlexilType getType() {
-        return myOperator.returnType;
+        return op.returnType;
     }
     
     public PlexilType getExpectedArgumentType() {
-        return myOperator.argType;
+        return argType;
     }
 
     @Override
@@ -389,12 +414,12 @@ public class Operation extends CompositeExpr {
 
     @Override
     public Operation getCloneWithArgs(List<Expression> args) {
-        return new Operation(myOperator, args);
+        return new Operation(op, args);
     }
 
     @Override
     public String toString() {
-        return myOperator.toString(args);
+        return op.toString(args);
     }
     
     @Override

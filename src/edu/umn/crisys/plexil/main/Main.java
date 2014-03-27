@@ -23,6 +23,7 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
+import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
 
@@ -80,13 +81,16 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--no-optimizations")) {
 					optimize = false;
+					continue;
 				} else if (args[i].equals("--print-type-info")) {
 					analyzeTypes = true;
+					continue;
 				} else if (args[i].equals("-h") || args[i].equals("--help")) {
 					System.out.println(usage);
 					return;
 				} else {
 					System.err.println("Error: Unrecognized option "+args[i]+". Try --help.");
+					return;
 				}
 			}
 			// Must be a file.
@@ -181,7 +185,23 @@ public class Main {
 		// Yay, all done. Did they ask for a type analysis?
 		if (analyzeTypes) {
 			for (String filename : asts.keySet()) {
+				PlexilPlan plan = asts.get(filename);
+				TypeAnalyzer analyzer = new TypeAnalyzer();
+				analyzer.checkNode(plan.getRootNode());
+				Map<String, PlexilType> lookups = analyzer.getLookupTypes();
+				Map<String, PlexilType> commands = analyzer.getCommandTypes();
 				
+				System.out.println("Type information for "+filename+": ");
+				System.out.println("  Lookups:");
+				for (String key : lookups.keySet()) {
+					System.out.println("    "+key+" returns "+analyzer.getLookupTypes().get(key));
+				}
+				System.out.println("  Commands (null means no returned variables found):");
+				for (String key : commands.keySet()) {
+					String type = commands.get(key) == null ? "nothing" : commands.get(key).toString();
+					System.out.println("    "+key+" returns "+type);
+				}
+				System.out.println();
 			}
 		}
 		

@@ -290,9 +290,9 @@ public class ExprParser {
         assertClosedTag(start, xml);
 
         if (negate) {
-            return Operation.ne(one, two);
+            return Operation.ne(one, two, type);
         } else {
-            return Operation.eq(one, two);
+            return Operation.eq(one, two, type);
         }    
     }
 
