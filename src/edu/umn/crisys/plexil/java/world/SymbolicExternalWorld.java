@@ -98,7 +98,8 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	private String symbolicString(String makeMeSymbolic) {
-		return makeMeSymbolic;
+		//return makeMeSymbolic;
+		throw new RuntimeException("Symbolic strings are broken in SPF, don't use them");
 	}
 	
 	private PValue getSymbolicPValueOfType(PlexilType t) {

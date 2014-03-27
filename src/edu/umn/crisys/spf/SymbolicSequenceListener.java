@@ -47,6 +47,7 @@ import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
 import gov.nasa.jpf.symbc.numeric.PathCondition;
 import gov.nasa.jpf.symbc.numeric.RealExpression;
 import gov.nasa.jpf.symbc.numeric.SymbolicConstraintsGeneral;
+import gov.nasa.jpf.symbc.string.DerivedStringExpression;
 import gov.nasa.jpf.symbc.string.StringSymbolic;
 
 import java.io.PrintWriter;
@@ -425,6 +426,13 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 			}
 			else if (attribute instanceof RealExpression)
 				solution = solution+ ((RealExpression) attribute).solution();
+			else if (attribute instanceof DerivedStringExpression) {
+				try {
+					solution = solution+ ((DerivedStringExpression) attribute).solution();
+				} catch (NullPointerException e){
+					solution = solution+"derived_string_expression_null_pointer";
+				}
+			}
 			else
 				solution = solution+ ((StringSymbolic) attribute).solution();
 			return solution;
