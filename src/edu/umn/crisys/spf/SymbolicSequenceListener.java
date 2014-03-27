@@ -427,10 +427,18 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 			else if (attribute instanceof RealExpression)
 				solution = solution+ ((RealExpression) attribute).solution();
 			else if (attribute instanceof DerivedStringExpression) {
-				try {
-					solution = solution+ ((DerivedStringExpression) attribute).solution();
-				} catch (NullPointerException e){
-					solution = solution+"derived_string_expression_null_pointer";
+				DerivedStringExpression dse = (DerivedStringExpression) attribute;
+				if (dse.right == null && dse.left == null) {
+					// This is gonna NullPointer at us.
+					solution += "derived_string_both_null";
+					System.err.println("Derived string expression had both sides null. Operator was "+dse.op);
+				} else if (dse.left == null) {
+					// Ah, right isn't null though! Let's use that.
+					// For some reason, the default one doesn't check this.
+					solution += dse.right.solution();
+				}
+				else {
+					solution = solution+ dse.solution();
 				}
 			}
 			else

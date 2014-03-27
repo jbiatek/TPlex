@@ -204,8 +204,16 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			if (lookupTypes.get(lookup) == null) {
 				throw new RuntimeException("Type not given for lookup "+lookup);
 			}
-			PValue newValue = getSymbolicPValueOfType(lookupTypes.get(lookup));
-			changeLookup(lookup, newValue);
+			if (lookupTypes.get(lookup) == PlexilType.INTEGER) {
+				// Special handling for integers
+				// TODO: Probably want a similar approach for reals, as well as
+				// for commands that return ints. Ideally, nothing should ever
+				// get cast to a string.
+				changeLookup(lookup, symbolicInt(0));
+			} else {
+				PValue newValue = getSymbolicPValueOfType(lookupTypes.get(lookup));
+				changeLookup(lookup, newValue);
+			}
 		}
 		
 		if (oldValueCaptured != null && increasingLookups.contains(lookup)) {
@@ -289,6 +297,10 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		// Should output <tag>result</tag>
 	}
 	
+	private void psxResultOrValue(Object tag, int result) {
+		// Should output <tag>result</tag>
+	}
+	
 	private void psxState(Object name, Object type) {
 		// Should output <State name="name" type="type">
 	}
@@ -332,10 +344,21 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	private Object unwrapValue(PValue p) {
+		// TODO: Find ways around casting to a string. It works, and there's a
+		// reason why I did it, but strings are a bag of hurt in SPF. Add 
+		// more things like psxResultOrValue(String, int), and more special
+		// cases so that we can use them. 
 		if (p.isUnknown()) {
 			return "UNKNOWN";
 		}
 		return p.toString();
+	}
+	
+	private void changeLookup(String lookup, int symbolicInt) {
+		currentLookupValues.put(StringValue.get(lookup), IntegerValue.get(symbolicInt));
+		psxState(lookup, "int");
+		psxResultOrValue("Value", symbolicInt);
+		psxEndState();
 	}
 	
 	private void changeLookup(String lookup, PValue v) {
