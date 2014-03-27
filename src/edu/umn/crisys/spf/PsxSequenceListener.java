@@ -28,7 +28,7 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		super(conf, jpf);
 		String dest = conf.getString("psxlistener.output_dir", "psx_output");
 		writeRedundantCasesToo = conf.getBoolean("psxlistener.output_all_tests", false);
-		outputDebugComments  = conf.getBoolean("output_debug_comments", false);
+		outputDebugComments  = conf.getBoolean("psxlistener.output_debug_comments", false);
 		testCaseDestination = new File(dest);
 	}
 
