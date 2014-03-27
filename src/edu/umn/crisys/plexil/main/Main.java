@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
@@ -18,6 +19,7 @@ import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
+import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
@@ -184,6 +186,9 @@ public class Main {
 		
 		// Yay, all done. Did they ask for a type analysis?
 		if (analyzeTypes) {
+			System.out.println();
+			System.out.println("Type analysis:");
+			System.out.println("--------------");
 			for (String filename : asts.keySet()) {
 				PlexilPlan plan = asts.get(filename);
 				TypeAnalyzer analyzer = new TypeAnalyzer();
@@ -191,16 +196,18 @@ public class Main {
 				Map<String, PlexilType> lookups = analyzer.getLookupTypes();
 				Map<String, PlexilType> commands = analyzer.getCommandTypes();
 				
-				System.out.println("Type information for "+filename+": ");
-				System.out.println("  Lookups:");
+				System.out.println("  "+filename+": ");
+				System.out.println("    Lookups:");
 				for (String key : lookups.keySet()) {
-					System.out.println("    "+key+" returns "+analyzer.getLookupTypes().get(key));
+					System.out.println("      "+key+" returns "+analyzer.getLookupTypes().get(key));
 				}
-				System.out.println("  Commands (null means no returned variables found):");
+				System.out.println("    Commands (null means no returned variables found):");
 				for (String key : commands.keySet()) {
 					String type = commands.get(key) == null ? "nothing" : commands.get(key).toString();
-					System.out.println("    "+key+" returns "+type);
+					System.out.println("      "+key+" returns "+type);
 				}
+				
+				
 				System.out.println();
 			}
 		}

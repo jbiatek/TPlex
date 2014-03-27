@@ -22,175 +22,175 @@ public class TargetPanorama
     extends JavaPlan
 {
 
-    private SimplePValue<PReal> DriveToTarget__Drive____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__Drive____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__TakePancam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__SetTimeoutFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__SetDriveFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PBoolean> DriveToTarget__drive_done = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__TakeNavcam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__StopForTarget__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__Drive____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__TakeNavcam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__TakePancam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PBoolean> DriveToTarget__StopForTimeout__SetTimeoutFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__SetDriveFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__Drive____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__Drive____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<CommandHandleState> DriveToTarget__Drive____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PBoolean> DriveToTarget__timeout = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__StopForTimeout__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__TakeNavcam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__TakePancam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__StopForTimeout____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__Drive____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeFailureType> DriveToTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeOutcome> DriveToTarget__TakeNavcam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PBoolean> DriveToTarget__StopForTimeout__SetTimeoutFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__SetTimeoutFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
     private SimplePValue<PReal> DriveToTarget____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<CommandHandleState> DriveToTarget__StopForTimeout__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeOutcome> DriveToTarget__TakePancam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PBoolean> DriveToTarget__StopForTarget__SetDriveFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__Drive____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PBoolean> DriveToTarget__timeout = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<CommandHandleState> DriveToTarget__TakeNavcam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
     private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<CommandHandleState> DriveToTarget__StopForTarget__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<NodeOutcome> DriveToTarget__Drive____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__StopForTimeout____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
     private SimplePValue<NodeOutcome> DriveToTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PBoolean> DriveToTarget__StopForTarget__SetDriveFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__SetDriveFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PBoolean> DriveToTarget__drive_done = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__SetDriveFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<CommandHandleState> DriveToTarget__TakePancam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__TakePancam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__TakePancam____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__Drive____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<NodeFailureType> DriveToTarget__TakeNavcam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimpleCurrentNext<Integer> DriveToTarget__state = new SimpleCurrentNext<Integer>(0);
     private SimpleCurrentNext<Integer> DriveToTarget__Drive__state = new SimpleCurrentNext<Integer>(0);
     private SimpleCurrentNext<Integer> DriveToTarget__StopForTimeout__state = new SimpleCurrentNext<Integer>(0);
@@ -220,7 +220,7 @@ DriveToTarget : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (<root node's parent state> == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@66218741 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2336f0c9 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -268,7 +268,7 @@ DriveToTarget : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@329a0466 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1d96de7e ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -293,7 +293,7 @@ DriveToTarget : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1d96de7e ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1be9315f ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -318,7 +318,7 @@ DriveToTarget : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (<root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1be9315f ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6aa86249 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -367,7 +367,7 @@ DriveToTarget : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6aa86249 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@54ccdd53 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -392,7 +392,7 @@ DriveToTarget : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@54ccdd53 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@55d69fa3 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -441,7 +441,7 @@ DriveToTarget : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1a35bab2 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3d74098f ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -466,7 +466,7 @@ DriveToTarget : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3d74098f ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@d1faace ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -492,7 +492,7 @@ DriveToTarget : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@d1faace ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1a06c11d ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -521,7 +521,7 @@ DriveToTarget : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1a06c11d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@31706444 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -546,7 +546,7 @@ DriveToTarget : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@31706444 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@49c6c5b7 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -669,66 +669,66 @@ DriveToTarget : FINISHED (1) -> INACTIVE
         /* In Actions executed here: */
         switch (DriveToTarget__state.getNext()) {
             case  1 :
-                MicroStep___DriveToTarget__StopForTarget();
-                MicroStep___DriveToTarget__TakePancam();
-                MicroStep___DriveToTarget__TakeNavcam();
-                MicroStep___DriveToTarget__Drive();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__TakeNavcam();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__Drive();
+                MicroStep___DriveToTarget__TakePancam();
                 break;
             case  2 :
-                MicroStep___DriveToTarget__StopForTarget();
-                MicroStep___DriveToTarget__TakePancam();
-                MicroStep___DriveToTarget__TakeNavcam();
-                MicroStep___DriveToTarget__Drive();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__TakeNavcam();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__Drive();
+                MicroStep___DriveToTarget__TakePancam();
                 break;
             case  3 :
-                MicroStep___DriveToTarget__StopForTarget();
-                MicroStep___DriveToTarget__TakePancam();
-                MicroStep___DriveToTarget__TakeNavcam();
-                MicroStep___DriveToTarget__Drive();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__TakeNavcam();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__Drive();
+                MicroStep___DriveToTarget__TakePancam();
                 break;
             case  4 :
-                MicroStep___DriveToTarget__StopForTarget();
-                MicroStep___DriveToTarget__TakePancam();
-                MicroStep___DriveToTarget__TakeNavcam();
-                MicroStep___DriveToTarget__Drive();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__TakeNavcam();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__Drive();
+                MicroStep___DriveToTarget__TakePancam();
                 break;
             case  5 :
-                MicroStep___DriveToTarget__StopForTarget();
-                MicroStep___DriveToTarget__TakePancam();
-                MicroStep___DriveToTarget__TakeNavcam();
-                MicroStep___DriveToTarget__Drive();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__TakeNavcam();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__Drive();
+                MicroStep___DriveToTarget__TakePancam();
                 break;
             case  6 :
-                MicroStep___DriveToTarget__StopForTarget();
-                MicroStep___DriveToTarget__TakePancam();
-                MicroStep___DriveToTarget__TakeNavcam();
-                MicroStep___DriveToTarget__Drive();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__TakeNavcam();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__Drive();
+                MicroStep___DriveToTarget__TakePancam();
                 break;
         }
     }
 
     public NodeState STATE___DriveToTarget() {
         switch (DriveToTarget__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget");
     }
@@ -743,7 +743,7 @@ DriveToTarget__Drive : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6c87080f ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@15224873 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -791,7 +791,7 @@ DriveToTarget__Drive : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@15224873 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7dc280db ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -816,7 +816,7 @@ DriveToTarget__Drive : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7dc280db ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6c99ea5d ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -841,7 +841,7 @@ DriveToTarget__Drive : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6c99ea5d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6ce9b75e ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -892,7 +892,7 @@ DriveToTarget__Drive : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@752dc320 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@f65a5fa ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -917,7 +917,7 @@ DriveToTarget__Drive : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@f65a5fa ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5a73c7fb ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -966,7 +966,7 @@ DriveToTarget__Drive : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5a73c7fb ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@674e5e21 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -991,7 +991,7 @@ DriveToTarget__Drive : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@674e5e21 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4a05fd83 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -1017,7 +1017,7 @@ DriveToTarget__Drive : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4a05fd83 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4f46c96c ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -1046,7 +1046,7 @@ DriveToTarget__Drive : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4f46c96c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3051fa1d ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -1071,7 +1071,7 @@ DriveToTarget__Drive : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3051fa1d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@55fb9eb3 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -1196,20 +1196,20 @@ DriveToTarget__Drive : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__Drive() {
         switch (DriveToTarget__Drive__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__Drive");
     }
@@ -1224,7 +1224,7 @@ DriveToTarget__StopForTimeout : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@55fb9eb3 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7a7025de ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -1272,7 +1272,7 @@ DriveToTarget__StopForTimeout : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7a7025de ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@58c6509e ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -1297,7 +1297,7 @@ DriveToTarget__StopForTimeout : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@58c6509e ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@43d6e29a ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -1322,7 +1322,7 @@ DriveToTarget__StopForTimeout : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@43d6e29a ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50b70f41 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -1373,7 +1373,7 @@ DriveToTarget__StopForTimeout : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@224a9dcd ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50be0f51 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -1398,7 +1398,7 @@ DriveToTarget__StopForTimeout : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@50be0f51 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6ddfb840 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -1447,7 +1447,7 @@ DriveToTarget__StopForTimeout : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6ddfb840 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7ab9aa1a ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -1472,7 +1472,7 @@ DriveToTarget__StopForTimeout : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7ab9aa1a ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@334ecfe8 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -1498,7 +1498,7 @@ DriveToTarget__StopForTimeout : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@334ecfe8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7afc02c8 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -1527,7 +1527,7 @@ DriveToTarget__StopForTimeout : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7b33a2a8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@371ad78c ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -1552,7 +1552,7 @@ DriveToTarget__StopForTimeout : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7afc02c8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@433d4497 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -1671,48 +1671,48 @@ DriveToTarget__StopForTimeout : FINISHED (1) -> INACTIVE
         /* In Actions executed here: */
         switch (DriveToTarget__StopForTimeout__state.getNext()) {
             case  1 :
-                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 MicroStep___DriveToTarget__StopForTimeout__Stop();
+                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 break;
             case  2 :
-                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 MicroStep___DriveToTarget__StopForTimeout__Stop();
+                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 break;
             case  3 :
-                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 MicroStep___DriveToTarget__StopForTimeout__Stop();
+                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 break;
             case  4 :
-                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 MicroStep___DriveToTarget__StopForTimeout__Stop();
+                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 break;
             case  5 :
-                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 MicroStep___DriveToTarget__StopForTimeout__Stop();
+                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 break;
             case  6 :
-                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 MicroStep___DriveToTarget__StopForTimeout__Stop();
+                MicroStep___DriveToTarget__StopForTimeout__SetTimeoutFlag();
                 break;
         }
     }
 
     public NodeState STATE___DriveToTarget__StopForTimeout() {
         switch (DriveToTarget__StopForTimeout__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTimeout");
     }
@@ -1727,7 +1727,7 @@ DriveToTarget__StopForTimeout__Stop : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTimeout.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6b6237fd ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3c407d5 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -1775,7 +1775,7 @@ DriveToTarget__StopForTimeout__Stop : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7d49fa1e ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3ade32e1 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -1800,7 +1800,7 @@ DriveToTarget__StopForTimeout__Stop : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3c407d5 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@51de6ff8 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -1825,7 +1825,7 @@ DriveToTarget__StopForTimeout__Stop : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTimeout__Stop.state && FINISHED == DriveToTarget__StopForTimeout__SetTimeoutFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3ade32e1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@62892cc5 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -1876,7 +1876,7 @@ DriveToTarget__StopForTimeout__Stop : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@51de6ff8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1bda6c0d ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -1901,7 +1901,7 @@ DriveToTarget__StopForTimeout__Stop : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@62892cc5 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@20ebd7c4 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -1950,7 +1950,7 @@ DriveToTarget__StopForTimeout__Stop : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1bda6c0d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5ba295be ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -1975,7 +1975,7 @@ DriveToTarget__StopForTimeout__Stop : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@20ebd7c4 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@f151bf2 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -2001,7 +2001,7 @@ DriveToTarget__StopForTimeout__Stop : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5ba295be ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@32ddb49a ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -2030,7 +2030,7 @@ DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@f151bf2 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@797c048c ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2055,7 +2055,7 @@ DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@32ddb49a ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3d0ec1a3 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -2180,20 +2180,20 @@ DriveToTarget__StopForTimeout__Stop : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTimeout__Stop() {
         switch (DriveToTarget__StopForTimeout__Stop__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTimeout__Stop");
     }
@@ -2208,7 +2208,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTimeout.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@797c048c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@13cad3a6 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2256,7 +2256,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3d0ec1a3 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@690d4170 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2281,7 +2281,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@13cad3a6 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@654355f1 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -2306,7 +2306,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTimeout__Stop.state && FINISHED == DriveToTarget__StopForTimeout__SetTimeoutFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@690d4170 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@27bf7527 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -2363,7 +2363,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@654355f1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@aa467d4 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -2394,7 +2394,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@27bf7527 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2f9c94c1 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -2425,7 +2425,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@aa467d4 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50ea2352 ]
  ----> (State #4)
 */
                         if (JavaPlan.DEBUG) {
@@ -2453,7 +2453,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2f9c94c1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3bb505fe ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2478,7 +2478,7 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@50ea2352 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@699c8551 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -2601,20 +2601,20 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTimeout__SetTimeoutFlag() {
         switch (DriveToTarget__StopForTimeout__SetTimeoutFlag__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTimeout__SetTimeoutFlag");
     }
@@ -2629,7 +2629,7 @@ DriveToTarget__StopForTarget : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3bb505fe ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@22f4bf02 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2677,7 +2677,7 @@ DriveToTarget__StopForTarget : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@699c8551 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@72282e3b ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2702,7 +2702,7 @@ DriveToTarget__StopForTarget : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@22f4bf02 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2bf35e0a ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -2727,7 +2727,7 @@ DriveToTarget__StopForTarget : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@72282e3b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@76a2f910 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -2752,7 +2752,7 @@ DriveToTarget__StopForTarget : WAITING (5) -> FINISHED
 <SKIP_CONDITION T?> (timeout)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2bf35e0a ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@458dc649 ]
  ----> (State #6)
 */
                                 if (JavaPlan.DEBUG) {
@@ -2804,7 +2804,7 @@ DriveToTarget__StopForTarget : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@76a2f910 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5ed5064b ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -2829,7 +2829,7 @@ DriveToTarget__StopForTarget : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@458dc649 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@73905690 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -2878,7 +2878,7 @@ DriveToTarget__StopForTarget : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5ed5064b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@9234336 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -2903,7 +2903,7 @@ DriveToTarget__StopForTarget : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@73905690 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6a1192e9 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -2929,7 +2929,7 @@ DriveToTarget__StopForTarget : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@9234336 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@27c43566 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -2958,7 +2958,7 @@ DriveToTarget__StopForTarget : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6a1192e9 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@428dcfef ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -2983,7 +2983,7 @@ DriveToTarget__StopForTarget : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@27c43566 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6c4e760b ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -3130,20 +3130,20 @@ DriveToTarget__StopForTarget : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTarget() {
         switch (DriveToTarget__StopForTarget__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTarget");
     }
@@ -3158,7 +3158,7 @@ DriveToTarget__StopForTarget__Stop : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@132803ba ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5984b649 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -3206,7 +3206,7 @@ DriveToTarget__StopForTarget__Stop : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@280cb229 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@17dba089 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -3231,7 +3231,7 @@ DriveToTarget__StopForTarget__Stop : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5984b649 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@54088e9b ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -3256,7 +3256,7 @@ DriveToTarget__StopForTarget__Stop : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTarget__Stop.state && FINISHED == DriveToTarget__StopForTarget__SetDriveFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@17dba089 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7dca8d36 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -3307,7 +3307,7 @@ DriveToTarget__StopForTarget__Stop : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@54088e9b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7cfd14be ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -3332,7 +3332,7 @@ DriveToTarget__StopForTarget__Stop : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7dca8d36 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4b5d060d ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -3381,7 +3381,7 @@ DriveToTarget__StopForTarget__Stop : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7cfd14be ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@48386622 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -3406,7 +3406,7 @@ DriveToTarget__StopForTarget__Stop : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4b5d060d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6eb96738 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -3432,7 +3432,7 @@ DriveToTarget__StopForTarget__Stop : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@48386622 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4e27c652 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -3461,7 +3461,7 @@ DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6eb96738 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@154d5994 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -3486,7 +3486,7 @@ DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4e27c652 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@9340e79 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -3611,20 +3611,20 @@ DriveToTarget__StopForTarget__Stop : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTarget__Stop() {
         switch (DriveToTarget__StopForTarget__Stop__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTarget__Stop");
     }
@@ -3639,7 +3639,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@154d5994 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@38a22ea7 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -3687,7 +3687,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@9340e79 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1fa4f2fd ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -3712,7 +3712,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@38a22ea7 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@64cd046 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -3737,7 +3737,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTarget__Stop.state && FINISHED == DriveToTarget__StopForTarget__SetDriveFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1fa4f2fd ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1cfda6e5 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -3794,7 +3794,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@64cd046 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50d81341 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -3825,7 +3825,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1cfda6e5 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@19d839de ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -3856,7 +3856,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@50d81341 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@42bf2b13 ]
  ----> (State #4)
 */
                         if (JavaPlan.DEBUG) {
@@ -3884,7 +3884,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@19d839de ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@14a50ea1 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -3909,7 +3909,7 @@ DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@42bf2b13 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6063769d ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -4032,20 +4032,20 @@ DriveToTarget__StopForTarget__SetDriveFlag : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTarget__SetDriveFlag() {
         switch (DriveToTarget__StopForTarget__SetDriveFlag__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTarget__SetDriveFlag");
     }
@@ -4060,7 +4060,7 @@ DriveToTarget__TakeNavcam : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@14a50ea1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@22006edb ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -4108,7 +4108,7 @@ DriveToTarget__TakeNavcam : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6063769d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4a6dfd4d ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -4133,7 +4133,7 @@ DriveToTarget__TakeNavcam : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@22006edb ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7b10f067 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -4158,7 +4158,7 @@ DriveToTarget__TakeNavcam : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4a6dfd4d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@15173950 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -4183,7 +4183,7 @@ DriveToTarget__TakeNavcam : WAITING (5) -> FINISHED
 <SKIP_CONDITION T?> (drive_done)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7b10f067 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@27b3be01 ]
  ----> (State #6)
 */
                                 if (JavaPlan.DEBUG) {
@@ -4237,7 +4237,7 @@ DriveToTarget__TakeNavcam : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@15173950 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@97f4804 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -4262,7 +4262,7 @@ DriveToTarget__TakeNavcam : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@27b3be01 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@351037b ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -4311,7 +4311,7 @@ DriveToTarget__TakeNavcam : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@97f4804 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3bbb81f0 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -4336,7 +4336,7 @@ DriveToTarget__TakeNavcam : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@351037b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@134fd233 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -4362,7 +4362,7 @@ DriveToTarget__TakeNavcam : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3bbb81f0 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5d711c2c ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -4391,7 +4391,7 @@ DriveToTarget__TakeNavcam : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@134fd233 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2cf0bca1 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -4416,7 +4416,7 @@ DriveToTarget__TakeNavcam : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5d711c2c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@70f00513 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -4541,20 +4541,20 @@ DriveToTarget__TakeNavcam : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__TakeNavcam() {
         switch (DriveToTarget__TakeNavcam__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__TakeNavcam");
     }
@@ -4569,7 +4569,7 @@ DriveToTarget__TakePancam : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2cf0bca1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1ddd5c52 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -4617,7 +4617,7 @@ DriveToTarget__TakePancam : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@70f00513 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2fd81acf ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -4642,7 +4642,7 @@ DriveToTarget__TakePancam : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1ddd5c52 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@14c82493 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -4667,7 +4667,7 @@ DriveToTarget__TakePancam : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2fd81acf ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5fd9398d ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
@@ -4692,7 +4692,7 @@ DriveToTarget__TakePancam : WAITING (5) -> FINISHED
 <SKIP_CONDITION T?> (timeout)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@14c82493 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2e518924 ]
  ----> (State #6)
 */
                                 if (JavaPlan.DEBUG) {
@@ -4746,7 +4746,7 @@ DriveToTarget__TakePancam : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5fd9398d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6b02b23d ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -4771,7 +4771,7 @@ DriveToTarget__TakePancam : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2e518924 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7e03f9ad ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -4820,7 +4820,7 @@ DriveToTarget__TakePancam : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6b02b23d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@36fd0d7d ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
@@ -4845,7 +4845,7 @@ DriveToTarget__TakePancam : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7e03f9ad ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1f80a5bf ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
@@ -4871,7 +4871,7 @@ DriveToTarget__TakePancam : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@36fd0d7d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3701aec1 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
@@ -4900,7 +4900,7 @@ DriveToTarget__TakePancam : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1f80a5bf ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4f781d1d ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
@@ -4925,7 +4925,7 @@ DriveToTarget__TakePancam : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3701aec1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@56bf83ad ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
@@ -5050,20 +5050,20 @@ DriveToTarget__TakePancam : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__TakePancam() {
         switch (DriveToTarget__TakePancam__state.getCurrent()) {
-            case  5 :
-                return NodeState.FAILING;
-            case  4 :
-                return NodeState.ITERATION_ENDED;
-            case  1 :
-                return NodeState.WAITING;
             case  6 :
                 return NodeState.FINISHED;
-            case  2 :
-                return NodeState.EXECUTING;
+            case  4 :
+                return NodeState.ITERATION_ENDED;
             case  3 :
                 return NodeState.FINISHING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  1 :
+                return NodeState.WAITING;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__TakePancam");
     }

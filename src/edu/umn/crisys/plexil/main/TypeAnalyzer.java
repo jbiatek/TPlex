@@ -35,8 +35,9 @@ import edu.umn.crisys.plexil.java.values.UnknownValue;
 
 public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyVisitor<Node, Void>{
 	
-    public Map<String, PlexilType> lookups = new HashMap<String, PlexilType>();
-    public Map<String, PlexilType> commands = new HashMap<String, PlexilType>();
+    private Map<String, PlexilType> lookups = new HashMap<String, PlexilType>();
+    private Map<String, PlexilType> commands = new HashMap<String, PlexilType>();
+    
 
     
     public void checkNode(Node root) {
@@ -62,8 +63,11 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
     public Map<String, PlexilType> getCommandTypes() {
     	return commands;
     }
-    
 
+    private void customAdd(Map<String, PlexilType> map, Expression key, PlexilType value) {
+		customAdd(lookups, "("+key.toString()+") (expression)", value);
+    }
+    
     private void customAdd(Map<String, PlexilType> map, String key, PlexilType value) {
         if (map.containsKey(key)) {
         	// Check the existing value and make sure it makes sense.
@@ -91,8 +95,8 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
                 return;
             } else {
             	// They didn't match, and it wasn't numeric? Bad times.
-            	System.err.println("Found incompatible types for "+key+":");
-            	System.err.println("Before, I had "+map.get(key)+", but now I'm seeing "+value);
+            	System.err.println("***Found incompatible types for "+key+":");
+            	System.err.println("***Before, I had "+map.get(key)+", but now I'm seeing "+value);
             	return;
             }
         } else {
@@ -107,7 +111,7 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
 	public Void visitLookupNow(LookupNowExpr lookup, PlexilType currentType) {
 		Expression name = lookup.getLookupName();
 		if ( ! (name instanceof StringValue)) {
-			System.err.println("Non-constant lookup: "+name);
+			customAdd(lookups, name, currentType);
 		} else {
 			customAdd(lookups, ((StringValue)name).getString(), currentType);
 		}
@@ -119,7 +123,7 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
 	public Void visitLookupOnChange(LookupOnChangeExpr lookup, PlexilType currentType) {
 		Expression name = lookup.getLookupName();
 		if ( ! (name instanceof StringValue)) {
-			System.err.println("Non-constant lookup: "+name);
+			customAdd(lookups, name, currentType);
 		} else {
 			customAdd(lookups, ((StringValue)name).getString(), currentType);
 		}
@@ -128,19 +132,21 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
 	
 	@Override
 	public Void visitCommand(CommandBody cmd, Node n) {
-        // Get command name first
+		PlexilType typeToSet = null;
+		if (cmd.getVarToAssign() != null) {
+			typeToSet = resolveVariableType(cmd.getVarToAssign(), n);
+		}
+		// Even if it's null, we want to set it. Null means that it's a command
+		// that doesn't appear to return anything.
+		
+        // Get command name
 		Expression name = cmd.getCommandName();
 		if ( ! (name instanceof StringValue)) {
-			System.err.println("Non-constant command: "+name);
-			return null;
-		} 
-		String realName = ((StringValue)name).getString();
-		if (cmd.getVarToAssign() != null) {
-			PlexilType varType = resolveVariableType(cmd.getVarToAssign(), n);
-			customAdd(commands, realName, varType);
-		} else {
-			// Shouldn't assign anything, so add that information too.
-            customAdd(commands, realName, null);
+			// Don't try to extract string
+			customAdd(commands, name, typeToSet);
+		}  else {
+			String realName = ((StringValue)name).getString();
+			customAdd(commands, realName, typeToSet);
 		}
 		return null;
 	}
