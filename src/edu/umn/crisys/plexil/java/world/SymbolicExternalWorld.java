@@ -139,6 +139,12 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		regenerateLookup(lookup);
 	}
 	
+	public void addLookup(String lookup, PlexilType type, PValue initialValue) {
+		lookupTypes.put(lookup, type);
+		currentLookupValues.put(StringValue.get(lookup), initialValue);
+		sendLookupToPsx(lookup, toPsxTypeString(type), initialValue);
+	}
+	
 	/**
 	 * Create a Lookup which will return one of the given values symbolically.
 	 * @param lookup
@@ -149,12 +155,26 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		regenerateLookup(lookup);
 	}
 	
+	public void addLookup(PValue initialValue, String lookup, PValue... values) {
+		lookupEnums.put(lookup, Arrays.asList(values));
+		currentLookupValues.put(StringValue.get(lookup), initialValue);
+		sendLookupToPsx(lookup, toPsxTypeString(initialValue.getType()), initialValue);
+	}
+	
+	
 	public void addIncreasingLookup(String lookup, PlexilType type) {
 		if ( ! type.isNumeric()) {
 			throw new RuntimeException("Cannot create non-numeric increasing lookup");
 		}
 		addLookup(lookup, type);
 		increasingLookups.add(lookup);
+	}
+	
+	public void addIncreasingLookup(String lookup, int initialValue) {
+		addLookup(lookup, PlexilType.INTEGER);
+		increasingLookups.add(lookup);
+		currentLookupValues.put(StringValue.get(lookup), IntegerValue.get(initialValue));
+		sendLookupToPsx(lookup, initialValue);
 	}
 	
 	/**
@@ -356,8 +376,19 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	private void changeLookup(String lookup, int symbolicInt) {
 		currentLookupValues.put(StringValue.get(lookup), IntegerValue.get(symbolicInt));
+		sendLookupToPsx(lookup, "int", symbolicInt);
+	}
+	
+	
+	private void sendLookupToPsx(String lookup, int value) {
 		psxState(lookup, "int");
-		psxResultOrValue("Value", symbolicInt);
+		psxResultOrValue("Value", value);
+		psxEndState();
+	}
+	
+	private void sendLookupToPsx(String lookup, String type, Object value) {
+		psxState(lookup, "int");
+		psxResultOrValue("Value", value.toString());
 		psxEndState();
 	}
 	
@@ -367,9 +398,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			t = lookupTypes.get(lookup);
 		}
 		currentLookupValues.put(StringValue.get(lookup), v);
-		psxState(lookup, toPsxTypeString(t));
-		psxResultOrValue("Value", unwrapValue(v));
-		psxEndState();
+		sendLookupToPsx(lookup, toPsxTypeString(t), v);
 	}
 	
 	
