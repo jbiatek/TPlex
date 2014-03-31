@@ -6,9 +6,8 @@ import edu.umn.crisys.plexil.java.values.*;
 
 public class SymbolicDriver {
 	public static void main(String[] args) {
-		JavaPlan plan = new TargetPanorama();
 		ExternalWorld world = configureSymbolicExternalWorld();
-		plan.setWorld(world);
+		JavaPlan plan = new TargetPanorama(world);
 		// Keep doing steps until the root node has an outcome.
 		// We could also perform some specific number of steps, or
 		// run indefinitely.
