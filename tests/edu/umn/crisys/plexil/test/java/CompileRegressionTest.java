@@ -21,6 +21,7 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
@@ -66,18 +67,22 @@ public class CompileRegressionTest {
 	}
 	
 	private static void buildLibrary(String name, File resources, File dest) throws Exception {
+		// TODO: This is almost exactly the same as below. WTF?
         System.out.println("Compiling "+name);
         PlexilPlan planXml = PlxParser.parseFile(new File(resources, name+".plx"));
         NodeToIL rootTranslator = new NodeToIL(planXml.getRootNode());
         Plan ilPlan = new Plan(name);
         rootTranslator.translate(ilPlan);
         
+        PruneUnusedTimepoints.optimize(ilPlan);
+        RemoveDeadTransitions.optimize(ilPlan);
+        
         JCodeModel cm = new JCodeModel();
         String pkg = "generated";
         
         JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, null);
         
-        addGetSnapshotMethod(rootTranslator, javaCode);
+        addGetSnapshotMethod(ilPlan, rootTranslator, javaCode);
         cm.build(dest);
 
 	}
@@ -98,7 +103,7 @@ public class CompileRegressionTest {
         
         JDefinedClass javaCode = PlanToJava.toJava(ilPlan, cm, pkg, null);
         
-        addGetSnapshotMethod(translator, javaCode);
+        addGetSnapshotMethod(ilPlan, translator, javaCode);
         
         XMLInputFactory factory = XMLInputFactory.newFactory();
         
@@ -114,7 +119,7 @@ public class CompileRegressionTest {
         cm.build(dest);
 	}
 
-    public static void addGetSnapshotMethod(NodeToIL translator,
+    public static void addGetSnapshotMethod(Plan ilPlan, NodeToIL translator,
             JDefinedClass javaCode) {
         
         javaCode._implements(PlexilTestable.class);
@@ -125,7 +130,7 @@ public class CompileRegressionTest {
         // For every Plexil node, we need to grab its variables and put them
         // into a PlanState node.
         
-        JVar root = addSnapshotInfo(translator, null, m.body(), cm);
+        JVar root = addSnapshotInfo(ilPlan, translator, null, m.body(), cm);
         
         m.body()._return(root);
         
@@ -140,7 +145,7 @@ public class CompileRegressionTest {
      * @param cm
      * @return the local variable that was made.
      */
-    private static JVar addSnapshotInfo(NodeToIL translator, JVar parent, JBlock b,
+    private static JVar addSnapshotInfo(Plan ilPlan, NodeToIL translator, JVar parent, JBlock b,
             JCodeModel cm) {
         JInvocation planStateInit = JExpr._new(cm.ref(PlanState.class))
             .arg(translator.getUID().getShortName());
@@ -151,8 +156,14 @@ public class CompileRegressionTest {
         
         for (String varName : translator.getAllVariables()) {
             ILVariable v = translator.getVariable(varName);
+            if ( ! ilPlan.getVariables().contains(v)) {
+            	// This variable didn't make it into the final version.
+            	continue;
+            }
+            
             
             String name = v.getName();
+            
             if (name.startsWith(".")) {
             	// Internal variables are named "ShortName.command_handle", etc.
             	name = v.getNodeUID().getShortName()+name;
@@ -162,7 +173,7 @@ public class CompileRegressionTest {
         }
         
         for (NodeToIL child : translator.getChildren()) {
-            JVar childVar = addSnapshotInfo(child, ps, b, cm);
+            JVar childVar = addSnapshotInfo(ilPlan, child, ps, b, cm);
             b.invoke(ps, "addChild").arg(childVar);
         }
         

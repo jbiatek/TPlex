@@ -9,7 +9,6 @@ import edu.umn.crisys.plexil.java.values.PlexilType;
 public class SimpleVar extends ILVariable {
 	
 	private ILExpression init;
-	private boolean ignoreMe = false;
 
 	public SimpleVar(String name, NodeUID uid, PlexilType type) {
 		this(name, uid, type, (ILExpression) null);
@@ -41,14 +40,6 @@ public class SimpleVar extends ILVariable {
 	@Override
 	public boolean isAssignable() {
 		return true;
-	}
-	
-	public boolean shouldBeIgnored() {
-		return ignoreMe;
-	}
-
-	public void markAsUnused() {
-		ignoreMe = true;
 	}
 	
 }

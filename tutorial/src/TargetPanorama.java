@@ -11,7 +11,6 @@ import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
 import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PNumeric;
-import edu.umn.crisys.plexil.java.values.PReal;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
 import edu.umn.crisys.plexil.java.values.StringValue;
@@ -22,175 +21,35 @@ public class TargetPanorama
     extends JavaPlan
 {
 
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PBoolean> DriveToTarget__timeout = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__TakePancam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__TakeNavcam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<CommandHandleState> DriveToTarget__StopForTarget__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PBoolean> DriveToTarget__drive_done = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__TakePancam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__SetTimeoutFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__SetDriveFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<CommandHandleState> DriveToTarget__StopForTimeout__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__Drive____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PBoolean> DriveToTarget__StopForTarget__SetDriveFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<NodeOutcome> DriveToTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<CommandHandleState> DriveToTarget__TakeNavcam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__SetDriveFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<NodeFailureType> DriveToTarget__Drive____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PBoolean> DriveToTarget__StopForTimeout__SetTimeoutFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<CommandHandleState> DriveToTarget__Drive____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__TakeNavcam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____WAITING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<NodeOutcome> DriveToTarget__Drive____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<NodeFailureType> DriveToTarget__TakePancam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout____FINISHING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____INACTIVE__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____WAITING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget____FAILING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__Drive____FINISHED__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
     private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
-    private SimplePValue<PReal> DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakeNavcam____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__Stop____FAILING__END = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
-    private SimplePValue<PReal> DriveToTarget__TakePancam____EXECUTING__START = new SimplePValue<PReal>(UnknownValue.get(), PlexilType.REAL);
+    private SimplePValue<PBoolean> DriveToTarget__StopForTarget__SetDriveFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
+    private SimplePValue<PBoolean> DriveToTarget__timeout = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<CommandHandleState> DriveToTarget__TakePancam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeOutcome> DriveToTarget__TakePancam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeOutcome> DriveToTarget__TakeNavcam____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeFailureType> DriveToTarget____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeOutcome> DriveToTarget__Drive____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<CommandHandleState> DriveToTarget__TakeNavcam____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<NodeFailureType> DriveToTarget__TakePancam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTimeout____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__SetTimeoutFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeFailureType> DriveToTarget__TakeNavcam____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<CommandHandleState> DriveToTarget__Drive____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<PBoolean> DriveToTarget__StopForTimeout__SetTimeoutFlag____previous_value = new SimplePValue<PBoolean>(UnknownValue.get(), PlexilType.BOOLEAN);
+    private SimplePValue<CommandHandleState> DriveToTarget__StopForTimeout__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<CommandHandleState> DriveToTarget__StopForTarget__Stop____command_handle = new SimplePValue<CommandHandleState>(CommandHandleState.UNKNOWN, PlexilType.COMMAND_HANDLE);
+    private SimplePValue<NodeOutcome> DriveToTarget____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTimeout__Stop____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__SetDriveFlag____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<NodeOutcome> DriveToTarget__StopForTarget__Stop____outcome = new SimplePValue<NodeOutcome>(NodeOutcome.UNKNOWN, PlexilType.OUTCOME);
+    private SimplePValue<PBoolean> DriveToTarget__drive_done = new SimplePValue<PBoolean>(BooleanValue.get((false)), PlexilType.BOOLEAN);
+    private SimplePValue<NodeFailureType> DriveToTarget__StopForTarget__SetDriveFlag____failure = new SimplePValue<NodeFailureType>(NodeFailureType.UNKNOWN, PlexilType.FAILURE);
     private SimpleCurrentNext<Integer> DriveToTarget__state = new SimpleCurrentNext<Integer>(0);
     private SimpleCurrentNext<Integer> DriveToTarget__Drive__state = new SimpleCurrentNext<Integer>(0);
     private SimpleCurrentNext<Integer> DriveToTarget__StopForTimeout__state = new SimpleCurrentNext<Integer>(0);
@@ -220,16 +79,12 @@ DriveToTarget : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (<root node's parent state> == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@797c048c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1f58ff73 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____INACTIVE__END);
-                    DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FINISHED__START);
                     DriveToTarget____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget____outcome);
                     DriveToTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -250,10 +105,6 @@ DriveToTarget : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____INACTIVE__END);
-                        DriveToTarget____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____WAITING__START);
                         DriveToTarget__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__state);
                         changeOccurred();
@@ -268,16 +119,12 @@ DriveToTarget : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7b10f067 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7e94c1a7 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____WAITING__END);
-                    DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FINISHED__START);
                     DriveToTarget____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget____outcome);
                     DriveToTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -293,16 +140,12 @@ DriveToTarget : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@15173950 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5835fbdd ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____WAITING__END);
-                        DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____FINISHED__START);
                         DriveToTarget____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget____outcome);
                         DriveToTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -318,16 +161,12 @@ DriveToTarget : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (<root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@27b3be01 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@402a9769 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____WAITING__END);
-                            DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____FINISHED__START);
                             DriveToTarget____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget____outcome);
                             DriveToTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -348,10 +187,6 @@ DriveToTarget : WAITING (6) -> EXECUTING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget : WAITING (6) -> EXECUTING");
                             }
-                            DriveToTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____WAITING__END);
-                            DriveToTarget____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____EXECUTING__START);
                             DriveToTarget__state.setNext(2);
                             commitAfterMicroStep(DriveToTarget__state);
                             changeOccurred();
@@ -367,16 +202,12 @@ DriveToTarget : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@97f4804 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2c3a8f68 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____EXECUTING__END);
-                    DriveToTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FAILING__START);
                     DriveToTarget____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget____outcome);
                     DriveToTarget____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -392,16 +223,12 @@ DriveToTarget : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@351037b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@389d0b87 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____EXECUTING__END);
-                        DriveToTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____FAILING__START);
                         DriveToTarget____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget____outcome);
                         DriveToTarget____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -422,10 +249,6 @@ DriveToTarget : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____EXECUTING__END);
-                            DriveToTarget____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____FINISHING__START);
                             DriveToTarget__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__state);
                             changeOccurred();
@@ -441,16 +264,12 @@ DriveToTarget : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2eb30073 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@b08f1ce ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FINISHING__END);
-                    DriveToTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FAILING__START);
                     DriveToTarget____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget____outcome);
                     DriveToTarget____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -466,16 +285,12 @@ DriveToTarget : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@69e295f8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@783b110a ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____FINISHING__END);
-                        DriveToTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____FAILING__START);
                         DriveToTarget____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget____outcome);
                         DriveToTarget____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -492,16 +307,12 @@ DriveToTarget : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1ae40317 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6ddbe530 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____FINISHING__END);
-                            DriveToTarget____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____ITERATION_ENDED__START);
                             DriveToTarget____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget____outcome);
                             DriveToTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -521,16 +332,12 @@ DriveToTarget : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6f86e8cb ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7fa3eaa8 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____ITERATION_ENDED__END);
-                    DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FINISHED__START);
                     DriveToTarget____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget____outcome);
                     DriveToTarget____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -546,16 +353,12 @@ DriveToTarget : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@21da0a1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6282fd0f ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____ITERATION_ENDED__END);
-                        DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget____FINISHED__START);
                         DriveToTarget____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget____outcome);
                         DriveToTarget____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -576,10 +379,6 @@ DriveToTarget : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____ITERATION_ENDED__END);
-                            DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____FINISHED__START);
                             DriveToTarget__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__state);
                             changeOccurred();
@@ -595,10 +394,6 @@ DriveToTarget : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____ITERATION_ENDED__END);
-                            DriveToTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget____FINISHED__START);
                             DriveToTarget__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__state);
                             changeOccurred();
@@ -620,10 +415,6 @@ DriveToTarget : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____FINISHED__END);
-                    DriveToTarget____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget____INACTIVE__START);
                     DriveToTarget____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget____EXECUTING__END);
                     DriveToTarget____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -669,45 +460,45 @@ DriveToTarget : FINISHED (1) -> INACTIVE
         /* In Actions executed here: */
         switch (DriveToTarget__state.getNext()) {
             case  1 :
-                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__Drive();
-                MicroStep___DriveToTarget__StopForTarget();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__TakeNavcam();
                 break;
             case  2 :
-                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__Drive();
-                MicroStep___DriveToTarget__StopForTarget();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__TakeNavcam();
                 break;
             case  3 :
-                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__Drive();
-                MicroStep___DriveToTarget__StopForTarget();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__TakeNavcam();
                 break;
             case  4 :
-                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__Drive();
-                MicroStep___DriveToTarget__StopForTarget();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__TakeNavcam();
                 break;
             case  5 :
-                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__Drive();
-                MicroStep___DriveToTarget__StopForTarget();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__TakeNavcam();
                 break;
             case  6 :
-                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__Drive();
-                MicroStep___DriveToTarget__StopForTarget();
                 MicroStep___DriveToTarget__StopForTimeout();
+                MicroStep___DriveToTarget__StopForTarget();
+                MicroStep___DriveToTarget__TakePancam();
                 MicroStep___DriveToTarget__TakeNavcam();
                 break;
         }
@@ -715,20 +506,20 @@ DriveToTarget : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget() {
         switch (DriveToTarget__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget");
     }
@@ -743,16 +534,12 @@ DriveToTarget__Drive : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@76f7a4ba ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@26250f55 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__Drive : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__Drive____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____INACTIVE__END);
-                    DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                     DriveToTarget__Drive____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__Drive____outcome);
                     DriveToTarget__Drive____failure.setNext(NodeFailureType.UNKNOWN);
@@ -773,10 +560,6 @@ DriveToTarget__Drive : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__Drive : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__Drive____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____INACTIVE__END);
-                        DriveToTarget__Drive____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____WAITING__START);
                         DriveToTarget__Drive__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__Drive__state);
                         changeOccurred();
@@ -791,16 +574,12 @@ DriveToTarget__Drive : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7c5fec5a ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4b11a903 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__Drive : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__Drive____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____WAITING__END);
-                    DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                     DriveToTarget__Drive____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__Drive____outcome);
                     DriveToTarget__Drive____failure.setNext(NodeFailureType.UNKNOWN);
@@ -816,16 +595,12 @@ DriveToTarget__Drive : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7d964880 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@746f2a75 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__Drive : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__Drive____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____WAITING__END);
-                        DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                         DriveToTarget__Drive____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__Drive____outcome);
                         DriveToTarget__Drive____failure.setNext(NodeFailureType.UNKNOWN);
@@ -841,16 +616,12 @@ DriveToTarget__Drive : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@15720bea ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2e4ca30b ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__Drive : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__Drive____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____WAITING__END);
-                            DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                             DriveToTarget__Drive____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__Drive____outcome);
                             DriveToTarget__Drive____failure.setNext(NodeFailureType.UNKNOWN);
@@ -871,10 +642,6 @@ DriveToTarget__Drive : WAITING (6) -> EXECUTING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__Drive : WAITING (6) -> EXECUTING");
                             }
-                            DriveToTarget__Drive____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____WAITING__END);
-                            DriveToTarget__Drive____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____EXECUTING__START);
                             getWorld().command(new CommandHandle(DriveToTarget__Drive____command_handle), StringValue.get(("rover_drive")), IntegerValue.get((10)));
                             endMacroStep();
                             DriveToTarget__Drive__state.setNext(2);
@@ -892,16 +659,12 @@ DriveToTarget__Drive : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5e5ad035 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7482384a ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__Drive : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__Drive____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____EXECUTING__END);
-                    DriveToTarget__Drive____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FAILING__START);
                     DriveToTarget__Drive____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__Drive____outcome);
                     DriveToTarget__Drive____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -917,16 +680,12 @@ DriveToTarget__Drive : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1c1b77f8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@113dbe08 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__Drive : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__Drive____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____EXECUTING__END);
-                        DriveToTarget__Drive____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____FAILING__START);
                         DriveToTarget__Drive____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__Drive____outcome);
                         DriveToTarget__Drive____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -947,10 +706,6 @@ DriveToTarget__Drive : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__Drive : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__Drive____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____EXECUTING__END);
-                            DriveToTarget__Drive____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____FINISHING__START);
                             DriveToTarget__Drive__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__Drive__state);
                             changeOccurred();
@@ -966,16 +721,12 @@ DriveToTarget__Drive : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4f614932 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6c87080f ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__Drive : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__Drive____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FINISHING__END);
-                    DriveToTarget__Drive____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FAILING__START);
                     DriveToTarget__Drive____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__Drive____outcome);
                     DriveToTarget__Drive____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -991,16 +742,12 @@ DriveToTarget__Drive : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7c0c9a54 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@15224873 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__Drive : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__Drive____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____FINISHING__END);
-                        DriveToTarget__Drive____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____FAILING__START);
                         DriveToTarget__Drive____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__Drive____outcome);
                         DriveToTarget__Drive____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -1017,16 +764,12 @@ DriveToTarget__Drive : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1f68406c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7dc280db ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__Drive : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__Drive____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____FINISHING__END);
-                            DriveToTarget__Drive____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____ITERATION_ENDED__START);
                             DriveToTarget__Drive____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__Drive____outcome);
                             DriveToTarget__Drive____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1046,16 +789,12 @@ DriveToTarget__Drive : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@755d828f ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6c99ea5d ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__Drive : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__Drive____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____ITERATION_ENDED__END);
-                    DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                     DriveToTarget__Drive____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__Drive____outcome);
                     DriveToTarget__Drive____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -1071,16 +810,12 @@ DriveToTarget__Drive : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4e26b67b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6ce9b75e ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__Drive : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__Drive____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____ITERATION_ENDED__END);
-                        DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                         DriveToTarget__Drive____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__Drive____outcome);
                         DriveToTarget__Drive____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -1101,10 +836,6 @@ DriveToTarget__Drive : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__Drive : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__Drive____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____ITERATION_ENDED__END);
-                            DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                             DriveToTarget__Drive__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__Drive__state);
                             changeOccurred();
@@ -1120,10 +851,6 @@ DriveToTarget__Drive : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__Drive : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__Drive____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____ITERATION_ENDED__END);
-                            DriveToTarget__Drive____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__Drive____FINISHED__START);
                             DriveToTarget__Drive__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__Drive__state);
                             changeOccurred();
@@ -1145,10 +872,6 @@ DriveToTarget__Drive : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__Drive : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__Drive____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____FINISHED__END);
-                    DriveToTarget__Drive____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__Drive____INACTIVE__START);
                     DriveToTarget__Drive____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__Drive____EXECUTING__END);
                     DriveToTarget__Drive____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -1196,20 +919,20 @@ DriveToTarget__Drive : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__Drive() {
         switch (DriveToTarget__Drive__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__Drive");
     }
@@ -1224,16 +947,12 @@ DriveToTarget__StopForTimeout : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4f966d52 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6405b42e ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____INACTIVE__END);
-                    DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                     DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                     DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1254,10 +973,6 @@ DriveToTarget__StopForTimeout : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__StopForTimeout____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____INACTIVE__END);
-                        DriveToTarget__StopForTimeout____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____WAITING__START);
                         DriveToTarget__StopForTimeout__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__state);
                         changeOccurred();
@@ -1272,16 +987,12 @@ DriveToTarget__StopForTimeout : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1ce34b50 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@32786b4f ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____WAITING__END);
-                    DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                     DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                     DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1297,16 +1008,12 @@ DriveToTarget__StopForTimeout : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@e658001 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7fcd296b ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__StopForTimeout____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____WAITING__END);
-                        DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                         DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                         DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1322,16 +1029,12 @@ DriveToTarget__StopForTimeout : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@29b6c909 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@765a7159 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____WAITING__END);
-                            DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                             DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                             DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1353,10 +1056,6 @@ DriveToTarget__StopForTimeout : WAITING (6) -> EXECUTING
                                 if (JavaPlan.DEBUG) {
                                     System.out.println("DriveToTarget__StopForTimeout : WAITING (6) -> EXECUTING");
                                 }
-                                DriveToTarget__StopForTimeout____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__StopForTimeout____WAITING__END);
-                                DriveToTarget__StopForTimeout____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__StopForTimeout____EXECUTING__START);
                                 DriveToTarget__StopForTimeout__state.setNext(2);
                                 commitAfterMicroStep(DriveToTarget__StopForTimeout__state);
                                 changeOccurred();
@@ -1373,16 +1072,12 @@ DriveToTarget__StopForTimeout : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1f488344 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@625ba0d9 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTimeout____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____EXECUTING__END);
-                    DriveToTarget__StopForTimeout____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FAILING__START);
                     DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                     DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -1398,16 +1093,12 @@ DriveToTarget__StopForTimeout : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@51a1f567 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6d9d3901 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTimeout____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____EXECUTING__END);
-                        DriveToTarget__StopForTimeout____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____FAILING__START);
                         DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                         DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -1428,10 +1119,6 @@ DriveToTarget__StopForTimeout : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__StopForTimeout____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____EXECUTING__END);
-                            DriveToTarget__StopForTimeout____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHING__START);
                             DriveToTarget__StopForTimeout__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__state);
                             changeOccurred();
@@ -1447,16 +1134,12 @@ DriveToTarget__StopForTimeout : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5ff6670f ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@152e0066 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTimeout____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHING__END);
-                    DriveToTarget__StopForTimeout____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FAILING__START);
                     DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                     DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -1472,16 +1155,12 @@ DriveToTarget__StopForTimeout : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@29e83b01 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7f1c3366 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTimeout____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHING__END);
-                        DriveToTarget__StopForTimeout____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____FAILING__START);
                         DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                         DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -1498,16 +1177,12 @@ DriveToTarget__StopForTimeout : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4d79d425 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1472aebc ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__StopForTimeout____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHING__END);
-                            DriveToTarget__StopForTimeout____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____ITERATION_ENDED__START);
                             DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                             DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1527,16 +1202,12 @@ DriveToTarget__StopForTimeout : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7956f0df ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@752dc320 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____ITERATION_ENDED__END);
-                    DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                     DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                     DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -1552,16 +1223,12 @@ DriveToTarget__StopForTimeout : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3adffeb5 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5a73c7fb ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__StopForTimeout____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____ITERATION_ENDED__END);
-                        DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                         DriveToTarget__StopForTimeout____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout____outcome);
                         DriveToTarget__StopForTimeout____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -1582,10 +1249,6 @@ DriveToTarget__StopForTimeout : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                             DriveToTarget__StopForTimeout__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__state);
                             changeOccurred();
@@ -1601,10 +1264,6 @@ DriveToTarget__StopForTimeout : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTimeout____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__START);
                             DriveToTarget__StopForTimeout__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__state);
                             changeOccurred();
@@ -1626,10 +1285,6 @@ DriveToTarget__StopForTimeout : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__StopForTimeout____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____FINISHED__END);
-                    DriveToTarget__StopForTimeout____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout____INACTIVE__START);
                     DriveToTarget__StopForTimeout____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__StopForTimeout____EXECUTING__END);
                     DriveToTarget__StopForTimeout____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -1699,20 +1354,20 @@ DriveToTarget__StopForTimeout : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTimeout() {
         switch (DriveToTarget__StopForTimeout__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTimeout");
     }
@@ -1727,16 +1382,12 @@ DriveToTarget__StopForTimeout__Stop : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTimeout.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6dffe34 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4f46c96c ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__Stop : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout__Stop____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____INACTIVE__END);
-                    DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                     DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                     DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1757,10 +1408,6 @@ DriveToTarget__StopForTimeout__Stop : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__Stop : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__StopForTimeout__Stop____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____INACTIVE__END);
-                        DriveToTarget__StopForTimeout__Stop____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____WAITING__START);
                         DriveToTarget__StopForTimeout__Stop__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop__state);
                         changeOccurred();
@@ -1775,16 +1422,12 @@ DriveToTarget__StopForTimeout__Stop : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5baa0b72 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3051fa1d ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__Stop : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____WAITING__END);
-                    DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                     DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                     DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1800,16 +1443,12 @@ DriveToTarget__StopForTimeout__Stop : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@78d59861 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@55fb9eb3 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__Stop : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__StopForTimeout__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____WAITING__END);
-                        DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                         DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                         DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1825,16 +1464,12 @@ DriveToTarget__StopForTimeout__Stop : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTimeout__Stop.state && FINISHED == DriveToTarget__StopForTimeout__SetTimeoutFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@f074641 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7a7025de ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__Stop : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____WAITING__END);
-                            DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                             DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                             DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -1855,10 +1490,6 @@ DriveToTarget__StopForTimeout__Stop : WAITING (6) -> EXECUTING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__Stop : WAITING (6) -> EXECUTING");
                             }
-                            DriveToTarget__StopForTimeout__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____WAITING__END);
-                            DriveToTarget__StopForTimeout__Stop____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____EXECUTING__START);
                             getWorld().command(new CommandHandle(DriveToTarget__StopForTimeout__Stop____command_handle), StringValue.get(("rover_stop")));
                             endMacroStep();
                             DriveToTarget__StopForTimeout__Stop__state.setNext(2);
@@ -1876,16 +1507,12 @@ DriveToTarget__StopForTimeout__Stop : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@26955d1c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@58c6509e ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__Stop : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTimeout__Stop____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____EXECUTING__END);
-                    DriveToTarget__StopForTimeout__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FAILING__START);
                     DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                     DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -1901,16 +1528,12 @@ DriveToTarget__StopForTimeout__Stop : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1813ed0e ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@43d6e29a ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__Stop : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTimeout__Stop____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____EXECUTING__END);
-                        DriveToTarget__StopForTimeout__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FAILING__START);
                         DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                         DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -1931,10 +1554,6 @@ DriveToTarget__StopForTimeout__Stop : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__Stop : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__StopForTimeout__Stop____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____EXECUTING__END);
-                            DriveToTarget__StopForTimeout__Stop____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHING__START);
                             DriveToTarget__StopForTimeout__Stop__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop__state);
                             changeOccurred();
@@ -1950,16 +1569,12 @@ DriveToTarget__StopForTimeout__Stop : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@44303e7b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50b70f41 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__Stop : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTimeout__Stop____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHING__END);
-                    DriveToTarget__StopForTimeout__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FAILING__START);
                     DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                     DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -1975,16 +1590,12 @@ DriveToTarget__StopForTimeout__Stop : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3b562036 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@224a9dcd ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__Stop : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTimeout__Stop____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHING__END);
-                        DriveToTarget__StopForTimeout__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FAILING__START);
                         DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                         DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -2001,16 +1612,12 @@ DriveToTarget__StopForTimeout__Stop : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@135cd7a9 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50be0f51 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__Stop : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__StopForTimeout__Stop____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHING__END);
-                            DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__START);
                             DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                             DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2030,16 +1637,12 @@ DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3452a22d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6ddfb840 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END);
-                    DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                     DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                     DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -2055,16 +1658,12 @@ DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1d155331 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7ab9aa1a ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END);
-                        DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                         DriveToTarget__StopForTimeout__Stop____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____outcome);
                         DriveToTarget__StopForTimeout__Stop____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -2085,10 +1684,6 @@ DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                             DriveToTarget__StopForTimeout__Stop__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop__state);
                             changeOccurred();
@@ -2104,10 +1699,6 @@ DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__Stop : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTimeout__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__START);
                             DriveToTarget__StopForTimeout__Stop__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop__state);
                             changeOccurred();
@@ -2129,10 +1720,6 @@ DriveToTarget__StopForTimeout__Stop : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__Stop : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__StopForTimeout__Stop____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____FINISHED__END);
-                    DriveToTarget__StopForTimeout__Stop____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____INACTIVE__START);
                     DriveToTarget__StopForTimeout__Stop____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__Stop____EXECUTING__END);
                     DriveToTarget__StopForTimeout__Stop____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -2180,20 +1767,20 @@ DriveToTarget__StopForTimeout__Stop : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTimeout__Stop() {
         switch (DriveToTarget__StopForTimeout__Stop__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTimeout__Stop");
     }
@@ -2208,16 +1795,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTimeout.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6308c4e1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@334ecfe8 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END);
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2238,10 +1821,6 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__END);
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__START);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag__state);
                         changeOccurred();
@@ -2256,16 +1835,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@54b5c292 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7b33a2a8 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END);
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2281,16 +1856,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@68f92ab0 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7afc02c8 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END);
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2306,16 +1877,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTimeout__Stop.state && FINISHED == DriveToTarget__StopForTimeout__SetTimeoutFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3e61bea7 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@371ad78c ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END);
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                             DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                             DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2336,10 +1903,6 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (6) -> EXECUTING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : WAITING (6) -> EXECUTING");
                             }
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____WAITING__END);
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__START);
                             if (JavaPlan.DEBUG) {
                                 System.out.println(("timeout: New value set to "+ BooleanValue.get((true))));
                             }
@@ -2363,16 +1926,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@32be5f0 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@433d4497 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END);
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -2394,16 +1953,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3704f130 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6b6237fd ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END);
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FAILING__START);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -2425,16 +1980,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2576a288 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7d49fa1e ]
  ----> (State #4)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : EXECUTING (5) -> ITERATION_ENDED");
                         }
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END);
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__START);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.SUCCESS);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2453,16 +2004,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@fa8a1ef ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3c407d5 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END);
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -2478,16 +2025,12 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@81f59f1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3ade32e1 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END);
-                        DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____outcome);
                         DriveToTarget__StopForTimeout__SetTimeoutFlag____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -2508,10 +2051,6 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                             DriveToTarget__StopForTimeout__SetTimeoutFlag__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag__state);
                             changeOccurred();
@@ -2527,10 +2066,6 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__START);
                             DriveToTarget__StopForTimeout__SetTimeoutFlag__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag__state);
                             changeOccurred();
@@ -2552,10 +2087,6 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTimeout__SetTimeoutFlag : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____FINISHED__END);
-                    DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____INACTIVE__START);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__StopForTimeout__SetTimeoutFlag____EXECUTING__END);
                     DriveToTarget__StopForTimeout__SetTimeoutFlag____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -2601,20 +2132,20 @@ DriveToTarget__StopForTimeout__SetTimeoutFlag : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTimeout__SetTimeoutFlag() {
         switch (DriveToTarget__StopForTimeout__SetTimeoutFlag__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTimeout__SetTimeoutFlag");
     }
@@ -2629,16 +2160,12 @@ DriveToTarget__StopForTarget : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4249e161 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@51de6ff8 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____INACTIVE__END);
-                    DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                     DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                     DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2659,10 +2186,6 @@ DriveToTarget__StopForTarget : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__StopForTarget____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____INACTIVE__END);
-                        DriveToTarget__StopForTarget____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____WAITING__START);
                         DriveToTarget__StopForTarget__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__state);
                         changeOccurred();
@@ -2677,16 +2200,12 @@ DriveToTarget__StopForTarget : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6bc947 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@62892cc5 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____WAITING__END);
-                    DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                     DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                     DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2702,16 +2221,12 @@ DriveToTarget__StopForTarget : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@246b5488 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1bda6c0d ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__StopForTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____WAITING__END);
-                        DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                         DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                         DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2727,16 +2242,12 @@ DriveToTarget__StopForTarget : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@27abf66 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@20ebd7c4 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____WAITING__END);
-                            DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                             DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                             DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2752,16 +2263,12 @@ DriveToTarget__StopForTarget : WAITING (5) -> FINISHED
 <SKIP_CONDITION T?> (timeout)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@48abc2cf ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5ba295be ]
  ----> (State #6)
 */
                                 if (JavaPlan.DEBUG) {
                                     System.out.println("DriveToTarget__StopForTarget : WAITING (5) -> FINISHED");
                                 }
-                                DriveToTarget__StopForTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__StopForTarget____WAITING__END);
-                                DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                                 DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.SKIPPED);
                                 commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                                 DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2783,10 +2290,6 @@ DriveToTarget__StopForTarget : WAITING (6) -> EXECUTING
                                     if (JavaPlan.DEBUG) {
                                         System.out.println("DriveToTarget__StopForTarget : WAITING (6) -> EXECUTING");
                                     }
-                                    DriveToTarget__StopForTarget____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                    commitAfterMicroStep(DriveToTarget__StopForTarget____WAITING__END);
-                                    DriveToTarget__StopForTarget____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                    commitAfterMicroStep(DriveToTarget__StopForTarget____EXECUTING__START);
                                     DriveToTarget__StopForTarget__state.setNext(2);
                                     commitAfterMicroStep(DriveToTarget__StopForTarget__state);
                                     changeOccurred();
@@ -2804,16 +2307,12 @@ DriveToTarget__StopForTarget : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@482c94f ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@f151bf2 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTarget____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____EXECUTING__END);
-                    DriveToTarget__StopForTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FAILING__START);
                     DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                     DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -2829,16 +2328,12 @@ DriveToTarget__StopForTarget : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@266e63d9 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@32ddb49a ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTarget____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____EXECUTING__END);
-                        DriveToTarget__StopForTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____FAILING__START);
                         DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                         DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -2859,10 +2354,6 @@ DriveToTarget__StopForTarget : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__StopForTarget____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____EXECUTING__END);
-                            DriveToTarget__StopForTarget____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHING__START);
                             DriveToTarget__StopForTarget__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__state);
                             changeOccurred();
@@ -2878,16 +2369,12 @@ DriveToTarget__StopForTarget : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@195d4f45 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@797c048c ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTarget____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHING__END);
-                    DriveToTarget__StopForTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FAILING__START);
                     DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                     DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -2903,16 +2390,12 @@ DriveToTarget__StopForTarget : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3cff4805 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3d0ec1a3 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTarget____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHING__END);
-                        DriveToTarget__StopForTarget____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____FAILING__START);
                         DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                         DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -2929,16 +2412,12 @@ DriveToTarget__StopForTarget : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1bd15f8c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@13cad3a6 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__StopForTarget____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHING__END);
-                            DriveToTarget__StopForTarget____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____ITERATION_ENDED__START);
                             DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                             DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.UNKNOWN);
@@ -2958,16 +2437,12 @@ DriveToTarget__StopForTarget : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4ed7ee98 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@690d4170 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____ITERATION_ENDED__END);
-                    DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                     DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                     DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -2983,16 +2458,12 @@ DriveToTarget__StopForTarget : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@42716598 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@654355f1 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__StopForTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____ITERATION_ENDED__END);
-                        DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                         DriveToTarget__StopForTarget____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget____outcome);
                         DriveToTarget__StopForTarget____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -3013,10 +2484,6 @@ DriveToTarget__StopForTarget : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                             DriveToTarget__StopForTarget__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__state);
                             changeOccurred();
@@ -3032,10 +2499,6 @@ DriveToTarget__StopForTarget : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTarget____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__START);
                             DriveToTarget__StopForTarget__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__state);
                             changeOccurred();
@@ -3057,10 +2520,6 @@ DriveToTarget__StopForTarget : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__StopForTarget____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____FINISHED__END);
-                    DriveToTarget__StopForTarget____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget____INACTIVE__START);
                     DriveToTarget__StopForTarget____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__StopForTarget____EXECUTING__END);
                     DriveToTarget__StopForTarget____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -3130,20 +2589,20 @@ DriveToTarget__StopForTarget : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTarget() {
         switch (DriveToTarget__StopForTarget__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTarget");
     }
@@ -3158,16 +2617,12 @@ DriveToTarget__StopForTarget__Stop : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@543da1e2 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2f9c94c1 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__Stop : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget__Stop____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____INACTIVE__END);
-                    DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                     DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                     DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3188,10 +2643,6 @@ DriveToTarget__StopForTarget__Stop : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__Stop : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__StopForTarget__Stop____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____INACTIVE__END);
-                        DriveToTarget__StopForTarget__Stop____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____WAITING__START);
                         DriveToTarget__StopForTarget__Stop__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__Stop__state);
                         changeOccurred();
@@ -3206,16 +2657,12 @@ DriveToTarget__StopForTarget__Stop : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1a4f27a3 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50ea2352 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__Stop : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____WAITING__END);
-                    DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                     DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                     DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3231,16 +2678,12 @@ DriveToTarget__StopForTarget__Stop : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@42b34bd3 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@3bb505fe ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__Stop : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__StopForTarget__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____WAITING__END);
-                        DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                         DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                         DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3256,16 +2699,12 @@ DriveToTarget__StopForTarget__Stop : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTarget__Stop.state && FINISHED == DriveToTarget__StopForTarget__SetDriveFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@9372bdb ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@699c8551 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__Stop : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____WAITING__END);
-                            DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                             DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                             DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3286,10 +2725,6 @@ DriveToTarget__StopForTarget__Stop : WAITING (6) -> EXECUTING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__Stop : WAITING (6) -> EXECUTING");
                             }
-                            DriveToTarget__StopForTarget__Stop____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____WAITING__END);
-                            DriveToTarget__StopForTarget__Stop____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____EXECUTING__START);
                             getWorld().command(new CommandHandle(DriveToTarget__StopForTarget__Stop____command_handle), StringValue.get(("rover_stop")));
                             endMacroStep();
                             DriveToTarget__StopForTarget__Stop__state.setNext(2);
@@ -3307,16 +2742,12 @@ DriveToTarget__StopForTarget__Stop : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5203b97 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@22f4bf02 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__Stop : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTarget__Stop____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____EXECUTING__END);
-                    DriveToTarget__StopForTarget__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FAILING__START);
                     DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                     DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -3332,16 +2763,12 @@ DriveToTarget__StopForTarget__Stop : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@7283922 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@72282e3b ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__Stop : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTarget__Stop____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____EXECUTING__END);
-                        DriveToTarget__StopForTarget__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FAILING__START);
                         DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                         DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -3362,10 +2789,6 @@ DriveToTarget__StopForTarget__Stop : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__Stop : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__StopForTarget__Stop____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____EXECUTING__END);
-                            DriveToTarget__StopForTarget__Stop____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHING__START);
                             DriveToTarget__StopForTarget__Stop__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__Stop__state);
                             changeOccurred();
@@ -3381,16 +2804,12 @@ DriveToTarget__StopForTarget__Stop : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@61beead9 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@2bf35e0a ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__Stop : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTarget__Stop____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHING__END);
-                    DriveToTarget__StopForTarget__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FAILING__START);
                     DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                     DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -3406,16 +2825,12 @@ DriveToTarget__StopForTarget__Stop : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3d2c7eb1 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@76a2f910 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__Stop : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTarget__Stop____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHING__END);
-                        DriveToTarget__StopForTarget__Stop____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FAILING__START);
                         DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                         DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -3432,16 +2847,12 @@ DriveToTarget__StopForTarget__Stop : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3431b5d7 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@458dc649 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__Stop : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__StopForTarget__Stop____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHING__END);
-                            DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__START);
                             DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                             DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3461,16 +2872,12 @@ DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2b995106 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5ed5064b ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END);
-                    DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                     DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                     DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -3486,16 +2893,12 @@ DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5e967746 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@73905690 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END);
-                        DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                         DriveToTarget__StopForTarget__Stop____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____outcome);
                         DriveToTarget__StopForTarget__Stop____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -3516,10 +2919,6 @@ DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                             DriveToTarget__StopForTarget__Stop__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__Stop__state);
                             changeOccurred();
@@ -3535,10 +2934,6 @@ DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__Stop : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTarget__Stop____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__START);
                             DriveToTarget__StopForTarget__Stop__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__Stop__state);
                             changeOccurred();
@@ -3560,10 +2955,6 @@ DriveToTarget__StopForTarget__Stop : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__Stop : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__StopForTarget__Stop____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____FINISHED__END);
-                    DriveToTarget__StopForTarget__Stop____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____INACTIVE__START);
                     DriveToTarget__StopForTarget__Stop____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__StopForTarget__Stop____EXECUTING__END);
                     DriveToTarget__StopForTarget__Stop____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -3611,20 +3002,20 @@ DriveToTarget__StopForTarget__Stop : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTarget__Stop() {
         switch (DriveToTarget__StopForTarget__Stop__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTarget__Stop");
     }
@@ -3639,16 +3030,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget__StopForTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6870c52d ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@9234336 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END);
-                    DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                     DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                     DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3669,10 +3056,6 @@ DriveToTarget__StopForTarget__SetDriveFlag : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__END);
-                        DriveToTarget__StopForTarget__SetDriveFlag____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____WAITING__START);
                         DriveToTarget__StopForTarget__SetDriveFlag__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag__state);
                         changeOccurred();
@@ -3687,16 +3070,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@43a142ec ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6a1192e9 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END);
-                    DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                     DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                     DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3712,16 +3091,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1030b6a4 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@27c43566 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END);
-                        DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                         DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                         DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3737,16 +3112,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__StopForTarget__Stop.state && FINISHED == DriveToTarget__StopForTarget__SetDriveFlag.state || FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6e26d149 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@428dcfef ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END);
-                            DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                             DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                             DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3767,10 +3138,6 @@ DriveToTarget__StopForTarget__SetDriveFlag : WAITING (6) -> EXECUTING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : WAITING (6) -> EXECUTING");
                             }
-                            DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____WAITING__END);
-                            DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__START);
                             if (JavaPlan.DEBUG) {
                                 System.out.println(("drive_done: New value set to "+ BooleanValue.get((true))));
                             }
@@ -3794,16 +3161,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3676481e ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6c4e760b ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END);
-                    DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START);
                     DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                     DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -3825,16 +3188,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@f78c581 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@132803ba ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END);
-                        DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FAILING__START);
                         DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                         DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -3856,16 +3215,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@41eea016 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@280cb229 ]
  ----> (State #4)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : EXECUTING (5) -> ITERATION_ENDED");
                         }
-                        DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END);
-                        DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__START);
                         DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.SUCCESS);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                         DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.UNKNOWN);
@@ -3884,16 +3239,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1950262b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@5984b649 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END);
-                    DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                     DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                     DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -3909,16 +3260,12 @@ DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5cf9de08 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@17dba089 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END);
-                        DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                         DriveToTarget__StopForTarget__SetDriveFlag____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____outcome);
                         DriveToTarget__StopForTarget__SetDriveFlag____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -3939,10 +3286,6 @@ DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                             DriveToTarget__StopForTarget__SetDriveFlag__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag__state);
                             changeOccurred();
@@ -3958,10 +3301,6 @@ DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__END);
-                            DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__START);
                             DriveToTarget__StopForTarget__SetDriveFlag__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag__state);
                             changeOccurred();
@@ -3983,10 +3322,6 @@ DriveToTarget__StopForTarget__SetDriveFlag : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__StopForTarget__SetDriveFlag : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____FINISHED__END);
-                    DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____INACTIVE__START);
                     DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__StopForTarget__SetDriveFlag____EXECUTING__END);
                     DriveToTarget__StopForTarget__SetDriveFlag____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -4032,20 +3367,20 @@ DriveToTarget__StopForTarget__SetDriveFlag : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__StopForTarget__SetDriveFlag() {
         switch (DriveToTarget__StopForTarget__SetDriveFlag__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__StopForTarget__SetDriveFlag");
     }
@@ -4060,16 +3395,12 @@ DriveToTarget__TakeNavcam : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@18600ee8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@54088e9b ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakeNavcam : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__TakeNavcam____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____INACTIVE__END);
-                    DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                     DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                     DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4090,10 +3421,6 @@ DriveToTarget__TakeNavcam : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakeNavcam : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__TakeNavcam____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____INACTIVE__END);
-                        DriveToTarget__TakeNavcam____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____WAITING__START);
                         DriveToTarget__TakeNavcam__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__TakeNavcam__state);
                         changeOccurred();
@@ -4108,16 +3435,12 @@ DriveToTarget__TakeNavcam : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@4a72add8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7dca8d36 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakeNavcam : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__TakeNavcam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____WAITING__END);
-                    DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                     DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                     DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4133,16 +3456,12 @@ DriveToTarget__TakeNavcam : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2ef36617 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7cfd14be ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakeNavcam : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__TakeNavcam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____WAITING__END);
-                        DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                         DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                         DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4158,16 +3477,12 @@ DriveToTarget__TakeNavcam : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6db38815 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4b5d060d ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakeNavcam : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__TakeNavcam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____WAITING__END);
-                            DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                             DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                             DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4183,16 +3498,12 @@ DriveToTarget__TakeNavcam : WAITING (5) -> FINISHED
 <SKIP_CONDITION T?> (drive_done)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@25ab52f7 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@48386622 ]
  ----> (State #6)
 */
                                 if (JavaPlan.DEBUG) {
                                     System.out.println("DriveToTarget__TakeNavcam : WAITING (5) -> FINISHED");
                                 }
-                                DriveToTarget__TakeNavcam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__TakeNavcam____WAITING__END);
-                                DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                                 DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.SKIPPED);
                                 commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                                 DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4214,10 +3525,6 @@ DriveToTarget__TakeNavcam : WAITING (6) -> EXECUTING
                                     if (JavaPlan.DEBUG) {
                                         System.out.println("DriveToTarget__TakeNavcam : WAITING (6) -> EXECUTING");
                                     }
-                                    DriveToTarget__TakeNavcam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                    commitAfterMicroStep(DriveToTarget__TakeNavcam____WAITING__END);
-                                    DriveToTarget__TakeNavcam____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                    commitAfterMicroStep(DriveToTarget__TakeNavcam____EXECUTING__START);
                                     getWorld().command(new CommandHandle(DriveToTarget__TakeNavcam____command_handle), StringValue.get(("take_navcam")));
                                     endMacroStep();
                                     DriveToTarget__TakeNavcam__state.setNext(2);
@@ -4237,16 +3544,12 @@ DriveToTarget__TakeNavcam : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@12d3e973 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6eb96738 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakeNavcam : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__TakeNavcam____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____EXECUTING__END);
-                    DriveToTarget__TakeNavcam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FAILING__START);
                     DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                     DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -4262,16 +3565,12 @@ DriveToTarget__TakeNavcam : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@168386ad ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4e27c652 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakeNavcam : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__TakeNavcam____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____EXECUTING__END);
-                        DriveToTarget__TakeNavcam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____FAILING__START);
                         DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                         DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -4292,10 +3591,6 @@ DriveToTarget__TakeNavcam : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakeNavcam : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__TakeNavcam____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____EXECUTING__END);
-                            DriveToTarget__TakeNavcam____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHING__START);
                             DriveToTarget__TakeNavcam__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__TakeNavcam__state);
                             changeOccurred();
@@ -4311,16 +3606,12 @@ DriveToTarget__TakeNavcam : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@14fed367 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@154d5994 ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakeNavcam : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__TakeNavcam____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHING__END);
-                    DriveToTarget__TakeNavcam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FAILING__START);
                     DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                     DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -4336,16 +3627,12 @@ DriveToTarget__TakeNavcam : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@65e919f5 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@9340e79 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakeNavcam : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__TakeNavcam____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHING__END);
-                        DriveToTarget__TakeNavcam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____FAILING__START);
                         DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                         DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -4362,16 +3649,12 @@ DriveToTarget__TakeNavcam : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2aa75818 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@38a22ea7 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakeNavcam : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__TakeNavcam____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHING__END);
-                            DriveToTarget__TakeNavcam____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____ITERATION_ENDED__START);
                             DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                             DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4391,16 +3674,12 @@ DriveToTarget__TakeNavcam : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5088a588 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1fa4f2fd ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakeNavcam : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__TakeNavcam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____ITERATION_ENDED__END);
-                    DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                     DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                     DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -4416,16 +3695,12 @@ DriveToTarget__TakeNavcam : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@3b2bad06 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@64cd046 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakeNavcam : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__TakeNavcam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____ITERATION_ENDED__END);
-                        DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                         DriveToTarget__TakeNavcam____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__TakeNavcam____outcome);
                         DriveToTarget__TakeNavcam____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -4446,10 +3721,6 @@ DriveToTarget__TakeNavcam : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakeNavcam : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__TakeNavcam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____ITERATION_ENDED__END);
-                            DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                             DriveToTarget__TakeNavcam__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__TakeNavcam__state);
                             changeOccurred();
@@ -4465,10 +3736,6 @@ DriveToTarget__TakeNavcam : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakeNavcam : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__TakeNavcam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____ITERATION_ENDED__END);
-                            DriveToTarget__TakeNavcam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__START);
                             DriveToTarget__TakeNavcam__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__TakeNavcam__state);
                             changeOccurred();
@@ -4490,10 +3757,6 @@ DriveToTarget__TakeNavcam : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakeNavcam : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__TakeNavcam____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____FINISHED__END);
-                    DriveToTarget__TakeNavcam____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakeNavcam____INACTIVE__START);
                     DriveToTarget__TakeNavcam____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__TakeNavcam____EXECUTING__END);
                     DriveToTarget__TakeNavcam____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -4541,20 +3804,20 @@ DriveToTarget__TakeNavcam : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__TakeNavcam() {
         switch (DriveToTarget__TakeNavcam__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__TakeNavcam");
     }
@@ -4569,16 +3832,12 @@ DriveToTarget__TakePancam : INACTIVE (1) -> FINISHED
 <PARENT_FINISHED T?> (DriveToTarget.state == FINISHED)
 [ Assignment: .INACTIVE.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@306c8343 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@1cfda6e5 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakePancam : INACTIVE (1) -> FINISHED");
                     }
-                    DriveToTarget__TakePancam____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____INACTIVE__END);
-                    DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                     DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                     DriveToTarget__TakePancam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4599,10 +3858,6 @@ DriveToTarget__TakePancam : INACTIVE (1) -> WAITING
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakePancam : INACTIVE (1) -> WAITING");
                         }
-                        DriveToTarget__TakePancam____INACTIVE__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____INACTIVE__END);
-                        DriveToTarget__TakePancam____WAITING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____WAITING__START);
                         DriveToTarget__TakePancam__state.setNext(1);
                         commitAfterMicroStep(DriveToTarget__TakePancam__state);
                         changeOccurred();
@@ -4617,16 +3872,12 @@ DriveToTarget__TakePancam : WAITING (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@241dbc8b ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@50d81341 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakePancam : WAITING (1) -> FINISHED");
                     }
-                    DriveToTarget__TakePancam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____WAITING__END);
-                    DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                     DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.SKIPPED);
                     commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                     DriveToTarget__TakePancam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4642,16 +3893,12 @@ DriveToTarget__TakePancam : WAITING (3) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1c455c33 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@19d839de ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakePancam : WAITING (3) -> FINISHED");
                         }
-                        DriveToTarget__TakePancam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____WAITING__END);
-                        DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                         DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.SKIPPED);
                         commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                         DriveToTarget__TakePancam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4667,16 +3914,12 @@ DriveToTarget__TakePancam : WAITING (4) -> FINISHED
 <ANCESTOR_ENDS_DISJOINED T?> (FINISHED == DriveToTarget__Drive.state && FINISHED == DriveToTarget__StopForTimeout.state && FINISHED == DriveToTarget__StopForTarget.state && FINISHED == DriveToTarget__TakeNavcam.state && FINISHED == DriveToTarget__TakePancam.state || <root node's ancestor end condition>)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@da826c5 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@42bf2b13 ]
  ----> (State #6)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakePancam : WAITING (4) -> FINISHED");
                             }
-                            DriveToTarget__TakePancam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____WAITING__END);
-                            DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                             DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.SKIPPED);
                             commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                             DriveToTarget__TakePancam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4692,16 +3935,12 @@ DriveToTarget__TakePancam : WAITING (5) -> FINISHED
 <SKIP_CONDITION T?> (timeout)
 [ Assignment: .WAITING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@1a895684 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@14a50ea1 ]
  ----> (State #6)
 */
                                 if (JavaPlan.DEBUG) {
                                     System.out.println("DriveToTarget__TakePancam : WAITING (5) -> FINISHED");
                                 }
-                                DriveToTarget__TakePancam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__TakePancam____WAITING__END);
-                                DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                                 DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.SKIPPED);
                                 commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                                 DriveToTarget__TakePancam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4723,10 +3962,6 @@ DriveToTarget__TakePancam : WAITING (6) -> EXECUTING
                                     if (JavaPlan.DEBUG) {
                                         System.out.println("DriveToTarget__TakePancam : WAITING (6) -> EXECUTING");
                                     }
-                                    DriveToTarget__TakePancam____WAITING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                    commitAfterMicroStep(DriveToTarget__TakePancam____WAITING__END);
-                                    DriveToTarget__TakePancam____EXECUTING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                                    commitAfterMicroStep(DriveToTarget__TakePancam____EXECUTING__START);
                                     getWorld().command(new CommandHandle(DriveToTarget__TakePancam____command_handle), StringValue.get(("take_pancam")));
                                     endMacroStep();
                                     DriveToTarget__TakePancam__state.setNext(2);
@@ -4746,16 +3981,12 @@ DriveToTarget__TakePancam : EXECUTING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2e8f01b8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@6063769d ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakePancam : EXECUTING (1) -> FAILING");
                     }
-                    DriveToTarget__TakePancam____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____EXECUTING__END);
-                    DriveToTarget__TakePancam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FAILING__START);
                     DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                     DriveToTarget__TakePancam____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -4771,16 +4002,12 @@ DriveToTarget__TakePancam : EXECUTING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .EXECUTING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2eb9eee9 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@22006edb ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakePancam : EXECUTING (3) -> FAILING");
                         }
-                        DriveToTarget__TakePancam____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____EXECUTING__END);
-                        DriveToTarget__TakePancam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____FAILING__START);
                         DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                         DriveToTarget__TakePancam____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -4801,10 +4028,6 @@ DriveToTarget__TakePancam : EXECUTING (5) -> FINISHING
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakePancam : EXECUTING (5) -> FINISHING");
                             }
-                            DriveToTarget__TakePancam____EXECUTING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____EXECUTING__END);
-                            DriveToTarget__TakePancam____FINISHING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____FINISHING__START);
                             DriveToTarget__TakePancam__state.setNext(3);
                             commitAfterMicroStep(DriveToTarget__TakePancam__state);
                             changeOccurred();
@@ -4820,16 +4043,12 @@ DriveToTarget__TakePancam : FINISHING (1) -> FAILING
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@30f41af6 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@4a6dfd4d ]
  ----> (State #5)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakePancam : FINISHING (1) -> FAILING");
                     }
-                    DriveToTarget__TakePancam____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FINISHING__END);
-                    DriveToTarget__TakePancam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FAILING__START);
                     DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                     DriveToTarget__TakePancam____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -4845,16 +4064,12 @@ DriveToTarget__TakePancam : FINISHING (3) -> FAILING
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FAILING.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@6a162595 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@7b10f067 ]
  ----> (State #5)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakePancam : FINISHING (3) -> FAILING");
                         }
-                        DriveToTarget__TakePancam____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____FINISHING__END);
-                        DriveToTarget__TakePancam____FAILING__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____FAILING__START);
                         DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                         DriveToTarget__TakePancam____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -4871,16 +4086,12 @@ DriveToTarget__TakePancam : FINISHING (5) -> ITERATION_ENDED
 <POST_CONDITION T?> (true)
 [ Assignment: .FINISHING.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .ITERATION_ENDED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@53fd8f9c ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@15173950 ]
  ----> (State #4)
 */
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakePancam : FINISHING (5) -> ITERATION_ENDED");
                             }
-                            DriveToTarget__TakePancam____FINISHING__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____FINISHING__END);
-                            DriveToTarget__TakePancam____ITERATION_ENDED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____ITERATION_ENDED__START);
                             DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.SUCCESS);
                             commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                             DriveToTarget__TakePancam____failure.setNext(NodeFailureType.UNKNOWN);
@@ -4900,16 +4111,12 @@ DriveToTarget__TakePancam : ITERATION_ENDED (1) -> FINISHED
 <ANCESTOR_EXITS_DISJOINED T?> (<root node's ancestor exit condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@2bdf75d8 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@27b3be01 ]
  ----> (State #6)
 */
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakePancam : ITERATION_ENDED (1) -> FINISHED");
                     }
-                    DriveToTarget__TakePancam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____ITERATION_ENDED__END);
-                    DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                     DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.INTERRUPTED);
                     commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                     DriveToTarget__TakePancam____failure.setNext(NodeFailureType.PARENT_EXITED);
@@ -4925,16 +4132,12 @@ DriveToTarget__TakePancam : ITERATION_ENDED (2) -> FINISHED
 <ANCESTOR_INVARIANTS_CONJOINED F?> (<root node's ancestor invariant condition>)
 [ Assignment: .ITERATION_ENDED.END = (PNumeric) (LookupNow(time)) ]
 [ Assignment: .FINISHED.START = (PNumeric) (LookupNow(time)) ]
-[ edu.umn.crisys.plexil.il.action.CompositeAction@5bb1ce68 ]
+[ edu.umn.crisys.plexil.il.action.CompositeAction@97f4804 ]
  ----> (State #6)
 */
                         if (JavaPlan.DEBUG) {
                             System.out.println("DriveToTarget__TakePancam : ITERATION_ENDED (2) -> FINISHED");
                         }
-                        DriveToTarget__TakePancam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____ITERATION_ENDED__END);
-                        DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                        commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                         DriveToTarget__TakePancam____outcome.setNext(NodeOutcome.FAILURE);
                         commitAfterMicroStep(DriveToTarget__TakePancam____outcome);
                         DriveToTarget__TakePancam____failure.setNext(NodeFailureType.PARENT_FAILED);
@@ -4955,10 +4158,6 @@ DriveToTarget__TakePancam : ITERATION_ENDED (3) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakePancam : ITERATION_ENDED (3) -> FINISHED");
                             }
-                            DriveToTarget__TakePancam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____ITERATION_ENDED__END);
-                            DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                             DriveToTarget__TakePancam__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__TakePancam__state);
                             changeOccurred();
@@ -4974,10 +4173,6 @@ DriveToTarget__TakePancam : ITERATION_ENDED (4) -> FINISHED
                             if (JavaPlan.DEBUG) {
                                 System.out.println("DriveToTarget__TakePancam : ITERATION_ENDED (4) -> FINISHED");
                             }
-                            DriveToTarget__TakePancam____ITERATION_ENDED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____ITERATION_ENDED__END);
-                            DriveToTarget__TakePancam____FINISHED__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                            commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__START);
                             DriveToTarget__TakePancam__state.setNext(6);
                             commitAfterMicroStep(DriveToTarget__TakePancam__state);
                             changeOccurred();
@@ -4999,10 +4194,6 @@ DriveToTarget__TakePancam : FINISHED (1) -> INACTIVE
                     if (JavaPlan.DEBUG) {
                         System.out.println("DriveToTarget__TakePancam : FINISHED (1) -> INACTIVE");
                     }
-                    DriveToTarget__TakePancam____FINISHED__END.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____FINISHED__END);
-                    DriveToTarget__TakePancam____INACTIVE__START.setNext(((PNumeric) getWorld().lookupNow(StringValue.get(("time")))));
-                    commitAfterMicroStep(DriveToTarget__TakePancam____INACTIVE__START);
                     DriveToTarget__TakePancam____EXECUTING__END.setNext(UnknownValue.get());
                     commitAfterMicroStep(DriveToTarget__TakePancam____EXECUTING__END);
                     DriveToTarget__TakePancam____ITERATION_ENDED__START.setNext(UnknownValue.get());
@@ -5050,20 +4241,20 @@ DriveToTarget__TakePancam : FINISHED (1) -> INACTIVE
 
     public NodeState STATE___DriveToTarget__TakePancam() {
         switch (DriveToTarget__TakePancam__state.getCurrent()) {
-            case  6 :
-                return NodeState.FINISHED;
-            case  5 :
-                return NodeState.FAILING;
             case  3 :
                 return NodeState.FINISHING;
-            case  2 :
-                return NodeState.EXECUTING;
             case  1 :
                 return NodeState.WAITING;
             case  0 :
                 return NodeState.INACTIVE;
+            case  5 :
+                return NodeState.FAILING;
+            case  6 :
+                return NodeState.FINISHED;
             case  4 :
                 return NodeState.ITERATION_ENDED;
+            case  2 :
+                return NodeState.EXECUTING;
         }
         throw new RuntimeException("No state mapping found for DriveToTarget__TakePancam");
     }

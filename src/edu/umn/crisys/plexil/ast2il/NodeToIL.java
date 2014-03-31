@@ -337,10 +337,11 @@ public class NodeToIL {
     public Set<String> getAllVariables() {
         return ilVars.keySet();
     }
-
+    
     public ILVariable getVariable(String varName) {
         return ilVars.get(varName);
     }
+    
     
     /**
      * Find the node containing an ILVariable with the given name, and return

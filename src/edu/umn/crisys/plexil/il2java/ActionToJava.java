@@ -67,11 +67,6 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	
 	@Override
 	public Void visitAssign(AssignAction assign, JBlock block) {
-		if (assign.getLHS() instanceof SimpleVar && 
-				((SimpleVar)assign.getLHS()).shouldBeIgnored()) {
-			return null;
-		}
-		
 		// Debug statement
 		if ( ! assign.getLHS().toString().startsWith(".")) {
 			block._if(cm.ref(JavaPlan.class).staticRef("DEBUG")) 
