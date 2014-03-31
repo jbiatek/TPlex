@@ -11,8 +11,6 @@ public interface CommonExprVisitor<Param, Return> extends PValueVisitor<Param, R
     
     public Return visitLookupOnChange(LookupOnChangeExpr lookup, Param param);
     
-    public Return visitNodeTimepoint(NodeTimepointExpr timept, Param param);
-    
     public Return visitOperation(Operation op, Param param);
     
 }

@@ -13,7 +13,6 @@ import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
@@ -75,12 +74,6 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
             jlookup.arg(arg.accept(this, cm));
         }
         return jlookup;
-    }
-
-    @Override
-    public JExpression visitNodeTimepoint(NodeTimepointExpr timept,
-            JCodeModel cm) {
-        return JExpr.direct("/* TODO: Node timepoint here */ null");
     }
 
     @Override

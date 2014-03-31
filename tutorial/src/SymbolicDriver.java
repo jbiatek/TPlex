@@ -31,7 +31,7 @@ public class SymbolicDriver {
 		// The Lookup(target_in_view) should return a boolean.
 		world.addLookup("target_in_view", PlexilType.BOOLEAN);
 		// Time should be an integer.
-		world.addIncreasingLookup("time", PlexilType.INTEGER);
+		world.addIncreasingLookup("time", 0);
 		return world;
 	}
 }

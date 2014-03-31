@@ -11,7 +11,6 @@ import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
@@ -206,12 +205,6 @@ class IL2JavaBiased implements ILExprVisitor<JCodeModel, JExpression> {
 	public JExpression visitLookupOnChange(LookupOnChangeExpr lookup,
 			JCodeModel cm) {
 		return wrap(ILExprToJava.toJava(ensureBool(lookup), cm));
-	}
-
-	@Override
-	public JExpression visitNodeTimepoint(NodeTimepointExpr timept,
-			JCodeModel cm) {
-		throw new RuntimeException("Timepoints aren't booleans.");
 	}
 
 	@Override

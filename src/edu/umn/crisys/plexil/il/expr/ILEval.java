@@ -8,7 +8,6 @@ import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
@@ -51,12 +50,6 @@ public class ILEval implements ILExprVisitor<Void, PValue> {
 		return UnknownValue.get();
 	}
 
-	@Override
-	public PValue visitNodeTimepoint(NodeTimepointExpr timept, Void param) {
-		return UnknownValue.get();
-	}
-
-	
 	@Override
 	public PValue visitOperation(Operation op, Void param) {
 		// Normally, we just call variables UNKNOWN and everything works

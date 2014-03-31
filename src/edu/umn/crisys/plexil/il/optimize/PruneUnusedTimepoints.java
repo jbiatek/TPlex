@@ -16,6 +16,7 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
+import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.util.Pair;
 
@@ -26,20 +27,12 @@ public class PruneUnusedTimepoints {
 	public static void optimize(Plan ilPlan) {
 	    Set<ILExpression> safeList = new HashSet<ILExpression>();
 	    
-	    Filter<ILExpression> timeFilter = new Filter<ILExpression>() {
-
-            @Override
-            public boolean accept(ILExpression obj) {
-            	// TODO: This used to return whether the variable was a NodeTimepoint. 
-                return false;
-            }};
-            
 	    // Save any that are being read in a guard or action
 	    // (assignment, command, or update could reference it)
 	    for (NodeStateMachine sm : ilPlan.getMachines()) {
 	        for (Transition t : sm.transitions) {
 	            for (TransitionGuard g : t.guards) {
-	                addAllMatchingInExpressionTo(g.getExpression(), safeList, timeFilter);
+	                addAllMatchingInExpressionTo(g.getExpression(), safeList);
 	            }
 	            for (PlexilAction a : t.actions) {
 	                pruneTimepointActionHelper(a, safeList);
@@ -56,48 +49,44 @@ public class PruneUnusedTimepoints {
 	    }
 	    
 	    // Okay, everything not on the list is being told to leave itself out.
-	    /*
-	    for (IntermediateVariable v : ilPlan.getVariables()) {
-	        if (v instanceof NodeTimepointReference && ! safeList.contains(v) ) {
-	            ((NodeTimepointReference) v).markAsUnused();
+	    
+	    for ( ILVariable v : ilPlan.getVariables()) {
+	        if (isTimepoint(v) && ! safeList.contains(v) ) {
+	            ((SimpleVar) v).markAsUnused();
 	        }
 	    }
-	    */
+	    
+	}
+	
+	private static boolean isTimepoint(ILExpression e) {
+		if (e instanceof SimpleVar) {
+			SimpleVar v = (SimpleVar) e;
+			return v.getName().endsWith(".START") || v.getName().endsWith(".END");
+		}
+		return false;
 	}
 
 	private static void pruneTimepointActionHelper(PlexilAction a, Set<ILExpression> safeList) {
-	    Filter<ILExpression> timeFilter = new Filter<ILExpression>() {
-
-	        @Override
-	        public boolean accept(ILExpression obj) {
-	        	// TODO: This used to be, um, the same thing as above. Wtf.
-	            return false;
-	        }};
-	        
         if (a instanceof AssignAction) {
-            addAllMatchingInExpressionTo(((AssignAction) a).getRHS(), safeList, timeFilter);
+            addAllMatchingInExpressionTo(((AssignAction) a).getRHS(), safeList);
         } else if (a instanceof CommandAction) {
-            addAllMatchingInExpressionTo(((CommandAction) a).getArgs(), safeList, timeFilter);
+            addAllMatchingInExpressionTo(((CommandAction) a).getArgs(), safeList);
         } else if (a instanceof UpdateAction) {
             for (Pair<String, ILExpression> p : ((UpdateAction) a).getUpdates()) {
-                addAllMatchingInExpressionTo(p.second, safeList, timeFilter);
+                addAllMatchingInExpressionTo(p.second, safeList);
             }
         }
 
 	}
 
-	private static interface Filter<T> {
-	    public boolean accept(T obj);
-	}
-	
-	private static void addAllMatchingInExpressionTo(List<ILExpression> es, Set<ILExpression> s, Filter<ILExpression> f) {
+	private static void addAllMatchingInExpressionTo(List<ILExpression> es, Set<ILExpression> s) {
 	    for (ILExpression e : es) {
-	        addAllMatchingInExpressionTo(e, s, f);
+	        addAllMatchingInExpressionTo(e, s);
 	    }
 	}
 	
-	private static void addAllMatchingInExpressionTo(ILExpression e, Set<ILExpression> s, Filter<ILExpression> f) {
-	    if (f.accept(e)) {
+	private static void addAllMatchingInExpressionTo(ILExpression e, Set<ILExpression> s) {
+	    if (isTimepoint(e)) {
 	        s.add(e);
 	        return;
 	    }
@@ -105,11 +94,10 @@ public class PruneUnusedTimepoints {
 	    if (e instanceof CompositeExpr) {
 	        CompositeExpr comp = (CompositeExpr) e;
 	        for (Expression arg : comp.getArguments()) {
-	            addAllMatchingInExpressionTo((ILExpression) arg, s, f);
+	            addAllMatchingInExpressionTo((ILExpression) arg, s);
 	        }    
 	    }
 	}
-	
-	
+
 	
 }

@@ -286,25 +286,25 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		 */
 		String[] args = splitMethod(str);
 		if (str.startsWith("psxUpdateAck")) {
-			return interpolate(args, "<UpdateAck name=\"", "\" />");
+			return interpolate(args, "      <UpdateAck name=\"", "\" />");
 		} else if (str.startsWith("psxCommand")) {
-			return interpolate(args, "<Command"," name=\"", "\" type=\"", "\">");
+			return interpolate(args, "      <Command"," name=\"", "\" type=\"", "\">");
 		} else if (str.startsWith("psxEndCommand")) {
-			return interpolate(args, "</Command", ">");
+			return interpolate(args, "      </Command", ">");
 		} else if (str.startsWith("psxResultOrValue")) {
-			return "<"+args[0]+">"+args[1]+"</"+args[0]+">";
+			return "        <"+args[0]+">"+args[1]+"</"+args[0]+">";
 		} else if (str.startsWith("psxState")) {
-			return interpolate(args, "<State name=\"", "\" type=\"", "\">");
+			return interpolate(args, "      <State name=\"", "\" type=\"", "\">");
 		} else if (str.startsWith("psxEndState")) {
-			return "</State>";
+			return "      </State>";
 		} else if (str.startsWith("psxParam")) {
-			return interpolate(args, "<Param type=\"", "\">", "</Param>");
+			return interpolate(args, "        <Param type=\"", "\">", "</Param>");
 		} else if (str.startsWith("psxInitialStateEnd")) {
-			return "</InitialState>\n<Script>";
+			return "  </InitialState>\n  <Script>";
 		} else if (str.startsWith("psxSimultaneousStart")) {
-			return "<Simultaneous>";
+			return "    <Simultaneous>";
 		} else if (str.startsWith("psxSimultaneousEnd")) {
-			return "</Simultaneous>";
+			return "    </Simultaneous>";
 		} else if (str.startsWith("psx")) {
 			throw new RuntimeException(str+" could not be converted.");
 		} else {
