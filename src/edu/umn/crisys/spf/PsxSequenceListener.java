@@ -285,6 +285,7 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		 * as its own argument. 
 		 */
 		String[] args = splitMethod(str);
+		try {
 		if (str.startsWith("psxUpdateAck")) {
 			return interpolate(args, "      <UpdateAck name=\"", "\" />");
 		} else if (str.startsWith("psxCommand")) {
@@ -314,6 +315,9 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 				return "";
 			}
 		}
+		} catch (Exception e) {
+			throw new RuntimeException("Exception converting method "+str, e);
+		}
 	}
 	
 	/**
@@ -325,10 +329,10 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 	 * @return
 	 */
 	private String[] splitMethod(String method) {
-		// Delete everything up to and including the open paren,
-		// then everything after the close paren.
-		String[] args = method.replaceFirst("^.*\\(", "")
-					 .replaceFirst("\\).*$", "")
+		// Delete everything up to and including the first open paren,
+		// then the close paren.
+		String[] args = method.replaceFirst("^.*?\\(", "")
+					 .replaceFirst("\\)$", "")
 					 .split(",");
 		for (int i=0; i<args.length; i++) {
 			if (args[i].startsWith("\"")) {
