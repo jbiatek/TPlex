@@ -56,7 +56,11 @@ public class SymbolicExternalWorld implements ExternalWorld {
 
 		@Override
 		public T generateNewValue() {
-			return values[symbolicIntIndex(values.length)];
+			if (values.length == 1) {
+				return values[0];
+			}
+			
+			return values[nondetIntIndex(values.length)];
 		}
 		
 	}
@@ -80,6 +84,8 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		@Override
 		public T generateNewValue() {
 			PNumeric newVal = (PNumeric) getSymbolicPValueOfType(type);
+//			lastValue = (T) lastValue.max(newVal);
+//			return lastValue;
 			// Abandon this line of execution if the new value is less than 
 			// the old one. 
 			Verify.ignoreIf((lastValue != null && newVal.lt(lastValue).isTrue()));
@@ -156,10 +162,8 @@ public class SymbolicExternalWorld implements ExternalWorld {
 
 	}
 	
-	private int symbolicIntIndex(int maximum) {
-		int symb = symbolicInt(0);
-		Verify.ignoreIf(symb >= maximum || symb < 0);
-		return symb;
+	private int nondetIntIndex(int maximum) {
+		return Verify.getInt(0, maximum-1);
 	}
 	
 	/**
@@ -249,6 +253,9 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	private void respondToCommand(CommandHandler handler, FunctionCall call) {
 		// Does this command return a value? 
+		// "There is an important aspect of scripting command handles when the 
+		// command also returns a value. Namely, the handle must occur after 
+		// the value."
 		if (cmdReturnValues.containsKey(call.getName())) {
 			returnValueToCommand(handler, call, 
 					cmdReturnValues.get(call.getName()).generateNewValue());
@@ -269,6 +276,10 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	@Override
 	public void waitForNextEvent() {
+		
+		// Did anything happen during the last step? If not, go back and 
+		// try again.
+		//Verify.ignoreIf(currentLookupValues.size() == 0 && updateQueue.size() == 0 && cmdQueue.size() == 0);
 		
 		if (currentStep == 0) {
 			// We just completed the first step. That means that we're done with
@@ -302,7 +313,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		Iterator<Pair<CommandHandler, FunctionCall>> iter = cmdQueue.iterator();
 		while (iter.hasNext()) {
 			Pair<CommandHandler, FunctionCall> pair = iter.next();
-			if (symbolicBoolean(true)) {
+			if (Verify.getBoolean()) {
 				respondToCommand(pair.first, pair.second);
 				iter.remove();
 			}
@@ -344,9 +355,14 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		}
 		String lookup = stateName.getString();
 		if ( ! currentLookupValues.containsKey(lookup)) {
+			if (oldLookupValues.containsKey(lookup) && Verify.getBoolean()) {
+				// Value doesn't change
+				return oldLookupValues.get(lookup);
+			}
+			
+			
 			PValue newVal = lookups.get(lookup).generateNewValue();
 			// A new value that is actually exactly the same is pointless.
-			// TODO:
 //			Verify.ignoreIf(oldLookupValues != null && 
 //					oldLookupValues.containsKey(lookup) && 
 //					oldLookupValues.get(lookup).equalTo(newVal).isTrue());
