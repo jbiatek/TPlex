@@ -35,6 +35,10 @@ public abstract class JavaPlan {
     	this.isLibrary = true;
     }
     
+    public void setWorld(ExternalWorld newWorld) {
+    	this.world = newWorld;
+    }
+    
     public NodeOutcome runPlanToCompletion() {
         while ( ! world.stop() && getRootNodeOutcome().isUnknown()) {
             doMacroStep();
@@ -62,6 +66,10 @@ public abstract class JavaPlan {
     }
     
     public int doMacroStepCount() {
+    	if (DEBUG) {
+    		System.out.println("***************************** New macro step");
+    	}
+    	
         int counter = 0;
         changeOccurred = true;
         endMacroStep = false;
