@@ -263,7 +263,7 @@ public class RegressionTest {
             }
             System.out.println("==> Ending step "+(i+1));
             
-            world.waitForNextEvent();
+            world.quiescenceReached();
         }
         System.out.println("Finished.");
 	}

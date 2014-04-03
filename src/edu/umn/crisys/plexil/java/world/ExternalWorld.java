@@ -11,7 +11,13 @@ public interface ExternalWorld {
 	 * Called after PLEXIL has reached quiescence. When something changes,
 	 * return so that PLEXIL can run again, this time with the new event. 
 	 */
-	public void waitForNextEvent();
+	public void quiescenceReached();
+	
+	/**
+	 * Called if the PLEXIL plan ended its macro step early due to an
+	 * assignment, command, or update. 
+	 */
+	public void prematureEndOfMacroStep();
 	
 	/**
 	 * Notify the executive that no more changes are forthcoming. For example,

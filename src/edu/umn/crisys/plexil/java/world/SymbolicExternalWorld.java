@@ -275,7 +275,16 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	@Override
-	public void waitForNextEvent() {
+	public void quiescenceReached() {
+		afterMacroStepEnds(true);
+	}
+	
+	@Override
+	public void prematureEndOfMacroStep() {
+		afterMacroStepEnds(false);
+	}
+	
+	private void afterMacroStepEnds(boolean refreshLookups) {
 		
 		// Did anything happen during the last step? If not, go back and 
 		// try again.
@@ -295,11 +304,12 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		
 		// Fresh new set of lookup values, but keep the old ones so that
 		// we can make sure that when they change, they actually change.
-		for (String newValue : currentLookupValues.keySet()) {
-			oldLookupValues.put(newValue, currentLookupValues.get(newValue));
+		if (refreshLookups) {
+			for (String newValue : currentLookupValues.keySet()) {
+				oldLookupValues.put(newValue, currentLookupValues.get(newValue));
+			}
+			currentLookupValues.clear();
 		}
-		currentLookupValues.clear();
-
 
 		// Start a new Simultaneous tag for the next step.
 		psxSimultaneousStart();

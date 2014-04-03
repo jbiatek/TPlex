@@ -213,12 +213,19 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 	
 	@Override
-	public void waitForNextEvent() {
+	public void quiescenceReached() {
 		if (events.size() > 0) {
 			events.get(0).doEvent(this);
 			events.remove(0);
 		}
 	}
+	
+	@Override
+	public void prematureEndOfMacroStep() {
+		// Do the same thing as when quiesence is reached
+		quiescenceReached();
+	}
+	
 
 	@Override
 	public boolean stop() {

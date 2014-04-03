@@ -42,7 +42,11 @@ public abstract class JavaPlan {
     public NodeOutcome runPlanToCompletion() {
         while ( ! world.stop() && getRootNodeOutcome().isUnknown()) {
             doMacroStep();
-            world.waitForNextEvent();
+            if (endMacroStep) {
+            	world.prematureEndOfMacroStep();
+            } else {
+            	world.quiescenceReached();
+            }
         }
         return getRootNodeOutcome();
     }
