@@ -51,11 +51,11 @@ import gov.nasa.jpf.symbc.string.DerivedStringExpression;
 import gov.nasa.jpf.symbc.string.StringSymbolic;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  *
@@ -97,7 +97,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	// 'methodSequences' is a set of 'methodSequence's
 	// A single 'methodSequence' is a vector of invoked 'method's along a path
 	// A single invoked 'method' is represented as a String.
- 	Set<Vector<String>> methodSequences = new LinkedHashSet<Vector<String>>();
+ 	List<List<String>> methodSequences = new ArrayList<List<String>>();
 
  	// Name of the class under test
  	String className ="";
@@ -149,7 +149,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 
 			// get the chain of choice generators.
 			ChoiceGenerator<?> [] cgs = ss.getChoiceGenerators();
-			Vector<String> methodSequence = getMethodSequence(cgs);
+			List<String> methodSequence = getMethodSequence(cgs);
 			// Now append the error String and then add methodSequence to methodSequences
 			// prefix the exception marker to distinguish this from
 			// an invoked method.
@@ -308,7 +308,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 					pc.solve();
 				// get the chain of choice generators.
 				ChoiceGenerator<?> [] cgs = ss.getChoiceGenerators();
-				Vector<String> methodSeq = getMethodSequence(cgs);
+				List<String> methodSeq = getMethodSequence(cgs);
 				removePrefixesOf(methodSeq);
 				if ( ! isPrefix(methodSeq)) {
 				    methodSequences.add(methodSeq);
@@ -330,7 +330,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
     }
 
     private boolean isPrefix(List<String> methodSeq) {
-        for (Vector<String> existing : methodSequences) {
+        for (List<String> existing : methodSequences) {
             if (firstIsPrefix(methodSeq, existing)) {
                 return true;
             }
@@ -339,9 +339,9 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
     }
 
     private void removePrefixesOf(List<String> methodSeq) {
-        Iterator<Vector<String>> iter = methodSequences.iterator();
+        Iterator<List<String>> iter = methodSequences.iterator();
         while (iter.hasNext()) {
-            Vector<String> otherSeq = iter.next();
+            List<String> otherSeq = iter.next();
             
             if (firstIsPrefix(otherSeq, methodSeq)) {
                 iter.remove();
@@ -360,9 +360,9 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	 * A single invoked 'method' is represented as a String.
 	 *
 	 */
-	private Vector<String> getMethodSequence(ChoiceGenerator [] cgs){
+	private List<String> getMethodSequence(ChoiceGenerator [] cgs){
 		// A method sequence is a vector of strings
-		Vector<String> methodSequence = new Vector<String>();
+		List<String> methodSequence = new ArrayList<String>();
 		ChoiceGenerator cg = null;
 		// explore the choice generator chain - unique for a given path.
 		for (int i=0; i<cgs.length; i++){
@@ -484,7 +484,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	   * prints the method sequences
 	   */
 	  private void printMethodSequences(PrintWriter pw){
-		  Iterator<Vector<String>> it = methodSequences.iterator();
+		  Iterator<List<String>> it = methodSequences.iterator();
 		  while (it.hasNext()){
 			  pw.println(it.next());
 		  }
@@ -515,9 +515,9 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 		  pw.println("	}"); // setUp method end
 		  // Create a test method for each sequence
 		  int testIndex = 0;
-		  Iterator<Vector<String>> it = methodSequences.iterator();
+		  Iterator<List<String>> it = methodSequences.iterator();
 		  while (it.hasNext()){
-			  Vector<String> methodSequence = it.next();
+			  List<String> methodSequence = it.next();
 			  pw.println();
 			  Iterator<String> it1 = methodSequence.iterator();
 			  if (it1.hasNext()) {

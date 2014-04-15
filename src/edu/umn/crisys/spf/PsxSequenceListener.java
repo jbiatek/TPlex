@@ -15,13 +15,16 @@ import edu.umn.crisys.util.Pair;
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.report.Publisher;
+import gov.nasa.jpf.search.Search;
 
 public class PsxSequenceListener extends SymbolicSequenceListener {
 
 	private File testCaseDestination;
 	private boolean writeRedundantCasesToo = false;
-	private Set<List<String>> testCases = new HashSet<List<String>>();
+	private List<List<String>> testCases = new ArrayList<List<String>>();
 	private Set<List<String>> redundantTestCases = new HashSet<List<String>>();
+	private boolean outputImmediately = true;
+	private int currentTest = 0;
 	private boolean outputDebugComments = false;
 	
 	public PsxSequenceListener(Config conf, JPF jpf) {
@@ -31,6 +34,46 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		outputDebugComments  = conf.getBoolean("psxlistener.output_debug_comments", false);
 		testCaseDestination = new File(dest);
 	}
+	
+	private List<String> processMethodSequence(List<String> methodSequence) {
+		// This sanitizes the method sequence by removing unclosed "tags"
+		cleanUpMethods(methodSequence);
+		// Now we can convert to XML,
+		return convertMethodsToScript(methodSequence);
+	}
+	
+	private void storeTestCase(List<String> xmlTestCase) {
+		if ( ! alreadyHaveThis(xmlTestCase)) {
+			// This test case has new stuff. It might even include other 
+			// test cases inside it, so move those.
+			removePrefixesOf(xmlTestCase);
+			testCases.add(xmlTestCase);
+		} else {
+			// This one's redundant, we already have it.
+			redundantTestCases.add(xmlTestCase);
+		}
+
+	}
+	
+	@Override 
+	public void storeSequence(Search search) {
+		// Overridden so that we can spit it out as a file, if desired
+		int sizeBefore = this.methodSequences.size();
+		super.storeSequence(search);
+		if (outputImmediately && this.methodSequences.size() > sizeBefore) {
+			List<String> lastTestCase = processMethodSequence(this.methodSequences.get(this.methodSequences.size()-1));
+			
+			// If we don't already have this one, let's output it.
+			if ( ! alreadyHaveThis(lastTestCase)) {
+				File newTestFile = new File(testCaseDestination, "test"+currentTest+".psx");
+				writeToFile(lastTestCase, newTestFile);
+				currentTest++;
+			}
+			
+			// Save it so that we don't do this one again.
+			storeTestCase(lastTestCase);
+		}
+	}
 
 	@Override
 	public void publishFinished(Publisher publisher) {
@@ -38,29 +81,19 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		// We're actually mostly going to spit out test case files.
 		testCaseDestination.mkdirs();
 		
-		for (Vector<String> methodSequence : this.methodSequences) {
-			// This sanitizes the method sequence by removing unclosed "tags"
-			cleanUpMethods(methodSequence);
-			// Now we can convert to XML,
-			List<String> xmlTestCase = convertMethodsToScript(methodSequence);
-			if ( ! alreadyHaveThis(xmlTestCase)) {
-				// This test case has new stuff. It might even include other 
-				// test cases inside it, so move those.
-				removePrefixesOf(xmlTestCase);
-				testCases.add(xmlTestCase);
-			} else {
-				// This one's redundant, we already have it.
-				redundantTestCases.add(xmlTestCase);
-			}
+		for (List<String> methodSequence : this.methodSequences) {
+			storeTestCase(processMethodSequence(methodSequence));
 		}
 		
 		// Now it's time to write XML to files.
-		int currentTest = 0;
 		int redundantTest = 0;
-		for (List<String> xml : testCases) {
-			File newTestFile = new File(testCaseDestination, "test"+currentTest+".psx");
-			writeToFile(xml, newTestFile);
-			currentTest++;
+		if ( ! outputImmediately) {
+			// These haven't been printed yet.
+			for (List<String> xml : testCases) {
+				File newTestFile = new File(testCaseDestination, "test"+currentTest+".psx");
+				writeToFile(xml, newTestFile);
+				currentTest++;
+			}
 		}
 		if (writeRedundantCasesToo) {
 			for (List<String> xml : redundantTestCases) {
