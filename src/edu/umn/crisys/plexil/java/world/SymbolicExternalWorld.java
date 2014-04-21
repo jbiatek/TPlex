@@ -8,6 +8,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.java.psx.FunctionCall;
 import edu.umn.crisys.plexil.java.values.*;
+import edu.umn.crisys.spf.CheckpointControl;
 import edu.umn.crisys.util.Pair;
 import gov.nasa.jpf.vm.Verify;
 
@@ -27,6 +28,9 @@ import gov.nasa.jpf.vm.Verify;
  *
  */
 public class SymbolicExternalWorld implements ExternalWorld {
+	
+	public static int CHECKPOINT_EVERY = 1;
+	public static boolean ENABLE_CHECKPOINTS = false;
 	
 	private interface ValueGenerator<T extends PValue> {
 		public T generateNewValue();
@@ -285,6 +289,10 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	private void afterMacroStepEnds(boolean refreshLookups) {
+		
+		if (ENABLE_CHECKPOINTS && refreshLookups /* currentStep % CHECKPOINT_EVERY == 0*/) {
+			CheckpointControl.setCheckpointFromInside(); 
+		}
 		
 		// Did anything happen during the last step? If not, go back and 
 		// try again.
