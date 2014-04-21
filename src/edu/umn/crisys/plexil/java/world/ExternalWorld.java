@@ -1,24 +1,12 @@
 package edu.umn.crisys.plexil.java.world;
 
+import edu.umn.crisys.plexil.java.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
 
-public interface ExternalWorld {
+public interface ExternalWorld extends JavaPlanObserver {
 
-	
-	/**
-	 * Called after PLEXIL has reached quiescence. When something changes,
-	 * return so that PLEXIL can run again, this time with the new event. 
-	 */
-	public void quiescenceReached();
-	
-	/**
-	 * Called if the PLEXIL plan ended its macro step early due to an
-	 * assignment, command, or update. 
-	 */
-	public void prematureEndOfMacroStep();
-	
 	/**
 	 * Notify the executive that no more changes are forthcoming. For example,
 	 * a script has run out of things to do. 

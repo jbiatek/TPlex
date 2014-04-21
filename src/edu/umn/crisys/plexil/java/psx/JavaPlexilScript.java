@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
@@ -213,7 +214,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 	
 	@Override
-	public void quiescenceReached() {
+	public void quiescenceReached(JavaPlan plan) {
 		if (events.size() > 0) {
 			events.get(0).doEvent(this);
 			events.remove(0);
@@ -221,11 +222,16 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 	
 	@Override
-	public void prematureEndOfMacroStep() {
+	public void prematureEndOfMacroStep(JavaPlan plan) {
 		// Do the same thing as when quiesence is reached
-		quiescenceReached();
+		quiescenceReached(plan);
 	}
 	
+
+	@Override
+	public void endOfMicroStep(JavaPlan plan) {
+		// Do nothing until the macro step ends.
+	}
 
 	@Override
 	public boolean stop() {

@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.java.plx;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public abstract class JavaPlan {
     public static boolean DEBUG = false;
 
     private ExternalWorld world;
+    private List<JavaPlanObserver> observers = new ArrayList<JavaPlanObserver>();
     private LibraryInterface parent = new LibraryInterface();
     private boolean isLibrary = false;
     private boolean askedForCommitAfterMicro = false;
@@ -39,13 +41,43 @@ public abstract class JavaPlan {
     	this.world = newWorld;
     }
     
+    public void addObserver(JavaPlanObserver obs) {
+    	observers.add(obs);
+    }
+    
+    private void notifyPrematureEnd() {
+    	world.prematureEndOfMacroStep(this);
+    	for (JavaPlanObserver obs : observers) {
+    		obs.prematureEndOfMacroStep(this);
+    	}
+    }
+
+    private void notifyQuiescence() {
+    	world.quiescenceReached(this);
+    	for (JavaPlanObserver obs : observers) {
+    		obs.quiescenceReached(this);
+    	}
+    }
+    
+    /**
+     * Notify listeners that a micro step has ended. Only call this inside
+     * of an implementation of doMicroStep() please.
+     */
+    public void notifyMicroStep() {
+    	world.endOfMicroStep(this);
+    	for (JavaPlanObserver obs : observers) {
+    		obs.endOfMicroStep(this);
+    	}
+    }
+
+    
     public NodeOutcome runPlanToCompletion() {
         while ( ! world.stop() && getRootNodeOutcome().isUnknown()) {
             doMacroStep();
             if (endMacroStep) {
-            	world.prematureEndOfMacroStep();
+            	notifyPrematureEnd();
             } else {
-            	world.quiescenceReached();
+            	notifyQuiescence();
             }
         }
         return getRootNodeOutcome();

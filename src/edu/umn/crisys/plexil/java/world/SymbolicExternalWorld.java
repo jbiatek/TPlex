@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.psx.FunctionCall;
 import edu.umn.crisys.plexil.java.values.*;
 import edu.umn.crisys.spf.CheckpointControl;
@@ -279,15 +280,20 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	@Override
-	public void quiescenceReached() {
+	public void quiescenceReached(JavaPlan plan) {
 		afterMacroStepEnds(true);
 	}
 	
 	@Override
-	public void prematureEndOfMacroStep() {
+	public void prematureEndOfMacroStep(JavaPlan plan) {
 		afterMacroStepEnds(false);
 	}
 	
+	@Override
+	public void endOfMicroStep(JavaPlan plan) {
+		// Do nothing until the macro step ends. 
+	}
+
 	private void afterMacroStepEnds(boolean refreshLookups) {
 		
 		if (ENABLE_CHECKPOINTS && refreshLookups /* currentStep % CHECKPOINT_EVERY == 0*/) {

@@ -47,6 +47,18 @@ public class PlanState {
         return childUIDs;
     }
     
+    public NodeUID getUID() {
+    	return uid;
+    }
+    
+    public PValue getVarValue(String varName) {
+    	return vars.get(varName);
+    }
+    
+    public List<PlanState> getChildren() {
+    	return children;
+    }
+    
     public void addChild(PlanState child) {
     	children.add(child);
     }
