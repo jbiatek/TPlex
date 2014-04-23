@@ -66,8 +66,8 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
 
         @Override
         public ILExpression visitEmpty(NodeBody empty, NodeToIL node) {
-            // This one is simple: False.
-            return BooleanValue.get(false);
+            // This one is simple: True.
+            return BooleanValue.get(true);
         }
 
         @Override
