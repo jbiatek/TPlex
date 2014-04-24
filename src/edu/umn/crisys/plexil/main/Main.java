@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamException;
 
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
@@ -173,7 +174,9 @@ public class Main {
 				RemoveDeadTransitions.optimize(ilPlan);
 			}
 			
-			PlanToJava.toJava(ilPlan, cm, pkg, idToFile);
+			JDefinedClass clazz = PlanToJava.toJava(ilPlan, cm, pkg, idToFile);
+			// Add the snapshot method too.
+			PlanToJava.addGetSnapshotMethod(ilPlan, toIl, clazz);
 		}
 		
 		// Now try to output the actual files
