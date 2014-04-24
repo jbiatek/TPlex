@@ -1,4 +1,34 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state time() = 0
+[Test:testOutput]Creating initial state target_in_view() = 0
+[Test:testOutput]Creating initial state temperature() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: DriveToTarget 
+[PlexilExec:step][1:0:0] Transitioning node DriveToTarget from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: DriveToTarget 
+[PlexilExec:step][1:1:0] Transitioning node DriveToTarget from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: Drive StopForTimeout StopForTarget TakeNavcam TakePancam Heater 
+[PlexilExec:step][1:2:0] Transitioning node Drive from INACTIVE to WAITING
+[PlexilExec:step][1:2:1] Transitioning node StopForTimeout from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for time()
+[PlexilExec:step][1:2:2] Transitioning node StopForTarget from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for target_in_view()
+[Test:testOutput]Looking up immediately target_in_view()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][1:2:3] Transitioning node TakeNavcam from INACTIVE to WAITING
+[PlexilExec:step][1:2:4] Transitioning node TakePancam from INACTIVE to WAITING
+[PlexilExec:step][1:2:5] Transitioning node Heater from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for temperature()
+[Test:testOutput]Looking up immediately temperature()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][1:3] State change queue: Drive 
+[PlexilExec:step][1:3:0] Transitioning node Drive from WAITING to EXECUTING
+[Test:testOutput]Executing rover_drive(10) into noId with ack Drive command_handle (id_534[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -139,6 +169,11 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 1
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: Drive 
+[PlexilExec:step][2:0:0] Transitioning node Drive from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -279,6 +314,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 2
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -419,6 +457,16 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Sending command ACK rover_drive(10) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 2
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: Drive 
+[PlexilExec:step][4:0:0] Transitioning node Drive from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:1] State change queue: Drive 
+[PlexilExec:step][4:1:0] Transitioning node Drive from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Drive' is SUCCESS
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -547,6 +595,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 3
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -675,6 +726,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 4
+[PlexilExec:cycle]==>Start cycle 6
+[PlexilExec:cycle]==>End cycle 6
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -803,6 +857,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 5
+[PlexilExec:cycle]==>Start cycle 7
+[PlexilExec:cycle]==>End cycle 7
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -931,6 +988,15 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: temperature() = -1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 8
+[PlexilExec:step][8:0] State change queue: Heater 
+[PlexilExec:step][8:0:0] Transitioning node Heater from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for temperature()
+[Test:testOutput]Executing turn_on_heater() into noId with ack Heater command_handle (id_712[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 8
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1059,6 +1125,11 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Sending command ACK turn_on_heater() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 9
+[PlexilExec:cycle]==>End cycle 9
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1187,6 +1258,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 6
+[PlexilExec:cycle]==>Start cycle 10
+[PlexilExec:cycle]==>End cycle 10
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1315,6 +1389,11 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: temperature() = 4.5
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 6
+[PlexilExec:cycle]==>Start cycle 11
+[PlexilExec:cycle]==>End cycle 11
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1443,6 +1522,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 7
+[PlexilExec:cycle]==>Start cycle 12
+[PlexilExec:cycle]==>End cycle 12
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1571,6 +1653,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 8
+[PlexilExec:cycle]==>Start cycle 13
+[PlexilExec:cycle]==>End cycle 13
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1699,6 +1784,18 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: temperature() = 11
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 8
+[PlexilExec:cycle]==>Start cycle 14
+[PlexilExec:step][14:0] State change queue: Heater 
+[PlexilExec:step][14:0:0] Transitioning node Heater from EXECUTING to FINISHING
+[PlexilExec:step][14:1] State change queue: Heater 
+[PlexilExec:step][14:1:0] Transitioning node Heater from FINISHING to ITERATION_ENDED
+[PlexilExec:step][14:2] State change queue: Heater 
+[PlexilExec:step][14:2:0] Transitioning node Heater from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Heater' is SUCCESS
+[PlexilExec:cycle]==>End cycle 14
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1815,6 +1912,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 9
+[PlexilExec:cycle]==>Start cycle 15
+[PlexilExec:cycle]==>End cycle 15
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -1931,6 +2031,23 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 10
+[PlexilExec:cycle]==>Start cycle 16
+[PlexilExec:step][16:0] State change queue: StopForTimeout 
+[PlexilExec:step][16:0:0] Transitioning node StopForTimeout from WAITING to EXECUTING
+[PlexilExec:step][16:1] State change queue: Concurrence__0 
+[PlexilExec:step][16:1:0] Transitioning node Concurrence__0 from INACTIVE to WAITING
+[PlexilExec:step][16:2] State change queue: Concurrence__0 
+[PlexilExec:step][16:2:0] Transitioning node Concurrence__0 from WAITING to EXECUTING
+[PlexilExec:step][16:3] State change queue: Stop SetTimeoutFlag 
+[PlexilExec:step][16:3:0] Transitioning node Stop from INACTIVE to WAITING
+[PlexilExec:step][16:3:1] Transitioning node SetTimeoutFlag from INACTIVE to WAITING
+[PlexilExec:step][16:4] State change queue: Stop SetTimeoutFlag 
+[PlexilExec:step][16:4:0] Transitioning node Stop from WAITING to EXECUTING
+[PlexilExec:step][16:4:1] Transitioning node SetTimeoutFlag from WAITING to EXECUTING
+[Test:testOutput]Assigning 'timeout' (timeout (id_102[au](0): boolean)) to 1
+[Test:testOutput]Executing rover_stop() into noId with ack Stop command_handle (id_609[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 16
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -2088,6 +2205,20 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Sending command ACK rover_stop() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 10
+[PlexilExec:cycle]==>Start cycle 17
+[PlexilExec:step][17:0] State change queue: Stop SetTimeoutFlag StopForTarget TakeNavcam TakePancam 
+[PlexilExec:step][17:0:0] Transitioning node Stop from EXECUTING to FINISHING
+[PlexilExec:step][17:0:1] Transitioning node SetTimeoutFlag from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][17:0:2] Transitioning node StopForTarget from WAITING to FINISHED
+[Node:outcome]Outcome of 'StopForTarget' is SKIPPED
+[PlexilExec:step][17:0:3] Transitioning node TakeNavcam from WAITING to EXECUTING
+[PlexilExec:step][17:0:4] Transitioning node TakePancam from WAITING to FINISHED
+[Node:outcome]Outcome of 'TakePancam' is SKIPPED
+[Test:testOutput]Executing take_navcam() into noId with ack TakeNavcam command_handle (id_684[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 17
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](EXECUTING): state) (0)
@@ -2222,6 +2353,47 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Sending command ACK take_navcam() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 10
+[PlexilExec:cycle]==>Start cycle 18
+[PlexilExec:step][18:0] State change queue: Stop SetTimeoutFlag Stop SetDriveFlag TakeNavcam 
+[PlexilExec:step][18:0:0] Transitioning node Stop from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:0:1] Transitioning node SetTimeoutFlag from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'SetTimeoutFlag' is SUCCESS
+[PlexilExec:step][18:0:2] Transitioning node Stop from INACTIVE to FINISHED
+[Node:outcome]Outcome of 'Stop' is SKIPPED
+[PlexilExec:step][18:0:3] Transitioning node SetDriveFlag from INACTIVE to FINISHED
+[Node:outcome]Outcome of 'SetDriveFlag' is SKIPPED
+[PlexilExec:step][18:0:4] Transitioning node TakeNavcam from EXECUTING to FINISHING
+[PlexilExec:step][18:1] State change queue: Stop TakeNavcam 
+[PlexilExec:step][18:1:0] Transitioning node Stop from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Stop' is SUCCESS
+[PlexilExec:step][18:1:1] Transitioning node TakeNavcam from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:2] State change queue: Concurrence__0 TakeNavcam 
+[PlexilExec:step][18:2:0] Transitioning node Concurrence__0 from EXECUTING to FINISHING
+[PlexilExec:step][18:2:1] Transitioning node TakeNavcam from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TakeNavcam' is SUCCESS
+[PlexilExec:step][18:3] State change queue: Concurrence__0 
+[PlexilExec:step][18:3:0] Transitioning node Concurrence__0 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:4] State change queue: Concurrence__0 
+[PlexilExec:step][18:4:0] Transitioning node Concurrence__0 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Concurrence__0' is SUCCESS
+[PlexilExec:step][18:5] State change queue: StopForTimeout 
+[PlexilExec:step][18:5:0] Transitioning node StopForTimeout from EXECUTING to FINISHING
+[PlexilExec:step][18:6] State change queue: StopForTimeout 
+[PlexilExec:step][18:6:0] Transitioning node StopForTimeout from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:7] State change queue: StopForTimeout 
+[PlexilExec:step][18:7:0] Transitioning node StopForTimeout from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'StopForTimeout' is SUCCESS
+[PlexilExec:step][18:8] State change queue: DriveToTarget 
+[PlexilExec:step][18:8:0] Transitioning node DriveToTarget from EXECUTING to FINISHING
+[PlexilExec:step][18:9] State change queue: DriveToTarget 
+[PlexilExec:step][18:9:0] Transitioning node DriveToTarget from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:10] State change queue: DriveToTarget 
+[PlexilExec:step][18:10:0] Transitioning node DriveToTarget from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DriveToTarget' is SUCCESS
+[PlexilExec:cycle]==>End cycle 18
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](FINISHED): state) (10)
@@ -2291,6 +2463,9 @@ DriveToTarget{
   }
 }
 
+[Test:testOutput]Processing event: time() = 11
+[PlexilExec:cycle]==>Start cycle 19
+[PlexilExec:cycle]==>End cycle 19
 [PlexilExec:printPlan]
 DriveToTarget{
  State: DriveToTarget (id_90[au](FINISHED): state) (10)

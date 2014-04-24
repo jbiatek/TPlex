@@ -1,4 +1,24 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: TestArrays 
+[PlexilExec:step][1:0:0] Transitioning node TestArrays from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: TestArrays 
+[PlexilExec:step][1:1:0] Transitioning node TestArrays from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: testIntStateVariable callBoolArrayCommand testCallBoolArrayCommand 
+[PlexilExec:step][1:2:0] Transitioning node testIntStateVariable from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for stateInteger()
+[Test:testOutput]Looking up immediately stateInteger()
+[Test:testOutput]Returning value UNKNOWN
+[PlexilExec:step][1:2:1] Transitioning node callBoolArrayCommand from INACTIVE to WAITING
+[PlexilExec:step][1:2:2] Transitioning node testCallBoolArrayCommand from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: callBoolArrayCommand 
+[PlexilExec:step][1:3:0] Transitioning node callBoolArrayCommand from WAITING to EXECUTING
+[Test:testOutput]Executing boolArrayCommand() into myBooleanArray (id_96[au](Array: [1, 0, <unknown>]): array) with ack callBoolArrayCommand command_handle (id_333[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 TestArrays{
  State: TestArrays (id_75[au](EXECUTING): state) (0)
@@ -68,6 +88,19 @@ TestArrays{
   }
 }
 
+[Test:testOutput]Processing event: stateInteger() = 100
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: callBoolArrayCommand testIntStateVariable 
+[PlexilExec:step][2:0:0] Transitioning node callBoolArrayCommand from EXECUTING to FINISHING
+[PlexilExec:step][2:0:1] Transitioning node testIntStateVariable from WAITING to EXECUTING
+[PlexilExec:step][2:1] State change queue: testIntStateVariable 
+[PlexilExec:step][2:1:0] Transitioning node testIntStateVariable from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][2:2] State change queue: testIntStateVariable 
+[PlexilExec:step][2:2:0] Transitioning node testIntStateVariable from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'testIntStateVariable' is SUCCESS
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 TestArrays{
  State: TestArrays (id_75[au](EXECUTING): state) (0)
@@ -127,6 +160,11 @@ TestArrays{
   }
 }
 
+[Test:testOutput]Sending command result boolArrayCommand() = 5.97819e-322
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 TestArrays{
  State: TestArrays (id_75[au](EXECUTING): state) (0)
@@ -186,6 +224,29 @@ TestArrays{
   }
 }
 
+[Test:testOutput]Sending command ACK boolArrayCommand() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: callBoolArrayCommand 
+[PlexilExec:step][4:0:0] Transitioning node callBoolArrayCommand from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:1] State change queue: testCallBoolArrayCommand callBoolArrayCommand 
+[PlexilExec:step][4:1:0] Transitioning node testCallBoolArrayCommand from WAITING to EXECUTING
+[PlexilExec:step][4:1:1] Transitioning node callBoolArrayCommand from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'callBoolArrayCommand' is SUCCESS
+[PlexilExec:step][4:2] State change queue: testCallBoolArrayCommand 
+[PlexilExec:step][4:2:0] Transitioning node testCallBoolArrayCommand from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][4:3] State change queue: testCallBoolArrayCommand 
+[PlexilExec:step][4:3:0] Transitioning node testCallBoolArrayCommand from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'testCallBoolArrayCommand' is SUCCESS
+[PlexilExec:step][4:4] State change queue: TestArrays 
+[PlexilExec:step][4:4:0] Transitioning node TestArrays from EXECUTING to FINISHING
+[PlexilExec:step][4:5] State change queue: TestArrays 
+[PlexilExec:step][4:5:0] Transitioning node TestArrays from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:6] State change queue: TestArrays 
+[PlexilExec:step][4:6:0] Transitioning node TestArrays from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TestArrays' is SUCCESS
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 TestArrays{
  State: TestArrays (id_75[au](FINISHED): state) (0)

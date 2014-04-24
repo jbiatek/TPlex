@@ -1,4 +1,31 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state x() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: Wrapper0 
+[PlexilExec:step][1:0:0] Transitioning node Wrapper0 from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: Wrapper0 
+[PlexilExec:step][1:1:0] Transitioning node Wrapper0 from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for x()
+[Test:testOutput]Looking up immediately x()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][1:2] State change queue: Wrapper1 
+[PlexilExec:step][1:2:0] Transitioning node Wrapper1 from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: Wrapper1 
+[PlexilExec:step][1:3:0] Transitioning node Wrapper1 from WAITING to EXECUTING
+[PlexilExec:step][1:4] State change queue: Wrapper2 
+[PlexilExec:step][1:4:0] Transitioning node Wrapper2 from INACTIVE to WAITING
+[PlexilExec:step][1:5] State change queue: Wrapper2 
+[PlexilExec:step][1:5:0] Transitioning node Wrapper2 from WAITING to EXECUTING
+[PlexilExec:step][1:6] State change queue: FooCall 
+[PlexilExec:step][1:6:0] Transitioning node FooCall from INACTIVE to WAITING
+[PlexilExec:step][1:7] State change queue: FooCall 
+[PlexilExec:step][1:7:0] Transitioning node FooCall from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack FooCall command_handle (id_288[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 Wrapper0{
  State: Wrapper0 (id_47[au](EXECUTING): state) (0)
@@ -63,6 +90,20 @@ Wrapper0{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: FooCall 
+[PlexilExec:step][2:0:0] Transitioning node FooCall from EXECUTING to FINISHING
+[PlexilExec:step][2:1] State change queue: FooCall 
+[PlexilExec:step][2:1:0] Transitioning node FooCall from FINISHING to ITERATION_ENDED
+[PlexilExec:step][2:2] State change queue: FooCall 
+[PlexilExec:step][2:2:0] Transitioning node FooCall from ITERATION_ENDED to WAITING
+[PlexilExec:step][2:3] State change queue: FooCall 
+[PlexilExec:step][2:3:0] Transitioning node FooCall from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack FooCall command_handle (id_288[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 Wrapper0{
  State: Wrapper0 (id_47[au](EXECUTING): state) (0)
@@ -127,6 +168,14 @@ Wrapper0{
   }
 }
 
+[Test:testOutput]Processing event: x() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: FooCall Wrapper0 
+[PlexilExec:step][3:0:0] Transitioning node FooCall from EXECUTING to FINISHING
+[PlexilExec:step][3:0:1] Transitioning node Wrapper0 from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 Wrapper0{
  State: Wrapper0 (id_47[au](FINISHING): state) (0)
@@ -191,6 +240,35 @@ Wrapper0{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: FooCall 
+[PlexilExec:step][4:0:0] Transitioning node FooCall from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:1] State change queue: FooCall 
+[PlexilExec:step][4:1:0] Transitioning node FooCall from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'FooCall' is SUCCESS
+[PlexilExec:step][4:2] State change queue: Wrapper2 
+[PlexilExec:step][4:2:0] Transitioning node Wrapper2 from EXECUTING to FINISHING
+[PlexilExec:step][4:3] State change queue: Wrapper2 
+[PlexilExec:step][4:3:0] Transitioning node Wrapper2 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:4] State change queue: Wrapper2 
+[PlexilExec:step][4:4:0] Transitioning node Wrapper2 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Wrapper2' is SUCCESS
+[PlexilExec:step][4:5] State change queue: Wrapper1 
+[PlexilExec:step][4:5:0] Transitioning node Wrapper1 from EXECUTING to FINISHING
+[PlexilExec:step][4:6] State change queue: Wrapper1 
+[PlexilExec:step][4:6:0] Transitioning node Wrapper1 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:7] State change queue: Wrapper1 
+[PlexilExec:step][4:7:0] Transitioning node Wrapper1 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Wrapper1' is SUCCESS
+[PlexilExec:step][4:8] State change queue: Wrapper0 
+[PlexilExec:step][4:8:0] Transitioning node Wrapper0 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:9] State change queue: Wrapper0 
+[PlexilExec:step][4:9:0] Transitioning node Wrapper0 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Wrapper0' is SUCCESS
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 Wrapper0{
  State: Wrapper0 (id_47[au](FINISHED): state) (0)

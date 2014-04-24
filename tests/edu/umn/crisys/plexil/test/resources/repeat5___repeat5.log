@@ -1,4 +1,21 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state time() = 0
+[Test:testOutput]Creating initial state continue() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: Root 
+[PlexilExec:step][1:0:0] Transitioning node Root from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: Root 
+[PlexilExec:step][1:1:0] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: Command 
+[PlexilExec:step][1:2:0] Transitioning node Command from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: Command 
+[PlexilExec:step][1:3:0] Transitioning node Command from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack Command command_handle (id_112[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (0)
@@ -33,6 +50,11 @@ Root{
   }
 }
 
+[Test:testOutput]Processing event: time() = 1
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: Command 
+[PlexilExec:step][2:0:0] Transitioning node Command from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (0)
@@ -67,6 +89,33 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: Command 
+[PlexilExec:step][3:0:0] Transitioning node Command from FINISHING to ITERATION_ENDED
+[PlexilExec:step][3:1] State change queue: Command 
+[PlexilExec:step][3:1:0] Transitioning node Command from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Command' is SUCCESS
+[PlexilExec:step][3:2] State change queue: Root 
+[PlexilExec:step][3:2:0] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][3:3] State change queue: Root 
+[PlexilExec:step][3:3:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[Test:testOutput]Looking up immediately continue()
+[Test:testOutput]Returning value 1
+[PlexilExec:step][3:4] State change queue: Root 
+[PlexilExec:step][3:4:0] Transitioning node Root from ITERATION_ENDED to WAITING
+[PlexilExec:step][3:5] State change queue: Command Root 
+[PlexilExec:step][3:5:0] Transitioning node Command from FINISHED to INACTIVE
+[PlexilExec:step][3:5:1] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][3:6] State change queue: Command 
+[PlexilExec:step][3:6:0] Transitioning node Command from INACTIVE to WAITING
+[PlexilExec:step][3:7] State change queue: Command 
+[PlexilExec:step][3:7:0] Transitioning node Command from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack Command command_handle (id_112[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (1)
@@ -101,6 +150,35 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: Command 
+[PlexilExec:step][4:0:0] Transitioning node Command from EXECUTING to FINISHING
+[PlexilExec:step][4:1] State change queue: Command 
+[PlexilExec:step][4:1:0] Transitioning node Command from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:2] State change queue: Command 
+[PlexilExec:step][4:2:0] Transitioning node Command from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Command' is SUCCESS
+[PlexilExec:step][4:3] State change queue: Root 
+[PlexilExec:step][4:3:0] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][4:4] State change queue: Root 
+[PlexilExec:step][4:4:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[Test:testOutput]Looking up immediately continue()
+[Test:testOutput]Returning value 1
+[PlexilExec:step][4:5] State change queue: Root 
+[PlexilExec:step][4:5:0] Transitioning node Root from ITERATION_ENDED to WAITING
+[PlexilExec:step][4:6] State change queue: Command Root 
+[PlexilExec:step][4:6:0] Transitioning node Command from FINISHED to INACTIVE
+[PlexilExec:step][4:6:1] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][4:7] State change queue: Command 
+[PlexilExec:step][4:7:0] Transitioning node Command from INACTIVE to WAITING
+[PlexilExec:step][4:8] State change queue: Command 
+[PlexilExec:step][4:8:0] Transitioning node Command from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack Command command_handle (id_112[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (1)
@@ -135,6 +213,35 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:step][5:0] State change queue: Command 
+[PlexilExec:step][5:0:0] Transitioning node Command from EXECUTING to FINISHING
+[PlexilExec:step][5:1] State change queue: Command 
+[PlexilExec:step][5:1:0] Transitioning node Command from FINISHING to ITERATION_ENDED
+[PlexilExec:step][5:2] State change queue: Command 
+[PlexilExec:step][5:2:0] Transitioning node Command from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Command' is SUCCESS
+[PlexilExec:step][5:3] State change queue: Root 
+[PlexilExec:step][5:3:0] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][5:4] State change queue: Root 
+[PlexilExec:step][5:4:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[Test:testOutput]Looking up immediately continue()
+[Test:testOutput]Returning value 1
+[PlexilExec:step][5:5] State change queue: Root 
+[PlexilExec:step][5:5:0] Transitioning node Root from ITERATION_ENDED to WAITING
+[PlexilExec:step][5:6] State change queue: Command Root 
+[PlexilExec:step][5:6:0] Transitioning node Command from FINISHED to INACTIVE
+[PlexilExec:step][5:6:1] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][5:7] State change queue: Command 
+[PlexilExec:step][5:7:0] Transitioning node Command from INACTIVE to WAITING
+[PlexilExec:step][5:8] State change queue: Command 
+[PlexilExec:step][5:8:0] Transitioning node Command from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack Command command_handle (id_112[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (1)
@@ -169,6 +276,35 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 6
+[PlexilExec:step][6:0] State change queue: Command 
+[PlexilExec:step][6:0:0] Transitioning node Command from EXECUTING to FINISHING
+[PlexilExec:step][6:1] State change queue: Command 
+[PlexilExec:step][6:1:0] Transitioning node Command from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:2] State change queue: Command 
+[PlexilExec:step][6:2:0] Transitioning node Command from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Command' is SUCCESS
+[PlexilExec:step][6:3] State change queue: Root 
+[PlexilExec:step][6:3:0] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][6:4] State change queue: Root 
+[PlexilExec:step][6:4:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[Test:testOutput]Looking up immediately continue()
+[Test:testOutput]Returning value 1
+[PlexilExec:step][6:5] State change queue: Root 
+[PlexilExec:step][6:5:0] Transitioning node Root from ITERATION_ENDED to WAITING
+[PlexilExec:step][6:6] State change queue: Command Root 
+[PlexilExec:step][6:6:0] Transitioning node Command from FINISHED to INACTIVE
+[PlexilExec:step][6:6:1] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][6:7] State change queue: Command 
+[PlexilExec:step][6:7:0] Transitioning node Command from INACTIVE to WAITING
+[PlexilExec:step][6:8] State change queue: Command 
+[PlexilExec:step][6:8:0] Transitioning node Command from WAITING to EXECUTING
+[Test:testOutput]Executing foo() into noId with ack Command command_handle (id_112[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 6
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (1)
@@ -203,6 +339,13 @@ Root{
   }
 }
 
+[Test:testOutput]Processing event: continue() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 7
+[PlexilExec:step][7:0] State change queue: Command 
+[PlexilExec:step][7:0:0] Transitioning node Command from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 7
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](EXECUTING): state) (1)
@@ -237,6 +380,26 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command ACK foo() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 8
+[PlexilExec:step][8:0] State change queue: Command 
+[PlexilExec:step][8:0:0] Transitioning node Command from FINISHING to ITERATION_ENDED
+[PlexilExec:step][8:1] State change queue: Command 
+[PlexilExec:step][8:1:0] Transitioning node Command from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Command' is SUCCESS
+[PlexilExec:step][8:2] State change queue: Root 
+[PlexilExec:step][8:2:0] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][8:3] State change queue: Root 
+[PlexilExec:step][8:3:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[Test:testOutput]Looking up immediately continue()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][8:4] State change queue: Root 
+[PlexilExec:step][8:4:0] Transitioning node Root from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Root' is SUCCESS
+[PlexilExec:cycle]==>End cycle 8
 [PlexilExec:printPlan]
 Root{
  State: Root (id_19[au](FINISHED): state) (1)

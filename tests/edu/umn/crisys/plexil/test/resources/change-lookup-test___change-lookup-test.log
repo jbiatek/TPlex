@@ -1,4 +1,16 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state some_state() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: StartConditionCheck 
+[PlexilExec:step][1:0:0] Transitioning node StartConditionCheck from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for some_state()
+[Test:testOutput]Looking up immediately some_state()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 StartConditionCheck{
  State: StartConditionCheck (id_22[au](WAITING): state) (0)
@@ -18,6 +30,11 @@ StartConditionCheck{
  foo: foo (id_32[iu](0): int)
 }
 
+[Test:testOutput]Processing event: some_state() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 StartConditionCheck{
  State: StartConditionCheck (id_22[au](WAITING): state) (0)
@@ -37,6 +54,11 @@ StartConditionCheck{
  foo: foo (id_32[iu](0): int)
 }
 
+[Test:testOutput]Processing event: some_state() = 2
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 StartConditionCheck{
  State: StartConditionCheck (id_22[au](WAITING): state) (0)
@@ -56,6 +78,14 @@ StartConditionCheck{
  foo: foo (id_32[iu](0): int)
 }
 
+[Test:testOutput]Processing event: some_state() = 3
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: StartConditionCheck 
+[PlexilExec:step][4:0:0] Transitioning node StartConditionCheck from WAITING to EXECUTING
+[Test:testOutput]Assigning 'foo' (foo (id_32[au](0): int)) to 3
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 StartConditionCheck{
  State: StartConditionCheck (id_22[au](EXECUTING): state) (0)
@@ -75,6 +105,15 @@ StartConditionCheck{
  foo: foo (id_32[au](3): int)
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:step][5:0] State change queue: StartConditionCheck 
+[PlexilExec:step][5:0:0] Transitioning node StartConditionCheck from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][5:1] State change queue: StartConditionCheck 
+[PlexilExec:step][5:1:0] Transitioning node StartConditionCheck from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'StartConditionCheck' is SUCCESS
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 StartConditionCheck{
  State: StartConditionCheck (id_22[au](FINISHED): state) (0)

@@ -1,4 +1,23 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: AssignFailureWithConflict 
+[PlexilExec:step][1:0:0] Transitioning node AssignFailureWithConflict from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: AssignFailureWithConflict 
+[PlexilExec:step][1:1:0] Transitioning node AssignFailureWithConflict from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: theFailure theSpoiler theConflict 
+[PlexilExec:step][1:2:0] Transitioning node theFailure from INACTIVE to WAITING
+[PlexilExec:step][1:2:1] Transitioning node theSpoiler from INACTIVE to WAITING
+[PlexilExec:step][1:2:2] Transitioning node theConflict from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: theFailure theSpoiler 
+[PlexilExec:step][1:3:0] Transitioning node theFailure from WAITING to EXECUTING
+[PlexilExec:step][1:3:1] Transitioning node theSpoiler from WAITING to EXECUTING
+[Test:testOutput]Assigning 'n' (n (id_46[au](0): int)) to 1
+[Test:testOutput]Assigning 'spoil' (spoil (id_48[au](0): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 AssignFailureWithConflict{
  State: AssignFailureWithConflict (id_36[au](EXECUTING): state) (0)
@@ -71,6 +90,14 @@ AssignFailureWithConflict{
   }
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: theFailure theSpoiler 
+[PlexilExec:step][2:0:0] Transitioning node theFailure from EXECUTING to FAILING
+[PlexilExec:step][2:0:1] Transitioning node theSpoiler from EXECUTING to ITERATION_ENDED
+[Test:testOutput]Restoring 'n' (n (id_46[au](1): int)) to 0
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 AssignFailureWithConflict{
  State: AssignFailureWithConflict (id_36[au](EXECUTING): state) (0)
@@ -143,6 +170,16 @@ AssignFailureWithConflict{
   }
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: theFailure theSpoiler theConflict 
+[PlexilExec:step][3:0:0] Transitioning node theFailure from FAILING to ITERATION_ENDED
+[PlexilExec:step][3:0:1] Transitioning node theSpoiler from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'theSpoiler' is SUCCESS
+[PlexilExec:step][3:0:2] Transitioning node theConflict from WAITING to EXECUTING
+[Test:testOutput]Assigning 'n' (n (id_46[au](0): int)) to 2
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 AssignFailureWithConflict{
  State: AssignFailureWithConflict (id_36[au](EXECUTING): state) (0)
@@ -203,6 +240,24 @@ AssignFailureWithConflict{
   }
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: theFailure theConflict 
+[PlexilExec:step][4:0:0] Transitioning node theFailure from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'theFailure' is FAILURE
+[PlexilExec:step][4:0:1] Transitioning node theConflict from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][4:1] State change queue: theConflict 
+[PlexilExec:step][4:1:0] Transitioning node theConflict from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'theConflict' is SUCCESS
+[PlexilExec:step][4:2] State change queue: AssignFailureWithConflict 
+[PlexilExec:step][4:2:0] Transitioning node AssignFailureWithConflict from EXECUTING to FINISHING
+[PlexilExec:step][4:3] State change queue: AssignFailureWithConflict 
+[PlexilExec:step][4:3:0] Transitioning node AssignFailureWithConflict from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:4] State change queue: AssignFailureWithConflict 
+[PlexilExec:step][4:4:0] Transitioning node AssignFailureWithConflict from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'AssignFailureWithConflict' is SUCCESS
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 AssignFailureWithConflict{
  State: AssignFailureWithConflict (id_36[au](FINISHED): state) (0)

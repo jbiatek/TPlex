@@ -1,4 +1,22 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state CommandName() = (string)get-string
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: Root 
+[PlexilExec:step][1:0:0] Transitioning node Root from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: Root 
+[PlexilExec:step][1:1:0] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: StringCommand 
+[PlexilExec:step][1:2:0] Transitioning node StringCommand from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: StringCommand 
+[PlexilExec:step][1:3:0] Transitioning node StringCommand from WAITING to EXECUTING
+[Test:testOutput]Looking up immediately CommandName()
+[Test:testOutput]Returning value get-string
+[Test:testOutput]Executing get-string() into result-string (id_30[au](UNKNOWN): string) with ack StringCommand command_handle (id_110[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 Root{
  State: Root (id_20[au](EXECUTING): state) (0)
@@ -35,6 +53,13 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command result get-string() = (string)fred
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: StringCommand 
+[PlexilExec:step][2:0:0] Transitioning node StringCommand from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 Root{
  State: Root (id_20[au](EXECUTING): state) (0)
@@ -71,6 +96,23 @@ Root{
   }
 }
 
+[Test:testOutput]Sending command ACK get-string() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: StringCommand 
+[PlexilExec:step][3:0:0] Transitioning node StringCommand from FINISHING to ITERATION_ENDED
+[PlexilExec:step][3:1] State change queue: StringCommand 
+[PlexilExec:step][3:1:0] Transitioning node StringCommand from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'StringCommand' is SUCCESS
+[PlexilExec:step][3:2] State change queue: Root 
+[PlexilExec:step][3:2:0] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][3:3] State change queue: Root 
+[PlexilExec:step][3:3:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[PlexilExec:step][3:4] State change queue: Root 
+[PlexilExec:step][3:4:0] Transitioning node Root from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Root' is SUCCESS
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 Root{
  State: Root (id_20[au](FINISHED): state) (0)

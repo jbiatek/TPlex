@@ -10,6 +10,7 @@ import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
+import edu.umn.crisys.plexil.ast.core.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
@@ -381,8 +382,42 @@ public class StateMachineBuilder {
     
     private TransitionGuard endCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(Description.END_CONDITION)) {
-            ilExprCache.put(Description.END_CONDITION, 
-                    translator.toIL(astNode.getEndCondition()));
+        	// Hold up! From the documentation:
+        	// The actual End Condition of Command and Update nodes is the 
+        	// conjunction of the explicitly specified expression and the default 
+        	// condition.
+        	
+        	// But actually, this isn't the whole truth. For commands:
+        	// Note that the supplied EndCondition is ORed with 
+        	// (command_handle == COMMAND_DENIED || command_handle == COMMAND_FAILED) . 
+        	// This allows the node to transition in the event the resource 
+        	// arbiter rejects the command.
+        	
+        	// In the source code, it seems that the latter is correct. The
+        	// end condition isn't conjoined with anything, but it is disjoined
+        	// with that expression. (CommandNode.cc)
+        	
+        	// It also looks like the default end condition of commands is
+        	// actually just "true". The semantics wiki page apparently lies 
+        	// about that. 
+        	
+        	ILExpression endCondition;
+        	
+        	if (astNode.isUpdateNode()) {
+        		endCondition = translator.toIL(
+        				Operation.and(DefaultEndExpr.get(), astNode.getEndCondition()));
+        	} else if (astNode.isCommandNode()) {
+        		endCondition = 
+        				Operation.or(translator.toIL(astNode.getEndCondition()), 
+        							Operation.eq(translator.getCommandHandle(), CommandHandleState.COMMAND_DENIED),
+        							Operation.eq(translator.getCommandHandle(), CommandHandleState.COMMAND_FAILED)
+        						);
+        	} else {
+        		// No wrapper necessary
+        		endCondition = translator.toIL(astNode.getEndCondition());
+        	}
+        	
+            ilExprCache.put(Description.END_CONDITION, endCondition);
         }
         return makeGuard(Description.END_CONDITION, cond);
     }

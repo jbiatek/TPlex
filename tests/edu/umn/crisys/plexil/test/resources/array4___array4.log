@@ -1,4 +1,18 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state a5() = 4.89125e-322
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: Root 
+[PlexilExec:step][1:0:0] Transitioning node Root from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: Root 
+[PlexilExec:step][1:1:0] Transitioning node Root from WAITING to EXECUTING
+[Test:testOutput]Looking up immediately a5()
+[Test:testOutput]Returning value Array: [1.1, 2.2, 3.3, 4.4]
+[Test:testOutput]Assigning 'a4' (a4 (id_37[au](Array: [5, 4, 3, 2, 1]): array)) to Array: [1.1, 2.2, 3.3, 4.4]
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 Root{
  State: Root (id_27[au](EXECUTING): state) (0)
@@ -18,6 +32,15 @@ Root{
  a4: a4 (id_37[au](Array: [1.1, 2.2, 3.3, 4.4, <unknown>]): array)
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: Root 
+[PlexilExec:step][2:0:0] Transitioning node Root from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][2:1] State change queue: Root 
+[PlexilExec:step][2:1:0] Transitioning node Root from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Root' is SUCCESS
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 Root{
  State: Root (id_27[au](FINISHED): state) (0)

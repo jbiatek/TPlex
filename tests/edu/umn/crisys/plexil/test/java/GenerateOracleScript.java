@@ -48,7 +48,7 @@ public class GenerateOracleScript {
         String scriptName = scriptFile.replaceFirst(".psx$", "");
 
         out.println("echo Plan "+planName+", script "+scriptName);
-        out.println("plexiltest -q -p "+path+planName+".plx -s "+path+scriptName
+        out.println("plexiltest -q -d "+path+"Debug.cfg -p "+path+planName+".plx -s "+path+scriptName
                 +".psx -L "+path+" > "+path+planName+"___"+scriptName+".log");
         
     }

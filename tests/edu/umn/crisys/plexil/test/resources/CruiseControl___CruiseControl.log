@@ -1,4 +1,46 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state time() = 0
+[Test:testOutput]Creating initial state SetPressed() = 0
+[Test:testOutput]Creating initial state CancelPressed() = 0
+[Test:testOutput]Creating initial state ActualSpeed() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: CruiseControl 
+[PlexilExec:step][1:0:0] Transitioning node CruiseControl from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: CruiseControl 
+[PlexilExec:step][1:1:0] Transitioning node CruiseControl from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: SET CANCEL RESUME ACCEL DECEL ControlSpeedAutomatically 
+[PlexilExec:step][1:2:0] Transitioning node SET from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for SetPressed()
+[Test:testOutput]Looking up immediately SetPressed()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][1:2:1] Transitioning node CANCEL from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for CancelPressed()
+[Test:testOutput]Looking up immediately CancelPressed()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][1:2:2] Transitioning node RESUME from INACTIVE to WAITING
+[PlexilExec:step][1:2:3] Transitioning node ACCEL from INACTIVE to WAITING
+[PlexilExec:step][1:2:4] Transitioning node DECEL from INACTIVE to WAITING
+[PlexilExec:step][1:2:5] Transitioning node ControlSpeedAutomatically from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: RESUME ACCEL DECEL 
+[PlexilExec:step][1:3:0] Transitioning node RESUME from WAITING to EXECUTING
+[PlexilExec:step][1:3:1] Transitioning node ACCEL from WAITING to EXECUTING
+[PlexilExec:step][1:3:2] Transitioning node DECEL from WAITING to EXECUTING
+[PlexilExec:step][1:4] State change queue: RESUME ACCEL DECEL 
+[PlexilExec:step][1:4:0] Transitioning node RESUME from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][1:4:1] Transitioning node ACCEL from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][1:4:2] Transitioning node DECEL from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][1:5] State change queue: RESUME ACCEL DECEL 
+[PlexilExec:step][1:5:0] Transitioning node RESUME from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'RESUME' is SUCCESS
+[PlexilExec:step][1:5:1] Transitioning node ACCEL from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ACCEL' is SUCCESS
+[PlexilExec:step][1:5:2] Transitioning node DECEL from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DECEL' is SUCCESS
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -95,6 +137,9 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: time() = 1
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -191,6 +236,11 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 50
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -287,6 +337,9 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: time() = 2
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -383,6 +436,11 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 51
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 2
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -479,6 +537,9 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: time() = 3
+[PlexilExec:cycle]==>Start cycle 6
+[PlexilExec:cycle]==>End cycle 6
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -575,6 +636,11 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 52
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 3
+[PlexilExec:cycle]==>Start cycle 7
+[PlexilExec:cycle]==>End cycle 7
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -671,6 +737,9 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: time() = 4
+[PlexilExec:cycle]==>Start cycle 8
+[PlexilExec:cycle]==>End cycle 8
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -767,6 +836,23 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: SetPressed() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 4
+[PlexilExec:cycle]==>Start cycle 9
+[PlexilExec:step][9:0] State change queue: SET 
+[PlexilExec:step][9:0:0] Transitioning node SET from WAITING to EXECUTING
+[PlexilExec:step][9:1] State change queue: SetCruiseOn SetTargetSpeed 
+[PlexilExec:step][9:1:0] Transitioning node SetCruiseOn from INACTIVE to WAITING
+[PlexilExec:step][9:1:1] Transitioning node SetTargetSpeed from INACTIVE to WAITING
+[PlexilExec:step][9:2] State change queue: SetCruiseOn SetTargetSpeed 
+[PlexilExec:step][9:2:0] Transitioning node SetCruiseOn from WAITING to EXECUTING
+[PlexilExec:step][9:2:1] Transitioning node SetTargetSpeed from WAITING to EXECUTING
+[Test:testOutput]Looking up immediately ActualSpeed()
+[Test:testOutput]Returning value 52
+[Test:testOutput]Assigning 'cruiseOn' (cruiseOn (id_81[au](0): boolean)) to 1
+[Test:testOutput]Assigning 'targetSpeed' (targetSpeed (id_83[au](UNKNOWN): real)) to 52
+[PlexilExec:cycle]==>End cycle 9
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -891,6 +977,30 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: time() = 5
+[PlexilExec:cycle]==>Start cycle 10
+[PlexilExec:step][10:0] State change queue: SetCruiseOn SetTargetSpeed ControlSpeedAutomatically 
+[PlexilExec:step][10:0:0] Transitioning node SetCruiseOn from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][10:0:1] Transitioning node SetTargetSpeed from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][10:0:2] Transitioning node ControlSpeedAutomatically from WAITING to EXECUTING
+[PlexilExec:step][10:1] State change queue: SetCruiseOn SetTargetSpeed IncreaseThrottle DecreaseThrottle 
+[PlexilExec:step][10:1:0] Transitioning node SetCruiseOn from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'SetCruiseOn' is SUCCESS
+[PlexilExec:step][10:1:1] Transitioning node SetTargetSpeed from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'SetTargetSpeed' is SUCCESS
+[PlexilExec:step][10:1:2] Transitioning node IncreaseThrottle from INACTIVE to WAITING
+[Test:testOutput]Registering change lookup for ActualSpeed()
+[Test:testOutput]Looking up immediately ActualSpeed()
+[Test:testOutput]Returning value 52
+[PlexilExec:step][10:1:3] Transitioning node DecreaseThrottle from INACTIVE to WAITING
+[PlexilExec:step][10:2] State change queue: SET 
+[PlexilExec:step][10:2:0] Transitioning node SET from EXECUTING to FINISHING
+[PlexilExec:step][10:3] State change queue: SET 
+[PlexilExec:step][10:3:0] Transitioning node SET from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:4] State change queue: SET 
+[PlexilExec:step][10:4:0] Transitioning node SET from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'SET' is SUCCESS
+[PlexilExec:cycle]==>End cycle 10
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -1010,6 +1120,14 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 50
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 11
+[PlexilExec:step][11:0] State change queue: IncreaseThrottle 
+[PlexilExec:step][11:0:0] Transitioning node IncreaseThrottle from WAITING to EXECUTING
+[Test:testOutput]Assigning 'throttlePos' (throttlePos (id_85[au](0): real)) to 0.1
+[PlexilExec:cycle]==>End cycle 11
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -1129,6 +1247,16 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 50
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 12
+[PlexilExec:step][12:0] State change queue: IncreaseThrottle 
+[PlexilExec:step][12:0:0] Transitioning node IncreaseThrottle from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][12:1] State change queue: IncreaseThrottle 
+[PlexilExec:step][12:1:0] Transitioning node IncreaseThrottle from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'IncreaseThrottle' is SUCCESS
+[PlexilExec:cycle]==>End cycle 12
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -1236,6 +1364,11 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 51
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 13
+[PlexilExec:cycle]==>End cycle 13
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -1343,6 +1476,14 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Processing event: ActualSpeed() = 53
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 14
+[PlexilExec:step][14:0] State change queue: DecreaseThrottle 
+[PlexilExec:step][14:0:0] Transitioning node DecreaseThrottle from WAITING to EXECUTING
+[Test:testOutput]Assigning 'throttlePos' (throttlePos (id_85[au](0.1): real)) to 0
+[PlexilExec:cycle]==>End cycle 14
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)
@@ -1450,6 +1591,15 @@ CruiseControl{
   }
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 15
+[PlexilExec:step][15:0] State change queue: DecreaseThrottle 
+[PlexilExec:step][15:0:0] Transitioning node DecreaseThrottle from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][15:1] State change queue: DecreaseThrottle 
+[PlexilExec:step][15:1:0] Transitioning node DecreaseThrottle from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DecreaseThrottle' is SUCCESS
+[PlexilExec:cycle]==>End cycle 15
 [PlexilExec:printPlan]
 CruiseControl{
  State: CruiseControl (id_71[au](EXECUTING): state) (0)

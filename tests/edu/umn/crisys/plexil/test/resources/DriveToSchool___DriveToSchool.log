@@ -1,4 +1,61 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state car_started() = 0
+[Test:testOutput]Creating initial state raining() = 0
+[Test:testOutput]Creating initial state no_passengers() = 1
+[Test:testOutput]Creating initial state at_school() = 0
+[Test:testOutput]Creating initial state time() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: DriveToSchool 
+[PlexilExec:step][1:0:0] Transitioning node DriveToSchool from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: DriveToSchool 
+[PlexilExec:step][1:1:0] Transitioning node DriveToSchool from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: StartCar SelectStation DriveUntilAtSchool 
+[PlexilExec:step][1:2:0] Transitioning node StartCar from INACTIVE to WAITING
+[PlexilExec:step][1:2:1] Transitioning node SelectStation from INACTIVE to WAITING
+[PlexilExec:step][1:2:2] Transitioning node DriveUntilAtSchool from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: StartCar 
+[PlexilExec:step][1:3:0] Transitioning node StartCar from WAITING to EXECUTING
+[PlexilExec:step][1:4] State change queue: Try__0 
+[PlexilExec:step][1:4:0] Transitioning node Try__0 from INACTIVE to WAITING
+[PlexilExec:step][1:5] State change queue: Try__0 
+[PlexilExec:step][1:5:0] Transitioning node Try__0 from WAITING to EXECUTING
+[PlexilExec:step][1:6] State change queue: KeyStart PushStart 
+[PlexilExec:step][1:6:0] Transitioning node KeyStart from INACTIVE to WAITING
+[PlexilExec:step][1:6:1] Transitioning node PushStart from INACTIVE to WAITING
+[PlexilExec:step][1:7] State change queue: KeyStart 
+[PlexilExec:step][1:7:0] Transitioning node KeyStart from WAITING to EXECUTING
+[PlexilExec:step][1:8] State change queue: PrimeAccelerator TurnKeyCombo 
+[PlexilExec:step][1:8:0] Transitioning node PrimeAccelerator from INACTIVE to WAITING
+[PlexilExec:step][1:8:1] Transitioning node TurnKeyCombo from INACTIVE to WAITING
+[PlexilExec:step][1:9] State change queue: PrimeAccelerator 
+[PlexilExec:step][1:9:0] Transitioning node PrimeAccelerator from WAITING to EXECUTING
+[PlexilExec:step][1:10] State change queue: for__1 
+[PlexilExec:step][1:10:0] Transitioning node for__1 from INACTIVE to WAITING
+[PlexilExec:step][1:11] State change queue: for__1 
+[PlexilExec:step][1:11:0] Transitioning node for__1 from WAITING to EXECUTING
+[PlexilExec:step][1:12] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][1:12:0] Transitioning node ep2cp_ForLoop from INACTIVE to WAITING
+[PlexilExec:step][1:13] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][1:13:0] Transitioning node ep2cp_ForLoop from WAITING to EXECUTING
+[PlexilExec:step][1:14] State change queue: ep2cp_ForDo ep2cp_ForLoopUpdater 
+[PlexilExec:step][1:14:0] Transitioning node ep2cp_ForDo from INACTIVE to WAITING
+[PlexilExec:step][1:14:1] Transitioning node ep2cp_ForLoopUpdater from INACTIVE to WAITING
+[PlexilExec:step][1:15] State change queue: ep2cp_ForDo 
+[PlexilExec:step][1:15:0] Transitioning node ep2cp_ForDo from WAITING to EXECUTING
+[PlexilExec:step][1:16] State change queue: BLOCK__2 
+[PlexilExec:step][1:16:0] Transitioning node BLOCK__2 from INACTIVE to WAITING
+[PlexilExec:step][1:17] State change queue: BLOCK__2 
+[PlexilExec:step][1:17:0] Transitioning node BLOCK__2 from WAITING to EXECUTING
+[PlexilExec:step][1:18] State change queue: PressAccelerator 
+[PlexilExec:step][1:18:0] Transitioning node PressAccelerator from INACTIVE to WAITING
+[PlexilExec:step][1:19] State change queue: PressAccelerator 
+[PlexilExec:step][1:19:0] Transitioning node PressAccelerator from WAITING to EXECUTING
+[Test:testOutput]Executing depress_accelerator() into noId with ack PressAccelerator command_handle (id_2008[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -309,6 +366,35 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK depress_accelerator() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: PressAccelerator 
+[PlexilExec:step][2:0:0] Transitioning node PressAccelerator from EXECUTING to FINISHING
+[PlexilExec:step][2:1] State change queue: PressAccelerator 
+[PlexilExec:step][2:1:0] Transitioning node PressAccelerator from FINISHING to ITERATION_ENDED
+[PlexilExec:step][2:2] State change queue: PressAccelerator 
+[PlexilExec:step][2:2:0] Transitioning node PressAccelerator from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'PressAccelerator' is SUCCESS
+[PlexilExec:step][2:3] State change queue: BLOCK__2 
+[PlexilExec:step][2:3:0] Transitioning node BLOCK__2 from EXECUTING to FINISHING
+[PlexilExec:step][2:4] State change queue: BLOCK__2 
+[PlexilExec:step][2:4:0] Transitioning node BLOCK__2 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][2:5] State change queue: BLOCK__2 
+[PlexilExec:step][2:5:0] Transitioning node BLOCK__2 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'BLOCK__2' is SUCCESS
+[PlexilExec:step][2:6] State change queue: ep2cp_ForDo 
+[PlexilExec:step][2:6:0] Transitioning node ep2cp_ForDo from EXECUTING to FINISHING
+[PlexilExec:step][2:7] State change queue: ep2cp_ForDo 
+[PlexilExec:step][2:7:0] Transitioning node ep2cp_ForDo from FINISHING to ITERATION_ENDED
+[PlexilExec:step][2:8] State change queue: ep2cp_ForDo 
+[PlexilExec:step][2:8:0] Transitioning node ep2cp_ForDo from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForDo' is SUCCESS
+[PlexilExec:step][2:9] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][2:9:0] Transitioning node ep2cp_ForLoopUpdater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'count' (count (id_357[au](0): int)) to 1
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -585,6 +671,40 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 2
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][3:0:0] Transitioning node ep2cp_ForLoopUpdater from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][3:1] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][3:1:0] Transitioning node ep2cp_ForLoopUpdater from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForLoopUpdater' is SUCCESS
+[PlexilExec:step][3:2] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][3:2:0] Transitioning node ep2cp_ForLoop from EXECUTING to FINISHING
+[PlexilExec:step][3:3] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][3:3:0] Transitioning node ep2cp_ForLoop from FINISHING to ITERATION_ENDED
+[PlexilExec:step][3:4] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][3:4:0] Transitioning node ep2cp_ForLoop from ITERATION_ENDED to WAITING
+[PlexilExec:step][3:5] State change queue: ep2cp_ForDo ep2cp_ForLoopUpdater ep2cp_ForLoop 
+[PlexilExec:step][3:5:0] Transitioning node ep2cp_ForDo from FINISHED to INACTIVE
+[PlexilExec:step][3:5:1] Transitioning node ep2cp_ForLoopUpdater from FINISHED to INACTIVE
+[PlexilExec:step][3:5:2] Transitioning node ep2cp_ForLoop from WAITING to EXECUTING
+[PlexilExec:step][3:6] State change queue: ep2cp_ForDo ep2cp_ForLoopUpdater 
+[PlexilExec:step][3:6:0] Transitioning node ep2cp_ForDo from INACTIVE to WAITING
+[PlexilExec:step][3:6:1] Transitioning node ep2cp_ForLoopUpdater from INACTIVE to WAITING
+[PlexilExec:step][3:7] State change queue: BLOCK__2 ep2cp_ForDo 
+[PlexilExec:step][3:7:0] Transitioning node BLOCK__2 from FINISHED to INACTIVE
+[PlexilExec:step][3:7:1] Transitioning node ep2cp_ForDo from WAITING to EXECUTING
+[PlexilExec:step][3:8] State change queue: BLOCK__2 
+[PlexilExec:step][3:8:0] Transitioning node BLOCK__2 from INACTIVE to WAITING
+[PlexilExec:step][3:9] State change queue: PressAccelerator BLOCK__2 
+[PlexilExec:step][3:9:0] Transitioning node PressAccelerator from FINISHED to INACTIVE
+[PlexilExec:step][3:9:1] Transitioning node BLOCK__2 from WAITING to EXECUTING
+[PlexilExec:step][3:10] State change queue: PressAccelerator 
+[PlexilExec:step][3:10:0] Transitioning node PressAccelerator from INACTIVE to WAITING
+[PlexilExec:step][3:11] State change queue: PressAccelerator 
+[PlexilExec:step][3:11:0] Transitioning node PressAccelerator from WAITING to EXECUTING
+[Test:testOutput]Executing depress_accelerator() into noId with ack PressAccelerator command_handle (id_2008[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -895,6 +1015,35 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK depress_accelerator() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 2
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: PressAccelerator 
+[PlexilExec:step][4:0:0] Transitioning node PressAccelerator from EXECUTING to FINISHING
+[PlexilExec:step][4:1] State change queue: PressAccelerator 
+[PlexilExec:step][4:1:0] Transitioning node PressAccelerator from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:2] State change queue: PressAccelerator 
+[PlexilExec:step][4:2:0] Transitioning node PressAccelerator from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'PressAccelerator' is SUCCESS
+[PlexilExec:step][4:3] State change queue: BLOCK__2 
+[PlexilExec:step][4:3:0] Transitioning node BLOCK__2 from EXECUTING to FINISHING
+[PlexilExec:step][4:4] State change queue: BLOCK__2 
+[PlexilExec:step][4:4:0] Transitioning node BLOCK__2 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:5] State change queue: BLOCK__2 
+[PlexilExec:step][4:5:0] Transitioning node BLOCK__2 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'BLOCK__2' is SUCCESS
+[PlexilExec:step][4:6] State change queue: ep2cp_ForDo 
+[PlexilExec:step][4:6:0] Transitioning node ep2cp_ForDo from EXECUTING to FINISHING
+[PlexilExec:step][4:7] State change queue: ep2cp_ForDo 
+[PlexilExec:step][4:7:0] Transitioning node ep2cp_ForDo from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:8] State change queue: ep2cp_ForDo 
+[PlexilExec:step][4:8:0] Transitioning node ep2cp_ForDo from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForDo' is SUCCESS
+[PlexilExec:step][4:9] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][4:9:0] Transitioning node ep2cp_ForLoopUpdater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'count' (count (id_357[au](1): int)) to 2
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -1171,6 +1320,40 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 3
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:step][5:0] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][5:0:0] Transitioning node ep2cp_ForLoopUpdater from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][5:1] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][5:1:0] Transitioning node ep2cp_ForLoopUpdater from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForLoopUpdater' is SUCCESS
+[PlexilExec:step][5:2] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][5:2:0] Transitioning node ep2cp_ForLoop from EXECUTING to FINISHING
+[PlexilExec:step][5:3] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][5:3:0] Transitioning node ep2cp_ForLoop from FINISHING to ITERATION_ENDED
+[PlexilExec:step][5:4] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][5:4:0] Transitioning node ep2cp_ForLoop from ITERATION_ENDED to WAITING
+[PlexilExec:step][5:5] State change queue: ep2cp_ForDo ep2cp_ForLoopUpdater ep2cp_ForLoop 
+[PlexilExec:step][5:5:0] Transitioning node ep2cp_ForDo from FINISHED to INACTIVE
+[PlexilExec:step][5:5:1] Transitioning node ep2cp_ForLoopUpdater from FINISHED to INACTIVE
+[PlexilExec:step][5:5:2] Transitioning node ep2cp_ForLoop from WAITING to EXECUTING
+[PlexilExec:step][5:6] State change queue: ep2cp_ForDo ep2cp_ForLoopUpdater 
+[PlexilExec:step][5:6:0] Transitioning node ep2cp_ForDo from INACTIVE to WAITING
+[PlexilExec:step][5:6:1] Transitioning node ep2cp_ForLoopUpdater from INACTIVE to WAITING
+[PlexilExec:step][5:7] State change queue: BLOCK__2 ep2cp_ForDo 
+[PlexilExec:step][5:7:0] Transitioning node BLOCK__2 from FINISHED to INACTIVE
+[PlexilExec:step][5:7:1] Transitioning node ep2cp_ForDo from WAITING to EXECUTING
+[PlexilExec:step][5:8] State change queue: BLOCK__2 
+[PlexilExec:step][5:8:0] Transitioning node BLOCK__2 from INACTIVE to WAITING
+[PlexilExec:step][5:9] State change queue: PressAccelerator BLOCK__2 
+[PlexilExec:step][5:9:0] Transitioning node PressAccelerator from FINISHED to INACTIVE
+[PlexilExec:step][5:9:1] Transitioning node BLOCK__2 from WAITING to EXECUTING
+[PlexilExec:step][5:10] State change queue: PressAccelerator 
+[PlexilExec:step][5:10:0] Transitioning node PressAccelerator from INACTIVE to WAITING
+[PlexilExec:step][5:11] State change queue: PressAccelerator 
+[PlexilExec:step][5:11:0] Transitioning node PressAccelerator from WAITING to EXECUTING
+[Test:testOutput]Executing depress_accelerator() into noId with ack PressAccelerator command_handle (id_2008[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -1481,6 +1664,35 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK depress_accelerator() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 3
+[PlexilExec:cycle]==>Start cycle 6
+[PlexilExec:step][6:0] State change queue: PressAccelerator 
+[PlexilExec:step][6:0:0] Transitioning node PressAccelerator from EXECUTING to FINISHING
+[PlexilExec:step][6:1] State change queue: PressAccelerator 
+[PlexilExec:step][6:1:0] Transitioning node PressAccelerator from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:2] State change queue: PressAccelerator 
+[PlexilExec:step][6:2:0] Transitioning node PressAccelerator from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'PressAccelerator' is SUCCESS
+[PlexilExec:step][6:3] State change queue: BLOCK__2 
+[PlexilExec:step][6:3:0] Transitioning node BLOCK__2 from EXECUTING to FINISHING
+[PlexilExec:step][6:4] State change queue: BLOCK__2 
+[PlexilExec:step][6:4:0] Transitioning node BLOCK__2 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:5] State change queue: BLOCK__2 
+[PlexilExec:step][6:5:0] Transitioning node BLOCK__2 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'BLOCK__2' is SUCCESS
+[PlexilExec:step][6:6] State change queue: ep2cp_ForDo 
+[PlexilExec:step][6:6:0] Transitioning node ep2cp_ForDo from EXECUTING to FINISHING
+[PlexilExec:step][6:7] State change queue: ep2cp_ForDo 
+[PlexilExec:step][6:7:0] Transitioning node ep2cp_ForDo from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:8] State change queue: ep2cp_ForDo 
+[PlexilExec:step][6:8:0] Transitioning node ep2cp_ForDo from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForDo' is SUCCESS
+[PlexilExec:step][6:9] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][6:9:0] Transitioning node ep2cp_ForLoopUpdater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'count' (count (id_357[au](2): int)) to 3
+[PlexilExec:cycle]==>End cycle 6
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -1757,6 +1969,48 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 4
+[PlexilExec:cycle]==>Start cycle 7
+[PlexilExec:step][7:0] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][7:0:0] Transitioning node ep2cp_ForLoopUpdater from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][7:1] State change queue: ep2cp_ForLoopUpdater 
+[PlexilExec:step][7:1:0] Transitioning node ep2cp_ForLoopUpdater from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForLoopUpdater' is SUCCESS
+[PlexilExec:step][7:2] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][7:2:0] Transitioning node ep2cp_ForLoop from EXECUTING to FINISHING
+[PlexilExec:step][7:3] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][7:3:0] Transitioning node ep2cp_ForLoop from FINISHING to ITERATION_ENDED
+[PlexilExec:step][7:4] State change queue: ep2cp_ForLoop 
+[PlexilExec:step][7:4:0] Transitioning node ep2cp_ForLoop from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_ForLoop' is SUCCESS
+[PlexilExec:step][7:5] State change queue: for__1 
+[PlexilExec:step][7:5:0] Transitioning node for__1 from EXECUTING to FINISHING
+[PlexilExec:step][7:6] State change queue: for__1 
+[PlexilExec:step][7:6:0] Transitioning node for__1 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][7:7] State change queue: for__1 
+[PlexilExec:step][7:7:0] Transitioning node for__1 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'for__1' is SUCCESS
+[PlexilExec:step][7:8] State change queue: PrimeAccelerator 
+[PlexilExec:step][7:8:0] Transitioning node PrimeAccelerator from EXECUTING to FINISHING
+[PlexilExec:step][7:9] State change queue: PrimeAccelerator 
+[PlexilExec:step][7:9:0] Transitioning node PrimeAccelerator from FINISHING to ITERATION_ENDED
+[PlexilExec:step][7:10] State change queue: PrimeAccelerator 
+[PlexilExec:step][7:10:0] Transitioning node PrimeAccelerator from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'PrimeAccelerator' is SUCCESS
+[PlexilExec:step][7:11] State change queue: TurnKeyCombo 
+[PlexilExec:step][7:11:0] Transitioning node TurnKeyCombo from WAITING to EXECUTING
+[PlexilExec:step][7:12] State change queue: DepressClutch TurnKey 
+[PlexilExec:step][7:12:0] Transitioning node DepressClutch from INACTIVE to WAITING
+[PlexilExec:step][7:12:1] Transitioning node TurnKey from INACTIVE to WAITING
+[PlexilExec:step][7:13] State change queue: DepressClutch TurnKey 
+[PlexilExec:step][7:13:0] Transitioning node DepressClutch from WAITING to EXECUTING
+[PlexilExec:step][7:13:1] Transitioning node TurnKey from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for car_started()
+[Test:testOutput]Looking up immediately car_started()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Executing depress_clutch() into noId with ack DepressClutch command_handle (id_2070[au](UNKNOWN): command_handle)
+[Test:testOutput]Executing turn_key() into noId with ack TurnKey command_handle (id_2083[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 7
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -2016,6 +2270,18 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK depress_clutch() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 4
+[PlexilExec:cycle]==>Start cycle 8
+[PlexilExec:step][8:0] State change queue: DepressClutch 
+[PlexilExec:step][8:0:0] Transitioning node DepressClutch from EXECUTING to FINISHING
+[PlexilExec:step][8:1] State change queue: DepressClutch 
+[PlexilExec:step][8:1:0] Transitioning node DepressClutch from FINISHING to ITERATION_ENDED
+[PlexilExec:step][8:2] State change queue: DepressClutch 
+[PlexilExec:step][8:2:0] Transitioning node DepressClutch from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DepressClutch' is SUCCESS
+[PlexilExec:cycle]==>End cycle 8
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -2263,6 +2529,11 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK turn_key() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 4
+[PlexilExec:cycle]==>Start cycle 9
+[PlexilExec:cycle]==>End cycle 9
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -2510,6 +2781,62 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: car_started() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 4
+[PlexilExec:cycle]==>Start cycle 10
+[PlexilExec:step][10:0] State change queue: TurnKey 
+[PlexilExec:step][10:0:0] Transitioning node TurnKey from EXECUTING to FINISHING
+[PlexilExec:step][10:1] State change queue: TurnKey 
+[PlexilExec:step][10:1:0] Transitioning node TurnKey from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:2] State change queue: TurnKey 
+[PlexilExec:step][10:2:0] Transitioning node TurnKey from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TurnKey' is SUCCESS
+[PlexilExec:step][10:3] State change queue: TurnKeyCombo 
+[PlexilExec:step][10:3:0] Transitioning node TurnKeyCombo from EXECUTING to FINISHING
+[PlexilExec:step][10:4] State change queue: TurnKeyCombo 
+[PlexilExec:step][10:4:0] Transitioning node TurnKeyCombo from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:5] State change queue: TurnKeyCombo 
+[PlexilExec:step][10:5:0] Transitioning node TurnKeyCombo from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TurnKeyCombo' is SUCCESS
+[PlexilExec:step][10:6] State change queue: KeyStart 
+[PlexilExec:step][10:6:0] Transitioning node KeyStart from EXECUTING to FINISHING
+[PlexilExec:step][10:7] State change queue: KeyStart 
+[PlexilExec:step][10:7:0] Transitioning node KeyStart from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:8] State change queue: Try__0 PushStart KeyStart 
+[PlexilExec:step][10:8:0] Transitioning node Try__0 from EXECUTING to FINISHING
+[PlexilExec:step][10:8:1] Transitioning node PushStart from WAITING to FINISHED
+[Node:outcome]Outcome of 'PushStart' is SKIPPED
+[PlexilExec:step][10:8:2] Transitioning node KeyStart from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'KeyStart' is SUCCESS
+[PlexilExec:step][10:9] State change queue: Try__0 
+[PlexilExec:step][10:9:0] Transitioning node Try__0 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:10] State change queue: Try__0 
+[PlexilExec:step][10:10:0] Transitioning node Try__0 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Try__0' is SUCCESS
+[PlexilExec:step][10:11] State change queue: StartCar 
+[PlexilExec:step][10:11:0] Transitioning node StartCar from EXECUTING to FINISHING
+[PlexilExec:step][10:12] State change queue: StartCar 
+[PlexilExec:step][10:12:0] Transitioning node StartCar from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:13] State change queue: StartCar 
+[PlexilExec:step][10:13:0] Transitioning node StartCar from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'StartCar' is SUCCESS
+[PlexilExec:step][10:14] State change queue: SelectStation 
+[PlexilExec:step][10:14:0] Transitioning node SelectStation from WAITING to EXECUTING
+[PlexilExec:step][10:15] State change queue: if__7 
+[PlexilExec:step][10:15:0] Transitioning node if__7 from INACTIVE to WAITING
+[PlexilExec:step][10:16] State change queue: if__7 
+[PlexilExec:step][10:16:0] Transitioning node if__7 from WAITING to EXECUTING
+[PlexilExec:step][10:17] State change queue: ep2cp_IfSetup ep2cp_IfBody 
+[PlexilExec:step][10:17:0] Transitioning node ep2cp_IfSetup from INACTIVE to WAITING
+[PlexilExec:step][10:17:1] Transitioning node ep2cp_IfBody from INACTIVE to WAITING
+[PlexilExec:step][10:18] State change queue: ep2cp_IfSetup 
+[PlexilExec:step][10:18:0] Transitioning node ep2cp_IfSetup from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for no_passengers()
+[Test:testOutput]Looking up immediately no_passengers()
+[Test:testOutput]Returning value 1
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_824[au](UNKNOWN): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 10
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -2729,6 +3056,30 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 6
+[PlexilExec:cycle]==>Start cycle 11
+[PlexilExec:step][11:0] State change queue: ep2cp_IfSetup 
+[PlexilExec:step][11:0:0] Transitioning node ep2cp_IfSetup from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][11:1] State change queue: ep2cp_IfSetup 
+[PlexilExec:step][11:1:0] Transitioning node ep2cp_IfSetup from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfSetup' is SUCCESS
+[PlexilExec:step][11:2] State change queue: ep2cp_IfBody 
+[PlexilExec:step][11:2:0] Transitioning node ep2cp_IfBody from WAITING to EXECUTING
+[PlexilExec:step][11:3] State change queue: ep2cp_IfThenCase ep2cp_IfElseCase 
+[PlexilExec:step][11:3:0] Transitioning node ep2cp_IfThenCase from INACTIVE to WAITING
+[PlexilExec:step][11:3:1] Transitioning node ep2cp_IfElseCase from INACTIVE to WAITING
+[PlexilExec:step][11:4] State change queue: ep2cp_IfThenCase ep2cp_IfElseCase 
+[PlexilExec:step][11:4:0] Transitioning node ep2cp_IfThenCase from WAITING to EXECUTING
+[PlexilExec:step][11:4:1] Transitioning node ep2cp_IfElseCase from WAITING to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfElseCase' is SKIPPED
+[PlexilExec:step][11:5] State change queue: Radio CD 
+[PlexilExec:step][11:5:0] Transitioning node Radio from INACTIVE to WAITING
+[PlexilExec:step][11:5:1] Transitioning node CD from INACTIVE to FINISHED
+[Node:outcome]Outcome of 'CD' is SKIPPED
+[PlexilExec:step][11:6] State change queue: Radio 
+[PlexilExec:step][11:6:0] Transitioning node Radio from WAITING to EXECUTING
+[Test:testOutput]Executing select_radio() into noId with ack Radio command_handle (id_2261[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 11
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -2967,6 +3318,65 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK select_radio() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 6
+[PlexilExec:cycle]==>Start cycle 12
+[PlexilExec:step][12:0] State change queue: Radio 
+[PlexilExec:step][12:0:0] Transitioning node Radio from EXECUTING to FINISHING
+[PlexilExec:step][12:1] State change queue: Radio 
+[PlexilExec:step][12:1:0] Transitioning node Radio from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:2] State change queue: Radio 
+[PlexilExec:step][12:2:0] Transitioning node Radio from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Radio' is SUCCESS
+[PlexilExec:step][12:3] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][12:3:0] Transitioning node ep2cp_IfThenCase from EXECUTING to FINISHING
+[PlexilExec:step][12:4] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][12:4:0] Transitioning node ep2cp_IfThenCase from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:5] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][12:5:0] Transitioning node ep2cp_IfThenCase from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfThenCase' is SUCCESS
+[PlexilExec:step][12:6] State change queue: ep2cp_IfBody 
+[PlexilExec:step][12:6:0] Transitioning node ep2cp_IfBody from EXECUTING to FINISHING
+[PlexilExec:step][12:7] State change queue: ep2cp_IfBody 
+[PlexilExec:step][12:7:0] Transitioning node ep2cp_IfBody from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:8] State change queue: ep2cp_IfBody 
+[PlexilExec:step][12:8:0] Transitioning node ep2cp_IfBody from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfBody' is SUCCESS
+[PlexilExec:step][12:9] State change queue: if__7 
+[PlexilExec:step][12:9:0] Transitioning node if__7 from EXECUTING to FINISHING
+[PlexilExec:step][12:10] State change queue: if__7 
+[PlexilExec:step][12:10:0] Transitioning node if__7 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:11] State change queue: if__7 
+[PlexilExec:step][12:11:0] Transitioning node if__7 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'if__7' is SUCCESS
+[PlexilExec:step][12:12] State change queue: SelectStation 
+[PlexilExec:step][12:12:0] Transitioning node SelectStation from EXECUTING to FINISHING
+[PlexilExec:step][12:13] State change queue: SelectStation 
+[PlexilExec:step][12:13:0] Transitioning node SelectStation from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:14] State change queue: SelectStation 
+[PlexilExec:step][12:14:0] Transitioning node SelectStation from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'SelectStation' is SUCCESS
+[PlexilExec:step][12:15] State change queue: DriveUntilAtSchool 
+[PlexilExec:step][12:15:0] Transitioning node DriveUntilAtSchool from WAITING to EXECUTING
+[PlexilExec:step][12:16] State change queue: while__10 
+[PlexilExec:step][12:16:0] Transitioning node while__10 from INACTIVE to WAITING
+[PlexilExec:step][12:17] State change queue: while__10 
+[PlexilExec:step][12:17:0] Transitioning node while__10 from WAITING to EXECUTING
+[PlexilExec:step][12:18] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][12:18:0] Transitioning node ep2cp_WhileBody from INACTIVE to WAITING
+[PlexilExec:step][12:19] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][12:19:0] Transitioning node ep2cp_WhileBody from WAITING to EXECUTING
+[PlexilExec:step][12:20] State change queue: ep2cp_WhileSetup ep2cp_WhileTrue 
+[PlexilExec:step][12:20:0] Transitioning node ep2cp_WhileSetup from INACTIVE to WAITING
+[PlexilExec:step][12:20:1] Transitioning node ep2cp_WhileTrue from INACTIVE to WAITING
+[PlexilExec:step][12:21] State change queue: ep2cp_WhileSetup 
+[PlexilExec:step][12:21:0] Transitioning node ep2cp_WhileSetup from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for at_school()
+[Test:testOutput]Looking up immediately at_school()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_1102[au](UNKNOWN): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 12
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -3202,6 +3612,37 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: raining() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 6
+[PlexilExec:cycle]==>Start cycle 13
+[PlexilExec:step][13:0] State change queue: ep2cp_WhileSetup 
+[PlexilExec:step][13:0:0] Transitioning node ep2cp_WhileSetup from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][13:1] State change queue: ep2cp_WhileSetup 
+[PlexilExec:step][13:1:0] Transitioning node ep2cp_WhileSetup from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileSetup' is SUCCESS
+[PlexilExec:step][13:2] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][13:2:0] Transitioning node ep2cp_WhileTrue from WAITING to EXECUTING
+[PlexilExec:step][13:3] State change queue: ep2cp_WhileAction ep2cp_WhileRetest 
+[PlexilExec:step][13:3:0] Transitioning node ep2cp_WhileAction from INACTIVE to WAITING
+[PlexilExec:step][13:3:1] Transitioning node ep2cp_WhileRetest from INACTIVE to WAITING
+[PlexilExec:step][13:4] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][13:4:0] Transitioning node ep2cp_WhileAction from WAITING to EXECUTING
+[PlexilExec:step][13:5] State change queue: KeepDriving 
+[PlexilExec:step][13:5:0] Transitioning node KeepDriving from INACTIVE to WAITING
+[PlexilExec:step][13:6] State change queue: KeepDriving 
+[PlexilExec:step][13:6:0] Transitioning node KeepDriving from WAITING to EXECUTING
+[PlexilExec:step][13:7] State change queue: HandleRain DriveABit 
+[PlexilExec:step][13:7:0] Transitioning node HandleRain from INACTIVE to WAITING
+[PlexilExec:step][13:7:1] Transitioning node DriveABit from INACTIVE to WAITING
+[PlexilExec:step][13:8] State change queue: HandleRain DriveABit 
+[PlexilExec:step][13:8:0] Transitioning node HandleRain from WAITING to EXECUTING
+[PlexilExec:step][13:8:1] Transitioning node DriveABit from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for at_school()
+[Test:testOutput]Looking up immediately at_school()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Executing drive_a_bit() into noId with ack DriveABit command_handle (id_2639[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 13
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -3489,6 +3930,22 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 7
+[PlexilExec:cycle]==>Start cycle 14
+[PlexilExec:step][14:0] State change queue: if__11 
+[PlexilExec:step][14:0:0] Transitioning node if__11 from INACTIVE to WAITING
+[PlexilExec:step][14:1] State change queue: if__11 
+[PlexilExec:step][14:1:0] Transitioning node if__11 from WAITING to EXECUTING
+[PlexilExec:step][14:2] State change queue: ep2cp_IfSetup ep2cp_IfBody 
+[PlexilExec:step][14:2:0] Transitioning node ep2cp_IfSetup from INACTIVE to WAITING
+[PlexilExec:step][14:2:1] Transitioning node ep2cp_IfBody from INACTIVE to WAITING
+[PlexilExec:step][14:3] State change queue: ep2cp_IfSetup 
+[PlexilExec:step][14:3:0] Transitioning node ep2cp_IfSetup from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for raining()
+[Test:testOutput]Looking up immediately raining()
+[Test:testOutput]Returning value 1
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_1177[au](UNKNOWN): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 14
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -3816,6 +4273,32 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 7.5
+[PlexilExec:cycle]==>Start cycle 15
+[PlexilExec:step][15:0] State change queue: ep2cp_IfSetup 
+[PlexilExec:step][15:0:0] Transitioning node ep2cp_IfSetup from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][15:1] State change queue: ep2cp_IfSetup 
+[PlexilExec:step][15:1:0] Transitioning node ep2cp_IfSetup from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfSetup' is SUCCESS
+[PlexilExec:step][15:2] State change queue: ep2cp_IfBody 
+[PlexilExec:step][15:2:0] Transitioning node ep2cp_IfBody from WAITING to EXECUTING
+[PlexilExec:step][15:3] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][15:3:0] Transitioning node ep2cp_IfThenCase from INACTIVE to WAITING
+[PlexilExec:step][15:4] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][15:4:0] Transitioning node ep2cp_IfThenCase from WAITING to EXECUTING
+[PlexilExec:step][15:5] State change queue: Concurrence__12 
+[PlexilExec:step][15:5:0] Transitioning node Concurrence__12 from INACTIVE to WAITING
+[PlexilExec:step][15:6] State change queue: Concurrence__12 
+[PlexilExec:step][15:6:0] Transitioning node Concurrence__12 from WAITING to EXECUTING
+[PlexilExec:step][15:7] State change queue: Wipers Lights 
+[PlexilExec:step][15:7:0] Transitioning node Wipers from INACTIVE to WAITING
+[PlexilExec:step][15:7:1] Transitioning node Lights from INACTIVE to WAITING
+[PlexilExec:step][15:8] State change queue: Wipers Lights 
+[PlexilExec:step][15:8:0] Transitioning node Wipers from WAITING to EXECUTING
+[PlexilExec:step][15:8:1] Transitioning node Lights from WAITING to EXECUTING
+[Test:testOutput]Executing turn_on_wipers() into noId with ack Wipers command_handle (id_2613[au](UNKNOWN): command_handle)
+[Test:testOutput]Executing turn_on_lights() into noId with ack Lights command_handle (id_2626[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 15
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -4184,6 +4667,19 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK turn_on_wipers() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 7.5
+[PlexilExec:cycle]==>Start cycle 16
+[PlexilExec:step][16:0] State change queue: Wipers Lights 
+[PlexilExec:step][16:0:0] Transitioning node Wipers from EXECUTING to FINISHING
+[PlexilExec:step][16:0:1] Transitioning node Lights from EXECUTING to FINISHING
+[PlexilExec:step][16:1] State change queue: Wipers 
+[PlexilExec:step][16:1:0] Transitioning node Wipers from FINISHING to ITERATION_ENDED
+[PlexilExec:step][16:2] State change queue: Wipers 
+[PlexilExec:step][16:2:0] Transitioning node Wipers from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Wipers' is SUCCESS
+[PlexilExec:cycle]==>End cycle 16
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -4540,6 +5036,9 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 8
+[PlexilExec:cycle]==>Start cycle 17
+[PlexilExec:cycle]==>End cycle 17
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -4896,6 +5395,51 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK turn_on_lights() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 8
+[PlexilExec:cycle]==>Start cycle 18
+[PlexilExec:step][18:0] State change queue: Lights 
+[PlexilExec:step][18:0:0] Transitioning node Lights from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:1] State change queue: Lights 
+[PlexilExec:step][18:1:0] Transitioning node Lights from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Lights' is SUCCESS
+[PlexilExec:step][18:2] State change queue: Concurrence__12 
+[PlexilExec:step][18:2:0] Transitioning node Concurrence__12 from EXECUTING to FINISHING
+[PlexilExec:step][18:3] State change queue: Concurrence__12 
+[PlexilExec:step][18:3:0] Transitioning node Concurrence__12 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:4] State change queue: Concurrence__12 
+[PlexilExec:step][18:4:0] Transitioning node Concurrence__12 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Concurrence__12' is SUCCESS
+[PlexilExec:step][18:5] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][18:5:0] Transitioning node ep2cp_IfThenCase from EXECUTING to FINISHING
+[PlexilExec:step][18:6] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][18:6:0] Transitioning node ep2cp_IfThenCase from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:7] State change queue: ep2cp_IfThenCase 
+[PlexilExec:step][18:7:0] Transitioning node ep2cp_IfThenCase from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfThenCase' is SUCCESS
+[PlexilExec:step][18:8] State change queue: ep2cp_IfBody 
+[PlexilExec:step][18:8:0] Transitioning node ep2cp_IfBody from EXECUTING to FINISHING
+[PlexilExec:step][18:9] State change queue: ep2cp_IfBody 
+[PlexilExec:step][18:9:0] Transitioning node ep2cp_IfBody from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:10] State change queue: ep2cp_IfBody 
+[PlexilExec:step][18:10:0] Transitioning node ep2cp_IfBody from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_IfBody' is SUCCESS
+[PlexilExec:step][18:11] State change queue: if__11 
+[PlexilExec:step][18:11:0] Transitioning node if__11 from EXECUTING to FINISHING
+[PlexilExec:step][18:12] State change queue: if__11 
+[PlexilExec:step][18:12:0] Transitioning node if__11 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:13] State change queue: if__11 
+[PlexilExec:step][18:13:0] Transitioning node if__11 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'if__11' is SUCCESS
+[PlexilExec:step][18:14] State change queue: HandleRain 
+[PlexilExec:step][18:14:0] Transitioning node HandleRain from EXECUTING to FINISHING
+[PlexilExec:step][18:15] State change queue: HandleRain 
+[PlexilExec:step][18:15:0] Transitioning node HandleRain from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:16] State change queue: HandleRain 
+[PlexilExec:step][18:16:0] Transitioning node HandleRain from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'HandleRain' is SUCCESS
+[PlexilExec:cycle]==>End cycle 18
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -5185,6 +5729,9 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: time() = 9
+[PlexilExec:cycle]==>Start cycle 19
+[PlexilExec:cycle]==>End cycle 19
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -5474,6 +6021,11 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK drive_a_bit() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 9
+[PlexilExec:cycle]==>Start cycle 20
+[PlexilExec:cycle]==>End cycle 20
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -5763,6 +6315,11 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK drive_a_bit() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 9
+[PlexilExec:cycle]==>Start cycle 21
+[PlexilExec:cycle]==>End cycle 21
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -6052,6 +6609,11 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Sending command ACK drive_a_bit() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 9
+[PlexilExec:cycle]==>Start cycle 22
+[PlexilExec:cycle]==>End cycle 22
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -6341,6 +6903,36 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Processing event: at_school() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 9
+[PlexilExec:cycle]==>Start cycle 23
+[PlexilExec:step][23:0] State change queue: DriveABit 
+[PlexilExec:step][23:0:0] Transitioning node DriveABit from EXECUTING to FINISHING
+[PlexilExec:step][23:1] State change queue: DriveABit 
+[PlexilExec:step][23:1:0] Transitioning node DriveABit from FINISHING to ITERATION_ENDED
+[PlexilExec:step][23:2] State change queue: DriveABit 
+[PlexilExec:step][23:2:0] Transitioning node DriveABit from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DriveABit' is SUCCESS
+[PlexilExec:step][23:3] State change queue: KeepDriving 
+[PlexilExec:step][23:3:0] Transitioning node KeepDriving from EXECUTING to FINISHING
+[PlexilExec:step][23:4] State change queue: KeepDriving 
+[PlexilExec:step][23:4:0] Transitioning node KeepDriving from FINISHING to ITERATION_ENDED
+[PlexilExec:step][23:5] State change queue: KeepDriving 
+[PlexilExec:step][23:5:0] Transitioning node KeepDriving from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'KeepDriving' is SUCCESS
+[PlexilExec:step][23:6] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][23:6:0] Transitioning node ep2cp_WhileAction from EXECUTING to FINISHING
+[PlexilExec:step][23:7] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][23:7:0] Transitioning node ep2cp_WhileAction from FINISHING to ITERATION_ENDED
+[PlexilExec:step][23:8] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][23:8:0] Transitioning node ep2cp_WhileAction from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileAction' is SUCCESS
+[PlexilExec:step][23:9] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][23:9:0] Transitioning node ep2cp_WhileRetest from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for at_school()
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_1102[au](1): boolean)) to 0
+[PlexilExec:cycle]==>End cycle 23
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](EXECUTING): state) (0)
@@ -6596,6 +7188,50 @@ DriveToSchool{
   }
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 9
+[PlexilExec:cycle]==>Start cycle 24
+[PlexilExec:step][24:0] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][24:0:0] Transitioning node ep2cp_WhileRetest from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][24:1] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][24:1:0] Transitioning node ep2cp_WhileRetest from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileRetest' is SUCCESS
+[PlexilExec:step][24:2] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][24:2:0] Transitioning node ep2cp_WhileTrue from EXECUTING to FINISHING
+[PlexilExec:step][24:3] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][24:3:0] Transitioning node ep2cp_WhileTrue from FINISHING to ITERATION_ENDED
+[PlexilExec:step][24:4] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][24:4:0] Transitioning node ep2cp_WhileTrue from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileTrue' is SUCCESS
+[PlexilExec:step][24:5] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][24:5:0] Transitioning node ep2cp_WhileBody from EXECUTING to FINISHING
+[PlexilExec:step][24:6] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][24:6:0] Transitioning node ep2cp_WhileBody from FINISHING to ITERATION_ENDED
+[PlexilExec:step][24:7] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][24:7:0] Transitioning node ep2cp_WhileBody from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileBody' is SUCCESS
+[PlexilExec:step][24:8] State change queue: while__10 
+[PlexilExec:step][24:8:0] Transitioning node while__10 from EXECUTING to FINISHING
+[PlexilExec:step][24:9] State change queue: while__10 
+[PlexilExec:step][24:9:0] Transitioning node while__10 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][24:10] State change queue: while__10 
+[PlexilExec:step][24:10:0] Transitioning node while__10 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'while__10' is SUCCESS
+[PlexilExec:step][24:11] State change queue: DriveUntilAtSchool 
+[PlexilExec:step][24:11:0] Transitioning node DriveUntilAtSchool from EXECUTING to FINISHING
+[PlexilExec:step][24:12] State change queue: DriveUntilAtSchool 
+[PlexilExec:step][24:12:0] Transitioning node DriveUntilAtSchool from FINISHING to ITERATION_ENDED
+[PlexilExec:step][24:13] State change queue: DriveUntilAtSchool 
+[PlexilExec:step][24:13:0] Transitioning node DriveUntilAtSchool from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DriveUntilAtSchool' is SUCCESS
+[PlexilExec:step][24:14] State change queue: DriveToSchool 
+[PlexilExec:step][24:14:0] Transitioning node DriveToSchool from EXECUTING to FINISHING
+[PlexilExec:step][24:15] State change queue: DriveToSchool 
+[PlexilExec:step][24:15:0] Transitioning node DriveToSchool from FINISHING to ITERATION_ENDED
+[PlexilExec:step][24:16] State change queue: DriveToSchool 
+[PlexilExec:step][24:16:0] Transitioning node DriveToSchool from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'DriveToSchool' is SUCCESS
+[PlexilExec:cycle]==>End cycle 24
 [PlexilExec:printPlan]
 DriveToSchool{
  State: DriveToSchool (id_312[au](FINISHED): state) (9)

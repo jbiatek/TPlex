@@ -1,4 +1,19 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: Root 
+[PlexilExec:step][1:0:0] Transitioning node Root from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: Root 
+[PlexilExec:step][1:1:0] Transitioning node Root from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: set 
+[PlexilExec:step][1:2:0] Transitioning node set from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: set 
+[PlexilExec:step][1:3:0] Transitioning node set from WAITING to EXECUTING
+[Test:testOutput]Assigning 'done' (done (id_30[au](0): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 Root{
  State: Root (id_20[au](EXECUTING): state) (0)
@@ -34,6 +49,21 @@ Root{
   }
 }
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: set Root 
+[PlexilExec:step][2:0:0] Transitioning node set from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][2:0:1] Transitioning node Root from EXECUTING to FINISHING
+[PlexilExec:step][2:1] State change queue: set 
+[PlexilExec:step][2:1:0] Transitioning node set from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'set' is SUCCESS
+[PlexilExec:step][2:2] State change queue: Root 
+[PlexilExec:step][2:2:0] Transitioning node Root from FINISHING to ITERATION_ENDED
+[PlexilExec:step][2:3] State change queue: Root 
+[PlexilExec:step][2:3:0] Transitioning node Root from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Root' is SUCCESS
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 Root{
  State: Root (id_20[au](FINISHED): state) (0)

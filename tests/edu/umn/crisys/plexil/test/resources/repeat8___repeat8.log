@@ -1,4 +1,20 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state continue() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: repeat8 
+[PlexilExec:step][1:0:0] Transitioning node repeat8 from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: repeat8 
+[PlexilExec:step][1:1:0] Transitioning node repeat8 from WAITING to EXECUTING
+[PlexilExec:step][1:2] State change queue: repeater 
+[PlexilExec:step][1:2:0] Transitioning node repeater from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: repeater 
+[PlexilExec:step][1:3:0] Transitioning node repeater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'repeat-count' (repeat-count (id_36[au](0): int)) to 1
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 repeat8{
  State: repeat8 (id_26[au](EXECUTING): state) (0)
@@ -34,6 +50,21 @@ repeat8{
   }
 }
 
+[Test:testOutput]Processing event: continue() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: repeater 
+[PlexilExec:step][2:0:0] Transitioning node repeater from EXECUTING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[Test:testOutput]Looking up immediately continue()
+[Test:testOutput]Returning value 1
+[PlexilExec:step][2:1] State change queue: repeater 
+[PlexilExec:step][2:1:0] Transitioning node repeater from ITERATION_ENDED to WAITING
+[PlexilExec:step][2:2] State change queue: repeater 
+[PlexilExec:step][2:2:0] Transitioning node repeater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'repeat-count' (repeat-count (id_36[au](1): int)) to 2
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 repeat8{
  State: repeat8 (id_26[au](EXECUTING): state) (0)
@@ -69,6 +100,19 @@ repeat8{
   }
 }
 
+[Test:testOutput]Processing event: continue() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: repeater 
+[PlexilExec:step][3:0:0] Transitioning node repeater from EXECUTING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[PlexilExec:step][3:1] State change queue: repeater 
+[PlexilExec:step][3:1:0] Transitioning node repeater from ITERATION_ENDED to WAITING
+[PlexilExec:step][3:2] State change queue: repeater 
+[PlexilExec:step][3:2:0] Transitioning node repeater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'repeat-count' (repeat-count (id_36[au](2): int)) to 3
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 repeat8{
  State: repeat8 (id_26[au](EXECUTING): state) (0)
@@ -104,6 +148,19 @@ repeat8{
   }
 }
 
+[Test:testOutput]Processing event: continue() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: repeater 
+[PlexilExec:step][4:0:0] Transitioning node repeater from EXECUTING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[PlexilExec:step][4:1] State change queue: repeater 
+[PlexilExec:step][4:1:0] Transitioning node repeater from ITERATION_ENDED to WAITING
+[PlexilExec:step][4:2] State change queue: repeater 
+[PlexilExec:step][4:2:0] Transitioning node repeater from WAITING to EXECUTING
+[Test:testOutput]Assigning 'repeat-count' (repeat-count (id_36[au](3): int)) to 4
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 repeat8{
  State: repeat8 (id_26[au](EXECUTING): state) (0)
@@ -139,6 +196,24 @@ repeat8{
   }
 }
 
+[Test:testOutput]Processing event: continue() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:step][5:0] State change queue: repeater 
+[PlexilExec:step][5:0:0] Transitioning node repeater from EXECUTING to ITERATION_ENDED
+[Test:testOutput]Registering change lookup for continue()
+[PlexilExec:step][5:1] State change queue: repeater 
+[PlexilExec:step][5:1:0] Transitioning node repeater from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'repeater' is SUCCESS
+[PlexilExec:step][5:2] State change queue: repeat8 
+[PlexilExec:step][5:2:0] Transitioning node repeat8 from EXECUTING to FINISHING
+[PlexilExec:step][5:3] State change queue: repeat8 
+[PlexilExec:step][5:3:0] Transitioning node repeat8 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][5:4] State change queue: repeat8 
+[PlexilExec:step][5:4:0] Transitioning node repeat8 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'repeat8' is SUCCESS
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 repeat8{
  State: repeat8 (id_26[au](FINISHED): state) (0)

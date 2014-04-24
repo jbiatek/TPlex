@@ -83,10 +83,16 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
 
         @Override
         public ILExpression visitCommand(CommandBody cmd, NodeToIL node) {
-            // TODO: Check on this too. 
-            // The documentation says "Command handle received". I think that
-            // means that it has been set to something, so not UNKNOWN.
-            return Operation.isKnown(node.getCommandHandle());
+            // The wiki says "Command handle received". But what does that mean?
+        	
+        	// The PLEXIL source code seems to imply that the default
+        	// end condition for Command nodes is just "true". Not
+        	// "command handle received" as the wiki states. (CommandNode.cc)
+        	// What it does is OR whatever end condition it has with 
+        	// handle == denied || handle == failed. 
+
+            //return Operation.isKnown(node.getCommandHandle());
+        	return BooleanValue.get(true);
         }
 
         @Override

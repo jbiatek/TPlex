@@ -219,7 +219,8 @@ public class PlanState {
         
         for (String var : vars.keySet()) {
             if (expected.vars.get(var) == null) {
-                if (vars.get(var).isKnown() && !var.endsWith(".START") && !var.endsWith(".END")) {
+                if (vars.get(var).isKnown() && !var.endsWith(".START") && !var.endsWith(".END")
+                		&& !var.equals(".previous_value")) {
                     System.err.println("Warning: Oracle doesn't say what "
                             +uid+"/"+var+" is. I think it's "+vars.get(var));
                 }

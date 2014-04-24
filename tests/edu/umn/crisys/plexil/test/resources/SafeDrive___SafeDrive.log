@@ -1,4 +1,33 @@
 
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Creating initial state WheelStuck() = 0
+[Test:testOutput]Creating initial state time() = 0
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 0
+[PlexilExec:cycle]==>Start cycle 1
+[PlexilExec:step][1:0] State change queue: SafeDrive 
+[PlexilExec:step][1:0:0] Transitioning node SafeDrive from INACTIVE to WAITING
+[PlexilExec:step][1:1] State change queue: SafeDrive 
+[PlexilExec:step][1:1:0] Transitioning node SafeDrive from WAITING to EXECUTING
+[Test:testOutput]Registering change lookup for WheelStuck()
+[Test:testOutput]Looking up immediately WheelStuck()
+[Test:testOutput]Returning value 0
+[PlexilExec:step][1:2] State change queue: while__0 
+[PlexilExec:step][1:2:0] Transitioning node while__0 from INACTIVE to WAITING
+[PlexilExec:step][1:3] State change queue: while__0 
+[PlexilExec:step][1:3:0] Transitioning node while__0 from WAITING to EXECUTING
+[PlexilExec:step][1:4] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][1:4:0] Transitioning node ep2cp_WhileBody from INACTIVE to WAITING
+[PlexilExec:step][1:5] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][1:5:0] Transitioning node ep2cp_WhileBody from WAITING to EXECUTING
+[PlexilExec:step][1:6] State change queue: ep2cp_WhileSetup ep2cp_WhileTrue 
+[PlexilExec:step][1:6:0] Transitioning node ep2cp_WhileSetup from INACTIVE to WAITING
+[PlexilExec:step][1:6:1] Transitioning node ep2cp_WhileTrue from INACTIVE to WAITING
+[PlexilExec:step][1:7] State change queue: ep2cp_WhileSetup 
+[PlexilExec:step][1:7:0] Transitioning node ep2cp_WhileSetup from WAITING to EXECUTING
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_146[au](UNKNOWN): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 1
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -106,6 +135,33 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: time() = 1
+[PlexilExec:cycle]==>Start cycle 2
+[PlexilExec:step][2:0] State change queue: ep2cp_WhileSetup 
+[PlexilExec:step][2:0:0] Transitioning node ep2cp_WhileSetup from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][2:1] State change queue: ep2cp_WhileSetup 
+[PlexilExec:step][2:1:0] Transitioning node ep2cp_WhileSetup from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileSetup' is SUCCESS
+[PlexilExec:step][2:2] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][2:2:0] Transitioning node ep2cp_WhileTrue from WAITING to EXECUTING
+[PlexilExec:step][2:3] State change queue: ep2cp_WhileAction ep2cp_WhileRetest 
+[PlexilExec:step][2:3:0] Transitioning node ep2cp_WhileAction from INACTIVE to WAITING
+[PlexilExec:step][2:3:1] Transitioning node ep2cp_WhileRetest from INACTIVE to WAITING
+[PlexilExec:step][2:4] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][2:4:0] Transitioning node ep2cp_WhileAction from WAITING to EXECUTING
+[PlexilExec:step][2:5] State change queue: BLOCK__1 
+[PlexilExec:step][2:5:0] Transitioning node BLOCK__1 from INACTIVE to WAITING
+[PlexilExec:step][2:6] State change queue: BLOCK__1 
+[PlexilExec:step][2:6:0] Transitioning node BLOCK__1 from WAITING to EXECUTING
+[PlexilExec:step][2:7] State change queue: OneMeter TakePic Counter Print 
+[PlexilExec:step][2:7:0] Transitioning node OneMeter from INACTIVE to WAITING
+[PlexilExec:step][2:7:1] Transitioning node TakePic from INACTIVE to WAITING
+[PlexilExec:step][2:7:2] Transitioning node Counter from INACTIVE to WAITING
+[PlexilExec:step][2:7:3] Transitioning node Print from INACTIVE to WAITING
+[PlexilExec:step][2:8] State change queue: OneMeter 
+[PlexilExec:step][2:8:0] Transitioning node OneMeter from WAITING to EXECUTING
+[Test:testOutput]Executing Drive(1) into noId with ack OneMeter command_handle (id_740[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 2
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -299,6 +355,21 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK Drive(1) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 3
+[PlexilExec:step][3:0] State change queue: OneMeter 
+[PlexilExec:step][3:0:0] Transitioning node OneMeter from EXECUTING to FINISHING
+[PlexilExec:step][3:1] State change queue: OneMeter 
+[PlexilExec:step][3:1:0] Transitioning node OneMeter from FINISHING to ITERATION_ENDED
+[PlexilExec:step][3:2] State change queue: OneMeter 
+[PlexilExec:step][3:2:0] Transitioning node OneMeter from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'OneMeter' is SUCCESS
+[PlexilExec:step][3:3] State change queue: TakePic 
+[PlexilExec:step][3:3:0] Transitioning node TakePic from WAITING to EXECUTING
+[Test:testOutput]Executing TakePicture() into noId with ack TakePic command_handle (id_753[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 3
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -480,6 +551,21 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK TakePicture() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 1
+[PlexilExec:cycle]==>Start cycle 4
+[PlexilExec:step][4:0] State change queue: TakePic 
+[PlexilExec:step][4:0:0] Transitioning node TakePic from EXECUTING to FINISHING
+[PlexilExec:step][4:1] State change queue: TakePic 
+[PlexilExec:step][4:1:0] Transitioning node TakePic from FINISHING to ITERATION_ENDED
+[PlexilExec:step][4:2] State change queue: TakePic 
+[PlexilExec:step][4:2:0] Transitioning node TakePic from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TakePic' is SUCCESS
+[PlexilExec:step][4:3] State change queue: Counter 
+[PlexilExec:step][4:3:0] Transitioning node Counter from WAITING to EXECUTING
+[Test:testOutput]Assigning 'pictures' (pictures (id_137[au](0): int)) to 1
+[PlexilExec:cycle]==>End cycle 4
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -649,7 +735,18 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: time() = 2
+[PlexilExec:cycle]==>Start cycle 5
+[PlexilExec:step][5:0] State change queue: Counter 
+[PlexilExec:step][5:0:0] Transitioning node Counter from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][5:1] State change queue: Counter 
+[PlexilExec:step][5:1:0] Transitioning node Counter from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Counter' is SUCCESS
+[PlexilExec:step][5:2] State change queue: Print 
+[PlexilExec:step][5:2:0] Transitioning node Print from WAITING to EXECUTING
+[Test:testOutput]Executing pprint(Pictures taken:, 1) into noId with ack Print command_handle (id_807[au](UNKNOWN): command_handle)
 Pictures taken: 1 
+[PlexilExec:cycle]==>End cycle 5
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -807,6 +904,37 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK Drive(1) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 2
+[PlexilExec:cycle]==>Start cycle 6
+[PlexilExec:step][6:0] State change queue: Print 
+[PlexilExec:step][6:0:0] Transitioning node Print from EXECUTING to FINISHING
+[PlexilExec:step][6:1] State change queue: Print 
+[PlexilExec:step][6:1:0] Transitioning node Print from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:2] State change queue: Print 
+[PlexilExec:step][6:2:0] Transitioning node Print from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Print' is SUCCESS
+[PlexilExec:step][6:3] State change queue: BLOCK__1 
+[PlexilExec:step][6:3:0] Transitioning node BLOCK__1 from EXECUTING to FINISHING
+[PlexilExec:step][6:4] State change queue: BLOCK__1 
+[PlexilExec:step][6:4:0] Transitioning node BLOCK__1 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:5] State change queue: BLOCK__1 
+[PlexilExec:step][6:5:0] Transitioning node BLOCK__1 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'BLOCK__1' is SUCCESS
+[PlexilExec:step][6:6] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][6:6:0] Transitioning node ep2cp_WhileAction from EXECUTING to FINISHING
+[PlexilExec:step][6:7] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][6:7:0] Transitioning node ep2cp_WhileAction from FINISHING to ITERATION_ENDED
+[PlexilExec:step][6:8] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][6:8:0] Transitioning node ep2cp_WhileAction from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileAction' is SUCCESS
+[PlexilExec:step][6:9] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][6:9:0] Transitioning node ep2cp_WhileRetest from WAITING to EXECUTING
+[Test:testOutput]Looking up immediately WheelStuck()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_146[au](1): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 6
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -930,6 +1058,48 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK TakePicture() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 2
+[PlexilExec:cycle]==>Start cycle 7
+[PlexilExec:step][7:0] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][7:0:0] Transitioning node ep2cp_WhileRetest from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][7:1] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][7:1:0] Transitioning node ep2cp_WhileRetest from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileRetest' is SUCCESS
+[PlexilExec:step][7:2] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][7:2:0] Transitioning node ep2cp_WhileTrue from EXECUTING to FINISHING
+[PlexilExec:step][7:3] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][7:3:0] Transitioning node ep2cp_WhileTrue from FINISHING to ITERATION_ENDED
+[PlexilExec:step][7:4] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][7:4:0] Transitioning node ep2cp_WhileTrue from ITERATION_ENDED to WAITING
+[PlexilExec:step][7:5] State change queue: ep2cp_WhileAction ep2cp_WhileRetest ep2cp_WhileTrue 
+[PlexilExec:step][7:5:0] Transitioning node ep2cp_WhileAction from FINISHED to INACTIVE
+[PlexilExec:step][7:5:1] Transitioning node ep2cp_WhileRetest from FINISHED to INACTIVE
+[PlexilExec:step][7:5:2] Transitioning node ep2cp_WhileTrue from WAITING to EXECUTING
+[PlexilExec:step][7:6] State change queue: ep2cp_WhileAction ep2cp_WhileRetest 
+[PlexilExec:step][7:6:0] Transitioning node ep2cp_WhileAction from INACTIVE to WAITING
+[PlexilExec:step][7:6:1] Transitioning node ep2cp_WhileRetest from INACTIVE to WAITING
+[PlexilExec:step][7:7] State change queue: BLOCK__1 ep2cp_WhileAction 
+[PlexilExec:step][7:7:0] Transitioning node BLOCK__1 from FINISHED to INACTIVE
+[PlexilExec:step][7:7:1] Transitioning node ep2cp_WhileAction from WAITING to EXECUTING
+[PlexilExec:step][7:8] State change queue: BLOCK__1 
+[PlexilExec:step][7:8:0] Transitioning node BLOCK__1 from INACTIVE to WAITING
+[PlexilExec:step][7:9] State change queue: OneMeter TakePic Counter Print BLOCK__1 
+[PlexilExec:step][7:9:0] Transitioning node OneMeter from FINISHED to INACTIVE
+[PlexilExec:step][7:9:1] Transitioning node TakePic from FINISHED to INACTIVE
+[PlexilExec:step][7:9:2] Transitioning node Counter from FINISHED to INACTIVE
+[PlexilExec:step][7:9:3] Transitioning node Print from FINISHED to INACTIVE
+[PlexilExec:step][7:9:4] Transitioning node BLOCK__1 from WAITING to EXECUTING
+[PlexilExec:step][7:10] State change queue: OneMeter TakePic Counter Print 
+[PlexilExec:step][7:10:0] Transitioning node OneMeter from INACTIVE to WAITING
+[PlexilExec:step][7:10:1] Transitioning node TakePic from INACTIVE to WAITING
+[PlexilExec:step][7:10:2] Transitioning node Counter from INACTIVE to WAITING
+[PlexilExec:step][7:10:3] Transitioning node Print from INACTIVE to WAITING
+[PlexilExec:step][7:11] State change queue: OneMeter 
+[PlexilExec:step][7:11:0] Transitioning node OneMeter from WAITING to EXECUTING
+[Test:testOutput]Executing Drive(1) into noId with ack OneMeter command_handle (id_740[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 7
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -1123,6 +1293,11 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: time() = 3
+[PlexilExec:cycle]==>Start cycle 8
+[PlexilExec:step][8:0] State change queue: OneMeter 
+[PlexilExec:step][8:0:0] Transitioning node OneMeter from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 8
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -1316,6 +1491,19 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK Drive(1) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 3
+[PlexilExec:cycle]==>Start cycle 9
+[PlexilExec:step][9:0] State change queue: OneMeter 
+[PlexilExec:step][9:0:0] Transitioning node OneMeter from FINISHING to ITERATION_ENDED
+[PlexilExec:step][9:1] State change queue: OneMeter 
+[PlexilExec:step][9:1:0] Transitioning node OneMeter from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'OneMeter' is SUCCESS
+[PlexilExec:step][9:2] State change queue: TakePic 
+[PlexilExec:step][9:2:0] Transitioning node TakePic from WAITING to EXECUTING
+[Test:testOutput]Executing TakePicture() into noId with ack TakePic command_handle (id_753[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 9
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -1497,6 +1685,21 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK TakePicture() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 3
+[PlexilExec:cycle]==>Start cycle 10
+[PlexilExec:step][10:0] State change queue: TakePic 
+[PlexilExec:step][10:0:0] Transitioning node TakePic from EXECUTING to FINISHING
+[PlexilExec:step][10:1] State change queue: TakePic 
+[PlexilExec:step][10:1:0] Transitioning node TakePic from FINISHING to ITERATION_ENDED
+[PlexilExec:step][10:2] State change queue: TakePic 
+[PlexilExec:step][10:2:0] Transitioning node TakePic from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TakePic' is SUCCESS
+[PlexilExec:step][10:3] State change queue: Counter 
+[PlexilExec:step][10:3:0] Transitioning node Counter from WAITING to EXECUTING
+[Test:testOutput]Assigning 'pictures' (pictures (id_137[au](1): int)) to 2
+[PlexilExec:cycle]==>End cycle 10
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -1666,7 +1869,18 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: time() = 4
+[PlexilExec:cycle]==>Start cycle 11
+[PlexilExec:step][11:0] State change queue: Counter 
+[PlexilExec:step][11:0:0] Transitioning node Counter from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][11:1] State change queue: Counter 
+[PlexilExec:step][11:1:0] Transitioning node Counter from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Counter' is SUCCESS
+[PlexilExec:step][11:2] State change queue: Print 
+[PlexilExec:step][11:2:0] Transitioning node Print from WAITING to EXECUTING
+[Test:testOutput]Executing pprint(Pictures taken:, 2) into noId with ack Print command_handle (id_807[au](UNKNOWN): command_handle)
 Pictures taken: 2 
+[PlexilExec:cycle]==>End cycle 11
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -1824,6 +2038,37 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK Drive(1) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 4
+[PlexilExec:cycle]==>Start cycle 12
+[PlexilExec:step][12:0] State change queue: Print 
+[PlexilExec:step][12:0:0] Transitioning node Print from EXECUTING to FINISHING
+[PlexilExec:step][12:1] State change queue: Print 
+[PlexilExec:step][12:1:0] Transitioning node Print from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:2] State change queue: Print 
+[PlexilExec:step][12:2:0] Transitioning node Print from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Print' is SUCCESS
+[PlexilExec:step][12:3] State change queue: BLOCK__1 
+[PlexilExec:step][12:3:0] Transitioning node BLOCK__1 from EXECUTING to FINISHING
+[PlexilExec:step][12:4] State change queue: BLOCK__1 
+[PlexilExec:step][12:4:0] Transitioning node BLOCK__1 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:5] State change queue: BLOCK__1 
+[PlexilExec:step][12:5:0] Transitioning node BLOCK__1 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'BLOCK__1' is SUCCESS
+[PlexilExec:step][12:6] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][12:6:0] Transitioning node ep2cp_WhileAction from EXECUTING to FINISHING
+[PlexilExec:step][12:7] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][12:7:0] Transitioning node ep2cp_WhileAction from FINISHING to ITERATION_ENDED
+[PlexilExec:step][12:8] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][12:8:0] Transitioning node ep2cp_WhileAction from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileAction' is SUCCESS
+[PlexilExec:step][12:9] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][12:9:0] Transitioning node ep2cp_WhileRetest from WAITING to EXECUTING
+[Test:testOutput]Looking up immediately WheelStuck()
+[Test:testOutput]Returning value 0
+[Test:testOutput]Assigning 'ep2cp_test' (ep2cp_test (id_146[au](1): boolean)) to 1
+[PlexilExec:cycle]==>End cycle 12
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -1947,6 +2192,48 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK TakePicture() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 4
+[PlexilExec:cycle]==>Start cycle 13
+[PlexilExec:step][13:0] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][13:0:0] Transitioning node ep2cp_WhileRetest from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][13:1] State change queue: ep2cp_WhileRetest 
+[PlexilExec:step][13:1:0] Transitioning node ep2cp_WhileRetest from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileRetest' is SUCCESS
+[PlexilExec:step][13:2] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][13:2:0] Transitioning node ep2cp_WhileTrue from EXECUTING to FINISHING
+[PlexilExec:step][13:3] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][13:3:0] Transitioning node ep2cp_WhileTrue from FINISHING to ITERATION_ENDED
+[PlexilExec:step][13:4] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][13:4:0] Transitioning node ep2cp_WhileTrue from ITERATION_ENDED to WAITING
+[PlexilExec:step][13:5] State change queue: ep2cp_WhileAction ep2cp_WhileRetest ep2cp_WhileTrue 
+[PlexilExec:step][13:5:0] Transitioning node ep2cp_WhileAction from FINISHED to INACTIVE
+[PlexilExec:step][13:5:1] Transitioning node ep2cp_WhileRetest from FINISHED to INACTIVE
+[PlexilExec:step][13:5:2] Transitioning node ep2cp_WhileTrue from WAITING to EXECUTING
+[PlexilExec:step][13:6] State change queue: ep2cp_WhileAction ep2cp_WhileRetest 
+[PlexilExec:step][13:6:0] Transitioning node ep2cp_WhileAction from INACTIVE to WAITING
+[PlexilExec:step][13:6:1] Transitioning node ep2cp_WhileRetest from INACTIVE to WAITING
+[PlexilExec:step][13:7] State change queue: BLOCK__1 ep2cp_WhileAction 
+[PlexilExec:step][13:7:0] Transitioning node BLOCK__1 from FINISHED to INACTIVE
+[PlexilExec:step][13:7:1] Transitioning node ep2cp_WhileAction from WAITING to EXECUTING
+[PlexilExec:step][13:8] State change queue: BLOCK__1 
+[PlexilExec:step][13:8:0] Transitioning node BLOCK__1 from INACTIVE to WAITING
+[PlexilExec:step][13:9] State change queue: OneMeter TakePic Counter Print BLOCK__1 
+[PlexilExec:step][13:9:0] Transitioning node OneMeter from FINISHED to INACTIVE
+[PlexilExec:step][13:9:1] Transitioning node TakePic from FINISHED to INACTIVE
+[PlexilExec:step][13:9:2] Transitioning node Counter from FINISHED to INACTIVE
+[PlexilExec:step][13:9:3] Transitioning node Print from FINISHED to INACTIVE
+[PlexilExec:step][13:9:4] Transitioning node BLOCK__1 from WAITING to EXECUTING
+[PlexilExec:step][13:10] State change queue: OneMeter TakePic Counter Print 
+[PlexilExec:step][13:10:0] Transitioning node OneMeter from INACTIVE to WAITING
+[PlexilExec:step][13:10:1] Transitioning node TakePic from INACTIVE to WAITING
+[PlexilExec:step][13:10:2] Transitioning node Counter from INACTIVE to WAITING
+[PlexilExec:step][13:10:3] Transitioning node Print from INACTIVE to WAITING
+[PlexilExec:step][13:11] State change queue: OneMeter 
+[PlexilExec:step][13:11:0] Transitioning node OneMeter from WAITING to EXECUTING
+[Test:testOutput]Executing Drive(1) into noId with ack OneMeter command_handle (id_740[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 13
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -2140,6 +2427,11 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: time() = 5
+[PlexilExec:cycle]==>Start cycle 14
+[PlexilExec:step][14:0] State change queue: OneMeter 
+[PlexilExec:step][14:0:0] Transitioning node OneMeter from EXECUTING to FINISHING
+[PlexilExec:cycle]==>End cycle 14
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -2333,6 +2625,19 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK Drive(1) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 15
+[PlexilExec:step][15:0] State change queue: OneMeter 
+[PlexilExec:step][15:0:0] Transitioning node OneMeter from FINISHING to ITERATION_ENDED
+[PlexilExec:step][15:1] State change queue: OneMeter 
+[PlexilExec:step][15:1:0] Transitioning node OneMeter from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'OneMeter' is SUCCESS
+[PlexilExec:step][15:2] State change queue: TakePic 
+[PlexilExec:step][15:2:0] Transitioning node TakePic from WAITING to EXECUTING
+[Test:testOutput]Executing TakePicture() into noId with ack TakePic command_handle (id_753[au](UNKNOWN): command_handle)
+[PlexilExec:cycle]==>End cycle 15
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -2514,6 +2819,21 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK TakePicture() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 5
+[PlexilExec:cycle]==>Start cycle 16
+[PlexilExec:step][16:0] State change queue: TakePic 
+[PlexilExec:step][16:0:0] Transitioning node TakePic from EXECUTING to FINISHING
+[PlexilExec:step][16:1] State change queue: TakePic 
+[PlexilExec:step][16:1:0] Transitioning node TakePic from FINISHING to ITERATION_ENDED
+[PlexilExec:step][16:2] State change queue: TakePic 
+[PlexilExec:step][16:2:0] Transitioning node TakePic from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'TakePic' is SUCCESS
+[PlexilExec:step][16:3] State change queue: Counter 
+[PlexilExec:step][16:3:0] Transitioning node Counter from WAITING to EXECUTING
+[Test:testOutput]Assigning 'pictures' (pictures (id_137[au](2): int)) to 3
+[PlexilExec:cycle]==>End cycle 16
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -2683,7 +3003,18 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: time() = 6
+[PlexilExec:cycle]==>Start cycle 17
+[PlexilExec:step][17:0] State change queue: Counter 
+[PlexilExec:step][17:0:0] Transitioning node Counter from EXECUTING to ITERATION_ENDED
+[PlexilExec:step][17:1] State change queue: Counter 
+[PlexilExec:step][17:1:0] Transitioning node Counter from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Counter' is SUCCESS
+[PlexilExec:step][17:2] State change queue: Print 
+[PlexilExec:step][17:2:0] Transitioning node Print from WAITING to EXECUTING
+[Test:testOutput]Executing pprint(Pictures taken:, 3) into noId with ack Print command_handle (id_807[au](UNKNOWN): command_handle)
 Pictures taken: 3 
+[PlexilExec:cycle]==>End cycle 17
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](EXECUTING): state) (0)
@@ -2841,6 +3172,61 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Processing event: WheelStuck() = 1
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 6
+[PlexilExec:cycle]==>Start cycle 18
+[PlexilExec:step][18:0] State change queue: Print SafeDrive ep2cp_WhileRetest 
+[PlexilExec:step][18:0:0] Transitioning node Print from EXECUTING to FINISHING
+[PlexilExec:step][18:0:1] Transitioning node SafeDrive from EXECUTING to FINISHING
+[PlexilExec:step][18:0:2] Transitioning node ep2cp_WhileRetest from WAITING to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileRetest' is SKIPPED
+[PlexilExec:step][18:1] State change queue: Print 
+[PlexilExec:step][18:1:0] Transitioning node Print from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:2] State change queue: Print 
+[PlexilExec:step][18:2:0] Transitioning node Print from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'Print' is SUCCESS
+[PlexilExec:step][18:3] State change queue: BLOCK__1 
+[PlexilExec:step][18:3:0] Transitioning node BLOCK__1 from EXECUTING to FINISHING
+[PlexilExec:step][18:4] State change queue: BLOCK__1 
+[PlexilExec:step][18:4:0] Transitioning node BLOCK__1 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:5] State change queue: BLOCK__1 
+[PlexilExec:step][18:5:0] Transitioning node BLOCK__1 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'BLOCK__1' is SUCCESS
+[PlexilExec:step][18:6] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][18:6:0] Transitioning node ep2cp_WhileAction from EXECUTING to FINISHING
+[PlexilExec:step][18:7] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][18:7:0] Transitioning node ep2cp_WhileAction from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:8] State change queue: ep2cp_WhileAction 
+[PlexilExec:step][18:8:0] Transitioning node ep2cp_WhileAction from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileAction' is SUCCESS
+[PlexilExec:step][18:9] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][18:9:0] Transitioning node ep2cp_WhileTrue from EXECUTING to FINISHING
+[PlexilExec:step][18:10] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][18:10:0] Transitioning node ep2cp_WhileTrue from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:11] State change queue: ep2cp_WhileTrue 
+[PlexilExec:step][18:11:0] Transitioning node ep2cp_WhileTrue from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileTrue' is SUCCESS
+[PlexilExec:step][18:12] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][18:12:0] Transitioning node ep2cp_WhileBody from EXECUTING to FINISHING
+[PlexilExec:step][18:13] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][18:13:0] Transitioning node ep2cp_WhileBody from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:14] State change queue: ep2cp_WhileBody 
+[PlexilExec:step][18:14:0] Transitioning node ep2cp_WhileBody from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'ep2cp_WhileBody' is SUCCESS
+[PlexilExec:step][18:15] State change queue: while__0 
+[PlexilExec:step][18:15:0] Transitioning node while__0 from EXECUTING to FINISHING
+[PlexilExec:step][18:16] State change queue: while__0 
+[PlexilExec:step][18:16:0] Transitioning node while__0 from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:17] State change queue: while__0 
+[PlexilExec:step][18:17:0] Transitioning node while__0 from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'while__0' is SUCCESS
+[PlexilExec:step][18:18] State change queue: SafeDrive 
+[PlexilExec:step][18:18:0] Transitioning node SafeDrive from FINISHING to ITERATION_ENDED
+[PlexilExec:step][18:19] State change queue: SafeDrive 
+[PlexilExec:step][18:19:0] Transitioning node SafeDrive from ITERATION_ENDED to FINISHED
+[Node:outcome]Outcome of 'SafeDrive' is SUCCESS
+[PlexilExec:cycle]==>End cycle 18
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](FINISHED): state) (6)
@@ -2908,6 +3294,11 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK Drive(1) = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 6
+[PlexilExec:cycle]==>Start cycle 19
+[PlexilExec:cycle]==>End cycle 19
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](FINISHED): state) (6)
@@ -2975,6 +3366,11 @@ SafeDrive{
   }
 }
 
+[Test:testOutput]Sending command ACK TakePicture() = (string)COMMAND_SUCCESS
+[Test:testOutput]Looking up immediately time()
+[Test:testOutput]Returning value 6
+[PlexilExec:cycle]==>Start cycle 20
+[PlexilExec:cycle]==>End cycle 20
 [PlexilExec:printPlan]
 SafeDrive{
  State: SafeDrive (id_127[au](FINISHED): state) (6)
