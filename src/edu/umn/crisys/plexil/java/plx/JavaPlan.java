@@ -46,6 +46,10 @@ public abstract class JavaPlan {
     }
     
     private void notifyPrematureEnd() {
+    	if (isLibrary) {
+    		parent.getParentPlan().notifyPrematureEnd();
+    		return;
+    	}
     	world.prematureEndOfMacroStep(this);
     	for (JavaPlanObserver obs : observers) {
     		obs.prematureEndOfMacroStep(this);
@@ -53,7 +57,10 @@ public abstract class JavaPlan {
     }
 
     private void notifyQuiescence() {
-    	world.quiescenceReached(this);
+    	if (isLibrary) {
+    		parent.getParentPlan().notifyQuiescence();
+    		return;
+    	}
     	for (JavaPlanObserver obs : observers) {
     		obs.quiescenceReached(this);
     	}
@@ -64,7 +71,10 @@ public abstract class JavaPlan {
      * of an implementation of doMicroStep() please.
      */
     public void notifyMicroStep() {
-    	world.endOfMicroStep(this);
+    	if (isLibrary) {
+    		parent.getParentPlan().notifyMicroStep();
+    		return;
+    	}
     	for (JavaPlanObserver obs : observers) {
     		obs.endOfMicroStep(this);
     	}
