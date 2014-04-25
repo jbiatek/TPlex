@@ -192,6 +192,10 @@ public class StateMachineBuilder {
             myFault.addGuard(childWaitingOrFinished);
 
         }
+        
+        nsm.addTransition(parentExited);
+        nsm.addTransition(parentFailed);
+        nsm.addTransition(myFault);
     }
     
     public void addIterationEndedTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
