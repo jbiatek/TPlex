@@ -100,7 +100,7 @@ public class CompileRegressionTest {
         translator.translate(ilPlan);
         
         PruneUnusedTimepoints.optimize(ilPlan);
-        //RemoveDeadTransitions.optimize(ilPlan);
+        RemoveDeadTransitions.optimize(ilPlan);
 
         
         JCodeModel cm = new JCodeModel();
