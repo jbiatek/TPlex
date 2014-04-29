@@ -37,7 +37,9 @@ public class JavaPlexilScript implements ExternalWorld {
 		public ReceivedCommand(CommandHandler handler, FunctionCall call) {
 			this.handler = handler;
 			this.call = call;
-			System.out.println("Command event created: "+handler+" "+call);
+			if (JavaPlan.DEBUG) {
+				System.out.println("Command event created: "+handler+" "+call);
+			}
 		}
 
 		public CommandHandler getHandler() {
@@ -61,8 +63,9 @@ public class JavaPlexilScript implements ExternalWorld {
 
 		@Override
 		public void doEvent(JavaPlexilScript world) {
-			
-			System.out.println("Setting value of "+call+" to "+value);
+			if (JavaPlan.DEBUG) {
+				System.out.println("Setting value of "+call+" to "+value);
+			}
 			world.lookup.put(call, value);
 		}
 	}
@@ -79,7 +82,9 @@ public class JavaPlexilScript implements ExternalWorld {
 		@Override
 		public void doEvent(JavaPlexilScript world) {
 			// Find the event
-			System.out.println("Returning "+value+" for "+call);
+			if (JavaPlan.DEBUG) {
+				System.out.println("Returning "+value+" for "+call);
+			}
 			ReceivedCommand event = null;
 			for (ReceivedCommand e : world.commandQueue) {
 				if (e.getCall().equals(call)) {
@@ -106,7 +111,9 @@ public class JavaPlexilScript implements ExternalWorld {
 		@Override
 		public void doEvent(JavaPlexilScript world) {
 			// Find the event
-			System.out.println("Acknowledging "+call + " with "+result);
+			if (JavaPlan.DEBUG) {
+				System.out.println("Acknowledging "+call + " with "+result);
+			}
 			ReceivedCommand event = null;
 			for (ReceivedCommand e : world.commandQueue) {
 				if (e.getCall().equals(call)) {
@@ -219,6 +226,9 @@ public class JavaPlexilScript implements ExternalWorld {
 			events.get(0).doEvent(this);
 			events.remove(0);
 		}
+		if (JavaPlan.DEBUG) {
+			System.out.println("Events remaining in script: "+events.size());
+		}
 	}
 	
 	@Override
@@ -240,7 +250,9 @@ public class JavaPlexilScript implements ExternalWorld {
 
 	@Override
 	public void update(UpdateHandler node, String key, PValue value) {
-		System.out.println("Update received: "+key+" = "+value+" from "+node);
+		if (JavaPlan.DEBUG) {
+			System.out.println("Update received: "+key+" = "+value+" from "+node);
+		}
 		updaters.add(node);
 	}
 
@@ -264,7 +276,7 @@ public class JavaPlexilScript implements ExternalWorld {
 		    return RealValue.get(0.0);
 		} 
 		
-		System.out.println("Warning: Script has no response for "+key+
+		System.err.println("Warning: Script has no response for "+key+
 		", returning UNKNOWN");
 		
 		return UnknownValue.get();
