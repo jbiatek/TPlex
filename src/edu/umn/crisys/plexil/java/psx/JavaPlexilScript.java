@@ -220,11 +220,14 @@ public class JavaPlexilScript implements ExternalWorld {
 		events.clear();
 	}
 	
+	public int getCommandQueueLength() {
+		return commandQueue.size();
+	}
+	
 	@Override
 	public void quiescenceReached(JavaPlan plan) {
 		if (events.size() > 0) {
-			events.get(0).doEvent(this);
-			events.remove(0);
+			events.remove(0).doEvent(this);;
 		}
 		if (JavaPlan.DEBUG) {
 			System.out.println("Events remaining in script: "+events.size());

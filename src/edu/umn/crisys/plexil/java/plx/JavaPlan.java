@@ -50,7 +50,6 @@ public abstract class JavaPlan {
     		parent.getParentPlan().notifyPrematureEnd();
     		return;
     	}
-    	world.prematureEndOfMacroStep(this);
     	for (JavaPlanObserver obs : observers) {
     		obs.prematureEndOfMacroStep(this);
     	}
@@ -61,7 +60,6 @@ public abstract class JavaPlan {
     		parent.getParentPlan().notifyQuiescence();
     		return;
     	}
-    	world.quiescenceReached(this);
     	for (JavaPlanObserver obs : observers) {
     		obs.quiescenceReached(this);
     	}
@@ -83,6 +81,9 @@ public abstract class JavaPlan {
 
     
     public NodeOutcome runPlanToCompletion() {
+    	if ( ! observers.contains(world)) {
+    		addObserver(world);
+    	}
         while ( ! world.stop() && getRootNodeOutcome().isUnknown()) {
             doMacroStep();
         }
@@ -134,13 +135,6 @@ public abstract class JavaPlan {
             }
         }
         // Debug message for end of macrostep
-        if (endMacroStep) {
-        	notifyPrematureEnd();
-        } else {
-        	notifyQuiescence();
-        }
-
-        
         if (endMacroStep) {
         	if (DEBUG) System.out.println("Premature end to macro step requested at microstep "+counter);
         	notifyPrematureEnd();
