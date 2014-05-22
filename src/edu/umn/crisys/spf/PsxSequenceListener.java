@@ -26,13 +26,18 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 	private boolean outputImmediately = true;
 	private int currentTest = 0;
 	private boolean outputDebugComments = false;
+	private boolean isBeingPrefixed = false;
 	
 	public PsxSequenceListener(Config conf, JPF jpf) {
 		super(conf, jpf);
 		String dest = conf.getString("psxlistener.output_dir", "psx_output");
 		writeRedundantCasesToo = conf.getBoolean("psxlistener.output_all_tests", false);
 		outputDebugComments  = conf.getBoolean("psxlistener.output_debug_comments", false);
+		isBeingPrefixed = conf.getBoolean("psxlistener.is_being_prefixed", false);
 		testCaseDestination = new File(dest);
+		if (outputImmediately) {
+			testCaseDestination.mkdirs();
+		}
 	}
 	
 	private List<String> processMethodSequence(List<String> methodSequence) {
@@ -275,7 +280,12 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 	private List<String> convertMethodsToScript(List<String> sequence) {
 		List<String> list = new ArrayList<String>();
 		list.add("<PLEXILScript>");
-		list.add("<InitialState>");
+		if ( isBeingPrefixed) {
+			list.add("<Script>");
+			list.add("<Simultaneous>");
+		} else {
+			list.add("<InitialState>");
+		}
 		for (String method : sequence) {
 			String xml = convertMethodToXML(method);
 			if ( ! xml.equals("")) {
@@ -334,6 +344,11 @@ public class PsxSequenceListener extends SymbolicSequenceListener {
 		} else if (str.startsWith("psxParam")) {
 			return interpolate(args, "        <Param type=\"", "\">", "</Param>");
 		} else if (str.startsWith("psxInitialStateEnd")) {
+			// If we're being prefixed, this actually means the end of a first step.
+			if (isBeingPrefixed) {
+				return "  </Simultaneous>";
+			} 
+			
 			return "  </InitialState>\n  <Script>";
 		} else if (str.startsWith("psxSimultaneousStart")) {
 			return "    <Simultaneous>";

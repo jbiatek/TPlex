@@ -22,22 +22,34 @@ public class CheckpointSearch extends DFSearch {
 	
 	public void setCheckpoint() {
 		stack.push(depth);
-		System.out.println("Set a checkpoint at depth "+depth);
 	}
 
 	@Override
 	public boolean backtrack() {
+		/*
+		boolean result = super.backtrack();
+		System.out.println("New depth is "+depth);
+		return result;
+		/*/
 		if (stack.size() == 0) { 
 			return super.backtrack();
 		}
-		int backtrackTo = stack.pop();
+		// We need to backtrack up to just before the checkpoint first.
+		int backtrackTo = stack.pop() + 1;
 		boolean didBacktrack = true;
 		while (depth > backtrackTo && didBacktrack) {
 			didBacktrack = super.backtrack();
 			depth--;
+			notifyStateBacktracked();
 		}
-		System.out.println("Backtracked to depth "+depth);
+		if (didBacktrack) {
+			// Okay, now go up to the "intended" depth. We don't want to do
+			// the depth-- or notification because our superclass will do it.
+			didBacktrack = super.backtrack();
+		}
+		
 		return didBacktrack;
+		//*/
 	}
 	
 

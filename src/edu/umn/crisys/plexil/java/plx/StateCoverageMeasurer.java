@@ -70,6 +70,14 @@ public class StateCoverageMeasurer implements JavaPlanObserver {
 		}
 	}
 	
+	public int getNumStatesCovered() {
+		int coverage = 0;
+		for (NodeUID uid : statesCovered.keySet()) {
+			coverage += statesCovered.get(uid).size();
+		}
+		return coverage;
+	}
+	
 	@Override
 	public void quiescenceReached(JavaPlan plan) {
 		collectCoverage((PlexilTestable) plan);

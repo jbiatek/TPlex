@@ -472,8 +472,8 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 		printMethodSequences(pw);
 
 		// print JUnit4.0 test class
-		publisher.publishTopicStart("JUnit 4.0 test class");
-		printJUnitTestClass(pw);
+		//publisher.publishTopicStart("JUnit 4.0 test class");
+		//printJUnitTestClass(pw);
 
 	}
 
@@ -485,6 +485,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	   */
 	  private void printMethodSequences(PrintWriter pw){
 		  Iterator<List<String>> it = methodSequences.iterator();
+		  pw.println("Number of tests: "+methodSequences.size());
 		  while (it.hasNext()){
 			  pw.println(it.next());
 		  }

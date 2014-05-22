@@ -30,8 +30,8 @@ import gov.nasa.jpf.vm.Verify;
  */
 public class SymbolicExternalWorld implements ExternalWorld {
 	
-	public static int CHECKPOINT_EVERY = 1;
-	public static boolean ENABLE_CHECKPOINTS = false;
+	public static int CHECKPOINT_EVERY_MACRO = 0;
+	public static int CHECKPOINT_EVERY_MICRO = 0;
 	
 	private interface ValueGenerator<T extends PValue> {
 		public T generateNewValue();
@@ -131,7 +131,9 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	
 	private int currentStep = 0;
-
+	private boolean somethingHappened = false;
+	
+	
 	private boolean symbolicBoolean(boolean makeMeSymbolic) {
 		return makeMeSymbolic;
 	}
@@ -289,16 +291,26 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		afterMacroStepEnds(false);
 	}
 	
+	
+	private int microStepCtr = 0;
 	@Override
 	public void endOfMicroStep(JavaPlan plan) {
-		// Do nothing until the macro step ends. 
+		// Do nothing until the macro step ends.
+		microStepCtr++;
+		if (CHECKPOINT_EVERY_MICRO != 0 && microStepCtr % CHECKPOINT_EVERY_MICRO == 0) {
+			CheckpointControl.setCheckpointFromInside(); 
+		}
+
 	}
 
 	private void afterMacroStepEnds(boolean refreshLookups) {
 		
-		if (ENABLE_CHECKPOINTS && refreshLookups /* currentStep % CHECKPOINT_EVERY == 0*/) {
+		if (CHECKPOINT_EVERY_MACRO != 0 && refreshLookups && currentStep % CHECKPOINT_EVERY_MACRO == 0) {
 			CheckpointControl.setCheckpointFromInside(); 
 		}
+		
+		Verify.interesting(somethingHappened);
+		somethingHappened = false;
 		
 		// Did anything happen during the last step? If not, go back and 
 		// try again.
@@ -337,10 +349,10 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		Iterator<Pair<CommandHandler, FunctionCall>> iter = cmdQueue.iterator();
 		while (iter.hasNext()) {
 			Pair<CommandHandler, FunctionCall> pair = iter.next();
-			if (Verify.getBoolean()) {
+			//if (Verify.getBoolean()) {
 				respondToCommand(pair.first, pair.second);
 				iter.remove();
-			}
+			//}
 		}
 		
 
@@ -360,6 +372,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	@Override
 	public void update(UpdateHandler node, String key, PValue value) {
 		updateQueue.add(node);
+		somethingHappened = true;
 	}
 
 	@Override
@@ -394,6 +407,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			
 			currentLookupValues.put(lookup, newVal);
 			lookupValueToXML(lookup, newVal);
+			somethingHappened = true;
 		}
 		return currentLookupValues.get(lookup);
 	}
@@ -405,6 +419,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		}
 		cmdQueue.add(new Pair<CommandHandler, FunctionCall>(caller, 
 				new FunctionCall(name.getString(), args)));
+		somethingHappened = true;
 	}
 
 	private void constructCommandXML(FunctionCall call, PValue result, String action) {
