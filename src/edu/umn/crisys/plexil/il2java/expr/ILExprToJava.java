@@ -17,6 +17,7 @@ import edu.umn.crisys.plexil.java.values.UnknownValue;
 
 public class ILExprToJava {
 
+	public static boolean SHORT_CIRCUITING = true;
     
     public static JExpression toJava(ILExpression expr, JCodeModel cm) {
         if (expr == null) {

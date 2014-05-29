@@ -89,7 +89,11 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
         case ADD:
             return multiOperation(children, "add");
         case AND: 
-            return shortCircuitAnd(children, cm);
+        	if (ILExprToJava.SHORT_CIRCUITING) {
+        		return shortCircuitAnd(children, cm);
+        	} else {
+        		return multiOperation(children, "and");
+        	}
         case CAST_BOOL:
             return JExpr.cast(cm.ref(PBoolean.class), children.get(0));
         case CAST_NUMERIC:
@@ -133,7 +137,11 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
         case NOT:
             return unaryOperation(children, "not");
         case OR:
-            return shortCircuitOr(children, cm);
+        	if (ILExprToJava.SHORT_CIRCUITING) {
+        		return shortCircuitOr(children, cm);
+        	} else {
+        		return multiOperation(children, "or");
+        	}
         case SQRT:
             return unaryOperation(children, "sqrt");
         case SUB:
