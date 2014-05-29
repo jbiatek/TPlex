@@ -26,6 +26,8 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
+import edu.umn.crisys.plexil.il2java.StateMachineToJava;
+import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
@@ -51,6 +53,10 @@ public class Main {
 									  
 									  + "    --no-optimizations          Disable removal of impossible transitions and \n"
 									  + "                                unused node timepoints.\n"
+									  + "    --no-biasing                Disable boolean biasing, all expressions will \n"
+									  + "                                use the PLEXIL logic library\n"
+									  + "    --no-short-circuiting       Disable use of the conditional operator (?:) \n"
+									  + "                                in AND and OR operations\n"
 									  + "    --print-type-info           Print an analysis of Lookup and Command types\n"
 									  + "                                using some basic heuristics.";
 
@@ -84,6 +90,12 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--no-optimizations")) {
 					optimize = false;
+					continue;
+				} else if (args[i].equals("--no-biasing")) { 
+					StateMachineToJava.BIASING = false;
+					continue;
+				} else if (args[i].equals("--no-short-circuiting")) {
+					ILExprToJava.SHORT_CIRCUITING = false;
 					continue;
 				} else if (args[i].equals("--print-type-info")) {
 					analyzeTypes = true;
