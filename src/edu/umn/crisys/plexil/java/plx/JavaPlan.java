@@ -90,6 +90,19 @@ public abstract class JavaPlan {
         return getRootNodeOutcome();
     }
     
+    public NodeOutcome runPlanToCompletion(int maxMacroSteps) {
+    	if ( ! observers.contains(world)) {
+    		addObserver(world);
+    	}
+    	int steps = 0;
+        while ( steps < maxMacroSteps && ! world.stop() && getRootNodeOutcome().isUnknown()) {
+            doMacroStep();
+            steps++;
+        }
+        return getRootNodeOutcome();
+
+    }
+    
     public abstract void doMicroStep();
     
     public abstract NodeOutcome getRootNodeOutcome();
