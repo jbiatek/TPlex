@@ -87,7 +87,7 @@ public class StateMachineToJava {
 			if ( ! methodMap.containsKey(t.start)) {
 				// Make it
 				JCase mainCase = sw._case(JExpr.lit(nsm.indexOf(t.start)));
-				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+t.start.getIndex()));
+				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+"__"+t.start.getIndex()));
 				// The case just needs to invoke the new method.
 				mainCase.body().invoke(methodMap.get(t.start));
 				mainCase.body()._break();
