@@ -11,6 +11,10 @@ public class CoverageSEW extends SymbolicExternalWorld {
 	private int previousCoverage = 0;
 	private int consecutiveStepsWithoutIncrease = 0;
 	
+	public CoverageSEW() {
+		super(new SPFValues());
+	}
+	
 	public JavaPlanObserver getObserver() {
 		return coverage;
 	}

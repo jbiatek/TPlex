@@ -11,14 +11,11 @@ public class SymbolicDriver {
 		// Keep doing steps until the root node has an outcome.
 		// We could also perform some specific number of steps, or
 		// run indefinitely.
-		while ( plan.getRootNodeOutcome().isUnknown() ) {
-			plan.doMacroStep();
-			world.waitForNextEvent();
-		}
+		plan.runPlanToCompletion();
 	}
 	private static ExternalWorld configureSymbolicExternalWorld(){
 		// Create our SymbolicExternalWorld and then configure it.
-		SymbolicExternalWorld world = new SymbolicExternalWorld();
+		SymbolicExternalWorld world = new SymbolicExternalWorld(new SPFValues());
 		// Respond to all the commands with either success or failure
 		world.addCommand("rover_drive", CommandHandleState.COMMAND_SUCCESS,
 				CommandHandleState.COMMAND_FAILED);
