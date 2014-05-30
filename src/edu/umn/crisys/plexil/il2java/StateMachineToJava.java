@@ -79,24 +79,24 @@ public class StateMachineToJava {
 		// We're going in order of priority, but the final code will be ordered by the
 		// starting state. This map will let us grab the correct code block to add on to.
 		// We also need the last if statement for each state.
-		Map<State, JCase> caseMap = new HashMap<State, JCase>();
+		Map<State, JMethod> methodMap = new HashMap<State, JMethod>();
 		Map<State, JConditional> lastCondition = new HashMap<State, JConditional>();
 
 		for (Transition t : nsm.transitions) {
 			// Do we have this starting state?
-			if ( ! caseMap.containsKey(t.start)) {
+			if ( ! methodMap.containsKey(t.start)) {
 				// Make it
-				caseMap.put(t.start, sw._case(JExpr.lit(nsm.indexOf(t.start))));
+				JCase mainCase = sw._case(JExpr.lit(nsm.indexOf(t.start)));
+				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+t.start.getIndex()));
+				// The case just needs to invoke the new method.
+				mainCase.body().invoke(methodMap.get(t.start));
+				mainCase.body()._break();
 			}
 			// Let the transition do its thing
 			JConditional cond = addTransition(t, nsm.thePlan,
-					caseMap.get(t.start).body(), cm, stateVar, lastCondition.get(t.start));
+					methodMap.get(t.start).body(), cm, stateVar, lastCondition.get(t.start));
 			// This is now the latest if statement for this state
 			lastCondition.put(t.start, cond);
-		}
-		// All done! We can add break statements to each of them
-		for (State state : caseMap.keySet()) {
-			caseMap.get(state).body()._break();
 		}
 		// Finally, after the case/switch we need to execute the in actions
 		// of whatever state we're (now) in.
