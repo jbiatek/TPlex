@@ -12,9 +12,6 @@ public class MainScript {
 		ExternalWorld world = new TargetPanoramaTimeoutScript();
 		JavaPlan plan = new TargetPanorama(world);
 		// Keep doing steps until the script runs out of events.
-		while ( ! world.stop() ) {
-			plan.doMacroStep();
-			world.waitForNextEvent();
-		}
+		plan.runPlanToCompletion();
 	}
 }

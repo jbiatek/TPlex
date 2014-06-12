@@ -9,9 +9,7 @@ import java.util.Map;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.psx.FunctionCall;
 import edu.umn.crisys.plexil.java.values.*;
-import edu.umn.crisys.spf.CheckpointControl;
 import edu.umn.crisys.util.Pair;
-import gov.nasa.jpf.vm.Verify;
 
 /**
  * Returns symbolic values to a plan and sends PLEXILScript files to a listener
@@ -30,8 +28,13 @@ import gov.nasa.jpf.vm.Verify;
  */
 public class SymbolicExternalWorld implements ExternalWorld {
 	
-	public static int CHECKPOINT_EVERY = 1;
-	public static boolean ENABLE_CHECKPOINTS = false;
+	private final ValueSource symbolic;
+	
+	public SymbolicExternalWorld(ValueSource symbolicSource) {
+		this.symbolic = symbolicSource;
+	}
+	
+	
 	
 	private interface ValueGenerator<T extends PValue> {
 		public T generateNewValue();
@@ -93,7 +96,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 //			return lastValue;
 			// Abandon this line of execution if the new value is less than 
 			// the old one. 
-			Verify.ignoreIf((lastValue != null && newVal.lt(lastValue).isTrue()));
+			symbolic.continueOnlyIf(lastValue != null && newVal.ge(lastValue).isTrue());
 			lastValue = (T) newVal.castTo(type);
 			return lastValue;
 		}
@@ -131,35 +134,18 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	
 	
 	private int currentStep = 0;
+	private boolean somethingHappened = false;
 
-	private boolean symbolicBoolean(boolean makeMeSymbolic) {
-		return makeMeSymbolic;
-	}
-	
-	private int symbolicInt(int makeMeSymbolic) {
-		return makeMeSymbolic;
-	}
-	
-	private double symbolicDouble(double makeMeSymbolic) {
-		return makeMeSymbolic;
-	}
-	
-	private String symbolicString(String makeMeSymbolic) {
-		//return makeMeSymbolic;
-		throw new RuntimeException("Symbolic strings are broken in SPF, don't use them");
-	}
 	
 	private PValue getSymbolicPValueOfType(PlexilType t) {
 		switch (t) {
 		case BOOLEAN:
-			return BooleanValue.get(symbolicBoolean(true));
+			return BooleanValue.get(symbolic.symbolicBoolean(true));
 		case INTEGER:
-			return IntegerValue.get(symbolicInt(0));
+			return IntegerValue.get(symbolic.symbolicInteger(0));
 		case REAL:
 		case NUMERIC:
-			return RealValue.get(symbolicDouble(0.0));
-		case STRING:
-			return StringValue.get(symbolicString(""));
+			return RealValue.get(symbolic.symbolicDouble(0.0));
 		default:
 			throw new RuntimeException("Type "+t+
 					" does not have a symbolic method");
@@ -168,7 +154,9 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	}
 	
 	private int nondetIntIndex(int maximum) {
-		return Verify.getInt(0, maximum-1);
+		int symbolicInt = symbolic.symbolicInteger(0);
+		symbolic.continueOnlyIf(symbolicInt >= 0 && symbolicInt < maximum);
+		return symbolicInt;
 	}
 	
 	/**
@@ -289,16 +277,14 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		afterMacroStepEnds(false);
 	}
 	
+	
 	@Override
 	public void endOfMicroStep(JavaPlan plan) {
-		// Do nothing until the macro step ends. 
+		// Do nothing until the macro step ends.
 	}
 
 	private void afterMacroStepEnds(boolean refreshLookups) {
-		
-		if (ENABLE_CHECKPOINTS && refreshLookups /* currentStep % CHECKPOINT_EVERY == 0*/) {
-			CheckpointControl.setCheckpointFromInside(); 
-		}
+		somethingHappened = false;
 		
 		// Did anything happen during the last step? If not, go back and 
 		// try again.
@@ -337,10 +323,10 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		Iterator<Pair<CommandHandler, FunctionCall>> iter = cmdQueue.iterator();
 		while (iter.hasNext()) {
 			Pair<CommandHandler, FunctionCall> pair = iter.next();
-			if (Verify.getBoolean()) {
+			//if (Verify.getBoolean()) {
 				respondToCommand(pair.first, pair.second);
 				iter.remove();
-			}
+			//}
 		}
 		
 
@@ -360,6 +346,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 	@Override
 	public void update(UpdateHandler node, String key, PValue value) {
 		updateQueue.add(node);
+		somethingHappened = true;
 	}
 
 	@Override
@@ -379,7 +366,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		}
 		String lookup = stateName.getString();
 		if ( ! currentLookupValues.containsKey(lookup)) {
-			if (oldLookupValues.containsKey(lookup) && Verify.getBoolean()) {
+			if (oldLookupValues.containsKey(lookup) && symbolic.symbolicBoolean(true)) {
 				// Value doesn't change
 				return oldLookupValues.get(lookup);
 			}
@@ -394,6 +381,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 			
 			currentLookupValues.put(lookup, newVal);
 			lookupValueToXML(lookup, newVal);
+			somethingHappened = true;
 		}
 		return currentLookupValues.get(lookup);
 	}
@@ -405,6 +393,7 @@ public class SymbolicExternalWorld implements ExternalWorld {
 		}
 		cmdQueue.add(new Pair<CommandHandler, FunctionCall>(caller, 
 				new FunctionCall(name.getString(), args)));
+		somethingHappened = true;
 	}
 
 	private void constructCommandXML(FunctionCall call, PValue result, String action) {

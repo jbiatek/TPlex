@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jpf-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jpf-symbc"/>
 	<classpathentry kind="lib" path="lib/codemodel-2.6.jar" sourcepath="lib/codemodel-2.6-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jcute.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,7 +1,11 @@
 package edu.umn.crisys.plexil.java.plx;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +37,47 @@ public class StateCoverageMeasurer implements JavaPlanObserver {
 		}
 		
 	}
+	
+	public void printData() {
+		System.out.println("State coverage information");
+		System.out.println("--------------------------\n");
+		
+		// Sort the UIDs alphabetically to make it easier to read
+		List<NodeUID> uids = new ArrayList<NodeUID>();
+		uids.addAll(statesCovered.keySet());
+		Collections.sort(uids, new Comparator<NodeUID>() {
 
+			@Override
+			public int compare(NodeUID o1, NodeUID o2) {
+				return o1.toString().compareTo(o2.toString());
+			}
+		});
+		
+		// Print data
+		for (NodeUID uid : uids) {
+			System.out.println(uid+":");
+			StringBuilder states = new StringBuilder();
+			
+			// Sort the states too. 
+			List<NodeState> sortedStates = new ArrayList<NodeState>();
+			sortedStates.addAll(statesCovered.get(uid));
+			Collections.sort(sortedStates);
+			
+			for (NodeState state : sortedStates) {
+				states.append(state+" ");
+			}
+			System.out.println("    "+states);
+		}
+	}
+	
+	public int getNumStatesCovered() {
+		int coverage = 0;
+		for (NodeUID uid : statesCovered.keySet()) {
+			coverage += statesCovered.get(uid).size();
+		}
+		return coverage;
+	}
+	
 	@Override
 	public void quiescenceReached(JavaPlan plan) {
 		collectCoverage((PlexilTestable) plan);

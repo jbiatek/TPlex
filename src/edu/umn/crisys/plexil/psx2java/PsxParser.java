@@ -95,7 +95,7 @@ public class PsxParser {
         } else if (isTag(start, "Delay")) {
             // No data to read, so just read the closing tag and return a delay
             assertClosedTag(start, xml);
-            return new DelayEvent();
+            return DelayEvent.SINGLETON;
         } else if (isTag(start, "UpdateAck")) {
             // Just grab the name and read the end tag
             String name = attribute(start, "name");

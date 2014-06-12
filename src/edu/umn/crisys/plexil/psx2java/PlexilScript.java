@@ -47,16 +47,23 @@ public class PlexilScript {
         clazz._extends(cm.ref(JavaPlexilScript.class));
         JMethod constructor = clazz.constructor(JMod.PUBLIC);
         
-        for (ScriptEvent e : initialEvents) {
-        	constructor.body().invoke("addEvent").arg(e.toJava(cm));
+        // The first event is always the initial state. If we don't have one,
+        // just do a Delay. 
+        if (initialEvents.isEmpty()) {
+        	constructor.body().invoke("addEvent").arg(DelayEvent.SINGLETON.toJava(cm));
+        } else {
+        	SimultaneousEvent initial = new SimultaneousEvent();
+        	for (ScriptEvent e : initialEvents) {
+        		initial.addEvent(e);
+        	}
+        	constructor.body().invoke("addEvent").arg(initial.toJava(cm));
         }
-        // Those events happen immediately, so just do them in the constructor
-        constructor.body().invoke("performAllEventsInQueue");
         
         for (ScriptEvent e : mainEvents) {
         	constructor.body().invoke("addEvent").arg(e.toJava(cm));
         }
         
+        constructor.body().invoke("reset");
     }
     
     

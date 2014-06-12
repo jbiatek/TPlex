@@ -50,6 +50,8 @@ import gov.nasa.jpf.symbc.numeric.SymbolicConstraintsGeneral;
 import gov.nasa.jpf.symbc.string.DerivedStringExpression;
 import gov.nasa.jpf.symbc.string.StringSymbolic;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -104,9 +106,11 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 
  	// custom marker to mark error strings in method sequences
  	private final static String exceptionMarker = "##EXCEPTION## ";
+ 	private File sequenceOutputFile;
 
 	public SymbolicSequenceListener(Config conf, JPF jpf) {
 		jpf.addPublisherExtension(ConsolePublisher.class, this);
+		sequenceOutputFile = conf.getPath("seqlistener.output");
 	}
 
 	@Override
@@ -465,15 +469,26 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
       //	-------- the publisher interface
 	public void publishFinished (Publisher publisher) {
 
-
-		PrintWriter pw = publisher.getOut();
-		// here just print the method sequences
 		publisher.publishTopicStart("Method Sequences");
-		printMethodSequences(pw);
+		PrintWriter pw = publisher.getOut();
+
+		
+		if (sequenceOutputFile != null) {
+			try {
+				printMethodSequences(new PrintWriter(sequenceOutputFile));
+				pw.println("Sequences written to "+sequenceOutputFile);
+			} catch (FileNotFoundException e) {
+				System.err.println("File not found: "+sequenceOutputFile);
+			}
+		} else {
+		
+			// here just print the method sequences
+			printMethodSequences(pw);
+		}
 
 		// print JUnit4.0 test class
-		publisher.publishTopicStart("JUnit 4.0 test class");
-		printJUnitTestClass(pw);
+		//publisher.publishTopicStart("JUnit 4.0 test class");
+		//printJUnitTestClass(pw);
 
 	}
 
@@ -485,9 +500,11 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	   */
 	  private void printMethodSequences(PrintWriter pw){
 		  Iterator<List<String>> it = methodSequences.iterator();
+		  pw.println("Number of tests: "+methodSequences.size());
 		  while (it.hasNext()){
 			  pw.println(it.next());
 		  }
+		  pw.flush();
 	  }
 
 
