@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.java.psx.symbolic;
 
 import cute.Cute;
-import edu.umn.crisys.plexil.java.world.ValueSource;
 
 /**
  * Returns symbolic values to a plan and sends PLEXILScript files to a listener

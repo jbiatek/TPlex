@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.java.psx.symbolic;
 
-import edu.umn.crisys.plexil.java.world.ValueSource;
 import gov.nasa.jpf.vm.Verify;
 
 public class SPFValues implements ValueSource {

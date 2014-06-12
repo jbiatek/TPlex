@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
@@ -23,6 +25,8 @@ public class ScriptedEnvironment implements ExternalWorld {
 
 	private Map<FunctionCall, PValue> lookup = new HashMap<FunctionCall, PValue>();
 	private List<Pair<CommandHandler,FunctionCall>> commandQueue = 
+			new ArrayList<Pair<CommandHandler,FunctionCall>>();
+	private List<Pair<CommandHandler,FunctionCall>> unhandledCommands =
 			new ArrayList<Pair<CommandHandler,FunctionCall>>();
     private List<UpdateHandler> updaters = new ArrayList<UpdateHandler>();
 
@@ -65,6 +69,20 @@ public class ScriptedEnvironment implements ExternalWorld {
 			}
 			world.lookup.put(call, value);
 		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if ( ! (other instanceof StateChange)) {
+				return false;
+			}
+			StateChange o = (StateChange) other;
+			return o.call.equals(this.call) && o.value.equals(this.value);
+		}
+		
+		@Override
+		public int hashCode() {
+			return call.hashCode() + value.hashCode();
+		}
 	}
 	
 	public static class CommandReturn implements Event {
@@ -92,6 +110,21 @@ public class ScriptedEnvironment implements ExternalWorld {
 			
 			world.findCommandThatSent(call).first.commandReturns(value);
 		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if ( ! (other instanceof CommandReturn)) {
+				return false;
+			}
+			CommandReturn o = (CommandReturn) other;
+			return o.call.equals(this.call) && o.value.equals(this.value);
+		}
+		
+		@Override
+		public int hashCode() {
+			return call.hashCode() + value.hashCode();
+		}
+
 	}
 	
 	public static class CommandAck implements Event {
@@ -121,7 +154,25 @@ public class ScriptedEnvironment implements ExternalWorld {
 			event.first.setCommandHandle(result);
 			// The reference implementation DOESN'T remove them. Yes, really.
 			//world.commandQueue.remove(event);
+			// But we maintain a saner list of things that haven't been dealt with,
+			// so we don't have to consider this nonsense.
+			world.unhandledCommands.remove(event);
 		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if ( ! (other instanceof CommandAck)) {
+				return false;
+			}
+			CommandAck o = (CommandAck) other;
+			return o.call.equals(this.call) && o.result.equals(this.result);
+		}
+		
+		@Override
+		public int hashCode() {
+			return call.hashCode() + result.hashCode();
+		}
+
 	}
 	
 	public static class UpdateAck implements Event {
@@ -144,6 +195,22 @@ public class ScriptedEnvironment implements ExternalWorld {
             world.updaters.remove(correct);
         }
 	    
+		@Override
+		public boolean equals(Object other) {
+			if ( ! (other instanceof UpdateAck)) {
+				return false;
+			}
+			UpdateAck o = (UpdateAck) other;
+			return o.nodeName.equals(this.nodeName);
+		}
+		
+		@Override
+		public int hashCode() {
+			return nodeName.hashCode();
+		}
+
+
+        
 	}
 	
 	public static class Delay implements Event {
@@ -156,7 +223,7 @@ public class ScriptedEnvironment implements ExternalWorld {
         public void doEvent(ScriptedEnvironment world) {
             // I'm a delay! Look at me go!
         }
-	    
+        
 	}
 	
 	public static class Simultaneous implements Event {
@@ -193,6 +260,25 @@ public class ScriptedEnvironment implements ExternalWorld {
 				return events.get(0);
 			} 
 			return this;
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof Simultaneous) {
+				Simultaneous o = (Simultaneous) other;
+				
+				Set<Event> mySet = new HashSet<Event>(events);
+				Set<Event> theirSet = new HashSet<Event>(o.events);
+				
+				return mySet.equals(theirSet);
+			}
+			
+			return false;
+		}
+		
+		@Override
+		public int hashCode() {
+			return new HashSet<Event>(events).hashCode();
 		}
 		
 	}
@@ -236,6 +322,10 @@ public class ScriptedEnvironment implements ExternalWorld {
 	
 	public List<Pair<CommandHandler,FunctionCall>> getCurrentCommandQueue() { 
 		return Collections.unmodifiableList(commandQueue);
+	}
+	
+	public List<Pair<CommandHandler,FunctionCall>> getUnhandledCommands() {
+		return Collections.unmodifiableList(unhandledCommands);
 	}
 	
 	public List<UpdateHandler> getCurrentUpdateQueue() {
@@ -311,6 +401,7 @@ public class ScriptedEnvironment implements ExternalWorld {
             e.first.setCommandHandle(CommandHandleState.COMMAND_SUCCESS);
         } else {
             commandQueue.add(e);
+            unhandledCommands.add(e);
         }
 	}
 

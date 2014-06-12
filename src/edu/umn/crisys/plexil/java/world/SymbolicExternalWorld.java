@@ -8,6 +8,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.psx.FunctionCall;
+import edu.umn.crisys.plexil.java.psx.symbolic.ValueSource;
 import edu.umn.crisys.plexil.java.values.*;
 import edu.umn.crisys.util.Pair;
 

@@ -5,7 +5,6 @@ import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.world.UpdateHandler;
-import edu.umn.crisys.plexil.java.world.ValueSource;
 
 public class MinimalEventStrategy extends SymbolicDecisionMaker {
 

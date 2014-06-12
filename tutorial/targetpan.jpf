@@ -1,9 +1,10 @@
 @using tplex
 
-target=SymbolicDriver
-listener=${listener},gov.nasa.jpf.symbc.SymbolicListener
+target=PanoramaDriver
+#listener=${listener},gov.nasa.jpf.symbc.SymbolicListener
 classpath=bin
-psxlistener.output_dir=TargetPanoramaScripts
+#psxlistener.output_dir=TargetPanoramaScripts
 #psxlistener.output_all_tests=true
-psxlistener.output_debug_comments=true
-search.depth_limit=100
+#psxlistener.output_debug_comments=true
+seqlistener.output=sequences.txt
+search.depth_limit=20

@@ -79,6 +79,8 @@ public class SymbolicScript implements ExternalWorld {
 		}
 		
 		out.println("</Script>\n</PLEXILScript>");
+		out.flush();
+		out.close();
 	}
 	
 	private static void printEvent(Event e, PrintWriter out) {
@@ -100,7 +102,7 @@ public class SymbolicScript implements ExternalWorld {
 			for (Event child : ((Simultaneous) e).getEvents()) {
 				printEvent(child, out);
 			}
-			out.println("</Simultaneous");
+			out.println("</Simultaneous>");
 		}
 	}
 	
@@ -214,20 +216,24 @@ public class SymbolicScript implements ExternalWorld {
 	}
 
 	private void respondToCommands() {
-		for (Pair<CommandHandler, FunctionCall> cmd : env.getCurrentCommandQueue()) {
+		List<Event> eventsToApplyAfterLoop = new ArrayList<Event>();
+		for (Pair<CommandHandler, FunctionCall> cmd : env.getUnhandledCommands()) {
 			// Decide whether to respond to this command.
 			FunctionCall call = cmd.second;
 			if (delegate.shouldAckCommand(env, call)) {
 				// If there are any, apparently return values should be first
 				if (delegate.doesCommandAlsoReturnValues(call)) {
 					PValue value = delegate.getReturnValueForCommand(call);
-					applyEvent(new ScriptedEnvironment.CommandReturn(call, value));
+					eventsToApplyAfterLoop.add(new ScriptedEnvironment.CommandReturn(call, value));
 				}
 				
 				// Return a handle value to the command.
 				CommandHandleState handle = delegate.getAckForCommand(call);
-				applyEvent(new ScriptedEnvironment.CommandAck(call, handle));
+				eventsToApplyAfterLoop.add(new ScriptedEnvironment.CommandAck(call, handle));
 			}
+		}
+		for (Event e : eventsToApplyAfterLoop) {
+			applyEvent(e);
 		}
 	}
 	

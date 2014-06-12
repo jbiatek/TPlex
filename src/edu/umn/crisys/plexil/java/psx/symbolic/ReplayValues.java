@@ -1,15 +1,18 @@
 package edu.umn.crisys.plexil.java.psx.symbolic;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.java.world.ValueSource;
-
 public class ReplayValues implements ValueSource {
+	
+	public static List<ReplayValues> parseSequenceFile(File file) throws IOException {
+		return parseSequenceFile(new FileReader(file));
+	}
 	
 	public static List<ReplayValues> parseSequenceFile(String filename)  throws IOException {
 		return parseSequenceFile(new FileReader(filename));

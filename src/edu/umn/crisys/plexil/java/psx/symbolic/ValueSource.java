@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.java.world;
+package edu.umn.crisys.plexil.java.psx.symbolic;
 
 public interface ValueSource {
 

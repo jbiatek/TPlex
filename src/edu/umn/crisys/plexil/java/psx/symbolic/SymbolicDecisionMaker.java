@@ -14,7 +14,6 @@ import edu.umn.crisys.plexil.java.values.PReal;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.world.ValueSource;
 
 public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	
