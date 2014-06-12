@@ -7,8 +7,14 @@ import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 
 public enum NodeOutcome implements PValue {
 	SUCCESS,
+//	FAILURE_PRE_CONDITION,
+//	FAILURE_POST_CONDITION,
+//	FAILURE_INVARIANT,
+//	FAILURE_PARENT,
 	FAILURE,
 	SKIPPED,
+//	INTERRUPTED_PARENT_EXITED,
+//	INTERRUPTED_EXITED,
 	INTERRUPTED,
 	UNKNOWN;
 

@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.java.world;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.java.plx.StateCoverageMeasurer;
+import edu.umn.crisys.plexil.java.psx.symbolic.SPFValues;
 import gov.nasa.jpf.vm.Verify;
 
 public class CoverageSEW extends SymbolicExternalWorld {

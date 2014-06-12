@@ -9,9 +9,7 @@ public class TargetPanoramaTimeoutScript
 
 
     public TargetPanoramaTimeoutScript() {
-        addEvent(stateChange(RealValue.get((0.0)), "time"));
-        addEvent(stateChange(BooleanValue.get((false)), "target_in_view"));
-        performAllEventsInQueue();
+        addEvent(simultaneous(stateChange(RealValue.get((0.0)), "time"), stateChange(BooleanValue.get((false)), "target_in_view")));
         addEvent(stateChange(RealValue.get((1.0)), "time"));
         addEvent(stateChange(RealValue.get((2.0)), "time"));
         addEvent(commandAck(CommandHandleState.COMMAND_SUCCESS, "rover_drive", RealValue.get((10.0))));
@@ -26,6 +24,7 @@ public class TargetPanoramaTimeoutScript
         addEvent(commandAck(CommandHandleState.COMMAND_SUCCESS, "rover_stop"));
         addEvent(commandAck(CommandHandleState.COMMAND_SUCCESS, "take_navcam"));
         addEvent(stateChange(RealValue.get((11.0)), "time"));
+        reset();
     }
 
 }
