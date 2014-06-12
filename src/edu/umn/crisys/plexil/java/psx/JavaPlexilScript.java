@@ -84,10 +84,6 @@ public class JavaPlexilScript implements ExternalWorld {
 	 * End convenience methods
 	 */
 	
-	public int getCommandQueueLength() {
-		return commandQueue.size();
-	}
-	
 	@Override
 	public void quiescenceReached(JavaPlan plan) {
 		if ( ! outOfEvents() ) {
