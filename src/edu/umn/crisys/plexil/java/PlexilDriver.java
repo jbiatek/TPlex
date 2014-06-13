@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.java;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -8,21 +9,92 @@ import java.util.Iterator;
 import java.util.List;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
+import edu.umn.crisys.plexil.java.plx.StateCoverageMeasurer;
+import edu.umn.crisys.plexil.java.psx.symbolic.RandomValues;
 import edu.umn.crisys.plexil.java.psx.symbolic.ReplayValues;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicDecisionMaker;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicScript;
 import edu.umn.crisys.plexil.java.psx.symbolic.ValueSource;
+import edu.umn.crisys.plexil.java.world.ExternalWorld;
 
 public class PlexilDriver {
 	
 	public static int STEP_LIMIT = -1;
 	
-	public static void mainMethod(TestGenerationInfo info, String[] args) throws IOException {
-		if (args.length == 3 && args[0].equalsIgnoreCase("Replay")) {
-			createScripts(info, new File(args[1]), new File(args[2]));
-		} else {
+	public static void mainMethod(TestGenerationInfo info, String[] args) throws Exception {
+		if (args.length == 0) {
 			generateTests(info);
+		} else if (args[0].equalsIgnoreCase("Replay")) {
+			createScripts(info, new File(args[1]), new File(args[2]));
+		} else if (args[0].equalsIgnoreCase("Random")) {
+			randomTesting(info, Integer.parseInt(args[1]), Integer.parseInt(args[2]), new File(args[3]));
+		} else if (args[0].equalsIgnoreCase("Filter")) {
+			File dir = new File(args[1]);
+			String pkg = args[2];
+			List<String> classNames = new ArrayList<String>();
+			
+			File packageDirectory = new File(dir, pkg);
+			
+			for (String clazz : packageDirectory.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".class");
+				}
+			})) {
+				
+				String rawName = clazz.replaceAll(".class$", "");
+				classNames.add(pkg+"."+rawName);
+			}
+			
+			coverageFilter(info, classNames);
 		}
+	}
+	
+	public static void randomTesting(TestGenerationInfo info, int numTests, int stepLimit, File destination) throws IOException {
+		List<SymbolicScript> generated = new ArrayList<SymbolicScript>();
+		
+		while (generated.size() < numTests) {
+			System.out.println("Generated "+generated.size()+" tests.");
+			RandomValues rand = new RandomValues();
+			SymbolicScript randScript = new SymbolicScript(info.createDecisionMaker(rand));
+			JavaPlan plan = info.createPlanUnderTest(randScript);
+			
+			try {
+				plan.runPlanToCompletion(stepLimit);
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+			
+			if (isPrefix(randScript, generated)) continue;
+			
+			// Remove anything that this test case makes redundant. 
+			removePrefixesOf(randScript, generated);
+			generated.add(randScript);
+		}
+		
+		writeScriptsToDirectory(generated, destination);
+	}
+	
+	public static void coverageFilter(TestGenerationInfo info, List<String> classes) throws Exception {
+		StateCoverageMeasurer coverage = new StateCoverageMeasurer();
+		int currentCoverage = 0;
+		
+		for (String className : classes) {
+			ExternalWorld world = (ExternalWorld) Class.forName(className).newInstance();
+			JavaPlan plan = info.createPlanUnderTest(world);
+			plan.addObserver(coverage);
+			
+			plan.runPlanToCompletion();
+			
+			int newCoverage = coverage.getNumStatesCovered();
+			if (newCoverage > currentCoverage) {
+				System.out.println("Adds to coverage: "+className);
+				currentCoverage = coverage.getNumStatesCovered();
+			}
+		}
+		
+		System.out.println("Finished. Covered states: "+currentCoverage);
+		coverage.printData();
 	}
 	
 	public static void generateTests(TestGenerationInfo info) {
@@ -44,13 +116,17 @@ public class PlexilDriver {
 			removePrefixesOf(newCase, allScripts);
 			allScripts.add(newCase);
 		}
-		
+		writeScriptsToDirectory(allScripts, destination);
+	}
+	
+	private static void writeScriptsToDirectory(List<SymbolicScript> scripts, File destination) throws IOException {
 		int counter = 0;
 		destination.mkdirs();
-		for (SymbolicScript fullCase : allScripts) {
+		for (SymbolicScript fullCase : scripts) {
 			fullCase.writeToXML(new PrintWriter(new File(destination, "test"+counter+".psx")));
 			counter++;
 		}
+
 	}
 	
     private static boolean firstIsPrefix(List<?> first, List<?> second) {
