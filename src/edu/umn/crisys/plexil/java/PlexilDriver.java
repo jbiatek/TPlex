@@ -23,7 +23,17 @@ public class PlexilDriver {
 	
 	public static void mainMethod(TestGenerationInfo info, String[] args) throws Exception {
 		if (args.length == 0) {
-			generateTests(info);
+			symbolicallyGenerateTests(info);
+		} else if (args[0].equalsIgnoreCase("help")) {
+			System.out.println("No arguments: Assumes symbolic environment, runs plan to completion.");
+			System.out.println("Replay sequencefile.txt destination_dir/ ");
+			System.out.println("    Replay sequences from sequence file, place resulting scripts in destination.");
+			System.out.println("Random numTests maxNumSteps destination_dir");
+			System.out.println("    Generate scripts using random values.");
+			System.out.println("Filter class_file_location packageName");
+			System.out.println("    Do coverage analysis. Finds Java classes in file location (probably bin/)");
+			System.out.println("    inside given package (cannot contain dots). ");
+			return;
 		} else if (args[0].equalsIgnoreCase("Replay")) {
 			createScripts(info, new File(args[1]), new File(args[2]));
 		} else if (args[0].equalsIgnoreCase("Random")) {
@@ -97,7 +107,7 @@ public class PlexilDriver {
 		coverage.printData();
 	}
 	
-	public static void generateTests(TestGenerationInfo info) {
+	public static void symbolicallyGenerateTests(TestGenerationInfo info) {
 		runSingleTest(info, info.createSymbolicValueSource(), false);
 	}
 	

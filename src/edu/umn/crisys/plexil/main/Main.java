@@ -3,9 +3,12 @@ package edu.umn.crisys.plexil.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,15 +23,16 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
-import edu.umn.crisys.plexil.ast.core.expr.Expression;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
+import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
+import edu.umn.crisys.plexil.il.statemachine.State;
+import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.psx2java.PsxParser;
 
@@ -58,7 +62,9 @@ public class Main {
 									  + "    --no-short-circuiting       Disable use of the conditional operator (?:) \n"
 									  + "                                in AND and OR operations\n"
 									  + "    --print-type-info           Print an analysis of Lookup and Command types\n"
-									  + "                                using some basic heuristics.";
+									  + "                                using some basic heuristics."
+									  + "    --print-reachable-states    Print the reachable PLEXIL states for each \n"
+									  + "                                translated plan.";
 
 	
 	
@@ -75,6 +81,7 @@ public class Main {
 		String pkg = "";
 		boolean optimize = true;
 		boolean analyzeTypes = false;
+		boolean reachableStates = false;
 		List<File> files = new ArrayList<File>();
 		
 		// Some simple parsing of options.
@@ -88,6 +95,20 @@ public class Main {
 					outputDir = new File(args[i+1]);
 					i++;
 					continue;
+				} else if (args[i].equals("--directory")) {
+					File dir = new File(args[i+1]);
+					i++;
+					files.addAll(Arrays.asList(
+							
+							dir.listFiles(new FilenameFilter() {
+						
+						@Override
+						public boolean accept(File dir, String name) {
+							return name.endsWith(".plx") || name.endsWith(".psx");
+						}
+					})));
+					
+					continue;
 				} else if (args[i].equals("--no-optimizations")) {
 					optimize = false;
 					continue;
@@ -99,6 +120,9 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--print-type-info")) {
 					analyzeTypes = true;
+					continue;
+				} else if (args[i].equals("--print-reachable-states")) {
+					reachableStates= true;
 					continue;
 				} else if (args[i].equals("-h") || args[i].equals("--help")) {
 					System.out.println(usage);
@@ -174,11 +198,13 @@ public class Main {
 			idToFile.put(asts.get(filename).getRootNode().getPlexilID(), filename);
 		}
 		
+		Set<Plan> ilPlans = new HashSet<Plan>();
 		// Finally, we translate each file into our JCodeModel.
 		for (String filename : asts.keySet()) {
 			PlexilPlan plan = asts.get(filename);
 			NodeToIL toIl = new NodeToIL(plan.getRootNode());
 			Plan ilPlan = new Plan(filename);
+			ilPlans.add(ilPlan);
 			toIl.translate(ilPlan);
 			
 			if (optimize) {
@@ -208,22 +234,18 @@ public class Main {
 				PlexilPlan plan = asts.get(filename);
 				TypeAnalyzer analyzer = new TypeAnalyzer();
 				analyzer.checkNode(plan.getRootNode());
-				Map<String, PlexilType> lookups = analyzer.getLookupTypes();
-				Map<String, PlexilType> commands = analyzer.getCommandTypes();
-				
 				System.out.println("  "+filename+": ");
-				System.out.println("    Lookups:");
-				for (String key : lookups.keySet()) {
-					System.out.println("      "+key+" returns "+analyzer.getLookupTypes().get(key));
+				analyzer.printAnalysis();
+			}
+		}
+		
+		if (reachableStates) {
+			for (Plan ilPlan : ilPlans) {
+				int numStates = 0;
+				for (NodeStateMachine machine : ilPlan.getMachines()) {
+					numStates += machine.states.size();
 				}
-				System.out.println("    Commands (null means no returned variables found):");
-				for (String key : commands.keySet()) {
-					String type = commands.get(key) == null ? "nothing" : commands.get(key).toString();
-					System.out.println("      "+key+" returns "+type);
-				}
-				
-				
-				System.out.println();
+				System.out.println(ilPlan.planName+": states == "+numStates);
 			}
 		}
 		

@@ -1,7 +1,11 @@
 package edu.umn.crisys.plexil.main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.core.Node;
 import edu.umn.crisys.plexil.ast.core.expr.Expression;
@@ -27,6 +31,7 @@ import edu.umn.crisys.plexil.java.values.IntegerValue;
 import edu.umn.crisys.plexil.java.values.NodeFailureType;
 import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.values.NodeState;
+import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
@@ -36,8 +41,32 @@ import edu.umn.crisys.plexil.java.values.UnknownValue;
 public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyVisitor<Node, Void>{
 	
     private Map<String, PlexilType> lookups = new HashMap<String, PlexilType>();
+    private Map<String, List<PValue>> lookupValuesOfInterest = new HashMap<String, List<PValue>>();
     private Map<String, PlexilType> commands = new HashMap<String, PlexilType>();
     
+
+	public void printAnalysis() {
+		System.out.println("    Lookups:");
+		for (String key : lookups.keySet()) {
+			System.out.println("      "+key+" returns "+lookups.get(key));
+			if (lookupValuesOfInterest.containsKey(key) && ! lookupValuesOfInterest.get(key).isEmpty()) {
+				System.out.println("        Possible values: ");
+				for (PValue v : lookupValuesOfInterest.get(key)) {
+					System.out.println("          "+v);
+				}
+			}
+			
+		}
+		System.out.println("    Commands:");
+		for (String key : commands.keySet()) {
+			String type = commands.get(key) == null ? "nothing" : commands.get(key).toString();
+			System.out.println("      "+key+" returns "+type);
+		}
+		
+		
+		System.out.println();
+
+	}
 
     
     public void checkNode(Node root) {
@@ -59,6 +88,9 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
     	return lookups;
     }
     
+    public Map<String, List<PValue>> getPossibleLookupConstants() {
+    	return lookupValuesOfInterest;
+    }
     
     public Map<String, PlexilType> getCommandTypes() {
     	return commands;
@@ -198,10 +230,32 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
             } 
         }
         // Move down, and pass along the argument type.
+        String lookup = null;
+        Set<PValue> constants = new HashSet<PValue>();
         for (Expression arg : op.getArguments()) {
         	arg.accept(this, argType);
+        	
+        	if (arg instanceof LookupNowExpr) {
+        		lookup = ((LookupNowExpr) arg).getLookupName().asString();
+        	} else if (arg instanceof LookupOnChangeExpr) {
+        		lookup = ((LookupOnChangeExpr) arg).getLookupName().asString();
+        	} else if (arg instanceof PValue) {
+        		// Booleans are boring, we know what those will be already.
+        		if (arg.getType() != PlexilType.BOOLEAN) {
+        			constants.add((PValue) arg);
+        		}
+        	}
         }
 		
+        // If there is a lookup here, any constants inside this operation
+        // may be of interest. This is simpler than symbolic analysis.
+        if (lookup != null && ! constants.isEmpty()) {
+        	if ( ! lookupValuesOfInterest.containsKey(lookup)) {
+        		lookupValuesOfInterest.put(lookup, new ArrayList<PValue>());
+        	}
+        	lookupValuesOfInterest.get(lookup).addAll(constants);
+        }
+        
 		return null;
 	}
 

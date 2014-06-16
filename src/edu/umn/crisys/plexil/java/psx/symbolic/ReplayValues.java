@@ -105,6 +105,11 @@ public class ReplayValues implements ValueSource {
 	}
 
 	@Override
+	public boolean symbolicBoolean(boolean dummyValue, double probabilityTrue) {
+		return booleans.remove(0);
+	}
+	
+	@Override
 	public boolean symbolicBoolean(boolean dummyValue) {
 		return booleans.remove(0);
 	}

@@ -20,6 +20,10 @@ import cute.Cute;
 public class JCuteValues implements ValueSource {
 	
 	
+	public boolean symbolicBoolean(boolean makeMeSymbolic, double probabilityTrue) {
+		return Cute.input.Boolean();
+	}
+	
 	public boolean symbolicBoolean(boolean makeMeSymbolic) {
 		return Cute.input.Boolean();
 	}

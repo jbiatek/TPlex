@@ -20,10 +20,17 @@ public class RandomValues implements ValueSource {
 	}
 
 	@Override
+	public boolean symbolicBoolean(boolean dummyValue, double probabilityTrue) {
+		double randVal = rand.nextDouble();
+		return randVal < probabilityTrue;
+	}
+
+	@Override
 	public boolean symbolicBoolean(boolean dummyValue) {
 		return rand.nextBoolean();
 	}
 
+	
 	@Override
 	public double symbolicDouble(double dummyValue) {
 		return rand.nextDouble() * 1000;

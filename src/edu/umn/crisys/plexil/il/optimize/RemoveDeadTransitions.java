@@ -1,9 +1,11 @@
 package edu.umn.crisys.plexil.il.optimize;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
@@ -16,7 +18,7 @@ public class RemoveDeadTransitions {
 	
 	public static void optimize(Plan ilPlan) {
 		for (NodeStateMachine nsm : ilPlan.getMachines()) {
-			removeImpossibleTransitions(nsm.transitions);
+			removeImpossibleTransitions(nsm);
 		}
 	}
 	
@@ -30,7 +32,8 @@ public class RemoveDeadTransitions {
      * 
      * @param chart The list that will be modified
      */
-    private static void removeImpossibleTransitions(List<Transition> chart) {
+    private static void removeImpossibleTransitions(NodeStateMachine nsm) {
+    	List<Transition> chart = nsm.transitions;
         // These optimizations are generic. We look for:
         //   - Transitions that are never taken
         //   - Transitions that are always taken that cause others to never be taken
@@ -64,6 +67,31 @@ public class RemoveDeadTransitions {
                 it.remove();
             } 
         }
+        
+        // Lastly, find and keep all transitions that are reachable from the
+        // starting state. 
+        
+        Set<Transition> reachableTransitions = new HashSet<Transition>();
+        Set<State> reachableStates = new HashSet<State>();
+        // For now, it's just the first state that we initially start in. 
+        reachableStates.add(nsm.states.get(0));
+        int previousSize = 0;
+        do {
+        	previousSize = reachableTransitions.size();
+        	
+        	for (Transition t : nsm.transitions) {
+        		if (reachableStates.contains(t.start)) {
+        			reachableStates.add(t.end);
+        			reachableTransitions.add(t);
+        		}
+        	}
+        	
+        	
+        } while (previousSize != reachableTransitions.size());
+        
+        nsm.transitions.retainAll(reachableTransitions);
+        nsm.states.retainAll(reachableStates);
+        
     }
 
 }

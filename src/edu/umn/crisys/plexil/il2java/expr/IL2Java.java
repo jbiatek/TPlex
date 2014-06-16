@@ -101,7 +101,11 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
         case CAST_STRING:
             return JExpr.cast(cm.ref(PString.class), children.get(0));
         case CONCAT:
-            return binaryOperation(children, "concat");
+        	if (children.size() == 1) {
+        		return children.get(0);
+        	} else {
+        		return binaryOperation(children, "concat");
+        	}
         case DIV:
             return binaryOperation(children, "div");
         case EQ:
@@ -154,14 +158,14 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
     }
     
     private JExpression unaryOperation(List<JExpression> children, String invoke) {
-        if (children.size() > 1) {
+        if (children.size() != 1) {
             throw new RuntimeException("Expected 1 argument here");
         }
         return children.get(0).invoke(invoke);
     }
     
     private JExpression binaryOperation(List<JExpression> children, String invoke) {
-        if (children.size() > 2) {
+        if (children.size() != 2 ) {
             throw new RuntimeException("Expected 2 arguments here");
         }
         return children.get(0).invoke(invoke).arg(children.get(1));

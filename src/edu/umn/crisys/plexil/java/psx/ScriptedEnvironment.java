@@ -38,6 +38,7 @@ public class ScriptedEnvironment implements ExternalWorld {
     public void reset() {
     	lookup.clear();
     	commandQueue.clear();
+    	unhandledCommands.clear();
     	updaters.clear();
     }
 

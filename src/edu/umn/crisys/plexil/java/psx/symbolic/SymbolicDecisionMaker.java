@@ -8,6 +8,7 @@ import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.IntegerValue;
+import edu.umn.crisys.plexil.java.values.PBoolean;
 import edu.umn.crisys.plexil.java.values.PInteger;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PReal;
@@ -32,6 +33,22 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 		@Override
 		public T generateNewValue() {
 			return (T) getSymbolicPValueOfType(type);
+		}
+		
+	}
+	
+	private class BiasedBoolean implements ValueGenerator<PBoolean> {
+
+		private double probabilityOfTrue;
+		
+		public BiasedBoolean(double probabilityOfTrue) {
+			this.probabilityOfTrue = probabilityOfTrue;
+		}
+		
+		
+		@Override
+		public PBoolean generateNewValue() {
+			return BooleanValue.get(source.symbolicBoolean(true, probabilityOfTrue));
 		}
 		
 	}
@@ -162,6 +179,10 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	 */
 	public void addLookup(String lookup, PValue... values) {
 		lookupGenerators.put(lookup, new AnyOfThese<PValue>(values));
+	}
+	
+	public void addLookupBooleanProb(String lookup, double probabilityOfTrue) {
+		lookupGenerators.put(lookup, new BiasedBoolean(probabilityOfTrue));
 	}
 	
 	public void addIncreasingLookup(String lookup, PlexilType type) {
