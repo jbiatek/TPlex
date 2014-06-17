@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.il.action;
 
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 

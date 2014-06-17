@@ -16,6 +16,7 @@ import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicDecisionMaker;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicScript;
 import edu.umn.crisys.plexil.java.psx.symbolic.ValueSource;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
+import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 
 public class PlexilDriver {
 	
@@ -135,7 +136,9 @@ public class PlexilDriver {
 		int counter = 0;
 		destination.mkdirs();
 		for (SymbolicScript fullCase : scripts) {
-			fullCase.writeToXML(new PrintWriter(new File(destination, "test"+counter+".psx")));
+			ScriptToXML.writeToStream(
+					new PrintWriter(new File(destination, "test"+counter+".psx")), 
+					fullCase.getEventsPerformed());
 			counter++;
 		}
 

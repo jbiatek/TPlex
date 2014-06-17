@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.il.action;
 
-import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 
 public class AssignAction implements PlexilAction {
 

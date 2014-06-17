@@ -3,7 +3,6 @@ package edu.umn.crisys.plexil.java.psx.symbolic;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umn.crisys.plexil.java.psx.FunctionCall;
 import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.java.values.BooleanValue;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
@@ -15,6 +14,7 @@ import edu.umn.crisys.plexil.java.values.PReal;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.values.RealValue;
+import edu.umn.crisys.plexil.script.ast.FunctionCall;
 
 public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	

@@ -9,11 +9,11 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JOp;
 
-import edu.umn.crisys.plexil.ast.core.expr.Expression;
-import edu.umn.crisys.plexil.ast.core.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.ast.core.expr.common.Operation;
+import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
+import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
+import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
+import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;

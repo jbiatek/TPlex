@@ -1,29 +1,26 @@
 package edu.umn.crisys.plexil.java.psx.symbolic;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
-import edu.umn.crisys.plexil.java.psx.FunctionCall;
 import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.CommandAck;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.CommandReturn;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.Delay;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.Event;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.Simultaneous;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.StateChange;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.UpdateAck;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
 import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.java.world.CommandHandler;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
 import edu.umn.crisys.plexil.java.world.UpdateHandler;
+import edu.umn.crisys.plexil.script.ast.CommandAck;
+import edu.umn.crisys.plexil.script.ast.CommandReturn;
+import edu.umn.crisys.plexil.script.ast.Event;
+import edu.umn.crisys.plexil.script.ast.FunctionCall;
+import edu.umn.crisys.plexil.script.ast.Simultaneous;
+import edu.umn.crisys.plexil.script.ast.StateChange;
+import edu.umn.crisys.plexil.script.ast.UpdateAck;
 import edu.umn.crisys.util.Pair;
 
 public class SymbolicScript implements ExternalWorld {
@@ -46,108 +43,6 @@ public class SymbolicScript implements ExternalWorld {
 	
 	public List<Event> getEventsPerformed() {
 		return eventsPerformed;
-	}
-	
-	public void writeToXML(PrintWriter out) {
-		out.println("<PLEXILScript>");
-		boolean startedScriptTag = false;
-		
-		
-		for (int i=0; i<eventsPerformed.size(); i++) {
-			Event e = eventsPerformed.get(i);
-			
-			if (i==0) {
-				// This is the initial state. It gets some special treatment.
-				if (e instanceof Delay) continue;
-				else if (e instanceof Simultaneous) {
-					out.println("<InitialState>");
-					for (Event child : ((Simultaneous) e).getEvents()) {
-						printEvent(child, out);
-					}
-					out.println("</InitialState>");
-				} else {
-					out.println("<InitialState>");
-					printEvent(e, out);
-					out.println("</InitialState>");
-				}
-			} else {
-				// Not the initial state. Basically just print the event.
-				if (i == 1){
-					out.println("<Script>");
-					startedScriptTag = true;
-				}
-				
-				printEvent(e, out);
-			}
-		}
-		
-		if (startedScriptTag) {
-			out.println("</Script>");
-		} else {
-			// They are mandatory, so stick an empty one in.
-			out.println("<Script />");
-		}
-
-		out.println("</PLEXILScript>");
-		out.flush();
-		out.close();
-	}
-	
-	private static void printEvent(Event e, PrintWriter out) {
-		if (e instanceof StateChange) {
-			StateChange lookup = (StateChange) e;
-			printParameterized("State", "Value", lookup.getLookup(), lookup.getValue(), out);
-		} else if (e instanceof CommandAck) {
-			CommandAck ack = (CommandAck) e;
-			printParameterized("CommandAck", "Result", ack.getCall(), ack.getResult(), out);
-		} else if (e instanceof CommandReturn) {
-			CommandReturn ret = (CommandReturn) e;
-			printParameterized("Command", "Result", ret.getCall(), ret.getValue(), out);
-		} else if (e instanceof UpdateAck) {
-			out.println("<UpdateAck name=\""+((UpdateAck)e).getNodeName()+"\" />");
-		} else if (e instanceof Delay) {
-			out.println("<Delay />");
-		} else if (e instanceof Simultaneous) {
-			out.println("<Simultaneous>");
-			for (Event child : ((Simultaneous) e).getEvents()) {
-				printEvent(child, out);
-			}
-			out.println("</Simultaneous>");
-		}
-	}
-	
-	private static void printParameterized(String tag, String resultTag, FunctionCall call, PValue result, PrintWriter out ) {
-		String type = toPsxTypeString(result.getType());
-		
-		out.println("<"+tag+" name=\""+call.getName()+"\" type=\""+type+"\">");
-		for (PValue arg : call.getArgs()) {
-			printParam(arg, out);
-		}
-		printSimpleTag(resultTag, result, out);
-		out.println("</"+tag+">");
-	}
-	
-	private static void printParam(PValue arg, PrintWriter out) {
-		out.println("    <Param type=\""+toPsxTypeString(arg.getType())+"\">"
-				+arg.toString()+"</Param>");
-	}
-	
-	private static void printSimpleTag(String tagName, PValue arg, PrintWriter out) {
-		out.println("    <"+tagName+">"+arg+"</"+tagName+">");
-	}
-
-	private static String toPsxTypeString(PlexilType t) {
-		switch (t) {
-		case BOOLEAN: return "bool";
-		case INTEGER: return "int";
-		case NUMERIC:
-		case REAL: return "real";
-		case STRING: 
-		case COMMAND_HANDLE: return "string";
-		
-		default:
-			return t.toString().toLowerCase();
-		}
 	}
 	
 	@Override
@@ -220,7 +115,7 @@ public class SymbolicScript implements ExternalWorld {
 	private void respondToUpdates() {
 		for (UpdateHandler update : env.getCurrentUpdateQueue()) {
 			if (delegate.shouldAckUpdate(env, update)) {
-				applyEvent(new ScriptedEnvironment.UpdateAck(update.getNodeName()));
+				applyEvent(new UpdateAck(update.getNodeName()));
 			}
 		}
 	}
@@ -234,12 +129,12 @@ public class SymbolicScript implements ExternalWorld {
 				// If there are any, apparently return values should be first
 				if (delegate.doesCommandAlsoReturnValues(call)) {
 					PValue value = delegate.getReturnValueForCommand(call);
-					eventsToApplyAfterLoop.add(new ScriptedEnvironment.CommandReturn(call, value));
+					eventsToApplyAfterLoop.add(new CommandReturn(call, value));
 				}
 				
 				// Return a handle value to the command.
 				CommandHandleState handle = delegate.getAckForCommand(call);
-				eventsToApplyAfterLoop.add(new ScriptedEnvironment.CommandAck(call, handle));
+				eventsToApplyAfterLoop.add(new CommandAck(call, handle));
 			}
 		}
 		for (Event e : eventsToApplyAfterLoop) {
@@ -255,7 +150,7 @@ public class SymbolicScript implements ExternalWorld {
 		if (delegate.shouldChangeLookup(env, lookup)) {
 			// New event created
 			PValue value = delegate.getValueForLookup(env, lookup);
-			applyEvent(new ScriptedEnvironment.StateChange(lookup, value));
+			applyEvent(new StateChange(lookup, value));
 		}
 		// Make sure we don't touch this one until the next step
 		lookupsAlreadyCheckedThisStep.add(lookup);

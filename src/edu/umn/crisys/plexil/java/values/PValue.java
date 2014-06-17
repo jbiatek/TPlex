@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.java.values;
 
-import edu.umn.crisys.plexil.ast.core.expr.ASTExpression;
-import edu.umn.crisys.plexil.ast.core.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 
 /**
  * The interface defining what all PlexilValues can do.

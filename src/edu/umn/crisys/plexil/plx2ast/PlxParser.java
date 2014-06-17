@@ -16,12 +16,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import edu.umn.crisys.plexil.ast.core.PlexilPlan;
-import edu.umn.crisys.plexil.ast.core.globaldecl.CommandDecl;
-import edu.umn.crisys.plexil.ast.core.globaldecl.LibraryDecl;
-import edu.umn.crisys.plexil.ast.core.globaldecl.LookupDecl;
-import edu.umn.crisys.plexil.ast.core.globaldecl.PlexilInterface;
-import edu.umn.crisys.plexil.ast.core.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.ast.PlexilPlan;
+import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
+import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.java.values.PlexilType;
 
 public class PlxParser {

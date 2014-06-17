@@ -23,7 +23,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.core.PlexilPlan;
+import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
@@ -33,7 +33,8 @@ import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
-import edu.umn.crisys.plexil.psx2java.PsxParser;
+import edu.umn.crisys.plexil.script.translator.ScriptParser;
+import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 
 public class Main {
 	
@@ -294,7 +295,7 @@ public class Main {
         XMLEventReader xml = factory.createXMLEventReader(new FileInputStream(f));
         
         String name = f.getName().replaceAll("\\.psx$", "") + "Script";
-        PsxParser.parse(name, xml).toJava(cm, pkg);
+        ScriptToJava.toJava(ScriptParser.parse(name, xml), cm, pkg);
 
 	}
 

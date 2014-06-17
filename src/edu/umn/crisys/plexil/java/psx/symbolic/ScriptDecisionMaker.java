@@ -1,10 +1,10 @@
 package edu.umn.crisys.plexil.java.psx.symbolic;
 
-import edu.umn.crisys.plexil.java.psx.FunctionCall;
 import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.world.UpdateHandler;
+import edu.umn.crisys.plexil.script.ast.FunctionCall;
 
 public interface ScriptDecisionMaker {
 	

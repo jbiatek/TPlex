@@ -1,13 +1,10 @@
 package edu.umn.crisys.plexil.java.psx;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
@@ -19,9 +16,18 @@ import edu.umn.crisys.plexil.java.values.UnknownValue;
 import edu.umn.crisys.plexil.java.world.CommandHandler;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
 import edu.umn.crisys.plexil.java.world.UpdateHandler;
+import edu.umn.crisys.plexil.script.ast.CommandAck;
+import edu.umn.crisys.plexil.script.ast.CommandReturn;
+import edu.umn.crisys.plexil.script.ast.Delay;
+import edu.umn.crisys.plexil.script.ast.Event;
+import edu.umn.crisys.plexil.script.ast.FunctionCall;
+import edu.umn.crisys.plexil.script.ast.ScriptEventVisitor;
+import edu.umn.crisys.plexil.script.ast.Simultaneous;
+import edu.umn.crisys.plexil.script.ast.StateChange;
+import edu.umn.crisys.plexil.script.ast.UpdateAck;
 import edu.umn.crisys.util.Pair;
 
-public class ScriptedEnvironment implements ExternalWorld {
+public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Object, Void> {
 
 	private Map<FunctionCall, PValue> lookup = new HashMap<FunctionCall, PValue>();
 	private List<Pair<CommandHandler,FunctionCall>> commandQueue = 
@@ -29,10 +35,9 @@ public class ScriptedEnvironment implements ExternalWorld {
 	private List<Pair<CommandHandler,FunctionCall>> unhandledCommands =
 			new ArrayList<Pair<CommandHandler,FunctionCall>>();
     private List<UpdateHandler> updaters = new ArrayList<UpdateHandler>();
-
     
     public void applyEvent(Event e) {
-    	e.doEvent(this);
+    	e.accept(this, null);
     }
     
     public void reset() {
@@ -42,249 +47,6 @@ public class ScriptedEnvironment implements ExternalWorld {
     	updaters.clear();
     }
 
-	public static interface Event {
-		public void doEvent(ScriptedEnvironment world);
-	}
-	
-	public static class StateChange implements Event {
-		private FunctionCall call;
-		private PValue value;
-		
-		public StateChange(FunctionCall call, PValue value) {
-			this.call = call;
-			this.value = value;
-		}
-
-		public FunctionCall getLookup() {
-			return call;
-		}
-		
-		public PValue getValue() {
-			return value;
-		}
-		
-		@Override
-		public void doEvent(ScriptedEnvironment world) {
-			if (JavaPlan.DEBUG) {
-				System.out.println("Setting value of "+call+" to "+value);
-			}
-			world.lookup.put(call, value);
-		}
-		
-		@Override
-		public boolean equals(Object other) {
-			if ( ! (other instanceof StateChange)) {
-				return false;
-			}
-			StateChange o = (StateChange) other;
-			return o.call.equals(this.call) && o.value.equals(this.value);
-		}
-		
-		@Override
-		public int hashCode() {
-			return call.hashCode() + value.hashCode();
-		}
-	}
-	
-	public static class CommandReturn implements Event {
-		private FunctionCall call;
-		private PValue value;
-		
-		public CommandReturn(FunctionCall call, PValue value) {
-			this.call = call;
-			this.value = value;
-		}
-		
-		public FunctionCall getCall() {
-			return call;
-		}
-		
-		public PValue getValue() {
-			return value;
-		}
-		
-		@Override
-		public void doEvent(ScriptedEnvironment world) {
-			if (JavaPlan.DEBUG) {
-				System.out.println("Returning "+value+" for "+call);
-			}
-			
-			world.findCommandThatSent(call).first.commandReturns(value);
-		}
-		
-		@Override
-		public boolean equals(Object other) {
-			if ( ! (other instanceof CommandReturn)) {
-				return false;
-			}
-			CommandReturn o = (CommandReturn) other;
-			return o.call.equals(this.call) && o.value.equals(this.value);
-		}
-		
-		@Override
-		public int hashCode() {
-			return call.hashCode() + value.hashCode();
-		}
-
-	}
-	
-	public static class CommandAck implements Event {
-		private FunctionCall call;
-		private CommandHandleState result;
-		
-		public CommandAck(FunctionCall call, CommandHandleState result) {
-			this.call = call;
-			this.result = result;
-		}
-		
-		public FunctionCall getCall() {
-			return call;
-		}
-		
-		public CommandHandleState getResult() {
-			return result;
-		}
-		
-		@Override
-		public void doEvent(ScriptedEnvironment world) {
-			// Find the event
-			if (JavaPlan.DEBUG) {
-				System.out.println("Acknowledging "+call + " with "+result);
-			}
-			Pair<CommandHandler, FunctionCall> event = world.findCommandThatSent(call);
-			event.first.setCommandHandle(result);
-			// The reference implementation DOESN'T remove them. Yes, really.
-			//world.commandQueue.remove(event);
-			// But we maintain a saner list of things that haven't been dealt with,
-			// so we don't have to consider this nonsense.
-			world.unhandledCommands.remove(event);
-		}
-		
-		@Override
-		public boolean equals(Object other) {
-			if ( ! (other instanceof CommandAck)) {
-				return false;
-			}
-			CommandAck o = (CommandAck) other;
-			return o.call.equals(this.call) && o.result.equals(this.result);
-		}
-		
-		@Override
-		public int hashCode() {
-			return call.hashCode() + result.hashCode();
-		}
-
-	}
-	
-	public static class UpdateAck implements Event {
-
-	    private String nodeName;
-	    
-	    public UpdateAck(String nodeName) {
-	        this.nodeName = nodeName;
-	    }
-	    
-	    public String getNodeName() {
-	    	return nodeName;
-	    }
-	    
-        @Override
-        public void doEvent(ScriptedEnvironment world) {
-        	UpdateHandler correct = world.findUpdate(nodeName);
-        	
-            correct.acknowledgeUpdate();
-            world.updaters.remove(correct);
-        }
-	    
-		@Override
-		public boolean equals(Object other) {
-			if ( ! (other instanceof UpdateAck)) {
-				return false;
-			}
-			UpdateAck o = (UpdateAck) other;
-			return o.nodeName.equals(this.nodeName);
-		}
-		
-		@Override
-		public int hashCode() {
-			return nodeName.hashCode();
-		}
-
-
-        
-	}
-	
-	public static class Delay implements Event {
-		
-		public static final Delay SINGLETON = new Delay();
-		
-		private Delay() {}
-
-        @Override
-        public void doEvent(ScriptedEnvironment world) {
-            // I'm a delay! Look at me go!
-        }
-        
-	}
-	
-	public static class Simultaneous implements Event {
-		private List<Event> events;
-		
-		public Simultaneous(Event...events) {
-			this(Arrays.asList(events));
-		}
-
-		public Simultaneous(List<Event> events) {
-			this.events = events;
-		}
-
-		@Override
-		public void doEvent(ScriptedEnvironment world) {
-			for (Event e : events) {
-				e.doEvent(world);
-			}
-		}
-		
-		public void addEvent(Event e) {
-			events.add(e);
-		}
-		
-		public List<Event> getEvents() {
-			return events;
-		}
-		
-		public Event getCleanestEvent() {
-			if (events.isEmpty()) {
-				return Delay.SINGLETON;
-			}
-			if (events.size() == 1) {
-				return events.get(0);
-			} 
-			return this;
-		}
-		
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof Simultaneous) {
-				Simultaneous o = (Simultaneous) other;
-				
-				Set<Event> mySet = new HashSet<Event>(events);
-				Set<Event> theirSet = new HashSet<Event>(o.events);
-				
-				return mySet.equals(theirSet);
-			}
-			
-			return false;
-		}
-		
-		@Override
-		public int hashCode() {
-			return new HashSet<Event>(events).hashCode();
-		}
-		
-	}
-	
-	
 	private Pair<CommandHandler,FunctionCall> findCommandThatSent(FunctionCall call) {
 		// The reference implementation seems to actually pick the latest one 
 		// that has come in. And it never removes them. 
@@ -353,7 +115,6 @@ public class ScriptedEnvironment implements ExternalWorld {
 		return false;
 	}
 	
-
 	@Override
 	public void update(UpdateHandler node, String key, PValue value) {
 		if (JavaPlan.DEBUG) {
@@ -405,5 +166,73 @@ public class ScriptedEnvironment implements ExternalWorld {
             unhandledCommands.add(e);
         }
 	}
+	
+	
+	/*
+	 * Visitor methods for script events:
+	 */
+
+	@Override
+	public Void visitCommandAck(CommandAck ack, Object param) {
+		// Find the event
+		if (JavaPlan.DEBUG) {
+			System.out.println("Acknowledging "+ack.getCall() + " with "+ack.getResult());
+		}
+		Pair<CommandHandler, FunctionCall> event = findCommandThatSent(ack.getCall());
+		event.first.setCommandHandle(ack.getResult());
+		// The reference implementation DOESN'T remove them. Yes, really.
+		//world.commandQueue.remove(event);
+		// But we maintain a saner list of things that haven't been dealt with,
+		// so we don't have to consider this nonsense.
+		unhandledCommands.remove(event);
+		
+		return null;
+	}
+
+	@Override
+	public Void visitCommandReturn(CommandReturn ret, Object param) {
+		if (JavaPlan.DEBUG) {
+			System.out.println("Returning "+ret.getValue()+" for "+ret.getCall());
+		}
+		
+		findCommandThatSent(ret.getCall()).first.commandReturns(ret.getValue());
+		
+		return null;
+	}
+
+	@Override
+	public Void visitDelay(Delay d, Object param) {
+		// Don't need to do anything.
+		return null;
+	}
+
+	@Override
+	public Void visitSimultaneous(Simultaneous sim, Object param) {
+		for (Event e : sim.getEvents()) {
+			applyEvent(e);
+		}
+		return null;
+	}
+
+	@Override
+	public Void visitStateChange(StateChange lookup, Object param) {
+		if (JavaPlan.DEBUG) {
+			System.out.println("Setting value of "+lookup.getLookup()+" to "+lookup.getValue());
+		}
+		this.lookup.put(lookup.getLookup(), lookup.getValue());
+		
+		return null;
+	}
+
+	@Override
+	public Void visitUpdateAck(UpdateAck ack, Object param) {
+    	UpdateHandler correct = findUpdate(ack.getNodeName());
+    	
+        correct.acknowledgeUpdate();
+        this.updaters.remove(correct);
+
+        return null;
+	}
+
 
 }

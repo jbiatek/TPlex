@@ -6,13 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.CommandAck;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.CommandReturn;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.Delay;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.Event;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.Simultaneous;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.StateChange;
-import edu.umn.crisys.plexil.java.psx.ScriptedEnvironment.UpdateAck;
 import edu.umn.crisys.plexil.java.values.CommandHandleState;
 import edu.umn.crisys.plexil.java.values.PNumeric;
 import edu.umn.crisys.plexil.java.values.PString;
@@ -20,6 +13,14 @@ import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.world.CommandHandler;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
 import edu.umn.crisys.plexil.java.world.UpdateHandler;
+import edu.umn.crisys.plexil.script.ast.CommandAck;
+import edu.umn.crisys.plexil.script.ast.CommandReturn;
+import edu.umn.crisys.plexil.script.ast.Delay;
+import edu.umn.crisys.plexil.script.ast.Event;
+import edu.umn.crisys.plexil.script.ast.FunctionCall;
+import edu.umn.crisys.plexil.script.ast.Simultaneous;
+import edu.umn.crisys.plexil.script.ast.StateChange;
+import edu.umn.crisys.plexil.script.ast.UpdateAck;
 
 public class JavaPlexilScript implements ExternalWorld {
 	

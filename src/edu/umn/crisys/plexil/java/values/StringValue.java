@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.java.values;
 
-import edu.umn.crisys.plexil.ast.core.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.core.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 
 public class StringValue implements PString {
