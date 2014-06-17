@@ -41,9 +41,9 @@ public class ReplayValues implements ValueSource {
 				for (String method : methods) {
 					if (method.startsWith("symbolicBoolean(")) {
 						
-						if (method.equals("symbolicBoolean(true)")) {
+						if (method.startsWith("symbolicBoolean(true")) {
 							v.addBoolean(true);
-						} else if (method.equals("symbolicBoolean(false)")) {
+						} else if (method.startsWith("symbolicBoolean(false")) {
 							v.addBoolean(false);
 						} else {
 							throw new RuntimeException("Incorrect boolean: "+method);

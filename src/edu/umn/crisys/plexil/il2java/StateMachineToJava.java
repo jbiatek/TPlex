@@ -33,6 +33,7 @@ import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.java.values.NodeState;
+import edu.umn.crisys.plexil.java.values.PBoolean;
 
 public class StateMachineToJava {
 
@@ -88,6 +89,9 @@ public class StateMachineToJava {
 				// Make it
 				JCase mainCase = sw._case(JExpr.lit(nsm.indexOf(t.start)));
 				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+"__"+t.start.getIndex()));
+				// Need to declare a temp variable inside each method. 
+				methodMap.get(t.start).body().decl(cm.ref(PBoolean.class), "temp");
+				
 				// The case just needs to invoke the new method.
 				mainCase.body().invoke(methodMap.get(t.start));
 				mainCase.body()._break();

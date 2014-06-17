@@ -22,14 +22,13 @@ import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 
+import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.core.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
-import edu.umn.crisys.plexil.il.statemachine.State;
-import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
@@ -61,8 +60,10 @@ public class Main {
 									  + "                                use the PLEXIL logic library\n"
 									  + "    --no-short-circuiting       Disable use of the conditional operator (?:) \n"
 									  + "                                in AND and OR operations\n"
+									  + "    --just-parse                Just read in files, don't output to Java.\n"
+									  + "                                Useful for just printing information.\n"
 									  + "    --print-type-info           Print an analysis of Lookup and Command types\n"
-									  + "                                using some basic heuristics."
+									  + "                                using some basic heuristics.\n"
 									  + "    --print-reachable-states    Print the reachable PLEXIL states for each \n"
 									  + "                                translated plan.";
 
@@ -80,6 +81,7 @@ public class Main {
 		File outputDir = new File(System.getProperty("user.dir"));
 		String pkg = "";
 		boolean optimize = true;
+		boolean produceJava = true;
 		boolean analyzeTypes = false;
 		boolean reachableStates = false;
 		List<File> files = new ArrayList<File>();
@@ -117,6 +119,9 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--no-short-circuiting")) {
 					ILExprToJava.SHORT_CIRCUITING = false;
+					continue;
+				} else if (args[i].equals("--just-parse")) {
+					produceJava = false;
 					continue;
 				} else if (args[i].equals("--print-type-info")) {
 					analyzeTypes = true;
@@ -195,7 +200,7 @@ public class Main {
 		// to create.
 		Map<String,String> idToFile = new HashMap<String, String>();
 		for (String filename : asts.keySet()) {
-			idToFile.put(asts.get(filename).getRootNode().getPlexilID(), filename);
+			idToFile.put(asts.get(filename).getRootNode().getPlexilID(), NameUtils.clean(filename));
 		}
 		
 		Set<Plan> ilPlans = new HashSet<Plan>();
@@ -218,15 +223,18 @@ public class Main {
 		}
 		
 		// Now try to output the actual files
-		outputDir.mkdirs();
-		try {
-			cm.build(outputDir);
-		} catch (IOException e) {
-			System.err.println("Error writing Java code to output directory: "+e.getMessage());
+		if (produceJava) {
+			outputDir.mkdirs();
+			try {
+				cm.build(outputDir);
+			} catch (IOException e) {
+				System.err.println("Error writing Java code to output directory: "+e.getMessage());
+			}
 		}
 		
 		// Yay, all done. Did they ask for a type analysis?
 		if (analyzeTypes) {
+			TypeAnalyzer all = new TypeAnalyzer();
 			System.out.println();
 			System.out.println("Type analysis:");
 			System.out.println("--------------");
@@ -234,9 +242,13 @@ public class Main {
 				PlexilPlan plan = asts.get(filename);
 				TypeAnalyzer analyzer = new TypeAnalyzer();
 				analyzer.checkNode(plan.getRootNode());
+				all.checkNode(plan.getRootNode());
 				System.out.println("  "+filename+": ");
 				analyzer.printAnalysis();
 			}
+			
+			System.out.println("Info from all plans:");
+			all.printAnalysis();
 		}
 		
 		if (reachableStates) {

@@ -98,8 +98,10 @@ public class PlexilDriver {
 			
 			int newCoverage = coverage.getNumStatesCovered();
 			if (newCoverage > currentCoverage) {
-				System.out.println("Adds to coverage: "+className);
+				System.out.println("\nAdds to coverage: "+className);
 				currentCoverage = coverage.getNumStatesCovered();
+			} else {
+				System.out.print(".");
 			}
 		}
 		

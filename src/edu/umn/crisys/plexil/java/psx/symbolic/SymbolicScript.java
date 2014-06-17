@@ -50,6 +50,7 @@ public class SymbolicScript implements ExternalWorld {
 	
 	public void writeToXML(PrintWriter out) {
 		out.println("<PLEXILScript>");
+		boolean startedScriptTag = false;
 		
 		
 		for (int i=0; i<eventsPerformed.size(); i++) {
@@ -70,15 +71,24 @@ public class SymbolicScript implements ExternalWorld {
 					out.println("</InitialState>");
 				}
 			} else {
+				// Not the initial state. Basically just print the event.
 				if (i == 1){
 					out.println("<Script>");
+					startedScriptTag = true;
 				}
 				
 				printEvent(e, out);
 			}
 		}
 		
-		out.println("</Script>\n</PLEXILScript>");
+		if (startedScriptTag) {
+			out.println("</Script>");
+		} else {
+			// They are mandatory, so stick an empty one in.
+			out.println("<Script />");
+		}
+
+		out.println("</PLEXILScript>");
 		out.flush();
 		out.close();
 	}
