@@ -105,27 +105,8 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
     
     private String doVariable(VariableDecl v) {
         StringBuilder str = new StringBuilder(tab(TAB));
-        PlexilType type = v.getType();
-        int arraySize = -1;
-        if (type.isArrayType()) {
-            type = type.elementType();
-            arraySize = v.getArraySize();
-        }
-        
-        // Uncapitalize the type.
-        String typeStr = type.toString().charAt(0) 
-            + type.toString().substring(1).toLowerCase();
-        
-        str.append(typeStr+" "+v);
-        if (v.isArray()) {
-            str.append("["+arraySize+"]");
-        }
-        if (v.hasInitialValue()) {
-        	str.append(" = "+v.getInitialValue());
-        }
-
-        
-        str.append(";"); newLine(str, indent);
+        str.append(v);
+        newLine(str, indent);
 
         return str.toString();
     }
@@ -199,7 +180,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
         
         if (lib.getAliases().size() != 0) {
             for (String alias : lib.getAliases()) {
-                str.append(alias+" = "+lib.getAlias(alias));
+                str.append(alias+" = "+lib.getAlias(alias)+", ");
             }
             trim(str, 2);
         }

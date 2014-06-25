@@ -81,7 +81,7 @@ public class VariableDecl {
         }
         
         if (this.hasInitialValue()) {
-        	init = " = "+init;
+        	init = " = "+this.init;
         }
         
 		// Start with the type, uncapitalizing all but the first letter

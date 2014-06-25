@@ -101,36 +101,39 @@ public class ReplayValues implements ValueSource {
 	
 	@Override
 	public int symbolicInteger(int dummyValue) {
+		if (integers.isEmpty()) {
+			throw new SimulatedBacktrackException();
+		}
 		return integers.remove(0);
 	}
 
 	@Override
 	public boolean symbolicBoolean(boolean dummyValue, double probabilityTrue) {
-		return booleans.remove(0);
+		return symbolicBoolean(dummyValue);
 	}
 	
 	@Override
 	public boolean symbolicBoolean(boolean dummyValue) {
+		if (booleans.isEmpty()) {
+			throw new SimulatedBacktrackException();
+		}
 		return booleans.remove(0);
 	}
 
 	@Override
 	public double symbolicDouble(double dummyValue) {
+		if (doubles.isEmpty()) {
+			throw new SimulatedBacktrackException();
+		}
 		return doubles.remove(0);
 	}
 
 	@Override
 	public void continueOnlyIf(boolean expression) {
 		if (! expression) {
-			throw new StopExecutingException();
-		}
-	}
-	
-	public static class StopExecutingException extends RuntimeException {
-		private static final long serialVersionUID = 8393690917621964795L;
-
-		public StopExecutingException() {
-			super("I was told to only continue if this was true!");
+			// SPF would, at this point, just do a backtrack since this path
+			// is supposed to be impossible.
+			throw new SimulatedBacktrackException();
 		}
 	}
 

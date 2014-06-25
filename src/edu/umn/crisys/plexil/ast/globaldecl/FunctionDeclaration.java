@@ -47,4 +47,5 @@ public abstract class FunctionDeclaration {
 	public void addParameter(VariableDecl param) {
 		parameters.add(param);
 	}
+
 }

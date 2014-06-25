@@ -39,6 +39,7 @@ public class PlexilPlan {
     }
     
     public String getFullPrintout() {
+    	String ret = "";
         NodePrinter p = new NodePrinter(root);
         return p.prettyPrint();
     }

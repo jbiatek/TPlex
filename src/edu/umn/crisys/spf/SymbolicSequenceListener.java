@@ -261,6 +261,14 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	}
 
 
+	@Override
+	public void searchConstraintHit(Search search) {
+		// We hit a depth limit or something. Store the sequence, since it's
+		// not going to get any longer. We might end up backtracking anyway,
+		// but not all search strategies actually backtrack when they hit the
+		// limit.
+		storeSequence(search);
+	}
 
 	@Override
     public void threadTerminated(VM vm, ThreadInfo terminatedThread) {
@@ -272,6 +280,13 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	
 	public void stateBacktracked(Search search) {
 	    storeSequence(search);
+	}
+	
+	@Override
+	public void statePurged(Search search) {
+		// In our custom Random search, this means that the current choices
+		// are going away. Better store them now, or we won't get them.
+		storeSequence(search);
 	}
 
     public void storeSequence(Search search) {

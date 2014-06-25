@@ -3,6 +3,8 @@ package edu.umn.crisys.plexil.main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,6 +65,8 @@ public class Main {
 									  + "                                in AND and OR operations\n"
 									  + "    --just-parse                Just read in files, don't output to Java.\n"
 									  + "                                Useful for just printing information.\n"
+									  + "    --output-as-source          Any .plx will be written as PLEXIL source\n"
+									  + "                                instead of Java code.\n"
 									  + "    --print-type-info           Print an analysis of Lookup and Command types\n"
 									  + "                                using some basic heuristics.\n"
 									  + "    --print-reachable-states    Print the reachable PLEXIL states for each \n"
@@ -83,6 +87,7 @@ public class Main {
 		String pkg = "";
 		boolean optimize = true;
 		boolean produceJava = true;
+		boolean produceSourceCode = false;
 		boolean analyzeTypes = false;
 		boolean reachableStates = false;
 		List<File> files = new ArrayList<File>();
@@ -123,6 +128,10 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--just-parse")) {
 					produceJava = false;
+					continue;
+				} else if (args[i].equals("--output-as-source")) {
+					produceJava = false;
+					produceSourceCode = true;
 					continue;
 				} else if (args[i].equals("--print-type-info")) {
 					analyzeTypes = true;
@@ -230,6 +239,23 @@ public class Main {
 				cm.build(outputDir);
 			} catch (IOException e) {
 				System.err.println("Error writing Java code to output directory: "+e.getMessage());
+			}
+		}
+		
+		if (produceSourceCode) {
+			outputDir.mkdirs();
+			for (String filename : asts.keySet()) {
+				File outFile = new File(outputDir, filename+".ple");
+				String text = asts.get(filename).getFullPrintout();
+				try {
+					FileWriter fw = new FileWriter(outFile);
+					fw.write(text);
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+				System.out.println(outFile.getName());
 			}
 		}
 		

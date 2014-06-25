@@ -12,6 +12,7 @@ import edu.umn.crisys.plexil.java.plx.JavaPlan;
 import edu.umn.crisys.plexil.java.plx.StateCoverageMeasurer;
 import edu.umn.crisys.plexil.java.psx.symbolic.RandomValues;
 import edu.umn.crisys.plexil.java.psx.symbolic.ReplayValues;
+import edu.umn.crisys.plexil.java.psx.symbolic.SimulatedBacktrackException;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicDecisionMaker;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicScript;
 import edu.umn.crisys.plexil.java.psx.symbolic.ValueSource;
@@ -20,13 +21,14 @@ import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 
 public class PlexilDriver {
 	
-	public static int STEP_LIMIT = -1;
+	public static int STEP_LIMIT = 100; // TODO: This should be -1, and Replays need to be able to set this too
 	
 	public static void mainMethod(TestGenerationInfo info, String[] args) throws Exception {
 		if (args.length == 0) {
 			symbolicallyGenerateTests(info);
 		} else if (args[0].equalsIgnoreCase("help")) {
 			System.out.println("No arguments: Assumes symbolic environment, runs plan to completion.");
+			System.out.println("[number]: Assumes symbolic environment, runs plans for at most N steps.");
 			System.out.println("Replay sequencefile.txt destination_dir/ ");
 			System.out.println("    Replay sequences from sequence file, place resulting scripts in destination.");
 			System.out.println("Random numTests maxNumSteps destination_dir");
@@ -35,6 +37,9 @@ public class PlexilDriver {
 			System.out.println("    Do coverage analysis. Finds Java classes in file location (probably bin/)");
 			System.out.println("    inside given package (cannot contain dots). ");
 			return;
+		} else if (args[0].matches("[0-9]+")) { 
+			STEP_LIMIT = Integer.parseInt(args[0]);
+			symbolicallyGenerateTests(info);
 		} else if (args[0].equalsIgnoreCase("Replay")) {
 			createScripts(info, new File(args[1]), new File(args[2]));
 		} else if (args[0].equalsIgnoreCase("Random")) {
@@ -128,6 +133,7 @@ public class PlexilDriver {
 			// Remove anything that this test case makes redundant. 
 			removePrefixesOf(newCase, allScripts);
 			allScripts.add(newCase);
+			System.out.println("Added a new script");
 		}
 		writeScriptsToDirectory(allScripts, destination);
 	}
@@ -196,13 +202,8 @@ public class PlexilDriver {
 			} else {
 				plan.runPlanToCompletion();
 			}
-		} catch (RuntimeException e) {
-			if (stopExceptions) {
-				e.printStackTrace();
-				return world;
-			} else {
-				throw e;
-			}
+		} catch (SimulatedBacktrackException e) {
+			// All done, apparently! The path ended before we got to the end.
 		}
 		return world;
 	}
