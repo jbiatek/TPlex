@@ -215,7 +215,7 @@ public class NodeToIL {
     	return parent;
     }
     
-    public ILExpression getState() {
+    public GetNodeStateExpr getState() {
         return new GetNodeStateExpr(myUid);
     }
     

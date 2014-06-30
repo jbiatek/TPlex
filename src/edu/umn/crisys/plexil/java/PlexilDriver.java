@@ -33,7 +33,7 @@ public class PlexilDriver {
 			System.out.println("    Replay sequences from sequence file, place resulting scripts in destination.");
 			System.out.println("Random numTests maxNumSteps destination_dir");
 			System.out.println("    Generate scripts using random values.");
-			System.out.println("Filter class_file_location packageName");
+			System.out.println("Filter class_file_location packageName1 packageName2...");
 			System.out.println("    Do coverage analysis. Finds Java classes in file location (probably bin/)");
 			System.out.println("    inside given package (cannot contain dots). ");
 			return;
@@ -46,24 +46,29 @@ public class PlexilDriver {
 			randomTesting(info, Integer.parseInt(args[1]), Integer.parseInt(args[2]), new File(args[3]));
 		} else if (args[0].equalsIgnoreCase("Filter")) {
 			File dir = new File(args[1]);
-			String pkg = args[2];
 			List<String> classNames = new ArrayList<String>();
-			
-			File packageDirectory = new File(dir, pkg);
-			
-			for (String clazz : packageDirectory.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.endsWith(".class");
-				}
-			})) {
-				
-				String rawName = clazz.replaceAll(".class$", "");
-				classNames.add(pkg+"."+rawName);
+			for (int i=2; i<args.length; i++) {
+				classNames.addAll(getClassNamesInPackage(new File(dir, args[i]), args[i]));
 			}
-			
 			coverageFilter(info, classNames);
 		}
+	}
+	
+	public static List<String> getClassNamesInPackage(File directLocationOfClassFiles, String javaPackage) {
+		List<String> classNames = new ArrayList<String>();
+		
+		for (String clazz : directLocationOfClassFiles.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".class");
+			}
+		})) {
+			
+			String rawName = clazz.replaceAll(".class$", "");
+			classNames.add(javaPackage.equals("") ? rawName : javaPackage+"."+rawName);
+		}
+		
+		return classNames;
 	}
 	
 	public static void randomTesting(TestGenerationInfo info, int numTests, int stepLimit, File destination) throws IOException {
@@ -75,11 +80,7 @@ public class PlexilDriver {
 			SymbolicScript randScript = new SymbolicScript(info.createDecisionMaker(rand));
 			JavaPlan plan = info.createPlanUnderTest(randScript);
 			
-			try {
-				plan.runPlanToCompletion(stepLimit);
-			} catch (RuntimeException e) {
-				e.printStackTrace();
-			}
+			plan.runPlanToCompletion(stepLimit);
 			
 			if (isPrefix(randScript, generated)) continue;
 			
@@ -133,7 +134,6 @@ public class PlexilDriver {
 			// Remove anything that this test case makes redundant. 
 			removePrefixesOf(newCase, allScripts);
 			allScripts.add(newCase);
-			System.out.println("Added a new script");
 		}
 		writeScriptsToDirectory(allScripts, destination);
 	}

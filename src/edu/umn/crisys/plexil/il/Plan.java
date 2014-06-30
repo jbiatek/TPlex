@@ -11,22 +11,19 @@ import java.util.List;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 
 public class Plan {
-
-
     
 	private List<NodeStateMachine> stateMachines = new LinkedList<NodeStateMachine>(); 
 	private Set<ILVariable> variables = new HashSet<ILVariable>();
 	
-    public Set<String> globalVarNameList = new HashSet<String>();
-	
-	public NodeStateMachine root;
-	public ILExpression rootOutcome;
-	public ILExpression rootState;
-    public String planName;
+	private NodeStateMachine root;
+	private ILVariable rootOutcome;
+	private GetNodeStateExpr rootState;
+    private String planName;
     
     public Plan(String planName) {
 	    this.planName = planName;
@@ -40,8 +37,9 @@ public class Plan {
     	return variables;
     }
 	
-
-	
+    public NodeStateMachine getRootMachine() {
+    	return root;
+    }
 
 	public void addVariable(ILVariable var) {
 	    variables.add(var);
@@ -55,7 +53,7 @@ public class Plan {
 	    stateMachines.add(nsm);
 	}
 	
-	public void setRoot(NodeStateMachine nsm, ILExpression state, ILExpression outcome) {
+	public void setRoot(NodeStateMachine nsm, GetNodeStateExpr state, ILVariable outcome) {
 	    root = nsm;
 	    rootOutcome = outcome;
 	    rootState = state;
@@ -68,6 +66,18 @@ public class Plan {
 	        }
 	    }
 	    throw new RuntimeException("Node ID "+nodeId+" isn't claimed by any state machine.");
+	}
+
+	public String getPlanName() {
+		return planName;
+	}
+
+	public ILExpression getRootNodeOutcome() {
+		return rootOutcome;
+	}
+
+	public ILExpression getRootNodeState() {
+		return rootState;
 	}
 	
 }

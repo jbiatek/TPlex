@@ -33,7 +33,7 @@ public class RemoveDeadTransitions {
      * @param chart The list that will be modified
      */
     private static void removeImpossibleTransitions(NodeStateMachine nsm) {
-    	List<Transition> chart = nsm.transitions;
+    	List<Transition> chart = nsm.getTransitions();
         // These optimizations are generic. We look for:
         //   - Transitions that are never taken
         //   - Transitions that are always taken that cause others to never be taken
@@ -74,12 +74,12 @@ public class RemoveDeadTransitions {
         Set<Transition> reachableTransitions = new HashSet<Transition>();
         Set<State> reachableStates = new HashSet<State>();
         // For now, it's just the first state that we initially start in. 
-        reachableStates.add(nsm.states.get(0));
+        reachableStates.add(nsm.getStates().get(0));
         int previousSize = 0;
         do {
         	previousSize = reachableTransitions.size();
         	
-        	for (Transition t : nsm.transitions) {
+        	for (Transition t : nsm.getTransitions()) {
         		if (reachableStates.contains(t.start)) {
         			reachableStates.add(t.end);
         			reachableTransitions.add(t);
@@ -89,8 +89,8 @@ public class RemoveDeadTransitions {
         	
         } while (previousSize != reachableTransitions.size());
         
-        nsm.transitions.retainAll(reachableTransitions);
-        nsm.states.retainAll(reachableStates);
+        nsm.getTransitions().retainAll(reachableTransitions);
+        nsm.getStates().retainAll(reachableStates);
         
     }
 

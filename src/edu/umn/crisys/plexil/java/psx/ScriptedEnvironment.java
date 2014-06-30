@@ -55,7 +55,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 			Pair<CommandHandler, FunctionCall> e = commandQueue.get(i);
 			if (e.second.equals(call)) {
 				event = e;
-				//break;
+				break;
 			}
 		}
 		if (event == null) {
@@ -181,11 +181,10 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 		Pair<CommandHandler, FunctionCall> event = findCommandThatSent(ack.getCall());
 		event.first.setCommandHandle(ack.getResult());
 		// The reference implementation DOESN'T remove them. Yes, really.
-		//world.commandQueue.remove(event);
 		// But we maintain a saner list of things that haven't been dealt with,
 		// so we don't have to consider this nonsense.
 		unhandledCommands.remove(event);
-		
+
 		return null;
 	}
 

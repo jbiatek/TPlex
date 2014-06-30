@@ -20,4 +20,19 @@ public class Pair<T1, T2> {
 	public String toString() {
 	    return "("+first+", "+second+")";
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (o instanceof Pair) {
+			return ((Pair<?,?>) o).first.equals(this.first)
+					&& ((Pair<?,?>) o).second.equals(this.second);
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return first.hashCode() + second.hashCode();
+	}
 }

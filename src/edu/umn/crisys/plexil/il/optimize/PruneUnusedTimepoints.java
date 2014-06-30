@@ -32,7 +32,7 @@ public class PruneUnusedTimepoints {
 	    // Save any that are being read in a guard or action
 	    // (assignment, command, or update could reference it)
 	    for (NodeStateMachine sm : ilPlan.getMachines()) {
-	        for (Transition t : sm.transitions) {
+	        for (Transition t : sm.getTransitions()) {
 	            for (TransitionGuard g : t.guards) {
 	                addAllMatchingInExpressionTo(g.getExpression(), safeList);
 	            }
@@ -40,7 +40,7 @@ public class PruneUnusedTimepoints {
 	                scanAllExpressionsInAction(a, safeList);
 	            }
 	        }
-	        for (State s : sm.states) {
+	        for (State s : sm.getStates()) {
 	            for (PlexilAction a : s.entryActions) {
 	                scanAllExpressionsInAction(a, safeList);
 	            }
@@ -62,10 +62,10 @@ public class PruneUnusedTimepoints {
 	    }
 	    // Now go through and remove any actions that use these dead variables.
 	    for (NodeStateMachine sm : ilPlan.getMachines()) {
-	        for (Transition t : sm.transitions) {
+	        for (Transition t : sm.getTransitions()) {
 	        	removeActions(killed, t.actions.iterator());
 	        }
-	        for (State s : sm.states) {
+	        for (State s : sm.getStates()) {
 	        	removeActions(killed, s.entryActions.iterator());
 	        	removeActions(killed, s.inActions.iterator());
 	        }

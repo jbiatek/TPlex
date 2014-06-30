@@ -16,16 +16,29 @@ public class NodeStateMachine {
 	 * The list of node IDs that this state machine is in charge of.
 	 */
 	private List<NodeUID> nodeIds = new LinkedList<NodeUID>(); 
-	public String nsmId;
+	private String nsmId;
 	
-	public List<State> states = new ArrayList<State>();
-	public List<Transition> transitions = new ArrayList<Transition>();
+	private List<State> states = new ArrayList<State>();
+	private List<Transition> transitions = new ArrayList<Transition>();
 
 	public NodeStateMachine(NodeUID nId, Plan thePlan) { 
         nodeIds.add(nId) ;
         nsmId = nId.toString();
         this.thePlan = thePlan;
     }
+	
+	public List<Transition> getTransitions() {
+		return transitions;
+	}
+
+	public List<State> getStates() {
+		return states;
+	}
+	
+	public String getStateMachineId() {
+		return nsmId;
+	}
+	
     public String toString() { 
     	return nodeIds.toString(); 
     }	
@@ -68,5 +81,7 @@ public class NodeStateMachine {
 	    transitions.add(t);
 	    return t;
 	}
+
+
 
 }

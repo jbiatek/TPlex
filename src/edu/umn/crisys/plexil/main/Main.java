@@ -28,6 +28,7 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.optimize.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimize.PruneUnusedTimepoints;
 import edu.umn.crisys.plexil.il.optimize.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
@@ -57,12 +58,16 @@ public class Main {
 									  + "                                If not specified, this defaults to the current\n"
 									  + "                                directory.\n\n"
 									  
-									  + "    --no-optimizations          Disable removal of impossible transitions and \n"
-									  + "                                unused node timepoints.\n"
+									  + "    --no-optimizations          Disable various dead code removal optimizations.\n"
 									  + "    --no-biasing                Disable boolean biasing, all expressions will \n"
 									  + "                                use the PLEXIL logic library\n"
 									  + "    --no-short-circuiting       Disable use of the conditional operator (?:) \n"
 									  + "                                in AND and OR operations\n"
+									  + "    --lib                       Disable optimization that guesses which plans\n"
+									  + "                                are meant to be used as top level plans, and\n"
+									  + "                                removes some code from them."
+									  + "    --no-debug                  Disable optional JavaPlan.DEBUG statements\n"
+									  + "    --no-plan-state             Disable method for generating plan snapshots\n"
 									  + "    --just-parse                Just read in files, don't output to Java.\n"
 									  + "                                Useful for just printing information.\n"
 									  + "    --output-as-source          Any .plx will be written as PLEXIL source\n"
@@ -88,6 +93,8 @@ public class Main {
 		boolean optimize = true;
 		boolean produceJava = true;
 		boolean produceSourceCode = false;
+		boolean createSnapshotMethod = true;
+		boolean guessTopLevelPlans = true;
 		boolean analyzeTypes = false;
 		boolean reachableStates = false;
 		List<File> files = new ArrayList<File>();
@@ -125,6 +132,15 @@ public class Main {
 					continue;
 				} else if (args[i].equals("--no-short-circuiting")) {
 					ILExprToJava.SHORT_CIRCUITING = false;
+					continue;
+				} else if (args[i].equals("--no-debug")) {
+					StateMachineToJava.DEBUG_STATEMENTS = false;
+					continue;
+				} else if (args[i].equals("--no-plan-state")) {
+					createSnapshotMethod = false;
+					continue;
+				} else if (args[i].equals("--libs")) {
+					guessTopLevelPlans = false;
 					continue;
 				} else if (args[i].equals("--just-parse")) {
 					produceJava = false;
@@ -223,13 +239,20 @@ public class Main {
 			toIl.translate(ilPlan);
 			
 			if (optimize) {
+				if (guessTopLevelPlans && AssumeTopLevelPlan.looksLikeTopLevelPlan(plan)) {
+					System.out.println("I think "+filename+" isn't a library, so I'm removing some code.");
+					System.out.println("If I'm wrong, you can either add an interface or use the \"--libs\" option.");
+					AssumeTopLevelPlan.optimize(ilPlan);
+				}
 				PruneUnusedTimepoints.optimize(ilPlan);
 				RemoveDeadTransitions.optimize(ilPlan);
 			}
 			
 			JDefinedClass clazz = PlanToJava.toJava(ilPlan, cm, pkg, idToFile);
 			// Add the snapshot method too.
-			PlanToJava.addGetSnapshotMethod(ilPlan, toIl, clazz);
+			if (createSnapshotMethod) {
+				PlanToJava.addGetSnapshotMethod(ilPlan, toIl, clazz);
+			}
 		}
 		
 		// Now try to output the actual files
@@ -282,9 +305,9 @@ public class Main {
 			for (Plan ilPlan : ilPlans) {
 				int numStates = 0;
 				for (NodeStateMachine machine : ilPlan.getMachines()) {
-					numStates += machine.states.size();
+					numStates += machine.getStates().size();
 				}
-				System.out.println(ilPlan.planName+": states == "+numStates);
+				System.out.println(ilPlan.getPlanName()+": states == "+numStates);
 			}
 		}
 		

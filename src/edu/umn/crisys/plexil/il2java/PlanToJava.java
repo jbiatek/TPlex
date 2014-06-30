@@ -151,7 +151,7 @@ public class PlanToJava {
 	    // Try to create a class for this Plan.
 	    JDefinedClass clazz;
         try {
-            String name = NameUtils.clean(p.planName);
+            String name = NameUtils.clean(p.getPlanName());
             clazz = cm._class(realPkg + name);
         } catch (JClassAlreadyExistsException e) {
             throw new RuntimeException(e);
@@ -236,14 +236,14 @@ public class PlanToJava {
         
         // Also make the doMicroStep method, using our root machine:
         JMethod doMicroStep = clazz.method(JMod.PUBLIC, cm.VOID, "doMicroStep"); 
-        StateMachineToJava.callStepFunction(p.root, doMicroStep.body());
+        StateMachineToJava.callStepFunction(p.getRootMachine(), doMicroStep.body());
         doMicroStep.body().invoke("notifyMicroStep");
         
         clazz.method(JMod.PUBLIC, cm.ref(NodeOutcome.class), "getRootNodeOutcome").body()
-            ._return(ILExprToJava.toJava(p.rootOutcome, cm));
+            ._return(ILExprToJava.toJava(p.getRootNodeOutcome(), cm));
         
         clazz.method(JMod.PUBLIC, cm.ref(NodeState.class), "getRootNodeState").body()
-            ._return(ILExprToJava.toJava(p.rootState, cm));
+            ._return(ILExprToJava.toJava(p.getRootNodeState(), cm));
         
 	    return clazz;
 	}

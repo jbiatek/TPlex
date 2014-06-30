@@ -38,6 +38,7 @@ import edu.umn.crisys.plexil.java.values.PBoolean;
 public class StateMachineToJava {
 
     public static boolean BIASING = true;
+    public static boolean DEBUG_STATEMENTS = true;
 	
 	private StateMachineToJava() {}
 	
@@ -54,7 +55,8 @@ public class StateMachineToJava {
 	
 		// Create the variable to hold the current state
 		JClass stateClass = cm.ref(SimpleCurrentNext.class).narrow(cm.ref(Integer.class));
-		JFieldVar stateVar = clazz.field(JMod.PRIVATE, stateClass, NameUtils.clean(nsm.nsmId+".state"), 
+		JFieldVar stateVar = clazz.field(JMod.PRIVATE, stateClass, 
+				NameUtils.clean(nsm.getStateMachineId()+".state"), 
 				JExpr._new(stateClass).arg(JExpr.lit(0)));
 	
 		// Now we make the step function.
@@ -65,7 +67,7 @@ public class StateMachineToJava {
 	}
 
 	private static String getStepMethodName(NodeStateMachine nsm) {
-	    return NameUtils.clean("MicroStep___"+nsm.nsmId);
+	    return NameUtils.clean("MicroStep___"+nsm.getStateMachineId());
 	}
 
 	private static void addStepFunction(NodeStateMachine nsm, JFieldVar stateVar, JDefinedClass clazz) {
@@ -75,7 +77,7 @@ public class StateMachineToJava {
 		
 		JSwitch sw = stepMethod.body()._switch(stateVar.invoke("getCurrent"));
 		// Now to go through the transitions. They need to be sorted by priority for this.
-		Collections.sort(nsm.transitions);
+		Collections.sort(nsm.getTransitions());
 
 		// We're going in order of priority, but the final code will be ordered by the
 		// starting state. This map will let us grab the correct code block to add on to.
@@ -83,7 +85,7 @@ public class StateMachineToJava {
 		Map<State, JMethod> methodMap = new HashMap<State, JMethod>();
 		Map<State, JConditional> lastCondition = new HashMap<State, JConditional>();
 
-		for (Transition t : nsm.transitions) {
+		for (Transition t : nsm.getTransitions()) {
 			// Do we have this starting state?
 			if ( ! methodMap.containsKey(t.start)) {
 				// Make it
@@ -106,7 +108,7 @@ public class StateMachineToJava {
 		// of whatever state we're (now) in.
 		stepMethod.body().directStatement("/* In Actions executed here: */");
 		JSwitch inActionSwitch = stepMethod.body()._switch(stateVar.invoke("getNext"));
-		for (State state : nsm.states) {
+		for (State state : nsm.getStates()) {
 			// Skip states with no In actions
 			if (state.inActions.size() == 0) continue;
 
@@ -133,7 +135,7 @@ public class StateMachineToJava {
 			// Map from Plexil state to all States tagged with it.
 			Map<NodeState, List<Integer>> reverseMapping = new HashMap<NodeState, List<Integer>>();
 
-			for (State s : nsm.states) {
+			for (State s : nsm.getStates()) {
 				NodeState ns = s.tags.get(nodeId);
 				if (ns == null) throw new RuntimeException("No tag for "+nodeId+" in state "+s);
 
@@ -225,10 +227,12 @@ public class StateMachineToJava {
 		// Add a readable comment:
 		thenBlock.directStatement("/*\n"+t.toString()+"\n*/");
 		// Some debug code to print what's happening if desired
-		thenBlock._if(cm.ref(JavaPlan.class).staticRef("DEBUG"))
-			._then()
-				.invoke(cm.ref(System.class).staticRef("out"), "println")
-					.arg(JExpr.lit(t.description));
+		if (DEBUG_STATEMENTS) {
+			thenBlock._if(cm.ref(JavaPlan.class).staticRef("DEBUG"))
+				._then()
+					.invoke(cm.ref(System.class).staticRef("out"), "println")
+						.arg(JExpr.lit(t.description));
+		}
 		
 		// Perform the actions, if any, then move to the destination state.
 		ActionToJava a2j = new ActionToJava(cm, ilPlan);
