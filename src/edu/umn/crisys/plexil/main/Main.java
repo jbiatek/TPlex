@@ -238,17 +238,20 @@ public class Main {
 			ilPlans.add(ilPlan);
 			toIl.translate(ilPlan);
 			
+			boolean couldBeLibrary = true;
+			
 			if (optimize) {
 				if (guessTopLevelPlans && AssumeTopLevelPlan.looksLikeTopLevelPlan(plan)) {
 					System.out.println("I think "+filename+" isn't a library, so I'm removing some code.");
 					System.out.println("If I'm wrong, you can either add an interface or use the \"--libs\" option.");
 					AssumeTopLevelPlan.optimize(ilPlan);
+					couldBeLibrary = false;
 				}
 				PruneUnusedTimepoints.optimize(ilPlan);
 				RemoveDeadTransitions.optimize(ilPlan);
 			}
 			
-			JDefinedClass clazz = PlanToJava.toJava(ilPlan, cm, pkg, idToFile);
+			JDefinedClass clazz = PlanToJava.toJava(ilPlan, cm, pkg, couldBeLibrary, idToFile);
 			// Add the snapshot method too.
 			if (createSnapshotMethod) {
 				PlanToJava.addGetSnapshotMethod(ilPlan, toIl, clazz);

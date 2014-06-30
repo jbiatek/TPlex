@@ -146,7 +146,8 @@ public class PlanToJava {
     }
 	
 	
-	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, final Map<String,String> idToClassName) {
+	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, boolean couldBeLibrary, 
+			final Map<String,String> idToClassName) {
 	    String realPkg = pkg.equals("") ? "" : pkg+".";
 	    // Try to create a class for this Plan.
 	    JDefinedClass clazz;
@@ -168,7 +169,16 @@ public class PlanToJava {
         // an interface for talking to our parent.
         JMethod libConstructor = clazz.constructor(JMod.PUBLIC);
         JVar inParent = libConstructor.param(cm.ref(LibraryInterface.class), "inParent");
-        libConstructor.body().invoke("super").arg(inParent);
+        if (couldBeLibrary) {
+        	libConstructor.body().invoke("super").arg(inParent);
+        } else {
+        	libConstructor.body().invoke("super").arg(JExpr.cast(cm.ref(LibraryInterface.class), JExpr._null()));
+        	libConstructor.body()._throw(JExpr._new(cm.ref(IllegalArgumentException.class))
+        			.arg(JExpr.lit(
+        					"This PLEXIL file didn't look like a library, so library support isn't"
+        					+ " included. Please either add an interface to the root node, or "
+        					+ "use the \"--libs\" option when translating.")));
+        }
         
         // Variables! We need to add them to the class.
         for (ILVariable v : p.getVariables()) {

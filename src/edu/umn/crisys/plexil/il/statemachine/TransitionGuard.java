@@ -58,6 +58,10 @@ public class TransitionGuard {
         return expr;
     }
     
+    public void setExpression(ILExpression newExpr) {
+    	this.expr = newExpr;
+    }
+    
     public Condition getCondition() {
     	return cond;
     }
