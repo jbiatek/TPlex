@@ -45,6 +45,16 @@ public class StateMachineBuilder {
 		this.astNode = node;
 	}
 	
+	public void addAllTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
+        this.addInactiveTransitions(nsm, map);
+        this.addWaitingTransitions(nsm, map);
+        this.addExecutingTransitions(nsm, map);
+        this.addFinishingTransitions(nsm, map);
+        this.addFailingTransitions(nsm, map);
+        this.addIterationEndedTransitions(nsm, map);
+        this.addFinishedTransitions(nsm, map);
+	}
+	
     /*
      * Node state transition diagrams -----------------------------------------
      */

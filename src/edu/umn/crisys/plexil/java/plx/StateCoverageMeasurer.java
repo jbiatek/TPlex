@@ -93,4 +93,9 @@ public class StateCoverageMeasurer implements JavaPlanObserver {
 		collectCoverage((PlexilTestable) plan);
 	}
 
+	@Override
+	public void endOfExecution(JavaPlan plan) {
+		collectCoverage((PlexilTestable) plan);
+	}
+
 }

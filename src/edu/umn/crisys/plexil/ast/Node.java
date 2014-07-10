@@ -162,6 +162,11 @@ public class Node {
     public int getPriority() { return priority; }
     
     public NodeBody getNodeBody() { return body; }
+    public AssignmentBody getAssignmentBody() { return (AssignmentBody) body; }
+    public UpdateBody getUpdateBody() { return (UpdateBody) body; }
+    public CommandBody getCommandBody() { return (CommandBody) body; }
+    public NodeListBody getNodeListBody() { return (NodeListBody) body; }
+    public LibraryBody getLibraryBody() { return (LibraryBody) body; }
 	public void setNodeBody(NodeBody b) { body = b; }
 
 	public void setInterface(PlexilInterface iface) { this.iface = iface; }

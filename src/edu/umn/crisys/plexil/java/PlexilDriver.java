@@ -5,10 +5,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import edu.umn.crisys.plexil.java.plx.JavaPlan;
+import edu.umn.crisys.plexil.java.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.java.plx.StateCoverageMeasurer;
 import edu.umn.crisys.plexil.java.psx.symbolic.RandomValues;
 import edu.umn.crisys.plexil.java.psx.symbolic.ReplayValues;
@@ -16,20 +19,23 @@ import edu.umn.crisys.plexil.java.psx.symbolic.SimulatedBacktrackException;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicDecisionMaker;
 import edu.umn.crisys.plexil.java.psx.symbolic.SymbolicScript;
 import edu.umn.crisys.plexil.java.psx.symbolic.ValueSource;
+import edu.umn.crisys.plexil.java.values.NodeOutcome;
 import edu.umn.crisys.plexil.java.world.ExternalWorld;
 import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 
 public class PlexilDriver {
 	
-	public static int STEP_LIMIT = 100; // TODO: This should be -1, and Replays need to be able to set this too
+	public static int STEP_LIMIT = -1;
+	public static boolean PRINT_INFO = true;
 	
 	public static void mainMethod(TestGenerationInfo info, String[] args) throws Exception {
 		if (args.length == 0) {
+			System.out.println("No step limit");
 			symbolicallyGenerateTests(info);
 		} else if (args[0].equalsIgnoreCase("help")) {
 			System.out.println("No arguments: Assumes symbolic environment, runs plan to completion.");
 			System.out.println("[number]: Assumes symbolic environment, runs plans for at most N steps.");
-			System.out.println("Replay sequencefile.txt destination_dir/ ");
+			System.out.println("Replay sequencefile.txt destination_dir/ [maxSteps]");
 			System.out.println("    Replay sequences from sequence file, place resulting scripts in destination.");
 			System.out.println("Random numTests maxNumSteps destination_dir");
 			System.out.println("    Generate scripts using random values.");
@@ -39,9 +45,13 @@ public class PlexilDriver {
 			return;
 		} else if (args[0].matches("[0-9]+")) { 
 			STEP_LIMIT = Integer.parseInt(args[0]);
+			System.out.println("Step limit set to "+STEP_LIMIT);
 			symbolicallyGenerateTests(info);
 		} else if (args[0].equalsIgnoreCase("Replay")) {
-			createScripts(info, new File(args[1]), new File(args[2]));
+			if (args.length == 4) {
+				STEP_LIMIT = Integer.parseInt(args[3]);
+			}
+			replaySequenceFile(info, new File(args[1]), new File(args[2]));
 		} else if (args[0].equalsIgnoreCase("Random")) {
 			randomTesting(info, Integer.parseInt(args[1]), Integer.parseInt(args[2]), new File(args[3]));
 		} else if (args[0].equalsIgnoreCase("Filter")) {
@@ -52,18 +62,19 @@ public class PlexilDriver {
 			}
 			coverageFilter(info, classNames);
 		}
+		System.out.println("All finished.");
 	}
 	
 	public static List<String> getClassNamesInPackage(File directLocationOfClassFiles, String javaPackage) {
 		List<String> classNames = new ArrayList<String>();
 		
 		for (String clazz : directLocationOfClassFiles.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".class");
-			}
-		})) {
-			
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".class");
+				}
+			})) {
+
 			String rawName = clazz.replaceAll(".class$", "");
 			classNames.add(javaPackage.equals("") ? rawName : javaPackage+"."+rawName);
 		}
@@ -73,14 +84,13 @@ public class PlexilDriver {
 	
 	public static void randomTesting(TestGenerationInfo info, int numTests, int stepLimit, File destination) throws IOException {
 		List<SymbolicScript> generated = new ArrayList<SymbolicScript>();
+		STEP_LIMIT = stepLimit;
 		
 		while (generated.size() < numTests) {
 			System.out.println("Generated "+generated.size()+" tests.");
 			RandomValues rand = new RandomValues();
-			SymbolicScript randScript = new SymbolicScript(info.createDecisionMaker(rand));
-			JavaPlan plan = info.createPlanUnderTest(randScript);
 			
-			plan.runPlanToCompletion(stepLimit);
+			SymbolicScript randScript = runSingleTest(info, rand);
 			
 			if (isPrefix(randScript, generated)) continue;
 			
@@ -93,16 +103,23 @@ public class PlexilDriver {
 	}
 	
 	public static void coverageFilter(TestGenerationInfo info, List<String> classes) throws Exception {
+		PRINT_INFO = false;
+		
 		StateCoverageMeasurer coverage = new StateCoverageMeasurer();
+		Map<NodeOutcome, Integer> outcomes = new HashMap<NodeOutcome, Integer>();
+		for (NodeOutcome outcome : NodeOutcome.values()) {
+			outcomes.put(outcome, 0);
+		}
+		
 		int currentCoverage = 0;
 		
 		for (String className : classes) {
 			ExternalWorld world = (ExternalWorld) Class.forName(className).newInstance();
 			JavaPlan plan = info.createPlanUnderTest(world);
-			plan.addObserver(coverage);
 			
-			plan.runPlanToCompletion();
+			runSingleTest(plan, world, coverage);
 			
+			outcomes.put(plan.getRootNodeOutcome(), outcomes.get(plan.getRootNodeOutcome())+1);
 			int newCoverage = coverage.getNumStatesCovered();
 			if (newCoverage > currentCoverage) {
 				System.out.println("\nAdds to coverage: "+className);
@@ -113,21 +130,26 @@ public class PlexilDriver {
 		}
 		
 		System.out.println("Finished. Covered states: "+currentCoverage);
+		System.out.println("Outcomes: ");
+		for (NodeOutcome outcome : NodeOutcome.values()) {
+			System.out.println("    "+outcome+": "+outcomes.get(outcome));
+		}
+		
 		coverage.printData();
 	}
 	
 	public static void symbolicallyGenerateTests(TestGenerationInfo info) {
-		runSingleTest(info, info.createSymbolicValueSource(), false);
+		runSingleTest(info, info.createSymbolicValueSource());
 	}
 	
-	public static void createScripts(TestGenerationInfo info, File sequenceFile, File destination) throws IOException {
-		createScripts(info, ReplayValues.parseSequenceFile(sequenceFile), destination);
+	public static void replaySequenceFile(TestGenerationInfo info, File sequenceFile, File destination) throws IOException {
+		produceScriptFiles(info, ReplayValues.parseSequenceFile(sequenceFile), destination);
 	}
 	
-	public static void createScripts(TestGenerationInfo info, List<ReplayValues> testCases, File destination) throws IOException {
+	public static void produceScriptFiles(TestGenerationInfo info, List<ReplayValues> testCases, File destination) throws IOException {
 		List<SymbolicScript> allScripts = new ArrayList<SymbolicScript>();
 		for (ReplayValues testCase : testCases) {
-			SymbolicScript newCase = runSingleTest(info, testCase, true);
+			SymbolicScript newCase = runSingleTest(info, testCase);
 			// If this one is just a prefix, skip it.
 			if (isPrefix(newCase, allScripts)) continue;
 			
@@ -191,21 +213,32 @@ public class PlexilDriver {
         }
     }
 	
-	private static SymbolicScript runSingleTest(TestGenerationInfo info, ValueSource values, boolean stopExceptions) {
+	private static SymbolicScript runSingleTest(TestGenerationInfo info, ValueSource values, JavaPlanObserver... observers) {
 		SymbolicDecisionMaker dm = info.createDecisionMaker(values);
 		SymbolicScript world = new SymbolicScript(dm);
 		JavaPlan plan = info.createPlanUnderTest(world);
+		runSingleTest(plan, world, observers);
+		return world;
+	}
+	
+	private static void runSingleTest(JavaPlan plan, ExternalWorld world, JavaPlanObserver... observers) {
+		plan.addObserver(world);
+		for (JavaPlanObserver observer : observers) {
+			plan.addObserver(observer);
+		}
 
 		try {
-			if (STEP_LIMIT > 0) {
-				plan.runPlanToCompletion(STEP_LIMIT);
-			} else {
-				plan.runPlanToCompletion();
+			int steps = plan.runPlanToCompletion(STEP_LIMIT);
+			if (PRINT_INFO) {
+				System.out.println("Done in "+steps+" steps. Root node was "+
+						plan.getRootNodeState()+", outcome "+plan.getRootNodeOutcome());
 			}
 		} catch (SimulatedBacktrackException e) {
 			// All done, apparently! The path ended before we got to the end.
+			if (PRINT_INFO) {
+				System.out.println("Backtrack detected");
+			}
 		}
-		return world;
 	}
 	
 	private PlexilDriver() {}

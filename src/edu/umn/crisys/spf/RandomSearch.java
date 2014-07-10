@@ -19,8 +19,11 @@
 package edu.umn.crisys.spf;
 
 
+import java.util.Arrays;
+
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.search.Search;
+import gov.nasa.jpf.vm.ChoiceGenerator;
 import gov.nasa.jpf.vm.VM;
 import gov.nasa.jpf.vm.RestorableVMState;
 
@@ -74,7 +77,21 @@ public class RandomSearch extends Search {
         // the main return, or a System.exit() call, we could flag a JPFException
         if (depth >= depthLimit) {
           notifySearchConstraintHit("depth limit reached: " + depthLimit);
+        } else if (isEndState()) {
+        	System.out.println("end state reached");
+        } else if (isIgnoredState()) {
+        	System.out.println("ignored state reached");
+        } else if (! forward() ){
+        	// No more choices?
+        	System.out.println("Couldn't go forward?");
+        	ChoiceGenerator<?>[] cgs = vm.getSystemState().getCurrentChoiceGenerators();
+        	for (ChoiceGenerator<?> cg : cgs) {
+        		if (cg.hasMoreChoices()) {
+        			System.out.println("Uh, "+cg.toString()+" has more choices.");
+        		}
+        	}
         }
+        
         checkPropertyViolation();
         done = (paths >= path_limit);
         paths++;

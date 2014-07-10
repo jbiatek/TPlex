@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,13 +54,15 @@ public class PlxParser {
         }
     }
     
-    public static PlexilPlan parseFile(File f) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+    public static PlexilPlan parseFile(File f) throws IOException, XMLStreamException, FactoryConfigurationError {
+    	FileInputStream in = new FileInputStream(f);
         XMLEventReader xml = 
-            XMLInputFactory.newInstance().createXMLEventReader(
-                    new FileInputStream(f));
+            XMLInputFactory.newInstance().createXMLEventReader(in);
         String name = f.getName().replaceFirst(".plx$", "");
-        return parsePlxFile(xml, name);
-
+        PlexilPlan ret = parsePlxFile(xml, name);
+        xml.close();
+        in.close();
+        return ret;
     }
     
     public static PlexilPlan parsePlxFile(XMLEventReader xml, String planName) {
@@ -98,6 +101,11 @@ public class PlxParser {
         
         // Parse parse parse, and finally close it all out.
         assertEnd("PlexilPlan", nextTag(xml));
+        try {
+			xml.close();
+		} catch (XMLStreamException e) {
+			throw new RuntimeException(e);
+		}
         return p;
     }
     

@@ -65,6 +65,12 @@ public abstract class JavaPlan {
     	}
     }
     
+    private void notifyPlanEnded() {
+    	for (JavaPlanObserver obs : observers) {
+    		obs.endOfExecution(this);
+    	}
+    }
+    
     /**
      * Notify listeners that a micro step has ended. Only call this inside
      * of an implementation of doMicroStep() please.
@@ -80,26 +86,31 @@ public abstract class JavaPlan {
     }
 
     
-    public NodeOutcome runPlanToCompletion() {
-    	if ( ! observers.contains(world)) {
-    		addObserver(world);
-    	}
-        while ( ! world.stop() && getRootNodeOutcome().isUnknown()) {
-            doMacroStep();
-        }
-        return getRootNodeOutcome();
+    public int runPlanToCompletion() {
+    	return runPlanToCompletion(-1);
     }
     
-    public NodeOutcome runPlanToCompletion(int maxMacroSteps) {
+    /**
+     * Run the plan to completion, or stop if more than maxMacroSteps occur.
+     * If this number is negative, there will be no limit. 
+     * 
+     * @param maxMacroSteps
+     * @return the number of steps actually taken. 
+     */
+    public int runPlanToCompletion(int maxMacroSteps) {
     	if ( ! observers.contains(world)) {
     		addObserver(world);
     	}
     	int steps = 0;
-        while ( steps < maxMacroSteps && ! world.stop() && getRootNodeOutcome().isUnknown()) {
+        while ( ! world.stop() && getRootNodeState() != NodeState.FINISHED) {
             doMacroStep();
             steps++;
+            if (maxMacroSteps > 0 && steps >= maxMacroSteps) {
+            	break;
+            }
         }
-        return getRootNodeOutcome();
+        notifyPlanEnded();
+        return steps;
 
     }
     

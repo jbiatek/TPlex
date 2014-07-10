@@ -36,9 +36,4 @@ public class JCuteValues implements ValueSource {
 		return Cute.input.Double();
 	}
 
-	@Override
-	public void continueOnlyIf(boolean expression) {
-		Cute.Assume(expression);
-	}
-
 }

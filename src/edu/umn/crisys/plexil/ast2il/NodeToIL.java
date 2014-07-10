@@ -7,27 +7,17 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
-import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
-import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
-import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
-import edu.umn.crisys.plexil.il.action.AssignAction;
-import edu.umn.crisys.plexil.il.action.CommandAction;
-import edu.umn.crisys.plexil.il.action.EndMacroStep;
-import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
-import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
@@ -45,7 +35,6 @@ import edu.umn.crisys.plexil.java.values.NodeTimepoint;
 import edu.umn.crisys.plexil.java.values.PValue;
 import edu.umn.crisys.plexil.java.values.PValueList;
 import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.util.Pair;
 
 /**
  * An object that takes an AST Node, and transforms it into IL. It knows a lot
@@ -57,31 +46,32 @@ import edu.umn.crisys.util.Pair;
  * <li> Transforming AST Expressions into IL expressions. This happens on the
  * fly as IL Expressions are needed. This mostly involves finding variables
  * and replacing, say, "foo" with the actual IL variable. 
- * <li> Lastly, creation of the state machine. It's broken down into about
- * as many parts as I could think of, because it gets complicated. 
+ * <li> Creating the IL state machine. That's handled by 2 other classes, one
+ * that knows the PLEXIL state transition diagrams, and one that takes the
+ * NodeBody and adds the appropriate actions to the state machine.
  * 
  * @author jbiatek
  *
  */
 public class NodeToIL {
     
+	public static PlexilType TIMEPOINT_TYPE = PlexilType.REAL;
+	
     //private static final String STATE = ".state";
     private static final String OUTCOME = ".outcome";
     private static final String FAILURE = ".failure";
     private static final String COMMAND_HANDLE = ".command_handle";
     private static final String LIBRARY_HANDLE = ".library_handle";
     private static final String UPDATE_HANDLE = ".update_handle";
-    private static final String PREVIOUS_VALUE = ".previous_value";
     
-    private Node myNode;
+    Node myNode;
     private NodeUID myUid;
     private NodeToIL parent;
     private ASTExprToILExpr exprToIL = new ASTExprToILExpr(this);
     
     private List<NodeToIL> children = new ArrayList<NodeToIL>();
     
-    private Map<String, ILVariable> ilVars = 
-        new HashMap<String, ILVariable>();
+    private Map<String, ILVariable> ilVars = new HashMap<String, ILVariable>();
     
     public NodeToIL(Node node) {
         this(node, null);
@@ -114,7 +104,7 @@ public class NodeToIL {
             for (NodeTimepoint tpt : NodeTimepoint.values()) {
             	String name = "."+state+"."+tpt;
             	
-                ilVars.put(name, new SimpleVar(name, myUid, PlexilType.REAL));
+                ilVars.put(name, new SimpleVar(name, myUid, TIMEPOINT_TYPE));
             }
         }
         
@@ -150,8 +140,7 @@ public class NodeToIL {
     
     private void checkForChildren() {
         if (myNode.isListNode()) {
-            NodeListBody body = (NodeListBody) myNode.getNodeBody();
-            for (Node child : body) {
+            for (Node child : myNode.getNodeListBody()) {
                 children.add(new NodeToIL(child, this));
             }
         }
@@ -168,7 +157,7 @@ public class NodeToIL {
         } else if (myNode.isUpdateNode()) {
             ilVars.put(UPDATE_HANDLE, new SimpleVar(UPDATE_HANDLE, myUid, PlexilType.BOOLEAN, BooleanValue.get(false)));
         } else if (myNode.isLibraryNode()) {
-            LibraryBody lib = (LibraryBody) myNode.getNodeBody();
+            LibraryBody lib = myNode.getLibraryBody();
             Map<String,ILExpression> aliases = new HashMap<String, ILExpression>();
             
             for (String alias : lib.getAliases()) {
@@ -258,14 +247,6 @@ public class NodeToIL {
             throw new RuntimeException("Not an update node: "+myNode.getNodeBody());
         }
         return (SimpleVar) ilVars.get(UPDATE_HANDLE);
-    }
-    
-    private ILVariable getPreviousValue() {
-        if ( ! ilVars.containsKey(PREVIOUS_VALUE)) {
-            throw new RuntimeException("Doesn't contain previous value: "+this);
-        }
-        
-        return ilVars.get(PREVIOUS_VALUE);
     }
 
     public ILVariable getNodeTimepoint(NodeState state, NodeTimepoint time) {
@@ -518,119 +499,31 @@ public class NodeToIL {
     }
     
     
-    public void translate(Plan ilPlan) {
-        // The two big componenets are our variables and the state machine.
+    public void translate(final Plan ilPlan) {
+        // The IL is basically a bag of variables and state machines.
         
         // We made the variables when we were constructed. 
         for (String variable : ilVars.keySet()) {
             ilPlan.addVariable(ilVars.get(variable));
         }
         
-        // Now the big state machine. 
+        // Now the big state machine. First, we need states.
         NodeStateMachine nsm = new NodeStateMachine(getUID(), ilPlan);
-        Map<NodeState,State> map = new HashMap<NodeState, State>();
+        final Map<NodeState,State> map = new HashMap<NodeState, State>();
         for (NodeState state : NodeState.values()) {
             map.put(state, new State(getUID(), state, nsm));
         }
-        
+        // Then we add the transitions. 
         StateMachineBuilder builder = new StateMachineBuilder(this, myNode);
-        builder.addInactiveTransitions(nsm, map);
-        builder.addWaitingTransitions(nsm, map);
-        builder.addExecutingTransitions(nsm, map);
-        builder.addFinishingTransitions(nsm, map);
-        builder.addFailingTransitions(nsm, map);
-        builder.addIterationEndedTransitions(nsm, map);
-        builder.addFinishedTransitions(nsm, map);
-
-        // And of course, node actions. 
+        builder.addAllTransitions(nsm, map);
         
-        if (myNode.isAssignmentNode()) {
-            AssignmentBody body = (AssignmentBody) myNode.getNodeBody();
-            Expression lhsUntranslated = body.getLeftHandSide();
-            ILExpression lhsExpr = resolveVariableforWriting(lhsUntranslated);
-            ILExpression rhs = toIL(body.getRightHandSide());
-            AssignAction assign = new AssignAction(lhsExpr, rhs, myNode.getPriority());
-            // Add the previous value now that we have the IL left hand side
-            PlexilType type = lhsUntranslated.getType();
-            if (type == PlexilType.UNKNOWN) {
-            	// If it's an array element, the type info isn't stored in the
-            	// original XML (at least, not here.) Let's try the translated
-            	// version:
-            	if (lhsExpr.getType() != PlexilType.UNKNOWN) {
-            		// Here we go. 
-            		type = lhsExpr.getType();
-            	} else if (rhs.getType() != PlexilType.UNKNOWN) {
-            		type = rhs.getType();
-            	} else {
-            		throw new RuntimeException("Find the type of this assignment."); 
-            	}
-            }
-            if (type.isArrayType()) {
-            	// We need an initial value for it, but it'll be overwritten anyway.
-            	// An empty array should be just fine.
-            	ilVars.put(PREVIOUS_VALUE, new SimpleVar(PREVIOUS_VALUE, getUID(), type, new PValueList<PValue>(type)));
-            } else {
-            	// Just create an UNKNOWN one. 
-            	ilVars.put(PREVIOUS_VALUE, new SimpleVar(PREVIOUS_VALUE, getUID(), type));
-            }
-            ilPlan.addVariable(getPreviousValue());
-            
-            AssignAction capture = new AssignAction(getPreviousValue(), lhsExpr, myNode.getPriority());
-            AssignAction revert = new AssignAction(lhsExpr, getPreviousValue(), myNode.getPriority());
-            
-            map.get(NodeState.EXECUTING).addEntryAction(assign);
-            map.get(NodeState.EXECUTING).addEntryAction(capture);
-            map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
-            map.get(NodeState.FAILING).addEntryAction(revert);
-            map.get(NodeState.FAILING).addEntryAction(EndMacroStep.get());
-            
-        } else if (myNode.isCommandNode()) {
-            CommandBody body = (CommandBody) myNode.getNodeBody();
-            ILExpression name = toIL(body.getCommandName());
-            ILExpression returnTo = null;
-            if (body.getVarToAssign() != null) {
-            	returnTo = resolveVariableforWriting(body.getVarToAssign());
-            }
-            List<ILExpression> args = toIL(body.getCommandArguments());
-            CommandAction issueCmd = new CommandAction(getCommandHandle(), name, args, returnTo);
-            map.get(NodeState.EXECUTING).addEntryAction(issueCmd);
-            map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
-            
-            // TODO: Implement aborting commands.
-//            AbortCommandAction abort = new AbortCommandAction(getCommandHandle());
-//            map.get(NodeState.FAILING).addEntryAction(abort);
-            
-        } else if (myNode.isUpdateNode()) {
-            UpdateBody update = (UpdateBody) myNode.getNodeBody();
-            UpdateAction doUpdate = new UpdateAction(getUpdateHandle(), myNode.getPlexilID());
-            for ( Pair<String, ASTExpression> pair : update.getUpdates()) {
-                doUpdate.addUpdatePair(pair.first, toIL(pair.second));
-            }
-            map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
-            map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
-            
-        } else if (myNode.isListNode()) {
-            // Each child needs to be told to transition in all states but INACTIVE.
-            List<NodeUID> childIds = new ArrayList<NodeUID>();
-            for (NodeToIL child : children) {
-                childIds.add(child.getUID());
-            }
-            AlsoRunNodesAction runChildren = new AlsoRunNodesAction(childIds, ilPlan);
-            for (NodeState state : NodeState.values()) {
-                if (state == NodeState.INACTIVE) continue;
-                map.get(state).addInAction(runChildren);
-            }
-        } else if (myNode.isLibraryNode()) {
-            // Similar deal here, we need to run the library node when not INACTIVE.
-            RunLibraryNodeAction runLib = new RunLibraryNodeAction(getLibraryHandle());
-            for (NodeState state : NodeState.values()) {
-                if (state == NodeState.INACTIVE) continue;
-                map.get(state).addInAction(runLib);
-            }
-
-        }
         
-        // Add the machine.
+        // Finally, add actions based on our body type.
+        NodeBodyVisitor<Void, Void> bodyTranslator = new NodeBodyToIL(this, map, ilPlan);
+		myNode.getNodeBody().accept(bodyTranslator, null);
+		
+		
+        // All done with the state machine, add it to the plan. 
         ilPlan.addStateMachine(nsm);
         // Are we root?
         if (parent == null) {

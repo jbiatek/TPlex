@@ -23,4 +23,9 @@ public interface JavaPlanObserver {
 	 * @param plan
 	 */
 	public void endOfMicroStep(JavaPlan plan);
+	
+	/**
+	 * Called when execution has halted.
+	 */
+	public void endOfExecution(JavaPlan plan);
 }

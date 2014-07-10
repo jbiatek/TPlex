@@ -1,7 +1,5 @@
 package edu.umn.crisys.plexil.java.psx.symbolic;
 
-import gov.nasa.jpf.vm.Verify;
-
 public class SPFValues implements ValueSource {
 
 	@Override
@@ -24,9 +22,5 @@ public class SPFValues implements ValueSource {
 		return dummyValue;
 	}
 
-	@Override
-	public void continueOnlyIf(boolean expression) {
-		Verify.ignoreIf( ! expression);
-	}
 
 }

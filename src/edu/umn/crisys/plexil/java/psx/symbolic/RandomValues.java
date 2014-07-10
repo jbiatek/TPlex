@@ -36,11 +36,5 @@ public class RandomValues implements ValueSource {
 		return rand.nextDouble() * 1000;
 	}
 
-	@Override
-	public void continueOnlyIf(boolean expression) {
-		if ( ! expression) {
-			throw new RuntimeException("Finished execution");
-		}
-	}
 
 }

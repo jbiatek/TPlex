@@ -31,6 +31,7 @@ public class SymbolicScript implements ExternalWorld {
 	private Set<FunctionCall> lookupsAlreadyCheckedThisStep = new HashSet<FunctionCall>();
 	private ScriptedEnvironment env;
 	private ScriptDecisionMaker delegate;
+	private boolean didSomethingThisStep = false;
 	
 	public SymbolicScript(ScriptDecisionMaker delegate) {
 		this(new ScriptedEnvironment(), delegate);
@@ -58,15 +59,29 @@ public class SymbolicScript implements ExternalWorld {
 	private void endOfMacroStep(JavaPlan plan, boolean endedPrematurely) {
 		lookupsAlreadyCheckedThisStep.clear();
 		delegate.endOfMacroStepNotification(endedPrematurely);
-		// Store all the Events we did.
-		eventsPerformed.add(new Simultaneous(currentStepEvents).getCleanestEvent());
-		// Then make a new one
-		currentStepEvents = new ArrayList<Event>();
+		if ( ! didSomethingThisStep && ! endedPrematurely) {
+			System.out.println("Warning: The plan quiesced without asking for new inputs (other than possibly time).");
+		}
 		
+		finalizePreviousStep();
 		// Respond to commands and updates for the next step. Lookups get 
 		// handled as they come in.
 		respondToCommands();
 		respondToUpdates();
+	}
+
+	private void finalizePreviousStep() {
+		// Store all the Events we did.
+		eventsPerformed.add(new Simultaneous(currentStepEvents).getCleanestEvent());
+		// Then make a new one
+		currentStepEvents = new ArrayList<Event>();
+		didSomethingThisStep = false;
+	}
+	
+	@Override
+	public void endOfExecution(JavaPlan plan) {
+		// We need to make sure that the last event gets saved.
+		finalizePreviousStep();
 	}
 
 	@Override
@@ -114,6 +129,7 @@ public class SymbolicScript implements ExternalWorld {
 	
 	private void respondToUpdates() {
 		for (UpdateHandler update : env.getCurrentUpdateQueue()) {
+			didSomethingThisStep = true;
 			if (delegate.shouldAckUpdate(env, update)) {
 				applyEvent(new UpdateAck(update.getNodeName()));
 			}
@@ -123,6 +139,7 @@ public class SymbolicScript implements ExternalWorld {
 	private void respondToCommands() {
 		List<Event> eventsToApplyAfterLoop = new ArrayList<Event>();
 		for (Pair<CommandHandler, FunctionCall> cmd : env.getUnhandledCommands()) {
+			didSomethingThisStep = true;
 			// Decide whether to respond to this command.
 			FunctionCall call = cmd.second;
 			if (delegate.shouldAckCommand(env, call)) {
@@ -143,6 +160,9 @@ public class SymbolicScript implements ExternalWorld {
 	}
 	
 	private void prepareForLookup(FunctionCall lookup) {
+		if ( ! lookup.getName().equals("time")) {
+			didSomethingThisStep = true;			
+		}
 		// If we already did this one, there's no need to prepare anything.
 		if (lookupsAlreadyCheckedThisStep.contains(lookup)) return;
 		

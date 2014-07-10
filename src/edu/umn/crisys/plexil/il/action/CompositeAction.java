@@ -24,5 +24,14 @@ public class CompositeAction implements PlexilAction {
 	public <P, R> R accept(ILActionVisitor<P, R> visitor, P param) {
 		return visitor.visitComposite(this, param);
 	}
+	
+	@Override
+	public String toString() {
+		String ret = "";
+		for (PlexilAction action : actions) {
+			ret += action.toString()+", ";
+		}
+		return ret.replaceAll(", $", "");
+	}
 
 }

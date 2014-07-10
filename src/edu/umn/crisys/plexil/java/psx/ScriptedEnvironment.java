@@ -28,6 +28,8 @@ import edu.umn.crisys.plexil.script.ast.UpdateAck;
 import edu.umn.crisys.util.Pair;
 
 public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Object, Void> {
+	
+	public static boolean DEBUG = false;
 
 	private Map<FunctionCall, PValue> lookup = new HashMap<FunctionCall, PValue>();
 	private List<Pair<CommandHandler,FunctionCall>> commandQueue = 
@@ -106,6 +108,11 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	}
 
 	@Override
+	public void endOfExecution(JavaPlan plan) {
+		// We don't need to do anything when the plan ends.
+	}
+
+	@Override
 	public final void endOfMicroStep(JavaPlan plan) {
 		// Don't do anything, and nothing else should do anything either really.
 	}
@@ -117,7 +124,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	
 	@Override
 	public void update(UpdateHandler node, String key, PValue value) {
-		if (JavaPlan.DEBUG) {
+		if (DEBUG) {
 			System.out.println("Update received: "+key+" = "+value+" from "+node);
 		}
 		updaters.add(node);
@@ -175,7 +182,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	@Override
 	public Void visitCommandAck(CommandAck ack, Object param) {
 		// Find the event
-		if (JavaPlan.DEBUG) {
+		if (DEBUG) {
 			System.out.println("Acknowledging "+ack.getCall() + " with "+ack.getResult());
 		}
 		Pair<CommandHandler, FunctionCall> event = findCommandThatSent(ack.getCall());
@@ -190,7 +197,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 
 	@Override
 	public Void visitCommandReturn(CommandReturn ret, Object param) {
-		if (JavaPlan.DEBUG) {
+		if (DEBUG) {
 			System.out.println("Returning "+ret.getValue()+" for "+ret.getCall());
 		}
 		
@@ -215,7 +222,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 
 	@Override
 	public Void visitStateChange(StateChange lookup, Object param) {
-		if (JavaPlan.DEBUG) {
+		if (DEBUG) {
 			System.out.println("Setting value of "+lookup.getLookup()+" to "+lookup.getValue());
 		}
 		this.lookup.put(lookup.getLookup(), lookup.getValue());

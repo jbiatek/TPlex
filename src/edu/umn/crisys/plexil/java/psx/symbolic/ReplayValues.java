@@ -128,13 +128,4 @@ public class ReplayValues implements ValueSource {
 		return doubles.remove(0);
 	}
 
-	@Override
-	public void continueOnlyIf(boolean expression) {
-		if (! expression) {
-			// SPF would, at this point, just do a backtrack since this path
-			// is supposed to be impossible.
-			throw new SimulatedBacktrackException();
-		}
-	}
-
 }

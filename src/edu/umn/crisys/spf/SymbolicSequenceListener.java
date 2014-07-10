@@ -286,6 +286,7 @@ public class SymbolicSequenceListener extends PropertyListenerAdapter implements
 	public void statePurged(Search search) {
 		// In our custom Random search, this means that the current choices
 		// are going away. Better store them now, or we won't get them.
+		System.out.println("Collecting purged sequence now.");
 		storeSequence(search);
 	}
 
