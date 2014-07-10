@@ -97,10 +97,18 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
 
         @Override
         public ILExpression visitLibrary(LibraryBody lib, NodeToIL node) {
-            // Same as a list: "All children FINISHED". But there's just
-            // one child, so it's easy.
-            return Operation.eq(NodeState.FINISHED, 
-                                node.getLibraryHandle());
+        	// If the library got included statically, this NodeToIL might 
+        	// actually have a real child instead of a handle.
+        	if (node.hasLibraryHandle()) {
+	            // Treat it the same as a list: "All children FINISHED". 
+	    		// But there's just one child, so it's easy.
+	            return Operation.eq(NodeState.FINISHED, 
+	                                node.getLibraryHandle());
+        	} else {
+        		// Since we don't actually care about the AST body, passing in
+        		// null is fine. 
+        		return visitNodeList(null, node);
+        	}
         }
 
         @Override

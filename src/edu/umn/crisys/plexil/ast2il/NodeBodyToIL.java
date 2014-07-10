@@ -37,7 +37,7 @@ import edu.umn.crisys.util.Pair;
  */
 public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
-	private final NodeToIL nodeToIL;
+		private final NodeToIL nodeToIL;
 		private final Map<NodeState, State> map;
 		private final Plan ilPlan;
 
@@ -58,7 +58,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    Expression lhsUntranslated = assignment.getLeftHandSide();
 		    ILExpression lhsExpr = nodeToIL.resolveVariableforWriting(lhsUntranslated);
 		    ILExpression rhs = nodeToIL.toIL(assignment.getRightHandSide());
-		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.myNode.getPriority());
+		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
 		    PlexilType type = lhsUntranslated.getType();
 		    if (type == PlexilType.UNKNOWN) {
@@ -85,8 +85,8 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    }
 		    ilPlan.addVariable(previousValue);
 		    
-		    AssignAction capture = new AssignAction(previousValue, lhsExpr, nodeToIL.myNode.getPriority());
-		    AssignAction revert = new AssignAction(lhsExpr, previousValue, nodeToIL.myNode.getPriority());
+		    AssignAction capture = new AssignAction(previousValue, lhsExpr, nodeToIL.getPriority());
+		    AssignAction revert = new AssignAction(lhsExpr, previousValue, nodeToIL.getPriority());
 		    
 		    map.get(NodeState.EXECUTING).addEntryAction(assignAction);
 		    map.get(NodeState.EXECUTING).addEntryAction(capture);
@@ -117,13 +117,19 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitLibrary(LibraryBody lib, Void p) {
-		    // Basically the same as a list, we need to run the library node when not INACTIVE.
-		    RunLibraryNodeAction runLib = new RunLibraryNodeAction(nodeToIL.getLibraryHandle());
-		    for (NodeState state : NodeState.values()) {
-		        if (state == NodeState.INACTIVE) continue;
-		        map.get(state).addInAction(runLib);
-		    }
-
+			if (nodeToIL.hasLibraryHandle()) {
+			    // Basically the same as a list, we need to run the library node when not INACTIVE.
+			    RunLibraryNodeAction runLib = new RunLibraryNodeAction(nodeToIL.getLibraryHandle());
+			    for (NodeState state : NodeState.values()) {
+			        if (state == NodeState.INACTIVE) continue;
+			        map.get(state).addInAction(runLib);
+			    }
+			} else {
+				// The library must have been statically included. We should 
+				// treat it like a real list. Since the AST body isn't actually
+				// used, passing in null is fine. 
+				visitNodeList(null, null);
+			}
 			return null;
 		}
 
@@ -144,7 +150,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitUpdate(UpdateBody update, Void p) {
-		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), nodeToIL.myNode.getPlexilID());
+		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), nodeToIL.getPlexilID());
 		    for ( Pair<String, ASTExpression> pair : update.getUpdates()) {
 		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second));
 		    }

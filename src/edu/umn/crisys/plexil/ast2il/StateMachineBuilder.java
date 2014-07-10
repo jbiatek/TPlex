@@ -553,11 +553,18 @@ public class StateMachineBuilder {
     
     private TransitionGuard libraryChildWaitingOrFinished(Condition cond) {
         if ( ! ilExprCache.containsKey(Description.ALL_CHILDREN_WAITING_OR_FINISHED)) {
-            ilExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, 
-                    Operation.or(
-                            Operation.eq(translator.getLibraryHandle(), NodeState.WAITING),
-                            Operation.eq(translator.getLibraryHandle(), NodeState.FINISHED)
-                    ));
+        	if (translator.hasLibraryHandle()) {
+	            ilExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, 
+	                    Operation.or(
+	                            Operation.eq(translator.getLibraryHandle(), NodeState.WAITING),
+	                            Operation.eq(translator.getLibraryHandle(), NodeState.FINISHED)
+	                    ));
+        	} else {
+        		// A library node won't actually have a handle if the library
+        		// got statically included. In that case, it should be treated
+        		// as a list node. 
+        		return allChildrenWaitingOrFinished(cond);
+        	}
         }
         return makeGuard(Description.ALL_CHILDREN_WAITING_OR_FINISHED, cond);
         

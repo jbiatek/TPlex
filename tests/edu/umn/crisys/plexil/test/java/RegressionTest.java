@@ -50,9 +50,6 @@ public class RegressionTest {
 	public static TestSuite simple_drive_r = new TestSuite("simple-drive", 
             new String[] {"single-drive", "double-drive"}, new String[]{});
 	
-//	public static TestSuite libTest = new TestSuite("LibCall",
-//	        new String[] { "LibCall" }, new String[]{"LibTest1", "LibTest2"});
-	
 	/**
 	 * Complex tests
 	 */

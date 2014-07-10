@@ -23,6 +23,7 @@ public class CompileRegressionsWithMain {
 		});
 		
 		List<String> mainArgs = new ArrayList<String>();
+		mainArgs.add("--static-libs");
 		mainArgs.add("--output-dir");
 		mainArgs.add(dest.getAbsolutePath());
 		mainArgs.add("--package");

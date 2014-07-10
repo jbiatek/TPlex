@@ -20,7 +20,13 @@ public class ArrayVar extends ILVariable {
 		if ( ! getType().isArrayType()) {
 			throw new RuntimeException("Array var must have array type, not "+type);
 		}
-		this.init = init;
+		if (init == null) {
+			// Just use an empty array, since it'll get filled with UNKNOWNs
+			// by default that way. 
+			this.init = new PValueList<PValue>(type);
+		} else {
+			this.init = init;
+		}
 	}
 	
 	public PValueList<?> getInitialValue() {

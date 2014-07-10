@@ -64,7 +64,7 @@ public class NodeToIL {
     private static final String LIBRARY_HANDLE = ".library_handle";
     private static final String UPDATE_HANDLE = ".update_handle";
     
-    Node myNode;
+    private Node myNode;
     private NodeUID myUid;
     private NodeToIL parent;
     private ASTExprToILExpr exprToIL = new ASTExprToILExpr(this);
@@ -72,6 +72,7 @@ public class NodeToIL {
     private List<NodeToIL> children = new ArrayList<NodeToIL>();
     
     private Map<String, ILVariable> ilVars = new HashMap<String, ILVariable>();
+    private Map<String, ILExpression> aliases = new HashMap<String, ILExpression>();
     
     public NodeToIL(Node node) {
         this(node, null);
@@ -120,12 +121,6 @@ public class NodeToIL {
                 }
                 int arraySize = v.getArraySize();
                 
-                // Get the initial value, if any. If not, just initialize to an
-                // empty array. 
-                if (init == null) {
-                    init = new PValueList<PValue>(type);
-                }
-                
                 ilVars.put(varName, new ArrayVar(varName, arraySize, type, myUid, init));
             } else {
                 // Standard variables.
@@ -136,20 +131,6 @@ public class NodeToIL {
                 ilVars.put(varName, new SimpleVar(varName, myUid, type, init));
             }
         }
-    }
-    
-    private void checkForChildren() {
-        if (myNode.isListNode()) {
-            for (Node child : myNode.getNodeListBody()) {
-                children.add(new NodeToIL(child, this));
-            }
-        }
-    }
-    
-    private void parentsAreReady() {
-        // This is called after construction when our parent nodes have finished
-        // constructing themselves. We should do what we need to do, then pass
-        // the message along to our children.
         
         // Special variables based on the type of node this is.
         if (myNode.isCommandNode()) {
@@ -168,16 +149,63 @@ public class NodeToIL {
                     lib.getNodeId(), getUID(), getState(), aliases);
             ilVars.put(LIBRARY_HANDLE, libRef);
             
-            // We have to set these after making the library reference, because
-            // it's very likely that they *include* the library reference.
-            libRef.setLibAndAncestorsInvariants(getThisAndAncestorsInvariants());
-            libRef.setLibOrAncestorsEnds(getThisOrAncestorsEnds());
-            libRef.setLibOrAncestorsExits(getThisOrAncestorsExits());
+            // NOTE: This Library variable still needs to be given its
+            // ancestor conditions, so that it can tell the library what's
+            // happening above it. But that has to happen *after* all nodes
+            // have had a chance to initialize. An invariant, for example,
+            // could refer to children not failing, but we're still putting
+            // together the tree. 
+        }
+    }
+    
+    private void checkForChildren() {
+        if (myNode.isListNode()) {
+            for (Node child : myNode.getNodeListBody()) {
+                children.add(new NodeToIL(child, this));
+            }
+        }
+    }
+    
+    private void parentsAreReady() {
+        // This is called after construction when our parent nodes have finished
+        // constructing themselves. We should do what we need to do, then pass
+        // the message along to our children.
+        
+    	if (this.hasLibraryHandle()) {
+            // We have to set these after everyone is initialized. 
+            getLibraryHandle().setLibAndAncestorsInvariants(getThisAndAncestorsInvariants());
+            getLibraryHandle().setLibOrAncestorsEnds(getThisOrAncestorsEnds());
+            getLibraryHandle().setLibOrAncestorsExits(getThisOrAncestorsExits());
         } 
         
         for (NodeToIL child : children) {
             child.parentsAreReady();
         }
+    }
+    
+    /**
+     * If this NodeToIL object represents a Library node, this method will take
+     * the given PLEXIL node and insert it as this node's child. This node
+     * will become a List node with a single child instead. Use this to 
+     * statically include libraries in the PLEXIL plan at compile time instead
+     * of doing it dynamically at runtime. 
+     */
+    public void convertLibraryToList(Node library) {
+    	if ( ! library.getPlexilID().equals(getLibraryHandle().getLibraryPlexilID())) {
+    		throw new RuntimeException(
+    				"Statically including the wrong library? The given one is "
+    						+library.getPlexilID()+" but the library node looks for "
+    						+getLibraryHandle().getLibraryPlexilID());
+    	}
+    	// Okay, we are about to throw out the Library body, so steal their 
+    	// aliases first. 
+    	aliases = getLibraryHandle().getAliases();
+    	ilVars.remove(LIBRARY_HANDLE);
+    	
+    	// Now we simulate the constructor process.
+    	NodeToIL libChild = new NodeToIL(library, this);
+    	children.add(libChild);
+    	libChild.parentsAreReady();
     }
     
     /**
@@ -196,7 +224,15 @@ public class NodeToIL {
         return ret;
     }
     
-    public NodeBody getASTNodeBody() {
+    public int getPriority() {
+    	return myNode.getPriority();
+    }
+    
+    public String getPlexilID() {
+    	return myNode.getPlexilID();
+    }
+    
+    NodeBody getASTNodeBody() {
     	return myNode.getNodeBody();
     }
 
@@ -333,7 +369,7 @@ public class NodeToIL {
      * @param writing
      * @return
      */
-    private ILVariable resolveVariableInternal(String name, boolean writing) {
+    private ILExpression resolveVariableInternal(String name, boolean writing) {
         // Variables have lexical scope, which mean they are visible only 
         // within the action and any descendants of the action. Scope can be 
         // explicitly limited using the Interface clause. 
@@ -341,6 +377,11 @@ public class NodeToIL {
         // Is it in this Node? That would be pretty easy.
         if (getAllVariables().contains(name)) {
             return getVariable(name);
+        }
+        
+        // Or if we have it as an alias, that works too.
+        if (aliases.containsKey(name)) {
+        	return aliases.get(name);
         }
         
         // It's not here. We need to make sure that our interface
@@ -438,7 +479,7 @@ public class NodeToIL {
     	
         if (e instanceof UnresolvedVariableExpr) {
             UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
-            ILVariable expr = resolveVariableInternal(var.getName(), true);
+            ILExpression expr = resolveVariableInternal(var.getName(), true);
             if (expr == null) {
             	// Must be an alias then. Or a typo.
             	return createAlias(var.getName(), true);

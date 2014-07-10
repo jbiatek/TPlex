@@ -234,9 +234,14 @@ public class Main {
 		for (String filename : asts.keySet()) {
 			PlexilPlan plan = asts.get(filename);
 			NodeToIL toIl = new NodeToIL(plan.getRootNode());
+
+			if (optimize && staticLibraries) {
+				StaticLibIncluder.optimize(toIl, asts);
+			}
+			
 			Plan ilPlan = new Plan(filename);
-			ilPlans.add(ilPlan);
 			toIl.translate(ilPlan);
+			ilPlans.add(ilPlan);
 			
 			boolean couldBeLibrary = true;
 			
