@@ -10,10 +10,10 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PValueList;
-import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class ILExprToJava {
 

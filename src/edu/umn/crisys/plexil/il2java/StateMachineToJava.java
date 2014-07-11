@@ -30,10 +30,10 @@ import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Condition;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.java.plx.JavaPlan;
-import edu.umn.crisys.plexil.java.plx.SimpleCurrentNext;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PBoolean;
 
 public class StateMachineToJava {
 

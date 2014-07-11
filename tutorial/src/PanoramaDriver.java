@@ -1,10 +1,10 @@
 
-import edu.umn.crisys.plexil.java.PlexilDriver;
-import edu.umn.crisys.plexil.java.TestGenerationInfo;
-import edu.umn.crisys.plexil.java.plx.*;
-import edu.umn.crisys.plexil.java.psx.symbolic.*;
-import edu.umn.crisys.plexil.java.world.*;
-import edu.umn.crisys.plexil.java.values.*;
+import edu.umn.crisys.plexil.runtime.PlexilDriver;
+import edu.umn.crisys.plexil.runtime.TestGenerationInfo;
+import edu.umn.crisys.plexil.runtime.plx.*;
+import edu.umn.crisys.plexil.runtime.psx.symbolic.*;
+import edu.umn.crisys.plexil.runtime.values.*;
+import edu.umn.crisys.plexil.runtime.world.*;
 
 
 public class PanoramaDriver implements TestGenerationInfo {

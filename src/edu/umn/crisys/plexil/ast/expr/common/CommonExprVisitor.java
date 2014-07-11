@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.expr.common;
 
-import edu.umn.crisys.plexil.java.values.PValueVisitor;
+import edu.umn.crisys.plexil.runtime.values.PValueVisitor;
 
 
 public interface CommonExprVisitor<Param, Return> extends PValueVisitor<Param, Return> {

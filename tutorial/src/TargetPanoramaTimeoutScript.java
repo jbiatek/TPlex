@@ -1,7 +1,7 @@
-import edu.umn.crisys.plexil.java.psx.JavaPlexilScript;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.CommandHandleState;
-import edu.umn.crisys.plexil.java.values.RealValue;
+import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
 
 public class TargetPanoramaTimeoutScript
     extends JavaPlexilScript

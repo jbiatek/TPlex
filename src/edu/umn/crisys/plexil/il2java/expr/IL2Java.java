@@ -26,19 +26,19 @@ import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il2java.JParens;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.CommandHandleState;
-import edu.umn.crisys.plexil.java.values.IntegerValue;
-import edu.umn.crisys.plexil.java.values.NodeFailureType;
-import edu.umn.crisys.plexil.java.values.NodeOutcome;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.PBoolean;
-import edu.umn.crisys.plexil.java.values.PNumeric;
-import edu.umn.crisys.plexil.java.values.PString;
-import edu.umn.crisys.plexil.java.values.PValueList;
-import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StringValue;
-import edu.umn.crisys.plexil.java.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PString;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
 	

@@ -21,11 +21,11 @@ import edu.umn.crisys.plexil.ast.expr.var.NodeIDExpression;
 import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr.NodeRef;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.NodeTimepoint;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
 
 

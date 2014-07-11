@@ -4,9 +4,9 @@ import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.var.ASTExprBase;
 import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.var.NodeIDExpression;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.NodeTimepoint;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class NodeTimepointExpr extends ASTExprBase {
 

@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 /**
  * Represents a Condition that wasn't specified in the XML file. This matters

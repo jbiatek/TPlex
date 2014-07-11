@@ -35,8 +35,8 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.java.values.PlexilType;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 

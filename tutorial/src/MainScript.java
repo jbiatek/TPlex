@@ -1,7 +1,7 @@
 
-import edu.umn.crisys.plexil.java.plx.*;
-import edu.umn.crisys.plexil.java.world.*;
-import edu.umn.crisys.plexil.java.values.*;
+import edu.umn.crisys.plexil.runtime.plx.*;
+import edu.umn.crisys.plexil.runtime.values.*;
+import edu.umn.crisys.plexil.runtime.world.*;
 
 
 public class MainScript {

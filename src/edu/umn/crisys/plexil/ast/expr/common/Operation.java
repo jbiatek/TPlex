@@ -5,15 +5,15 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.IntegerValue;
-import edu.umn.crisys.plexil.java.values.PBoolean;
-import edu.umn.crisys.plexil.java.values.PNumeric;
-import edu.umn.crisys.plexil.java.values.PString;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.StringValue;
-import edu.umn.crisys.plexil.java.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PString;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 /**
  * Almost all of Plexil's native operations. 

@@ -25,11 +25,11 @@ import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Condition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Description;
-import edu.umn.crisys.plexil.java.values.CommandHandleState;
-import edu.umn.crisys.plexil.java.values.NodeFailureType;
-import edu.umn.crisys.plexil.java.values.NodeOutcome;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.NodeTimepoint;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.util.Pair;
 
 public class StateMachineBuilder {

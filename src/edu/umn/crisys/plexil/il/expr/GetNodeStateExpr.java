@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.il.expr;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class GetNodeStateExpr extends ILExprBase {
 

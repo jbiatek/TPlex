@@ -11,8 +11,8 @@ import com.sun.codemodel.JMod;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.java.psx.JavaPlexilScript;
-import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;

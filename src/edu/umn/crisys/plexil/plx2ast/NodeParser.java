@@ -29,9 +29,9 @@ import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PValueList;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
 import edu.umn.crisys.util.xml.XMLUtils.TagIterator;
 

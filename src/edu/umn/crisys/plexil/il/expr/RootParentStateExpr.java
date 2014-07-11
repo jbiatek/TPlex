@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.il.expr;
 
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class RootParentStateExpr extends ILExprBase {
 

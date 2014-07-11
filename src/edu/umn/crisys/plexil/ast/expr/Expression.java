@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.ast.expr;
 
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public interface Expression {
     

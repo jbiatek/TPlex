@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.script.ast;
 
-import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class CommandReturn implements Event {
 	private FunctionCall call;

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class LibraryVar extends ILVariable {
 	

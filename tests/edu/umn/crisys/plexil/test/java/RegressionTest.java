@@ -12,9 +12,9 @@ import java.util.List;
 import org.junit.*;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.java.plx.JavaPlan;
-import edu.umn.crisys.plexil.java.psx.JavaPlexilScript;
-import edu.umn.crisys.plexil.java.world.ExternalWorld;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
 
 /**

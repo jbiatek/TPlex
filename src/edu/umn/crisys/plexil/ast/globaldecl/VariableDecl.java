@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.ast.globaldecl;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class VariableDecl {
 

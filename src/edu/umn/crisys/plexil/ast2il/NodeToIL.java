@@ -29,12 +29,12 @@ import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.NodeTimepoint;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PValueList;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 /**
  * An object that takes an AST Node, and transforms it into IL. It knows a lot

@@ -2,9 +2,9 @@ package edu.umn.crisys.plexil.il.vars;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PValueList;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class SimpleVar extends ILVariable {
 	

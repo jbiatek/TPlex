@@ -10,7 +10,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
-import edu.umn.crisys.plexil.java.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
 
 /**
  * @author Whalen

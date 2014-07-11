@@ -5,7 +5,7 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class ArrayIndexExpr extends CompositeExpr {
 

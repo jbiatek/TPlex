@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.test.java;
 
-import edu.umn.crisys.plexil.java.values.NodeOutcome;
-import edu.umn.crisys.plexil.java.world.ExternalWorld;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 
 public interface PlexilTestable {
     

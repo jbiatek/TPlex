@@ -6,13 +6,13 @@ import java.util.List;
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.IntegerValue;
-import edu.umn.crisys.plexil.java.values.PBoolean;
-import edu.umn.crisys.plexil.java.values.PValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public class DebugOutputPlexilArray implements PValue {
 

@@ -11,9 +11,9 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.PlexilType;
-import edu.umn.crisys.plexil.java.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.util.Pair;
 
 public class NodePrinter implements NodeBodyVisitor<Void, String> {

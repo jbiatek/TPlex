@@ -36,10 +36,10 @@ import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.java.plx.CommandHandle;
-import edu.umn.crisys.plexil.java.plx.JavaPlan;
-import edu.umn.crisys.plexil.java.plx.UpdateHandle;
-import edu.umn.crisys.plexil.java.values.PValue;
+import edu.umn.crisys.plexil.runtime.plx.CommandHandle;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.UpdateHandle;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.util.Pair;
 
 public class ActionToJava implements ILActionVisitor<JBlock, Void>{

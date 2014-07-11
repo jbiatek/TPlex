@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.script.ast;
 
-import edu.umn.crisys.plexil.java.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 
 public class CommandAck implements Event {
 	private FunctionCall call;

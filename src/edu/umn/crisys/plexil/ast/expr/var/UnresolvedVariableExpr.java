@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
-import edu.umn.crisys.plexil.java.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 /**
  * An expression representing a variable reference. This is basically just the

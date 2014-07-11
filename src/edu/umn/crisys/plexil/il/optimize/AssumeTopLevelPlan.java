@@ -25,16 +25,16 @@ import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
-import edu.umn.crisys.plexil.java.values.BooleanValue;
-import edu.umn.crisys.plexil.java.values.CommandHandleState;
-import edu.umn.crisys.plexil.java.values.IntegerValue;
-import edu.umn.crisys.plexil.java.values.NodeFailureType;
-import edu.umn.crisys.plexil.java.values.NodeOutcome;
-import edu.umn.crisys.plexil.java.values.NodeState;
-import edu.umn.crisys.plexil.java.values.PValueList;
-import edu.umn.crisys.plexil.java.values.RealValue;
-import edu.umn.crisys.plexil.java.values.StringValue;
-import edu.umn.crisys.plexil.java.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class AssumeTopLevelPlan implements ILExprVisitor<Void, ILExpression>{
 	
