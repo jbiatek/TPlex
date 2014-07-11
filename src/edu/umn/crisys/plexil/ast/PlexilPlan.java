@@ -39,7 +39,6 @@ public class PlexilPlan {
     }
     
     public String getFullPrintout() {
-    	String ret = "";
         NodePrinter p = new NodePrinter(root);
         return p.prettyPrint();
     }
@@ -55,6 +54,11 @@ public class PlexilPlan {
 	public void setTimeScalingUnitsSubunits(int value) {
 		timeScalingUnitsSubunits = value;
 	}
+	
+	public int getTimeScalingUnitsSubunits() {
+		return timeScalingUnitsSubunits;
+	}
+	
 	public List<LibraryDecl> getLibraryDeclarations() {
 		return libraryDecls;
 	}

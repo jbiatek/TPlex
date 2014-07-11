@@ -74,7 +74,7 @@ public class ILExprToJava {
         	PValueList<?> array = (PValueList<?>) v;
         	PlexilType elements = array.getType().elementType();
         	// We need a PValueList<ElementType>.
-        	Class elementClass = PValue.class;
+        	Class<?> elementClass = PValue.class;
         	if (elements != PlexilType.UNKNOWN) {
         		elementClass = elements.getTypeClass();
         	}
