@@ -23,6 +23,7 @@ import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
+import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
@@ -255,22 +256,9 @@ public class NodeParser {
         for (StartElement e : new TagIterator(xml, start)) {
             
             if (isTag(e, "DeclareVariable")) {
-                DeclaredVarInfo varInfo = parseDeclareVariable(e, xml);
-                if (varInfo.varInit == null) {
-                    node.addVar(varInfo.name, varInfo.type);
-                } else {
-                    node.addVar(varInfo.name, varInfo.type, varInfo.varInit);
-                }
-                
+                node.addVar(parseDeclareVariable(e, xml));
             } else if (isTag(e, "DeclareArray")) {
-                DeclaredVarInfo arrayInfo = parseDeclareArray(e, xml);
-                if (arrayInfo.varInit == null) {
-                    node.addArray(arrayInfo.name, arrayInfo.type, 
-                            arrayInfo.maxSize);
-                } else {
-                    node.addArray(arrayInfo.name, arrayInfo.type, 
-                            arrayInfo.maxSize, (PValueList<?>)arrayInfo.varInit);
-                }
+                node.addArray(parseDeclareArray(e, xml));
                 
             } else {
                 throw new UnexpectedTagException(e);
@@ -279,22 +267,14 @@ public class NodeParser {
     }
     
     
-    private static class DeclaredVarInfo {
-        public String name = null;
-        public PlexilType type = null;
-        public int maxSize = -1;
-        public PValue varInit = null;
-    }
-
-    
-    private static DeclaredVarInfo parseDeclareArray(StartElement start, 
+    private static VariableDecl parseDeclareArray(StartElement start, 
             XMLEventReader xml) {
         assertStart("DeclareArray", start);
         
         String name = null;
         String type = null;
-        String maxSize = null;
-        List<PValue> init = null;
+        String maxSizeStr = null;
+        List<PValue> parsedInitValues = null;
         
         for (StartElement e : new TagIterator(xml, "DeclareArray")) {
             if (isTag(e, "Name")) {
@@ -302,45 +282,44 @@ public class NodeParser {
             } else if (isTag(e, "Type")) {
                 type = getStringContent(e, xml);
             } else if (isTag(e, "MaxSize")) {
-                maxSize = getStringContent(e, xml);
+                maxSizeStr = getStringContent(e, xml);
             } else if (isTag(e, "InitialValue")) {
-                init = new ArrayList<PValue>();
+                parsedInitValues = new ArrayList<PValue>();
                 for (StartElement v : new TagIterator(xml, "InitialValue")) {
-                    init.add(ExprParser.parsePValue(v, xml));
+                    parsedInitValues.add(ExprParser.parsePValue(v, xml));
                 }
             } else {
                 throw new UnexpectedTagException(e);
             }
         }
-        if (name == null || type == null || maxSize == null) {
+        if (name == null || type == null || maxSizeStr == null) {
             throw new RuntimeException("Array has name "+name+" and type "+type
-                    +", max size is "+maxSize);
+                    +", max size is "+maxSizeStr);
         }
-        DeclaredVarInfo info = new DeclaredVarInfo();
-        info.name = name;
-        info.type = PlexilType.valueOf(type.toUpperCase()).toArrayType();
-        info.maxSize = Integer.parseInt(maxSize); 
-        if (init != null) {
-        	info.varInit = new PValueList<PValue>(info.type, init);
+
+        PlexilType arrayType = PlexilType.valueOf(type.toUpperCase()).toArrayType();
+        int maxSize = Integer.parseInt(maxSizeStr);
+        PValueList<PValue> initialValue = null;
+        if (parsedInitValues != null) {
+        	initialValue = new PValueList<PValue>(arrayType, parsedInitValues);
         }
-        
-        return info;
+        return new VariableDecl(name, maxSize, arrayType, initialValue);
     }
 
 
-    private static DeclaredVarInfo parseDeclareVariable(XMLEvent start, 
+    private static VariableDecl parseDeclareVariable(XMLEvent start, 
             XMLEventReader xml) {
         assertStart("DeclareVariable", start);
         
         String name = null;
-        String type = null;
+        String typeStr = null;
         PValue init = null;
         
         for (StartElement e : new TagIterator(xml, "DeclareVariable")) {
             if (isTag(e, "Name")) {
                 name = getStringContent(e, xml);
             } else if (isTag(e, "Type")) {
-                type = getStringContent(e, xml);
+                typeStr = getStringContent(e, xml);
             } else if (isTag(e, "InitialValue")) {
                 init = ExprParser.parsePValue(nextTag(xml).asStartElement(), xml);
                 assertClosedTag(e, xml);
@@ -348,21 +327,12 @@ public class NodeParser {
                 throw new UnexpectedTagException(e);
             }
         }
-        if (name == null || type == null) {
-            throw new RuntimeException("Variable has name "+name+" and type "+type);
+        if (name == null || typeStr == null) {
+            throw new RuntimeException("Variable has name "+name+" and type "+typeStr);
         }
         // Now we have all the info
-        DeclaredVarInfo info = new DeclaredVarInfo();
-        info.name = name;
-        if (type.equalsIgnoreCase("Duration") || type.equalsIgnoreCase("Date")) {
-        	info.type = PlexilType.REAL;
-        } else {
-        	info.type = PlexilType.valueOf(type.toUpperCase());
-        }
-        if (init != null) {
-            info.varInit = init;
-        }
-        return info;
+        PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
+        return new VariableDecl(name, type, init);
     }
 
     public static PlexilInterface parseInterface(StartElement start, XMLEventReader xml) {
@@ -387,12 +357,12 @@ public class NodeParser {
                             +"Interface variables, according to the Plexil Reference.");
                 }
                 else if (isTag(declare, "DeclareVariable")) {
-                    DeclaredVarInfo info = parseDeclareVariable(declare, xml);
+                    VariableDecl info = parseDeclareVariable(declare, xml);
 
                     if (writeable) {
-                        iface.addInOutVariable(info.name, info.type);
+                        iface.addInOutVariable(info.getName(), info.getType());
                     } else {
-                        iface.addInVariable(info.name, info.type);
+                        iface.addInVariable(info.getName(), info.getType());
                     }
                 } else {
                     throw new UnexpectedTagException(declare, "DeclareVariable");

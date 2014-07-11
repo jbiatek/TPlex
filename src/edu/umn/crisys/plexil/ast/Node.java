@@ -15,9 +15,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
-import edu.umn.crisys.plexil.runtime.values.PValue;
-import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class Node {
 	
@@ -68,38 +65,14 @@ public class Node {
 	    return parent;
 	}
 
-	@Deprecated
-	public void addVar(String name, PlexilType type) { 
-	    if (type.isArrayType()) {
-	        throw new RuntimeException("Must include size for array type");
-	    }
-	    vars.add(new VariableDecl(name, type)); 
+	public void addVar(VariableDecl var) {
+		vars.add(var);
 	}
 
-	@Deprecated
-	public void addVar(String name, PlexilType type, PValue init) {
-		if (type.isArrayType()) {
-			throw new RuntimeException(type+" is an array, it needs a max size");
-		}
-		vars.add(new VariableDecl(name, type, init));
+	public void addArray(VariableDecl array) {
+		vars.add(array);
 	}
 
-	@Deprecated
-	public void addArray(String name, PlexilType t, int maxSize) {
-        if (! t.isArrayType()) {
-            throw new RuntimeException(t+" is not an array type");
-        }
-        if (maxSize < 0) { 
-            throw new RuntimeException("Array cannot have negative size: "+maxSize);
-        }
-        vars.add(new VariableDecl(name, maxSize, t));
-    }
-
-	@Deprecated
-    public void addArray(String name, PlexilType t, int maxSize, PValueList<?> init) {
-		vars.add(new VariableDecl(name, maxSize, t, init));
-    }
-    
     public boolean containsVar(String name) {
     	for (VariableDecl v : vars) { 
     		if (v.getName().equals(name)) {
