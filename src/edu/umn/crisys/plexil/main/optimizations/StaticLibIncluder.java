@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.main;
+package edu.umn.crisys.plexil.main.optimizations;
 
 import java.util.Map;
 
