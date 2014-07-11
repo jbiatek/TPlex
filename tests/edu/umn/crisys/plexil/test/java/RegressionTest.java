@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.*;
@@ -35,6 +36,10 @@ import edu.umn.crisys.plexil.java.world.ExternalWorld;
  */
 public class RegressionTest {
 	
+	public static final File RESOURCES = new File("tests/edu/umn/crisys/plexil/test/resources/");
+	public static final File ORACLE_LOGS = new File("tests/generated/oracle");
+	public static final String TPLEX_OUTPUT_PACKAGE = "generated.java";
+	
 	public static class TestSuite {
 		public String planFile;
 		public String[] planScripts;
@@ -47,17 +52,26 @@ public class RegressionTest {
 		}
 	}	
 	
-	public static TestSuite simple_drive_r = new TestSuite("simple-drive", 
+	private static TestSuite simple_drive_r = new TestSuite("simple-drive", 
             new String[] {"single-drive", "double-drive"}, new String[]{});
 	
+	private static TestSuite increment1 = new TestSuite("Increment-test",
+			new String[] {}, new String[]{"Increment"});
+	
+	private static TestSuite increment2 = new TestSuite("Increment-test2",
+			new String[] {}, new String[]{"Increment"});
+	
 	/**
-	 * Complex tests
+	 * Complex tests that were specified by hand
 	 */
-	public static final TestSuite[] TESTS = new TestSuite[] {
-		simple_drive_r
+	private static final TestSuite[] MANUAL_TESTS = new TestSuite[] {
+		simple_drive_r, increment1, increment2
 	};
 	
-	public static final String[] SAME_NAME_TESTS = new String[] {
+	/**
+	 * Tests where the script name matches the plan name
+	 */
+	private static final String[] SAME_NAME_TESTS = new String[] {
 	    "CruiseControl", "DriveToSchool", "DriveToTarget", "SafeDrive", "SimpleDrive",
 	    "array1", "array3", "array4", "array8", "command1", "command2", "command3",
 	    "command4", "command5", "long_command", "uncle_command", "repeat2", 
@@ -65,7 +79,10 @@ public class RegressionTest {
 	    "change-lookup-test"
 	};
 
-	public static final String[] EMPTY_SCRIPT_TESTS = new String[] {
+	/**
+	 * Tests that don't have a script at all
+	 */
+	private static final String[] EMPTY_SCRIPT_TESTS = new String[] {
 	    "AncestorReferenceTest", "assign-failure-with-conflict", 
 	    "assign-to-parent-exit", "assign-to-parent-invariant", 
 	    "array2", "array5", "array6", "array9", "failure-type1", "failure-type2",
@@ -73,11 +90,32 @@ public class RegressionTest {
 	    "Increment-test2", "repeat1", "repeat3", "repeat4"
 	};
 	
+	private static TestSuite produceSameNameTest(String name) {
+		return new TestSuite(name, new String[] { name }, new String[]{});
+	}
+	
+	private static TestSuite produceEmptyScriptTest(String name) {
+		return new TestSuite(name, new String[] { }, new String[]{});
+	}
+	
 	/**
-	 * Plexil files that should be included on the default "lib path" when
-	 * translating. 
+	 * @return all of the TestSuites in the regression test suite. 
 	 */
-	public static final String[] libPath = new String[] { "Increment" };
+	public static List<TestSuite> getTestSuites() {
+		List<TestSuite> ret = new ArrayList<RegressionTest.TestSuite>();
+		ret.addAll(Arrays.asList(MANUAL_TESTS));
+		
+		for (String name : RegressionTest.SAME_NAME_TESTS) {
+			ret.add(produceSameNameTest(name));
+		}
+
+		for (String name : EMPTY_SCRIPT_TESTS) {
+			ret.add(produceEmptyScriptTest(name));
+		}
+		
+		return ret;
+	}
+	
 	
 	@Before
 	public void debug() {
@@ -199,8 +237,8 @@ public class RegressionTest {
 	
 	@Test
 	public void incrementTests() throws Exception {
-	    runSingleTest("Increment-test", "empty");
-	    runSingleTest("Increment-test2", "empty");
+	    runTestSuite(increment1);
+	    runTestSuite(increment2);
 	}
 	
 	private List<PlanState> parseLogFile(File logFile) throws Exception {
@@ -219,7 +257,6 @@ public class RegressionTest {
 	private void runSingleTest(String planName, String scriptName) throws Exception {
         System.out.println("Running "+planName+" with script "+scriptName);
         
-	    String pkg = "generated";
 	    String script = NameUtils.clean(scriptName);
 //		root.fullReset();
 		// Get the script
@@ -227,18 +264,17 @@ public class RegressionTest {
 		if (scriptName.equals("empty")) {
 		    world = new JavaPlexilScript();
 		} else {
-		    Class<?> scriptClass = Class.forName(pkg+"."+script+"Script");
+		    Class<?> scriptClass = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+script+"Script");
 		    world = (JavaPlexilScript) 
 		        scriptClass.getConstructor().newInstance();
 		}
 		// Need to find the root node
-		Class<?> main = Class.forName(pkg+"."+NameUtils.clean(planName));
+		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
 		PlexilTestable root = (PlexilTestable) main.getConstructor(ExternalWorld.class).newInstance(world);
 		
 		// And finally the log file
-		File resources = new File("tests/edu/umn/crisys/plexil/test/resources");
 		List<PlanState> expected = parseLogFile(
-		        new File(resources, planName+"___"+scriptName+".log"));
+		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
 		
 		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
         
