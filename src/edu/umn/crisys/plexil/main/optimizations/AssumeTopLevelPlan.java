@@ -69,7 +69,7 @@ public class AssumeTopLevelPlan implements ILExprVisitor<Void, ILExpression>{
 	@Override
 	public ILExpression visitRootParentExit(RootAncestorExitExpr ancExit,
 			Void param) {
-		// Their parent isn't executing.
+		// Their parent isn't exiting.
 		return BooleanValue.get(false);
 	}
 
