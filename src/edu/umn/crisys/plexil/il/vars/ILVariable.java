@@ -33,6 +33,10 @@ public abstract class ILVariable implements ILExpression {
 
 	@Override
 	public String toString() {
+		if (name.startsWith(".")) {
+			// Also include the local node name for some context
+			return uid.getShortName()+name;
+		}
 		return name;
 	}
 	
