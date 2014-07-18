@@ -3,12 +3,8 @@ package edu.umn.crisys.plexil.ast2il;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
@@ -22,19 +18,12 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
-import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
-import edu.umn.crisys.plexil.runtime.values.IntegerValue;
-import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
-import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
-import edu.umn.crisys.plexil.runtime.values.RealValue;
-import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
+public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisitor<Void, ILExpression> {
     
     private NodeToIL context;
     
@@ -190,87 +179,8 @@ public class ASTExprToILExpr implements ASTExprVisitor<Void, ILExpression> {
         default:
             // Everything else is just a composite node that we can deal with
             // the same way. 
-            return translateComposite(op);
+            return visitComposite(op, param);
         }
     }
-    /*
-     * Everything else is really boring, because it's already an ILExpression!
-     * We just either recurse down the tree or return it as-is. 
-     * 
-     */
-    private ILExpression translateComposite(CompositeExpr expr) {
-        List<Expression> newArgs = new ArrayList<Expression>();
-        for (Expression arg : expr.getArguments()) {
-            newArgs.add(arg.accept(this, null));
-        }
-        return expr.getCloneWithArgs(newArgs);
-    }
-
-    @Override
-    public ILExpression visitArrayIndex(ArrayIndexExpr array, Void param) {
-        return translateComposite(array);
-    }
-
-    @Override
-    public ILExpression visitLookupNow(LookupNowExpr lookup, Void param) {
-        return translateComposite(lookup);
-    }
-
-    @Override
-    public ILExpression visitLookupOnChange(LookupOnChangeExpr lookup,
-            Void param) {
-        return translateComposite(lookup);
-    }
-
-	@Override
-	public ILExpression visitBooleanValue(BooleanValue bool, Void param) {
-		return bool;
-	}
-
-	@Override
-	public ILExpression visitIntegerValue(IntegerValue integer, Void param) {
-		return integer;
-	}
-
-	@Override
-	public ILExpression visitRealValue(RealValue real, Void param) {
-		return real;
-	}
-
-	@Override
-	public ILExpression visitStringValue(StringValue string, Void param) {
-		return string;
-	}
-
-	@Override
-	public ILExpression visitUnknownValue(UnknownValue unk, Void param) {
-		return unk;
-	}
-
-	@Override
-	public ILExpression visitPValueList(PValueList<?> list, Void param) {
-		return list;
-	}
-
-	@Override
-	public ILExpression visitCommandHandleState(CommandHandleState state,
-			Void param) {
-		return state;
-	}
-
-	@Override
-	public ILExpression visitNodeFailure(NodeFailureType type, Void param) {
-		return type;
-	}
-
-	@Override
-	public ILExpression visitNodeOutcome(NodeOutcome outcome, Void param) {
-		return outcome;
-	}
-
-	@Override
-	public ILExpression visitNodeState(NodeState state, Void param) {
-		return state;
-	}
 
 }

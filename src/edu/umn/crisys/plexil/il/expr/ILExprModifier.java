@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.main.optimizations;
+package edu.umn.crisys.plexil.il.expr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +10,6 @@ import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
-import edu.umn.crisys.plexil.il.expr.AliasExpr;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
