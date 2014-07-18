@@ -9,7 +9,7 @@ public class CompositeAction implements PlexilAction {
 	private List<PlexilAction> actions;
 	
 	public CompositeAction(PlexilAction... actions) {
-		this.actions = Arrays.asList(actions);
+		this.actions = new ArrayList<PlexilAction>(Arrays.asList(actions));
 	}
 	
 	public CompositeAction(List<PlexilAction> actions) {
