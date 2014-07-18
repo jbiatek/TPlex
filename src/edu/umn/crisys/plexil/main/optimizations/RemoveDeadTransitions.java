@@ -75,7 +75,7 @@ public class RemoveDeadTransitions {
         Set<State> reachableStates = new HashSet<State>();
         // For now, it's just the first state that we initially start in. 
         reachableStates.add(nsm.getStates().get(0));
-        int previousSize = 0;
+        int previousSize;
         do {
         	previousSize = reachableTransitions.size();
         	
