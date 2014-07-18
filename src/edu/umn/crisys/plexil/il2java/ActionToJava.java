@@ -68,7 +68,8 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	@Override
 	public Void visitAssign(AssignAction assign, JBlock block) {
 		// Debug statement
-		if ( ! assign.getLHS().toString().startsWith(".")) {
+		if ( ! assign.getLHS().toString().startsWith(".") 
+				&& StateMachineToJava.DEBUG_STATEMENTS) {
 			block._if(cm.ref(JavaPlan.class).staticRef("DEBUG")) 
 					._then().add(
 						cm.ref(System.class).staticRef("out").invoke("println")
