@@ -33,7 +33,6 @@ import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.main.optimizations.AssumeTopLevelPlan;
-import edu.umn.crisys.plexil.main.optimizations.PossibleValueAnalysis;
 import edu.umn.crisys.plexil.main.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.main.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.main.optimizations.StaticLibIncluder;
