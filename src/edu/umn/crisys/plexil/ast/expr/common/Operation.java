@@ -248,6 +248,9 @@ public class Operation extends CompositeExpr {
         		PBoolean ret = BooleanValue.get(true);
         		for (PValue b : values) {
         			ret = ret.and(bool(b));
+        			if (ret.isFalse()) {
+        				return ret;
+        			}
         		}
         		return ret;
         	case CONCAT:
@@ -289,6 +292,9 @@ public class Operation extends CompositeExpr {
         		PBoolean or = BooleanValue.get(false);
         		for (PValue b : values) {
         			or = or.or(bool(b));
+        			if (or.isTrue()) {
+        				return or;
+        			}
         		}
         		return or;
         	case SQRT:

@@ -25,153 +25,205 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ILEval implements ILExprVisitor<Void, PValue> {
+public class ILEval implements ILExprVisitor<Void, edu.umn.crisys.plexil.il.expr.ILEval.EvalResult> {
+	
+	private static final ILEval EVALUATOR = new ILEval();
+	private ILEval() {}
+	
+	/**
+	 * You can basically ignore this, it's an internal thing. 
+	 * @author jbiatek
+	 *
+	 */
+	public static interface EvalResult {
+		public boolean isConstant();
+		public PValue getConstantValue();
+	}
+	
+	private static class ConstantResult implements EvalResult {
+		private PValue value;
+		
+		public ConstantResult(PValue value) {
+			this.value = value;
+		}
+
+		@Override
+		public boolean isConstant() {
+			return true;
+		}
+
+		@Override
+		public PValue getConstantValue() {
+			return value;
+		}
+	}
+	
+	private static class VariableResult implements EvalResult {
+
+		public static final VariableResult SINGLETON = new VariableResult();
+		
+		@Override
+		public boolean isConstant() {
+			return false;
+		}
+
+		@Override
+		public PValue getConstantValue() {
+			throw new RuntimeException("This expression isn't constant!");
+		}
+		
+	}
 
     public static boolean isConstant(ILExpression ilExpr) {
-        return eval(ilExpr).isKnown();
+        return ilExpr.accept(EVALUATOR, null).isConstant();
     }
     
     public static PValue eval(ILExpression ilExpr) {
-        return ilExpr.accept(new ILEval(), null);
+        return ilExpr.accept(EVALUATOR, null).getConstantValue();
     }
 
 	@Override
-	public PValue visitArrayIndex(ArrayIndexExpr array, Void param) {
-		return UnknownValue.get();
+	public EvalResult visitArrayIndex(ArrayIndexExpr array, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitLookupNow(LookupNowExpr lookup, Void param) {
-		return UnknownValue.get();
+	public EvalResult visitLookupNow(LookupNowExpr lookup, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
-		return UnknownValue.get();
+	public EvalResult visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitOperation(Operation op, Void param) {
-		// Normally, we just call variables UNKNOWN and everything works
-		// out because we really don't know what they'll be. But there's
-		// one exception to this...
-		if (op.getOperator() == Operator.ISKNOWN) {
-			PValue arg = op.getArguments().get(0).accept(this, null);
-			if (arg.isUnknown()) {
-				// Since Expressions can't reference UNKNOWN except through
-				// variables, and we don't know if this variable will always
-				// be unknown or not, the answer is actually UNKNOWN. 
-				return UnknownValue.get();
-			} else {
-				// It must be a constant? This probably doesn't make
-				// any actual sense. 
-				return BooleanValue.get(true);
-			}
+	public EvalResult visitOperation(Operation op, Void param) {
+		// OR and AND have short circuiting, which is slightly different
+		// from everything else. 
+		PValue shortCircuiter = null;
+		if (op.getOperator() == Operator.AND) {
+			shortCircuiter = BooleanValue.get(false);
+		} else if (op.getOperator() == Operator.OR) {
+			shortCircuiter = BooleanValue.get(true);
 		}
 		
 		List<PValue> values = new ArrayList<PValue>();
 		for (Expression arg : op.getArguments()) {
-			values.add(arg.accept(this, null));
+			EvalResult argResult = arg.accept(this, null);
+			if (argResult.isConstant()) {
+				if (shortCircuiter != null && argResult.getConstantValue().equals(shortCircuiter)) {
+					// We have short circuited! This is always going to be it.
+					return argResult;
+				} else {
+					// Just a regular constant. 
+					values.add(argResult.getConstantValue());
+				}
+			} else {
+				// Not constant. Could be anything.
+				return VariableResult.SINGLETON;
+			}
 		}
-		return op.getOperator().eval(values);
-	}
-
-	@Override
-	public PValue visitRootParentState(RootParentStateExpr state, Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitRootParentExit(RootAncestorExitExpr ancExit,
-			Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitRootParentInvariant(
-			RootAncestorInvariantExpr ancInv, Void param) {
-		return UnknownValue.get();
-	}
-
-
-	@Override
-	public PValue visitSimple(SimpleVar var, Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitArray(ArrayVar array, Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitLibrary(LibraryVar lib, Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitAlias(AliasExpr alias, Void param) {
-		return UnknownValue.get();
-	}
-
-	@Override
-	public PValue visitGetNodeState(GetNodeStateExpr state, Void param) {
-		return UnknownValue.get();
+		// All the arguments were constant, so this should be constant too. 
+		return new ConstantResult(op.getOperator().eval(values));
 	}
 	
 	@Override
-	public PValue visitBooleanValue(BooleanValue bool, Void param) {
-		return bool;
+	public EvalResult visitRootParentState(RootParentStateExpr state, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitIntegerValue(IntegerValue integer, Void param) {
-		return integer;
+	public EvalResult visitRootParentExit(RootAncestorExitExpr ancExit,
+			Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitRealValue(RealValue real, Void param) {
-		return real;
+	public EvalResult visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitStringValue(StringValue string, Void param) {
-		return string;
+	public EvalResult visitRootParentInvariant(
+			RootAncestorInvariantExpr ancInv, Void param) {
+		return VariableResult.SINGLETON;
+	}
+
+
+	@Override
+	public EvalResult visitSimple(SimpleVar var, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitUnknownValue(UnknownValue unk, Void param) {
-		return unk;
+	public EvalResult visitArray(ArrayVar array, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitPValueList(PValueList<?> list, Void param) {
-		return list;
+	public EvalResult visitLibrary(LibraryVar lib, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitCommandHandleState(CommandHandleState state, Void param) {
-		return state;
+	public EvalResult visitAlias(AliasExpr alias, Void param) {
+		return VariableResult.SINGLETON;
 	}
 
 	@Override
-	public PValue visitNodeFailure(NodeFailureType type, Void param) {
-		return type;
+	public EvalResult visitGetNodeState(GetNodeStateExpr state, Void param) {
+		return VariableResult.SINGLETON;
+	}
+	
+	@Override
+	public EvalResult visitBooleanValue(BooleanValue bool, Void param) {
+		return new ConstantResult(bool);
 	}
 
 	@Override
-	public PValue visitNodeOutcome(NodeOutcome outcome, Void param) {
-		return outcome;
+	public EvalResult visitIntegerValue(IntegerValue integer, Void param) {
+		return new ConstantResult(integer);
 	}
 
 	@Override
-	public PValue visitNodeState(NodeState state, Void param) {
-		return state;
+	public EvalResult visitRealValue(RealValue real, Void param) {
+		return new ConstantResult(real);
+	}
+
+	@Override
+	public EvalResult visitStringValue(StringValue string, Void param) {
+		return new ConstantResult(string);
+	}
+
+	@Override
+	public EvalResult visitUnknownValue(UnknownValue unk, Void param) {
+		return new ConstantResult(unk);
+	}
+
+	@Override
+	public EvalResult visitPValueList(PValueList<?> list, Void param) {
+		return new ConstantResult(list);
+	}
+
+	@Override
+	public EvalResult visitCommandHandleState(CommandHandleState state, Void param) {
+		return new ConstantResult(state);
+	}
+
+	@Override
+	public EvalResult visitNodeFailure(NodeFailureType type, Void param) {
+		return new ConstantResult(type);
+	}
+
+	@Override
+	public EvalResult visitNodeOutcome(NodeOutcome outcome, Void param) {
+		return new ConstantResult(outcome);
+	}
+
+	@Override
+	public EvalResult visitNodeState(NodeState state, Void param) {
+		return new ConstantResult(state);
 	}
 
 	
