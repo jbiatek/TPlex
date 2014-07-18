@@ -18,10 +18,9 @@ public class CompileRegressionTest {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-	    File outputDir = new File("tests");
 		// Compile tests:
 		for (TestSuite suite : RegressionTest.getTestSuites()) {
-		    buildTest(suite, RegressionTest.RESOURCES, outputDir);
+		    buildTest(suite, RegressionTest.RESOURCES, RegressionTest.TESTING_DIRECTORY);
 		}
 	}
 	

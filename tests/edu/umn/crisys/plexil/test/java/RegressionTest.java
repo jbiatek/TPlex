@@ -36,6 +36,7 @@ import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
  */
 public class RegressionTest {
 	
+	public static final File TESTING_DIRECTORY = new File("tests");
 	public static final File RESOURCES = new File("tests/edu/umn/crisys/plexil/test/resources/");
 	public static final File ORACLE_LOGS = new File("tests/generated/oracle");
 	public static final String TPLEX_OUTPUT_PACKAGE = "generated.java";
