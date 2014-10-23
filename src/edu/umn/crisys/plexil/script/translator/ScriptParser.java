@@ -4,7 +4,6 @@ import static edu.umn.crisys.util.xml.XMLUtils.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,15 +46,7 @@ public class ScriptParser {
         
         File resources = new File("tests/edu/umn/crisys/plexil/test/resources");
         
-        //*/
-        String[] files = resources.list(new FilenameFilter() {
-            
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".psx");
-            }
-        });//*/
-        
+        String[] files = resources.list((File dir, String name) -> name.endsWith(".psx"));
         
         for (String file : files) {
             System.out.println("Parsing file "+file);
