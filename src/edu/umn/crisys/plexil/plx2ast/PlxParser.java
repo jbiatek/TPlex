@@ -4,7 +4,6 @@ import static edu.umn.crisys.util.xml.XMLUtils.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +30,7 @@ public class PlxParser {
         
         //String[] files = new String[]{"array1.plx"};
         //*/
-        String[] files = resources.list(new FilenameFilter() {
-            
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".plx");
-            }
-        });//*/
+        String[] files = resources.list((File dir, String name) -> name.endsWith(".plx"));
         
         
         for (String file : files) {
