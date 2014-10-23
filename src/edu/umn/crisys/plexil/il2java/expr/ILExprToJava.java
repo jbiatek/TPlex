@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.il2java.expr;
 
+import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
@@ -10,6 +11,7 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
+import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -24,6 +26,10 @@ public class ILExprToJava {
             throw new NullPointerException();
         }
         return expr.accept(new IL2Java(), cm);
+    }
+    
+    public static void insertShortCircuitHack(JBlock block, JCodeModel cm) {
+        block.decl(cm.ref(PBoolean.class), "temp");
     }
     
     public static JExpression toJavaBiased(ILExpression expr, JCodeModel cm, boolean isThis) {

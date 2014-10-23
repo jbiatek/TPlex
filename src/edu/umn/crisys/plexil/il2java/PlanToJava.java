@@ -42,6 +42,100 @@ public class PlanToJava {
 
 	private PlanToJava() {}
 	
+	private static void addLibEvalMethod(Class<?> returnType, String name, ILExpression ret, JDefinedClass libClass) {
+		JMethod evalSomething = libClass.method(JMod.PUBLIC, libClass.owner().ref(returnType), name);
+		// The eval methods can contain complex expressions, but since we're not
+		// in a biased environment, we need to add a temp for short circuiting.
+		ILExprToJava.insertShortCircuitHack(evalSomething.body(), libClass.owner());
+		evalSomething.body()._return(ILExprToJava.toJava(ret, libClass.owner()));
+	}
+	
+	private static void addAliasesToLibraryVar(JDefinedClass libClass, LibraryVar ilLib) {
+		if (ilLib.getAliases().isEmpty()) return;
+		
+		JCodeModel cm = libClass.owner();
+		
+		// There are two methods that deal with aliases: one to just get the
+		// value and one to perform assignments. 
+        JMethod performAssignment = libClass.method(JMod.PUBLIC, cm.VOID, "performAssignment");
+        JVar varNamePA = performAssignment.param(cm.ref(String.class), "varName");
+        JVar value = performAssignment.param(cm.ref(PValue.class), "value");
+        performAssignment.param(cm.INT, "priority"); // TODO: Is priority really used?
+
+        JMethod getValue = libClass.method(JMod.PUBLIC, cm.ref(PValue.class), "getValue");
+        JVar varNameGV = getValue.param(cm.ref(String.class), "varName");
+
+        // There's a chain of if/else statements for both the getValue and
+        // performAssignment methods. 
+        JConditional condAssign = null;
+        JConditional condGetter = null;
+
+        // We're just doing both methods at once, since we have to go through
+        // the whole set of aliases for each one anyway. 
+        for (String alias : ilLib.getAliases().keySet()) {
+
+            // First up, performAssignment. 
+
+            ILExpression target = ilLib.getAliases().get(alias);
+            if (target.isAssignable()) {
+                // Add this one to the assignable list. 
+                if (condAssign == null) {
+                	// First one, use an if statement
+                    condAssign = performAssignment.body()._if(
+                    		varNamePA.invoke("equals").arg(JExpr.lit(alias)));
+                } else {
+                	// Not first, chain it on with an else if statement
+                    condAssign = condAssign._elseif(
+                    		varNamePA.invoke("equals").arg(JExpr.lit(alias)));
+                }
+                // Now we have a conditional, fill its body with the assignment
+                ILVariable varToCommit = ActionToJava.addAssignment(condAssign._then(), target, value, cm);
+                if (varToCommit != null) {
+                	// We need to commit this variable after we assign it.
+                	condAssign._then().invoke("commitAfterMicroStep").arg(
+                			JExpr.ref(ILExprToJava.getFieldName(varToCommit)));
+                	condAssign._then().invoke("endMacroStep");
+                }
+            }
+
+            // All aliases are readable, so let's do the same thing with the 
+            // getter method. 
+            if (condGetter == null) {
+            	// First one, so use an if statement
+                condGetter = getValue.body()._if(
+                		varNameGV.invoke("equals").arg(JExpr.lit(alias)));
+            } else {
+            	// Not first, so chain it and use an else if
+                condGetter = condGetter._elseif(
+                		varNameGV.invoke("equals").arg(JExpr.lit(alias)));
+            }
+            // Fill the body with a return statement.
+            condGetter._then()._return(
+                    ILExprToJava.toJava(ilLib.getAliases().get(alias), cm));
+
+        }
+        // We've been through all aliases now. What if we didn't use condAssign
+        // or condGetter? 
+        if (condAssign == null) {
+        	// Nothing was assignable, but this method is being asked to assign.
+        	// We can just throw a descriptive expression. 
+        	performAssignment.body()._throw(JExpr._new(cm.ref(RuntimeException.class))
+        			.arg(JExpr.lit("No variables were specified as writable")));
+        } else {
+        	// We had some assignments. Let's cap off the if/else chain with
+        	// a final else, handling the case where they asked for a name
+        	// that we don't know about. 
+        	condAssign._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
+        			.arg(JExpr.lit("I don't know where to assign for ").plus(varNamePA)));
+        }
+        // We can assume the getter isn't null, because there should
+        // have been at least 1 alias. We just need to handle the else case,
+        // just like above. 
+        condGetter._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
+                .arg(JExpr.lit("I don't know about a var named ").plus(varNameGV)));
+
+	}
+	
 	private static void addLibraryVarToClass(JDefinedClass clazz, LibraryVar lib, Map<String,String> idToClassName) {
         JCodeModel cm = clazz.owner();
         // We're actually adding the entire node, and creating the interface
@@ -58,193 +152,112 @@ public class PlanToJava {
             .body()._return(ILExprToJava.toJava(lib.getLibraryNodeState(), cm));
         
         // evalAncestorInvariant() returns our + ancestor's invariants
-        JMethod evalInv = anonClass.method(JMod.PUBLIC, cm.ref(PBoolean.class), "evalAncestorInvariant");
-        evalInv.body().decl(cm.ref(PBoolean.class), "temp");
-        evalInv.body()._return(ILExprToJava.toJava(lib.getLibAndAncestorsInvariants(), cm));
+        addLibEvalMethod(PBoolean.class, "evalAncestorInvariant", lib.getLibAndAncestorsInvariants(), anonClass);
         
         // evalAncestorEnd() returns our + ancestor's ends
-        JMethod evalEnd = anonClass.method(JMod.PUBLIC, cm.ref(PBoolean.class), "evalAncestorEnd");
-        evalEnd.body().decl(cm.ref(PBoolean.class), "temp");
-        evalEnd.body()._return(ILExprToJava.toJava(lib.getLibOrAncestorsEnds(), cm));
+        addLibEvalMethod(PBoolean.class, "evalAncestorEnd", lib.getLibOrAncestorsEnds(), anonClass);
         
         // evalAncestorExit() returns our + ancestor's exits
-        JMethod evalExit = anonClass.method(JMod.PUBLIC, cm.ref(PBoolean.class), "evalAncestorExit");
-        evalExit.body().decl(cm.ref(PBoolean.class), "temp");
-        evalExit.body()._return(ILExprToJava.toJava(lib.getLibOrAncestorsExits(), cm));
+        addLibEvalMethod(PBoolean.class, "evalAncestorExit", lib.getLibOrAncestorsExits(), anonClass);
         
-        
-        if ( ! lib.getAliases().isEmpty()) {
-            // More work to handle aliases
-            JMethod performAssignment = anonClass.method(JMod.PUBLIC, cm.VOID, "performAssignment");
-            JVar varNamePA = performAssignment.param(cm.ref(String.class), "varName");
-            JVar value = performAssignment.param(cm.ref(PValue.class), "value");
-            JVar priority = performAssignment.param(cm.INT, "priority");
-
-            JMethod getValue = anonClass.method(JMod.PUBLIC, cm.ref(PValue.class), "getValue");
-            JVar varNameGV = getValue.param(cm.ref(String.class), "varName");
-
-            JConditional condAssign = null;
-            JConditional condGetter = null;
-
-            for (String alias : lib.getAliases().keySet()) {
-
-                // Do we need to make this assignable, or just readable?
-
-                ILExpression target = lib.getAliases().get(alias);
-                if (target.isAssignable()) {
-                    // Need to add this to both methods
-                    if (condAssign == null) {
-                        condAssign = performAssignment.body()
-                        ._if(varNamePA.invoke("equals").arg(JExpr.lit(alias)));
-                    } else {
-                        condAssign = condAssign
-                        ._elseif(varNamePA.invoke("equals").arg(JExpr.lit(alias)));
-                    }
-                    ILVariable varToCommit = ActionToJava.addAssignment(condAssign._then(), target, value, cm);
-                    if (varToCommit != null) {
-                    	// We need to commit this variable after we assign it.
-                    	condAssign._then().invoke("commitAfterMicroStep").arg(
-                    			JExpr.ref(ILExprToJava.getFieldName(varToCommit)));
-                    	condAssign._then().invoke("endMacroStep");
-                    }
-                }
-
-                if (condGetter == null) {
-                    condGetter = getValue.body()
-                    ._if(varNameGV.invoke("equals").arg(JExpr.lit(alias)));
-                } else {
-                    condGetter = condGetter
-                    ._elseif(varNameGV.invoke("equals").arg(JExpr.lit(alias)));
-                }
-                condGetter._then()._return(
-                        ILExprToJava.toJava(lib.getAliases().get(alias), cm));
-
-            }
-            if (condAssign == null) {
-            	// We never set one, so make the body just an exception throw.
-            	performAssignment.body()._throw(JExpr._new(cm.ref(RuntimeException.class))
-            			.arg(JExpr.lit("No variables were specified as writable")));
-            } else {
-            	condAssign._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
-            			.arg(JExpr.lit("I don't know where to assign for ").plus(varNamePA)));
-            }
-            // That shouldn't be a problem here, though, since there must have
-            // been at least 1 alias.
-            condGetter._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
-                    .arg(JExpr.lit("I don't know about a var named ").plus(varNameGV)));
-        }
+        // More work to handle aliases, if any
+        addAliasesToLibraryVar(anonClass, lib);
 
         String className = NameUtils.clean(lib.getLibraryPlexilID());
         if (idToClassName != null && idToClassName.containsKey(lib.getLibraryPlexilID())) {
         	className = idToClassName.get(lib.getLibraryPlexilID());
         }
         
+        // Finally, add the library field to the main class
         clazz.field(JMod.PRIVATE, clazz.owner().ref(JavaPlan.class), 
                 ILExprToJava.getLibraryFieldName(lib.getNodeUID()),
                 JExpr._new(cm.directClass(className))
                 .arg(JExpr._new(anonClass))); 
     }
 	
+	private static void addVariable(ILVariable v, JDefinedClass clazz, Map<String,String> idToClassName) {
+		ILVarVisitor<JDefinedClass, Void> adder = new ILVarVisitor<JDefinedClass, Void>() {
+
+			@Override
+			public Void visitSimple(SimpleVar var, JDefinedClass clazz) {
+				JCodeModel cm = clazz.owner();
+				// Get SimplePValue<Whatever>
+				JClass varContainerClass = cm.ref(SimplePValue.class).narrow(var.getType().getTypeClass());
+
+				// Prepare the initial value. There should always be one, because
+				// SimpleVar creates one if there isn't. 
+				JExpression initExpr = ILExprToJava.toJava(var.getInitialValue(), cm);
+
+
+				// Now we can create the field
+				// private SimplePValue<Whatever> varId_ = new SimplePValue<Whatever>(init, type);
+				clazz.field(JMod.PRIVATE, varContainerClass, ILExprToJava.getFieldName(var),
+						JExpr._new(varContainerClass)
+						.arg(initExpr)
+						.arg(ILExprToJava.plexilTypeAsJava(var.getType(), cm)));
+
+				return null;
+			}
+
+			@Override
+			public Void visitArray(ArrayVar array, JDefinedClass clazz) {
+				JCodeModel cm = clazz.owner();
+
+				// Create JClass for SimplePArray<PBooleanOrPIntOrPWhatever>:
+				JClass parameterized = cm.ref(SimplePArray.class).narrow(
+						array.getType().elementType().getTypeClass());
+
+				// Create the initializing expression:
+				// new SimplePArray<Type>(type, numElements, T... init):
+				JInvocation init = JExpr._new(parameterized)
+						.arg(ILExprToJava.plexilTypeAsJava(array.getType(), cm))
+						.arg(JExpr.lit(array.getMaxSize()));
+				for (PValue item : array.getInitialValue()) {
+					init.arg(ILExprToJava.toJava(item, cm));
+				}
+
+				// That's all the pieces! Let's make the field:
+				//JFieldVar jvar = 
+				clazz.field(JMod.PRIVATE, parameterized, ILExprToJava.getFieldName(array), init);
+
+				return null;
+			}
+
+			@Override
+			public Void visitLibrary(LibraryVar lib, JDefinedClass clazz) {
+				addLibraryVarToClass(clazz, lib, idToClassName);
+				return null;
+			}
+
+		};
+		v.accept(adder, clazz);
+	}
 	
 	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, boolean couldBeLibrary, 
 			final Map<String,String> idToClassName) {
-	    String realPkg = pkg.equals("") ? "" : pkg+".";
 	    // Try to create a class for this Plan.
-	    JDefinedClass clazz;
-        try {
-            String name = NameUtils.clean(p.getPlanName());
-            clazz = cm._class(realPkg + name);
-        } catch (JClassAlreadyExistsException e) {
-            throw new RuntimeException(e);
-        }
-        // Of course, we extend the JavaPlan class. 
-        clazz._extends(cm.ref(JavaPlan.class));
-        
-        // JavaPlan has two constructors to override.
-        JMethod basicConstructor = clazz.constructor(JMod.PUBLIC);
-        basicConstructor.param(cm.ref(ExternalWorld.class), "world");
-        basicConstructor.body().invoke("super").arg(JExpr.ref("world"));
-        
-        // If we're being used as a library, this one will be invoked. It contains
-        // an interface for talking to our parent.
-        JMethod libConstructor = clazz.constructor(JMod.PUBLIC);
-        JVar inParent = libConstructor.param(cm.ref(LibraryInterface.class), "inParent");
-        if (couldBeLibrary) {
-        	libConstructor.body().invoke("super").arg(inParent);
-        } else {
-        	libConstructor.body().invoke("super").arg(JExpr.cast(cm.ref(LibraryInterface.class), JExpr._null()));
-        	libConstructor.body()._throw(JExpr._new(cm.ref(IllegalArgumentException.class))
-        			.arg(JExpr.lit(
-        					"This PLEXIL file didn't look like a library, so library support isn't"
-        					+ " included. Please either add an interface to the root node, or "
-        					+ "use the \"--libs\" option when translating.")));
-        }
+		String fqcn = fullyQualifyName(pkg, NameUtils.clean(p.getPlanName()));
+	    JDefinedClass clazz = createJavaPlanClass(fqcn, couldBeLibrary, cm);
         
         // Variables! We need to add them to the class.
-        for (ILVariable v : p.getVariables()) {
-        	ILVarVisitor<JDefinedClass, Void> adder = new ILVarVisitor<JDefinedClass, Void>() {
-
-				@Override
-				public Void visitSimple(SimpleVar var, JDefinedClass clazz) {
-			        JCodeModel cm = clazz.owner();
-			        // Get SimplePValue<Whatever>
-			        JClass varContainerClass = cm.ref(SimplePValue.class).narrow(var.getType().getTypeClass());
-
-			        // Prepare the initial value. There should always be one, because
-			        // SimpleVar creates one if there isn't. 
-			        JExpression initExpr = ILExprToJava.toJava(var.getInitialValue(), cm);
-
-			        
-			        // Now we can create the field
-			        // private SimplePValue<Whatever> varId_ = new SimplePValue<Whatever>(init, type);
-			        clazz.field(JMod.PRIVATE, varContainerClass, ILExprToJava.getFieldName(var),
-			                JExpr._new(varContainerClass)
-			                	.arg(initExpr)
-			                	.arg(ILExprToJava.plexilTypeAsJava(var.getType(), cm)));
-			        
-			        return null;
-				}
-
-				@Override
-				public Void visitArray(ArrayVar array, JDefinedClass clazz) {
-			        JCodeModel cm = clazz.owner();
-			        
-			        // Create JClass for SimplePArray<PBooleanOrPIntOrPWhatever>:
-			        JClass parameterized = cm.ref(SimplePArray.class).narrow(
-			        		array.getType().elementType().getTypeClass());
-			        
-			        // Create the initializing expression:
-			        // new SimplePArray<Type>(type, numElements, T... init):
-			        JInvocation init = JExpr._new(parameterized)
-			        		.arg(ILExprToJava.plexilTypeAsJava(array.getType(), cm))
-			        		.arg(JExpr.lit(array.getMaxSize()));
-			        for (PValue item : array.getInitialValue()) {
-			        	init.arg(ILExprToJava.toJava(item, cm));
-			        }
-
-			        // That's all the pieces! Let's make the field:
-			        //JFieldVar jvar = 
-			        clazz.field(JMod.PRIVATE, parameterized, ILExprToJava.getFieldName(array), init);
-			        
-			        return null;
-				}
-
-				@Override
-				public Void visitLibrary(LibraryVar lib, JDefinedClass clazz) {
-					addLibraryVarToClass(clazz, lib, idToClassName);
-					return null;
-				}
-        		
-        	};
-        	v.accept(adder, clazz);
-        }
-        
+	    for (ILVariable v : p.getVariables()) {
+	    	addVariable(v, clazz, idToClassName);
+	    }
+	    
         // Put each node state machine into the class.
         for (NodeStateMachine nsm : p.getMachines()) {
             StateMachineToJava.addStateMachineToClass(nsm, clazz);
         }
         
-        // Also make the doMicroStep method, using our root machine:
+        // Also make the abstract methods that JavaPlan uses:
+        implementAbstractMethods(clazz, p);
+        
+	    return clazz;
+	}
+	
+	private static void implementAbstractMethods(JDefinedClass clazz, Plan p) {
+		JCodeModel cm = clazz.owner();
+		
         JMethod doMicroStep = clazz.method(JMod.PUBLIC, cm.VOID, "doMicroStep"); 
         StateMachineToJava.callStepFunction(p.getRootMachine(), doMicroStep.body());
         doMicroStep.body().invoke("notifyMicroStep");
@@ -254,13 +267,56 @@ public class PlanToJava {
         
         clazz.method(JMod.PUBLIC, cm.ref(NodeState.class), "getRootNodeState").body()
             ._return(ILExprToJava.toJava(p.getRootNodeState(), cm));
-        
+	}
+
+    private static String fullyQualifyName(String pkg, String className) {
+		String realPkg = pkg.equals("") ? "" : pkg+".";
+		return realPkg + className;
+	}
+
+	/**
+	 * @param fullyQualifiedName
+	 * @param cm
+	 * @return an empty JavaPlan class
+	 */
+	private static JDefinedClass createJavaPlanClass(String fullyQualifiedName, boolean couldBeLibrary, JCodeModel cm) {
+	    JDefinedClass clazz;
+	    try {
+	        clazz = cm._class(fullyQualifiedName);
+	    } catch (JClassAlreadyExistsException e) {
+	        throw new RuntimeException(e);
+	    }
+	    // Of course, we extend the JavaPlan class. 
+	    clazz._extends(cm.ref(JavaPlan.class));
+	    
+	    // There's a simple basic constructor
+	    JMethod basicConstructor = clazz.constructor(JMod.PUBLIC);
+	    basicConstructor.param(clazz.owner().ref(ExternalWorld.class), "world");
+	    basicConstructor.body().invoke("super").arg(JExpr.ref("world"));
+	    
+	    // And there's also a library constructor
+	    JMethod libConstructor = clazz.constructor(JMod.PUBLIC);
+	    JVar inParent = libConstructor.param(cm.ref(LibraryInterface.class), "inParent");
+	    if (couldBeLibrary) {
+	    	// The "real" constructor, passing info to JavaPlan.class
+	    	libConstructor.body().invoke("super").arg(inParent);
+	    } else {
+	    	// A stub constructor which just throws an exception
+	    	libConstructor.body().invoke("super").arg(JExpr.cast(cm.ref(LibraryInterface.class), JExpr._null()));
+	    	libConstructor.body()._throw(JExpr._new(cm.ref(IllegalArgumentException.class))
+	    			.arg(JExpr.lit(
+	    					"This PLEXIL file didn't look like a library, so library support isn't"
+	    					+ " included. Please either add an interface to the root node, or "
+	    					+ "use the \"--libs\" option when translating.")));
+	    }
+	    
+	    // Those are the basics!
 	    return clazz;
 	}
 	
 	
 
-    public static void addGetSnapshotMethod(Plan ilPlan, NodeToIL translator,
+	public static void addGetSnapshotMethod(Plan ilPlan, NodeToIL translator,
             JDefinedClass javaCode) {
         
         javaCode._implements(PlexilTestable.class);
