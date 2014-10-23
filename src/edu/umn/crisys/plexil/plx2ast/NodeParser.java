@@ -1,14 +1,6 @@
 package edu.umn.crisys.plexil.plx2ast;
 
-import static edu.umn.crisys.util.xml.XMLUtils.assertClosedTag;
-import static edu.umn.crisys.util.xml.XMLUtils.assertEnd;
-import static edu.umn.crisys.util.xml.XMLUtils.assertStart;
-import static edu.umn.crisys.util.xml.XMLUtils.getStringContent;
-import static edu.umn.crisys.util.xml.XMLUtils.isTag;
-import static edu.umn.crisys.util.xml.XMLUtils.isTagEndingWith;
-import static edu.umn.crisys.util.xml.XMLUtils.localNameOf;
-import static edu.umn.crisys.util.xml.XMLUtils.nextTag;
-import static edu.umn.crisys.util.xml.XMLUtils.nextTagIsStartOf;
+import static edu.umn.crisys.util.xml.XMLUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +26,6 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
-import edu.umn.crisys.util.xml.XMLUtils.TagIterator;
 
 public class NodeParser {
     
@@ -49,7 +40,7 @@ public class NodeParser {
         assertStart("Node", start);
         
         // Process child tags of <Node>
-        for (StartElement e : new TagIterator(xml, "Node")) {
+        for (StartElement e : allChildTagsOf(start.asStartElement(), xml)) {
             if (isTag(e, "NodeId")) {
                 nodeToFill.setPlexilID(getStringContent(e, xml));
             }
@@ -125,7 +116,7 @@ public class NodeParser {
 
     private static NodeListBody parseNodeListBody(StartElement start, XMLEventReader xml, Node theNode) {
         NodeListBody list = new NodeListBody();
-        for (StartElement e : new TagIterator(xml, "NodeList")) {
+        for (StartElement e : allChildTagsOf(start, xml)) {
             list.getChildList().add(parsePlexilNode(e, xml, new Node(theNode)));
         }
         return list;
@@ -160,7 +151,7 @@ public class NodeParser {
         List<ASTExpression> args = new ArrayList<ASTExpression>();
         child = nextTag(xml);
         if (isTag(child, "Arguments")) {
-            for (StartElement arg : new TagIterator(xml, child.asStartElement())) {
+            for (StartElement arg : allChildTagsOf(child.asStartElement(), xml)) {
                 args.add(ExprParser.parse(arg, xml, PlexilType.UNKNOWN));
             }
             // Now we should be done.
@@ -206,7 +197,7 @@ public class NodeParser {
         
         // Contains a bunch of things like this:
         // <Pair><Name>blah</Name><IntegerValue>1</IntegerValue></Pair>
-        for (StartElement pair : new TagIterator(xml, start)) {
+        for (StartElement pair : allChildTagsOf(start, xml)) {
             if (isTag(pair, "Pair")) {
                 String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
                 ASTExpression value = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
@@ -234,7 +225,7 @@ public class NodeParser {
         // Then, 0 or more Alias tags. 
         // First, let's make the body to store them in.
         LibraryBody lib = new LibraryBody(nodeId);
-        for (StartElement alias : new TagIterator(xml, start)) {
+        for (StartElement alias : allChildTagsOf(start, xml)) {
             if (isTag(alias, "Alias")) {
                 //These contain a <NodeParameter> string, then an expression.
                 String param = getStringContent(assertStart("NodeParameter", nextTag(xml)), xml);
@@ -253,7 +244,7 @@ public class NodeParser {
     private static void parseVariableDeclarations(Node node, StartElement start, 
             XMLEventReader xml)  {
         assertStart("VariableDeclarations", start);
-        for (StartElement e : new TagIterator(xml, start)) {
+        for (StartElement e : allChildTagsOf(start, xml)) {
             
             if (isTag(e, "DeclareVariable")) {
                 node.addVar(parseDeclareVariable(e, xml));
@@ -276,7 +267,7 @@ public class NodeParser {
         String maxSizeStr = null;
         List<PValue> parsedInitValues = null;
         
-        for (StartElement e : new TagIterator(xml, "DeclareArray")) {
+        for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
                 name = getStringContent(e, xml);
             } else if (isTag(e, "Type")) {
@@ -285,7 +276,7 @@ public class NodeParser {
                 maxSizeStr = getStringContent(e, xml);
             } else if (isTag(e, "InitialValue")) {
                 parsedInitValues = new ArrayList<PValue>();
-                for (StartElement v : new TagIterator(xml, "InitialValue")) {
+                for (StartElement v : allChildTagsOf(e.asStartElement(), xml)) {
                     parsedInitValues.add(ExprParser.parsePValue(v, xml));
                 }
             } else {
@@ -315,7 +306,7 @@ public class NodeParser {
         String typeStr = null;
         PValue init = null;
         
-        for (StartElement e : new TagIterator(xml, "DeclareVariable")) {
+        for (StartElement e : allChildTagsOf(start.asStartElement(), xml)) {
             if (isTag(e, "Name")) {
                 name = getStringContent(e, xml);
             } else if (isTag(e, "Type")) {
@@ -341,7 +332,7 @@ public class NodeParser {
         // Obviously, this one has been defined.
         iface.isDefined();
         
-        for (StartElement inOrOut : new TagIterator(xml, start)) {
+        for (StartElement inOrOut : allChildTagsOf(start, xml)) {
             boolean writeable = false;
             if (isTag(inOrOut, "InOut")) {
                 writeable = true;
@@ -350,7 +341,7 @@ public class NodeParser {
             }
             // Either way, it contains some number of DeclareVariable/Array. 
             // But Arrays aren't officially supported, so don't bother.
-            for (StartElement declare : new TagIterator(xml, inOrOut)) {
+            for (StartElement declare : allChildTagsOf(inOrOut, xml)) {
 
                 if (isTag(declare, "DeclareArray")) {
                     throw new RuntimeException("Arrays are not supported as "

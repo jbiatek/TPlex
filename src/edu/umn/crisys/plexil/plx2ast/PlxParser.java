@@ -69,7 +69,7 @@ public class PlxParser {
         XMLEvent nextTag = nextTag(xml);
         if (isTag(nextTag, "GlobalDeclarations")) {
         	// Global declarations. It could be any of these.
-        	for (StartElement child : new TagIterator(xml, nextTag.asStartElement())) {
+        	for (StartElement child : allChildTagsOf(nextTag.asStartElement(), xml)) {
         		if (isTag(child, "CommandDeclaration")) {
         			p.getCommandDeclarations().add(parseCommandDecl(xml, child));
         		} else if (isTag(child, "StateDeclaration")) {

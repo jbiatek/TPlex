@@ -80,7 +80,7 @@ public class ScriptParser {
         // Here we go with the first thing
         StartElement e = xml.nextTag().asStartElement();
         if (isTag(e, "InitialState")) {
-            for (StartElement event : new TagIterator(xml, e)) {
+            for (StartElement event : allChildTagsOf(e, xml)) {
                 ret.addInitialEvent(parseScriptEvent(event, xml));
             }
             // That should be it for initial state. Move to the next tag.
@@ -88,7 +88,7 @@ public class ScriptParser {
         }
         // Finished with initial state, if any. Now there should be a main Script tag.
         assertStart("Script", e);
-        for (StartElement event : new TagIterator(xml, e)) {
+        for (StartElement event : allChildTagsOf(e, xml)) {
             ret.addMainEvent(parseScriptEvent(event, xml));
         }
         
@@ -112,7 +112,7 @@ public class ScriptParser {
             return new UpdateAck(name);
         } else if (isTag(start, "Simultaneous")) {
         	Simultaneous sim = new Simultaneous();
-        	for (StartElement child : new TagIterator(xml, start)) {
+        	for (StartElement child : allChildTagsOf(start, xml)) {
         		sim.addEvent(parseScriptEvent(child, xml));
         	}
         	return sim;

@@ -28,11 +28,10 @@ import javax.xml.stream.events.XMLEvent;
  * too, so just think of it as "closing" each tag that you "start". 
  * 
  * <p>Two things in here "close" the tag for you. Both getStringContent and
- * TagIterator take a start tag, and when they see an end tag they "close"
- * it for you and additionally make sure that it matches the start tag. There
- * are ways to fool TagIterator but you have to mess things up inside the loop
- * in a pretty specific way.
- * 
+ * allChildTagsOf take a start tag, and when they see an end tag they "close"
+ * it for you and additionally make sure that it matches the start tag. The
+ * allChildTagsOf method uses some slightly tricky side effects, so make sure
+ * to read its documentation when using. 
  * 
  * <p>Common idioms:
  * <pre><p>
@@ -40,7 +39,7 @@ import javax.xml.stream.events.XMLEvent;
  *     assertStart("Foo", fooStart); // just to make sure 
  *      
  *     // We want each child node of the Foo tag: 
- *     for (StartElement child : new TagIterator(xml, fooStart)) { 
+ *     for (StartElement child : allChildTagsOf(fooStart, xml)) { 
  *         if (isTag(child, "Bar")) { 
  *         
  *             // Do something to contents of "Bar" tag 
@@ -54,7 +53,8 @@ import javax.xml.stream.events.XMLEvent;
  *             // tag is already closed thanks to getStringContent()
  *         } 
  *     } 
- *     // Tag is already closed thanks to TagIterator 
+ *     // Tag is already closed thanks to allChildTagsOf, otherwise we'd 
+ *     // probably do assertClosedTag(fooStart, xml) to "consume" that end tag 
  *     return foo; 
  * }
  * </p></pre>
@@ -254,9 +254,10 @@ public class XMLUtils {
      * the whitespace between children, because this will silently skip it. 
      * It also skips XML comments. 
      * 
-     * <p>This iterator makes that scenario dead simple, as long as you leave the Reader
-     * at the next child at the end of the loop. After the loop, you should
-     * be at the next tag after the close of the start.
+     * <p>This iterator makes that scenario dead simple, <em>as long as you leave the Reader
+     * at the next child at the end of the loop</em>. After the loop, you should
+     * be at the next tag after the close of the start. More simply, just make
+     * sure that the last thing you do to the XML in each loop is "close" the current tag. 
      * 
      * <p>Note that this kind of breaks the contract for iterators. It's really just a 
      * wrapper around the XMLEventReader (which itself is an iterator) that
@@ -266,14 +267,13 @@ public class XMLUtils {
      * @author jbiatek
      *
      */
-    public static class TagIterator implements Iterator<StartElement>, Iterable<StartElement> {
+    public static Iterable<StartElement> allChildTagsOf(StartElement start, XMLEventReader xml) {
+    	return new TagIterator(xml, start);
+    }
+    
+    private static class TagIterator implements Iterator<StartElement>, Iterable<StartElement> {
         private XMLEventReader xml;
         private String expectedEnd;
-        
-        public TagIterator(XMLEventReader xml, String expectedEnd) {
-            this.xml = xml;
-            this.expectedEnd = expectedEnd;
-        }
         
         public TagIterator(XMLEventReader xml, StartElement tagToClose) {
             this.xml = xml;

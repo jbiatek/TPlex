@@ -110,7 +110,7 @@ public class ExprParser {
 
     private static List<Expression> parseMultiple(StartElement start, XMLEventReader xml, PlexilType expectedType) {
         List<Expression> list = new ArrayList<Expression>();
-        for (StartElement tag : new TagIterator(xml, start)) {
+        for (StartElement tag : allChildTagsOf(start, xml)) {
             list.add(parse(tag, xml, expectedType));
         }
         return list;
@@ -252,7 +252,7 @@ public class ExprParser {
         String timepoint = null;
         Expression nodeId = null;
 
-        for (StartElement e : new TagIterator(xml, start)) {
+        for (StartElement e : allChildTagsOf(start, xml)) {
             if (isNodeReference(localNameOf(e))) {
                 nodeId = parseNodeReference(e, xml);
             } else if (isTag(e, "NodeStateValue")) {
@@ -308,7 +308,7 @@ public class ExprParser {
         Expression tolerance = RealValue.get(0.0);
         List<Expression> args = new ArrayList<Expression>();
 
-        for (StartElement e : new TagIterator(xml, start)) {
+        for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
                 name = parse(nextTag(xml), xml, PlexilType.STRING);
                 assertClosedTag(e, xml);
@@ -344,7 +344,7 @@ public class ExprParser {
         UnresolvedVariableExpr array = null;
         Expression index = null;
 
-        for (StartElement e : new TagIterator(xml, start)) {
+        for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
                 array = new UnresolvedVariableExpr(getStringContent(e, xml), PlexilType.ARRAY);
             } else if (isTag(e, "Index")) {
