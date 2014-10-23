@@ -1,8 +1,9 @@
 package edu.umn.crisys.plexil.il.expr;
 
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class RootParentStateExpr extends ILExprBase {
+public class RootParentStateExpr implements ILExpression {
 
     @Override
     public PlexilType getType() {

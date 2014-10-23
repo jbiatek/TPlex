@@ -1,11 +1,12 @@
 package edu.umn.crisys.plexil.il.expr;
 
 
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class GetNodeStateExpr extends ILExprBase {
+public class GetNodeStateExpr implements ILExpression {
 
     private NodeUID nodeUniquePath;
     

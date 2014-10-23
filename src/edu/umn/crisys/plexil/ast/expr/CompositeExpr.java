@@ -32,6 +32,9 @@ public abstract class CompositeExpr implements ASTExpression, ILExpression {
      */
     public abstract CompositeExpr getCloneWithArgs(List<Expression> args);
 
+    @Override // un-default this expression from AST and IL versions
+    public abstract <P, R> R accept(CommonExprVisitor<P, R> visitor, P param);
+    
     @Override
     public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
         return this.accept((CommonExprVisitor<P,R>)visitor, param);
