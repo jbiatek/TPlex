@@ -29,10 +29,12 @@ public class PValueList<T extends PValue> implements PValue, List<T>{
 	private final T[] myValues;
 	private final T unknown;
 	
+	@SafeVarargs
 	public PValueList(PlexilType type, int maxSize, T...values) {
 		this(type, maxSize, Arrays.asList(values));
 	}
 	
+	@SafeVarargs
 	public PValueList(PlexilType type, T...values) {
 		this(type, values.length, Arrays.asList(values));
 	}
