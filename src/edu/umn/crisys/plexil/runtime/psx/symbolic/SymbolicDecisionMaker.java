@@ -56,6 +56,7 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	private class AnyOfThese<T extends PValue> implements ValueGenerator<T> {
 		private T[] values;
 		
+		@SafeVarargs // we don't do anything with the actual array, just its elements
 		public AnyOfThese(T... values) {
 			this.values = values;
 		}
