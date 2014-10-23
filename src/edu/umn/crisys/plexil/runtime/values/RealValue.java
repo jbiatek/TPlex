@@ -1,9 +1,5 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-
 public class RealValue implements PReal {
 	
 	private final double value;
@@ -27,15 +23,6 @@ public class RealValue implements PReal {
 		return false;
 	}
 	
-	@Override
-	public PValue castTo(PlexilType type) {
-		if (type == PlexilType.INTEGER) {
-			return castToInteger();
-		}
-		return PValue.Util.defaultCastTo(this, type);
-	}
-
-
 	@Override
 	public boolean isReal() {
 		return true; // yes, this is real
@@ -198,18 +185,8 @@ public class RealValue implements PReal {
 	}
 
 	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(PValueVisitor<P, R> visitor, P param) {
 		return visitor.visitRealValue(this, param);
-	}
-
-	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
-	}
-
-	@Override
-	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
 	}
 
 	@Override
@@ -217,8 +194,4 @@ public class RealValue implements PReal {
 		return toString();
 	}
 
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 }

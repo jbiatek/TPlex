@@ -1,10 +1,5 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-
-
 public enum NodeOutcome implements PValue {
 	SUCCESS,
 	FAILURE,
@@ -12,18 +7,14 @@ public enum NodeOutcome implements PValue {
 	INTERRUPTED,
 	UNKNOWN;
 
-	public PBoolean equalTo(PValue other) {
-		return PValue.Util.enumEqualTo(this, other);
-	}
-
 	@Override
 	public boolean isKnown() {
-		return !this.equals(UNKNOWN);
+		return this != UNKNOWN;
 	}
 
 	@Override
 	public boolean isUnknown() {
-		return this.equals(UNKNOWN);
+		return this == UNKNOWN;
 	}
 
 	@Override
@@ -32,23 +23,8 @@ public enum NodeOutcome implements PValue {
 	}
 
 	@Override
-	public PValue castTo(PlexilType type) {
-		return PValue.Util.defaultCastTo(this, type);
-	}
-
-	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(PValueVisitor<P, R> visitor, P param) {
 		return visitor.visitNodeOutcome(this, param);
-	}
-
-	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
-	}
-
-	@Override
-	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
 	}
 
 	@Override
@@ -56,9 +32,4 @@ public enum NodeOutcome implements PValue {
 		return toString();
 	}
 
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
-	
 }

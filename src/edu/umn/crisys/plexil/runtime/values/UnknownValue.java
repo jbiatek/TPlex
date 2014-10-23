@@ -1,9 +1,5 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-
 public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 
 	private static UnknownValue singleton = new UnknownValue();
@@ -189,29 +185,13 @@ public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 	}
 
 	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(PValueVisitor<P, R> visitor, P param) {
 		return visitor.visitUnknownValue(this, param);
-	}
-
-	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
-	}
-
-	@Override
-	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
 	}
 
 	@Override
 	public String asString() {
 		return toString();
 	}
-
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
-	
 
 }

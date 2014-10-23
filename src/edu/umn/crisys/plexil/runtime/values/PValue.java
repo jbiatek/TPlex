@@ -2,6 +2,9 @@ package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 
 /**
  * The interface defining what all PlexilValues can do.
@@ -14,67 +17,73 @@ public interface PValue extends ASTExpression, ILExpression {
 
 	public abstract boolean isUnknown();
 
-	public abstract PBoolean equalTo(PValue o);
-	
 	public abstract PlexilType getType();
+
+	public abstract <P, R> R accept(PValueVisitor<P, R> visitor, P param);
+
+	/**
+	 * Performs, essentially, Java's == operator but with PLEXIL logic. That is,
+	 * if either one is unknown, return an unknown value, but otherwise they
+	 * must be the exact same object. For enumerated types, this is exactly
+	 * what we want. For wrapped types, it's probably not. 
+	 * 
+	 * @param o
+	 * @return a PBoolean answer
+	 */
+	default public PBoolean equalTo(PValue o) {
+		if (this.isUnknown() || o.isUnknown()) return UnknownValue.get();
+		else return BooleanValue.get(this == o);
+	}
 	
 	/**
 	 * Attempt to change this value to the given value type. If nothing bad
-	 * happens, you can safely cast it to the given type. If this is unknown,
-	 * a new unknown of the given type will be created.
+	 * happens, you can safely Java cast it to the given type. This is the 
+	 * baseline behavior, which handles these scenarios:
+	 * 
+	 * <ul>
+	 * <li> If we're already the right type, return this
+	 * <li> If the desired type is NUMERIC and we're already numeric, return this
+	 * <li> If we're UNKNOWN, return an appropriate UNKNOWN
+	 * </ul> 
 	 * 
 	 * Subclasses can override this to implement casting to another type
-	 * (independent of Java's actual casting behavior). Just check to see
-	 * if the given class is one you'd like to cast to, return the new value,
-	 * and otherwise return super.castTo(c).
+	 * (independent of Java's actual casting behavior). For example, 
+	 * PIntegers add an additional case when the desired type is REAL, and
+	 * then defer to PValue.super.castTo() for the remaining cases.  
 	 * 
 	 * @param type The type that you'd like to cast to
 	 * @return an object that can be safely cast, or an exception if it can't
 	 * be done.
 	 */
-	public abstract PValue castTo(PlexilType type);
-
-	public static class Util {
-		
-		/** Performs, essentially, Java's == operation in Plexil's logic. That is,
-		 * if either isUnknown(), the result is unknown, otherwise, they must be
-		 * == to each other. Used for the enum types.
-		 * 
-		 * @param one
-		 * @param two
-		 * @return the equality check result
-		 */
-		public static PBoolean enumEqualTo(PValue one, PValue two) {
-			if (one.isUnknown() || two.isUnknown()) {
-				return UnknownValue.get();
-			} else {
-				return BooleanValue.get(one == two);
-			}
+	default public PValue castTo(PlexilType type)  {
+		if (this.getType() == type) {
+			return this;
+		} else if (type == PlexilType.NUMERIC 
+				&& this instanceof PNumeric) { 
+			return this;
 		}
-		
-		/**
-		 * Attempt a standard Java cast of the given value to the given type.
-		 * Intended for use in places where UNKNOWN-aware smarter casting won't
-		 * mean much, such as for the enum types.
-		 * @param val
-		 * @param cls
-		 * @return a PlexilValue that can be safely cast to the given type, or
-		 * an exception will be thrown.
-		 */
-		public static PValue defaultCastTo(
-				PValue val, PlexilType type) {
-			if (val.getType() == type) {
-				return val;
-			} else if (type == PlexilType.NUMERIC 
-					&& val instanceof PNumeric) { 
-				return val;
-			}
-			else if (val.isUnknown()) {
-				return type.getUnknown();
-			}
-			throw new RuntimeException(
-					"Cannot cast a "+val.getType()+" to "+type);
+		else if (this.isUnknown()) {
+			return type.getUnknown();
 		}
-		
+		throw new RuntimeException(
+				"Cannot cast a "+this.getType()+" to "+type);
 	}
+	
+	@Override
+	default public boolean isAssignable() {
+		return false;
+	}
+	
+	default public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+    	return this.accept((PValueVisitor<P,R>) visitor, param);
+    }
+
+	default public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+    	return this.accept((PValueVisitor<P,R>) visitor, param);
+    }
+
+	default public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+    	return this.accept((PValueVisitor<P,R>) visitor, param);
+    }
+
 }

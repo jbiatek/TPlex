@@ -1,9 +1,5 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-
 /**
  * Implements a known boolean value.
  * 
@@ -122,11 +118,6 @@ public class BooleanValue implements PBoolean {
 	}
 	
 	@Override
-	public PValue castTo(PlexilType type) {
-		return PValue.Util.defaultCastTo(this, type);
-	}
-	
-	@Override
 	public int hashCode() {
 		return bool? 1 : 0;
 	}
@@ -148,18 +139,8 @@ public class BooleanValue implements PBoolean {
 	}
 
 	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(PValueVisitor<P, R> visitor, P param) {
 		return visitor.visitBooleanValue(this, param);
-	}
-	
-	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
-	}
-
-	@Override
-	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
 	}
 
 	@Override
@@ -167,10 +148,4 @@ public class BooleanValue implements PBoolean {
 		return toString();
 	}
 
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
-
-	
 }

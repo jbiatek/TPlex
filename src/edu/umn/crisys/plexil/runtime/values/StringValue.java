@@ -1,9 +1,5 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-
 public class StringValue implements PString {
 
 	private final String value;
@@ -32,11 +28,6 @@ public class StringValue implements PString {
 	@Override
 	public boolean isUnknown() {
 		return false;
-	}
-	
-	@Override
-	public PValue castTo(PlexilType type) {
-		return PValue.Util.defaultCastTo(this, type);
 	}
 	
 	@Override
@@ -88,27 +79,12 @@ public class StringValue implements PString {
 	}
 
 	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(PValueVisitor<P, R> visitor, P param) {
 		return visitor.visitStringValue(this, param);
-	}
-
-	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
-	}
-
-	@Override
-	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-		return accept((CommonExprVisitor<P, R>) visitor, param);
 	}
 
 	@Override
 	public String asString() {
 		return toString();
-	}
-
-	@Override
-	public boolean isAssignable() {
-		return false;
 	}
 }
