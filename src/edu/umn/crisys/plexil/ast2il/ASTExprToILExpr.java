@@ -47,78 +47,77 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
 
 	@Override
     public ILExpression visitDefaultEnd(DefaultEndExpr end, Void param) {
-        return context.getASTNodeBody().accept(new DefaultEndMaker(), context);
+		// The default end condition depends on the body type:
+        return context.getASTNodeBody().accept(new NodeBodyVisitor<NodeToIL, ILExpression>() {
+
+            @Override
+            public ILExpression visitEmpty(NodeBody empty, NodeToIL node) {
+                // This one is simple: True.
+                return BooleanValue.get(true);
+            }
+
+            @Override
+            public ILExpression visitAssignment(AssignmentBody assign, NodeToIL node) {
+                // TODO Make sure this is right by doing some experiments.
+                // The detailed semantics say "assignment completed". And then 
+                // there's a footnote saying that assignments always complete unless
+                // there's an error evaluating the right hand side. Somehow. I'm
+                // guessing an error like that is a showstopper, so it's safe to
+                // just say that they always complete. 
+                return BooleanValue.get(true);
+            }
+
+            @Override
+            public ILExpression visitCommand(CommandBody cmd, NodeToIL node) {
+                // The wiki says "Command handle received". But what does that mean?
+            	
+            	// The PLEXIL source code seems to imply that the default
+            	// end condition for Command nodes is just "true". Not
+            	// "command handle received" as the wiki states. (CommandNode.cc)
+            	// What it does is OR whatever end condition it has with 
+            	// handle == denied || handle == failed. 
+
+                //return Operation.isKnown(node.getCommandHandle());
+            	return BooleanValue.get(true);
+            }
+
+            @Override
+            public ILExpression visitLibrary(LibraryBody lib, NodeToIL node) {
+            	// If the library got included statically, this NodeToIL might 
+            	// actually have a real child instead of a handle.
+            	if (node.hasLibraryHandle()) {
+    	            // Treat it the same as a list: "All children FINISHED". 
+    	    		// But there's just one child, so it's easy.
+    	            return Operation.eq(NodeState.FINISHED, 
+    	                                node.getLibraryHandle());
+            	} else {
+            		// Since we don't actually care about the AST body, passing in
+            		// null is fine. 
+            		return visitNodeList(null, node);
+            	}
+            }
+
+            @Override
+            public ILExpression visitNodeList(NodeListBody list, NodeToIL node) {
+                // All children FINISHED.
+                List<Expression> childStates = new ArrayList<Expression>();
+                for (NodeToIL child : node.getChildren()) {
+                    childStates.add(
+                            Operation.eq(NodeState.FINISHED,
+                                         child.getState()));
+                }
+                return Operation.and(childStates);
+            }
+
+            @Override
+            public ILExpression visitUpdate(UpdateBody update, NodeToIL node) {
+                // Invocation success. Pretty sure this just means ACK. 
+                return node.getUpdateHandle();
+            }
+            
+        }, context);
     }
     
-
-    private static class DefaultEndMaker implements NodeBodyVisitor<NodeToIL, ILExpression> {
-
-        @Override
-        public ILExpression visitEmpty(NodeBody empty, NodeToIL node) {
-            // This one is simple: True.
-            return BooleanValue.get(true);
-        }
-
-        @Override
-        public ILExpression visitAssignment(AssignmentBody assign, NodeToIL node) {
-            // TODO Make sure this is right by doing some experiments.
-            // The detailed semantics say "assignment completed". And then 
-            // there's a footnote saying that assignments always complete unless
-            // there's an error evaluating the right hand side. Somehow. I'm
-            // guessing an error like that is a showstopper, so it's safe to
-            // just say that they always complete. 
-            return BooleanValue.get(true);
-        }
-
-        @Override
-        public ILExpression visitCommand(CommandBody cmd, NodeToIL node) {
-            // The wiki says "Command handle received". But what does that mean?
-        	
-        	// The PLEXIL source code seems to imply that the default
-        	// end condition for Command nodes is just "true". Not
-        	// "command handle received" as the wiki states. (CommandNode.cc)
-        	// What it does is OR whatever end condition it has with 
-        	// handle == denied || handle == failed. 
-
-            //return Operation.isKnown(node.getCommandHandle());
-        	return BooleanValue.get(true);
-        }
-
-        @Override
-        public ILExpression visitLibrary(LibraryBody lib, NodeToIL node) {
-        	// If the library got included statically, this NodeToIL might 
-        	// actually have a real child instead of a handle.
-        	if (node.hasLibraryHandle()) {
-	            // Treat it the same as a list: "All children FINISHED". 
-	    		// But there's just one child, so it's easy.
-	            return Operation.eq(NodeState.FINISHED, 
-	                                node.getLibraryHandle());
-        	} else {
-        		// Since we don't actually care about the AST body, passing in
-        		// null is fine. 
-        		return visitNodeList(null, node);
-        	}
-        }
-
-        @Override
-        public ILExpression visitNodeList(NodeListBody list, NodeToIL node) {
-            // All children FINISHED.
-            List<Expression> childStates = new ArrayList<Expression>();
-            for (NodeToIL child : node.getChildren()) {
-                childStates.add(
-                        Operation.eq(NodeState.FINISHED,
-                                     child.getState()));
-            }
-            return Operation.and(childStates);
-        }
-
-        @Override
-        public ILExpression visitUpdate(UpdateBody update, NodeToIL node) {
-            // Invocation success. Pretty sure this just means ACK. 
-            return node.getUpdateHandle();
-        }
-        
-    }
 
     private NodeToIL resolveNode(Expression e) {
     	if (e instanceof UnresolvedVariableExpr) {
