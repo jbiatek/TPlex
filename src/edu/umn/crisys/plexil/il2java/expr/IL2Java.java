@@ -200,12 +200,12 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
             // It's a standard Java "condition ? ifTrue : ifFalse" operator
             ret = JOp.cond(
                     // If args[i].isFalse(),
-                    new JParens(JExpr.assign(JExpr.ref("temp"), children.get(i))).invoke("isFalse"),
+                    new JParens(JExpr.assign(JExpr.ref(ILExprToJava.TEMP_VAR_NAME), children.get(i))).invoke("isFalse"),
                     // return false,
                     cm.ref(BooleanValue.class).staticInvoke("get").arg(JExpr.lit(false)),
                     // else, return the result of the rest of the list.
                     // (remember, we're moving backwards)
-                    JExpr.ref("temp").invoke("and").arg(ret));
+                    JExpr.ref(ILExprToJava.TEMP_VAR_NAME).invoke("and").arg(ret));
         }
         return ret;
     }
@@ -230,11 +230,11 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
         for (int i=(children.size()-2); i>=0; i--) {
             ret = JOp.cond(
                     // If args[i] is true,
-                    new JParens(JExpr.assign(JExpr.ref("temp"), children.get(i))).invoke("isTrue"),
+                    new JParens(JExpr.assign(JExpr.ref(ILExprToJava.TEMP_VAR_NAME), children.get(i))).invoke("isTrue"),
                     // return true,
                     cm.ref(BooleanValue.class).staticInvoke("get").arg(JExpr.lit(true)),
                     // else, return the result of the rest of the list.
-                    JExpr.ref("temp").invoke("or").arg(ret));
+                    JExpr.ref(ILExprToJava.TEMP_VAR_NAME).invoke("or").arg(ret));
         }
         return ret;
     }

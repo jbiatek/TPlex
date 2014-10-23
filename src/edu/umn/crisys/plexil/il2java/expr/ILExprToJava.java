@@ -8,7 +8,11 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.common.Operation;
+import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -20,6 +24,7 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 public class ILExprToJava {
 
 	public static boolean SHORT_CIRCUITING = true;
+	static final String TEMP_VAR_NAME = "temp";
     
     public static JExpression toJava(ILExpression expr, JCodeModel cm) {
         if (expr == null) {
@@ -28,8 +33,37 @@ public class ILExprToJava {
         return expr.accept(new IL2Java(), cm);
     }
     
+    /**
+     * Without biasing, in order to implement short circuit AND and OR operations,
+     * we need a temporary variable to store intermediate results in. Use this
+     * method before adding a translated JExpression to insert that temporary
+     * variable. 
+     * @param block
+     * @param cm
+     */
     public static void insertShortCircuitHack(JBlock block, JCodeModel cm) {
-        block.decl(cm.ref(PBoolean.class), "temp");
+        block.decl(cm.ref(PBoolean.class), TEMP_VAR_NAME);
+    }
+    
+    public static boolean requiresShortCircuitHack(ILExpression expr) {
+    	if (expr instanceof Operation) {
+    		Operation op = (Operation) expr;
+    		if (op.getOperator() == Operator.AND || op.getOperator() == Operator.OR) {
+    			return true; // these are the ones we're looking for
+    		}
+    	}
+    	
+    	if (expr instanceof CompositeExpr) {
+    		// Could be one hiding in here somewhere
+    		for (Expression child : ((CompositeExpr) expr).getArguments()) {
+    			if (requiresShortCircuitHack((ILExpression) child)) {
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	// Didn't find one anywhere.
+    	return false;
     }
     
     public static JExpression toJavaBiased(ILExpression expr, JCodeModel cm, boolean isThis) {
