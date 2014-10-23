@@ -33,6 +33,7 @@ public class SimplePArray<T extends PValue> {
 	 */
 	private PlexilType type;
 
+	@SafeVarargs
 	public SimplePArray(PlexilType t, int size, T...init) {
 		this.current = new PValueList<T>(t, size, init);
 		this.type = t;
