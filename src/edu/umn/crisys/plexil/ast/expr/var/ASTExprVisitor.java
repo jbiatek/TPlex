@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.common.NodeTimepointExpr;
 
 public interface ASTExprVisitor<Param, Return> extends CommonExprVisitor<Param, Return>{
 

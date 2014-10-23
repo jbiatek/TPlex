@@ -1,8 +1,9 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
+import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class NodeRefExpr extends ASTExprBase {
+public class NodeRefExpr implements ASTExpression {
 	
 	private static NodeRefExpr PARENT = null;
 	private static NodeRefExpr SIBLING = null;

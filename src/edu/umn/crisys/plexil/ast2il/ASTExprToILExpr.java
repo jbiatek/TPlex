@@ -5,11 +5,11 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.expr.common.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr;
+import edu.umn.crisys.plexil.ast.expr.var.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;

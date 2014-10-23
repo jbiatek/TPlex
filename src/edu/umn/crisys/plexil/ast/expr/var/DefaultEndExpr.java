@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
+import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 /**
@@ -10,7 +11,7 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
  * @author jbiatek
  *
  */
-public class DefaultEndExpr extends ASTExprBase {
+public class DefaultEndExpr implements ASTExpression {
 
     private static DefaultEndExpr singleton;
     
