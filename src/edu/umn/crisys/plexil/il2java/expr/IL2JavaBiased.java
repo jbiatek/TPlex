@@ -134,15 +134,8 @@ class IL2JavaBiased implements ILExprVisitor<JCodeModel, JExpression> {
         for (Expression childExpr : op.getArguments()) {
         	ILExpression child = (ILExpression) childExpr;
         	// Should we remove this child?
-        	if ((op.getOperator() == Operator.AND || op.getOperator() == Operator.OR) 
-        			&& ILEval.isConstant(child)) {
-        		// Maybe. It's a constant, and we're using a known operator.
-        		PBoolean eval = (PBoolean) ILEval.eval(child);
-        		if (op.getOperator() == Operator.AND && eval.isTrue()) {
-        			continue;
-        		} else if (op.getOperator() == Operator.OR && eval.isFalse()) {
-        			continue;
-        		}
+        	if (IL2Java.clauseIsSkippable(op.getOperator(), child)) {
+    			continue;
         	}
         	children.add(child);
         }

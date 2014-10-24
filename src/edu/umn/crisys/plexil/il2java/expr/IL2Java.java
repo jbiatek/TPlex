@@ -10,12 +10,15 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JOp;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
+import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
@@ -75,11 +78,29 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
         }
         return jlookup;
     }
+    
+    public static boolean clauseIsSkippable(Operator op, ILExpression expr) {
+    	if ((op == Operator.AND || op == Operator.OR) 
+    			&& ILEval.isConstant(expr)) {
+    		// Maybe. It's a constant, and we're using a known operator.
+    		PBoolean eval = (PBoolean) ILEval.eval(expr);
+    		if (op == Operator.AND && eval.isTrue()) {
+    			return true;
+    		} else if (op == Operator.OR && eval.isFalse()) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     @Override
     public JExpression visitOperation(Operation op, JCodeModel cm) {
         List<JExpression> children = new ArrayList<JExpression>();
         for (Expression child : op.getArguments()) {
+        	// Prune out constants
+        	if (clauseIsSkippable(op.getOperator(), (ILExpression) child)){
+        		continue;
+        	}
             children.add(child.accept(this, cm));
         }
         
