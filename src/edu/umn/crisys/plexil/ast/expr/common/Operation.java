@@ -361,21 +361,21 @@ public class Operation extends CompositeExpr {
     
     private Operator op;
     private List<Expression> args;
-    private PlexilType argType = null;
+    private PlexilType argType;
     
-    private Operation(Operator op, PlexilType newArgType, List<Expression> args) {
+    private Operation(Operator op, PlexilType argType, List<Expression> args) {
         this.op = op;
         this.args = args;
-        this.argType = newArgType == null ? op.argType : newArgType;
+        this.argType = argType;
         checkArgs();
     }
     
     private Operation(Operator op, List<Expression> args) {
-    	this(op, null, args);
+    	this(op, op.argType, args);
     }
     
     private Operation(Operator op, Expression... args) {
-        this(op, null, Arrays.asList(args));
+        this(op, op.argType, Arrays.asList(args));
     }
     
     private Operation(Operator op, PlexilType argType, Expression... args) {
