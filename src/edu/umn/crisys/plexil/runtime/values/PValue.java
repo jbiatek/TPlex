@@ -23,9 +23,10 @@ public interface PValue extends ASTExpression, ILExpression {
 
 	/**
 	 * Performs, essentially, Java's == operator but with PLEXIL logic. That is,
-	 * if either one is unknown, return an unknown value, but otherwise they
-	 * must be the exact same object. For enumerated types, this is exactly
-	 * what we want. For wrapped types, it's probably not. 
+	 * if either one is unknown, return UNKNOWN, but otherwise they
+	 * must be the exact same object. Just as in Java, sometimes this is okay
+	 * for checking equality but sometimes not (e.g. 1 == 1 but "hello" doesn't
+	 * always == "hello" in Java). 
 	 * 
 	 * @param o
 	 * @return a PBoolean answer
