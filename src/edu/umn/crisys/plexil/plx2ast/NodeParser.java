@@ -4,6 +4,7 @@ import static edu.umn.crisys.util.xml.XMLUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
@@ -290,11 +291,11 @@ public class NodeParser {
 
         PlexilType arrayType = PlexilType.valueOf(type.toUpperCase()).toArrayType();
         int maxSize = Integer.parseInt(maxSizeStr);
-        PValueList<PValue> initialValue = null;
+        Optional<PValueList<PValue>> initialValue = Optional.empty();
         if (parsedInitValues != null) {
-        	initialValue = new PValueList<PValue>(arrayType, parsedInitValues);
+        	initialValue = Optional.of(new PValueList<PValue>(arrayType, parsedInitValues));
         }
-        return new VariableDecl(name, maxSize, arrayType, initialValue);
+        return new VariableDecl(name, arrayType, Optional.of(maxSize), initialValue);
     }
 
 
@@ -304,7 +305,7 @@ public class NodeParser {
         
         String name = null;
         String typeStr = null;
-        PValue init = null;
+        Optional<PValue> init = Optional.empty();
         
         for (StartElement e : allChildTagsOf(start.asStartElement(), xml)) {
             if (isTag(e, "Name")) {
@@ -312,7 +313,7 @@ public class NodeParser {
             } else if (isTag(e, "Type")) {
                 typeStr = getStringContent(e, xml);
             } else if (isTag(e, "InitialValue")) {
-                init = ExprParser.parsePValue(nextTag(xml).asStartElement(), xml);
+                init = Optional.of(ExprParser.parsePValue(nextTag(xml).asStartElement(), xml));
                 assertClosedTag(e, xml);
             } else {
                 throw new UnexpectedTagException(e);
@@ -323,7 +324,7 @@ public class NodeParser {
         }
         // Now we have all the info
         PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
-        return new VariableDecl(name, type, init);
+        return new VariableDecl(name, type, Optional.empty(), init);
     }
 
     public static PlexilInterface parseInterface(StartElement start, XMLEventReader xml) {

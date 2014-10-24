@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.ast.globaldecl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * PLEXIL doesn't actually have functions, but it does have two things 
@@ -15,7 +16,7 @@ public abstract class FunctionDeclaration {
 
 	private String name;
 	private List<VariableDecl> parameters = new ArrayList<VariableDecl>();
-	private VariableDecl ret;
+	private Optional<VariableDecl> ret = Optional.empty();
 	
 	public FunctionDeclaration(String name) {
 		this.name = name;
@@ -25,19 +26,12 @@ public abstract class FunctionDeclaration {
 		return name;
 	}
 	
-	public boolean hasReturnValue() {
-		return ret != null;
-	}
-	
-	public VariableDecl getReturnValue() {
-		if (! hasReturnValue()) {
-			throw new NullPointerException(name+" has no return value");
-		}
+	public Optional<VariableDecl> getReturnValue() {
 		return ret;
 	}
 	
 	public void setReturnValue(VariableDecl ret) {
-		this.ret = ret;
+		this.ret = Optional.of(ret);
 	}
 	
 	public List<VariableDecl> getParameters() {

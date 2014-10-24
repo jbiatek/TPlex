@@ -117,17 +117,18 @@ public class NodeToIL {
             if (type.isArrayType()) {
                 // Array variables.
                 PValueList<?> init = null;
-                if (v.hasInitialValue() ) { 
-                	init = (PValueList<?>) v.getInitialValue();
+                
+                if (v.getInitialValue().isPresent() ) { 
+                	init = (PValueList<?>) v.getInitialValue().get();
                 }
-                int arraySize = v.getArraySize();
+                int arraySize = v.getArraySize().get();
                 
                 ilVars.put(varName, new ArrayVar(varName, arraySize, type, myUid, init));
             } else {
                 // Standard variables.
             	PValue init = null;
-            	if (v.hasInitialValue()) {
-            		init = (PValue) v.getInitialValue();
+            	if (v.getInitialValue().isPresent()) {
+            		init = (PValue) v.getInitialValue().get();
             	}
                 ilVars.put(varName, new SimpleVar(varName, myUid, type, init));
             }

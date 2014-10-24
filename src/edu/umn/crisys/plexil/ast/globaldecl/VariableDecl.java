@@ -1,39 +1,46 @@
 package edu.umn.crisys.plexil.ast.globaldecl;
 
+import java.util.Optional;
+
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class VariableDecl {
 
 	private String name;
-	private int arraySize = -1;
 	private PlexilType type;
-	private ASTExpression init;
+	private Optional<Integer> arraySize;
+	private Optional<? extends ASTExpression> init;
 	
 	public VariableDecl(String name, PlexilType type) {
-		this(name, type, null);
+		this(name, type, Optional.empty(), Optional.empty());
 	}
 	
 	public VariableDecl(String name, PlexilType type, ASTExpression init) {
-		if (type.isArrayType()) {
-			throw new RuntimeException("Tried to create a "+type+" with no size");
-		}
-		this.name = name;
-		this.type = type;
-		this.init = init;
+		this(name, type, Optional.empty(), Optional.of(init));
 	}
 	
 	public VariableDecl(String arrayName, int arraySize, PlexilType type) {
-		this(arrayName, arraySize, type, null);
+		this(arrayName, type, Optional.of(arraySize), Optional.empty());
 	}
 	
 	public VariableDecl(String arrayName, int arraySize, PlexilType type, ASTExpression init) {
-		if ( ! type.isArrayType()) {
-			throw new RuntimeException("Passed in a size, but "+type+" isn't an array type");
+		this(arrayName, type, Optional.of(arraySize), Optional.of(init));
+	}
+	
+	public VariableDecl(String arrayName, final PlexilType type, 
+			Optional<Integer> arraySize, Optional<? extends ASTExpression> init) {
+		arraySize.ifPresent((size) -> {
+			if (size < 0) { 
+				throw new RuntimeException("Array cannot have negative size: "+arraySize);
+			} else if (! type.isArrayType()) {
+				throw new RuntimeException("Passed in a size, but "+type+" isn't an array type");
+			}
+		});
+		if (type.isArrayType() && ! arraySize.isPresent()) {
+			throw new RuntimeException("Tried to create a "+type+" with no size");
 		}
-		if (arraySize < 0) { 
-            throw new RuntimeException("Array cannot have negative size: "+arraySize);
-		}
+		
 		this.name = arrayName;
 		this.arraySize = arraySize;
 		this.type = type;
@@ -49,46 +56,34 @@ public class VariableDecl {
 	}
 	
 	public boolean isArray() {
-		return arraySize >= 0;
+		return arraySize.isPresent();
 	}
 	
-	public int getArraySize() {
-		if (! isArray()) {
-			throw new RuntimeException(name+" is not an array!");
-		}
+	public Optional<Integer> getArraySize() {
 		return arraySize;
 	}
 	
-	public boolean hasInitialValue() {
-		return init != null;
-	}
-	
-	public ASTExpression getInitialValue() {
-		if (init == null) {
-			throw new NullPointerException("No initial value for "+name);
-		}
+	public Optional<? extends ASTExpression> getInitialValue() {
 		return init;
 	}
 	
 	public String toString() {
 		PlexilType typeToUse = type;
 		String arrayStuff = "";
-		String init = "";
+		StringBuilder initString = new StringBuilder();
 		
         if (this.isArray()) {
             typeToUse = typeToUse.elementType();
-            arrayStuff = "["+arraySize+"]";
+            arrayStuff = "["+arraySize.get()+"]";
         }
         
-        if (this.hasInitialValue()) {
-        	init = " = "+this.init;
-        }
+        getInitialValue().ifPresent((initValue) -> initString.append(" = "+initValue));
         
 		// Start with the type, uncapitalizing all but the first letter
         String typeStr = typeToUse.toString().charAt(0) 
             + typeToUse.toString().substring(1).toLowerCase();
         
-        return typeStr+" "+name+arrayStuff+init+";";
+        return typeStr+" "+name+arrayStuff+initString+";";
 	}
 	
 }
