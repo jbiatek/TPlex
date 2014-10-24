@@ -20,7 +20,6 @@ import edu.umn.crisys.plexil.ast.expr.var.NodeIDExpression;
 import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr;
 import edu.umn.crisys.plexil.ast.expr.var.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr.NodeRef;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -185,8 +184,7 @@ public class ExprParser {
         if (localNameOf(start).equals("NodeId")) {
             toReturn = new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
-        	toReturn = NodeRefExpr.get(
-        			NodeRef.valueOf(attribute(start, "dir").toUpperCase()));
+        	toReturn = NodeRefExpr.valueOf(attribute(start, "dir").toUpperCase());
             assertClosedTag(start, xml);
         } else {
             throw new RuntimeException("Was expecting a node reference, not a "+start);

@@ -125,7 +125,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     		return context.resolveNode(nodeName.getName());
     	} else if (e instanceof NodeRefExpr) {
     		NodeRefExpr ref = (NodeRefExpr) e;
-    		switch (ref.getNodeRef()) {
+    		switch (ref) {
     		case PARENT: 
     			if (context.getParent() == null) throw new NullPointerException();
     			return context.getParent();
@@ -147,8 +147,9 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     			}
     		case SELF:
     			return context;
+    		default: 
+    			throw new RuntimeException("Missing case: "+ref);
     		}
-    		throw new RuntimeException("Missing case: "+ref.getNodeRef());
     	}
     	else {
     		throw new RuntimeException("How do you resolve a node given a "+e.getClass()+"?");
