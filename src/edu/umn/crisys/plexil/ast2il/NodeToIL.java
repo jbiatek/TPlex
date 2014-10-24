@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.Node;
+import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
@@ -472,7 +473,7 @@ public class NodeToIL {
     	return new AliasExpr(name, PlexilType.UNKNOWN, writeable);
     }
     
-    public ILExpression resolveVariableforWriting(Expression e) {
+    public ILExpression resolveVariableForWriting(Expression e) {
     	if ( ! e.isAssignable()) {
     		throw new RuntimeException(e+" is not a valid LHS");
     	}
@@ -488,7 +489,7 @@ public class NodeToIL {
         } else if (e instanceof ArrayIndexExpr) {
             ArrayIndexExpr arr = (ArrayIndexExpr) e;
             return new ArrayIndexExpr(
-                    (ArrayVar) resolveVariableforWriting(arr.getArray()), toIL(arr.getIndex()));
+                    (ArrayVar) resolveVariableForWriting(arr.getArray()), toIL(arr.getIndex()));
         }
         throw new RuntimeException(e+" says it's assignable, but I don't know how to read it.");
     }

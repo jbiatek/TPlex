@@ -165,10 +165,9 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
 	@Override
 	public Void visitCommand(CommandBody cmd, Node n) {
 		PlexilType typeToSet = null;
-		if (cmd.getVarToAssign() != null) {
-			typeToSet = resolveVariableType(cmd.getVarToAssign(), n);
-		}
-		// Even if it's null, we want to set it. Null means that it's a command
+		cmd.getVarToAssign().ifPresent(
+				(varToAssign) -> resolveVariableType(varToAssign, n));
+		// Even if it's not there, we want to set it. Null means that it's a command
 		// that doesn't appear to return anything.
 		
         // Get command name

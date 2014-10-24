@@ -1,28 +1,31 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+import java.util.Optional;
+
 public enum PlexilType {
 
-    BOOLEAN			(UnknownValue.get()),
-    INTEGER			(UnknownValue.get()),
-    REAL			(UnknownValue.get()),
-    STRING			(UnknownValue.get()),
-    NUMERIC			(UnknownValue.get()),
-    UNKNOWN			(UnknownValue.get()),
-    ARRAY           (null),
-    BOOLEAN_ARRAY	(null),
-    INTEGER_ARRAY   (null),
-    REAL_ARRAY      (null),
-    STRING_ARRAY    (null),
-    STATE			(null),
-    OUTCOME			(NodeOutcome.UNKNOWN),
-    FAILURE			(NodeFailureType.UNKNOWN),
-    COMMAND_HANDLE	(CommandHandleState.UNKNOWN),
-    NODEREF         (null);
+    BOOLEAN			(Optional.of(UnknownValue.get())),
+    INTEGER			(Optional.of(UnknownValue.get())),
+    REAL			(Optional.of(UnknownValue.get())),
+    STRING			(Optional.of(UnknownValue.get())),
+    NUMERIC			(Optional.of(UnknownValue.get())),
+    UNKNOWN			(Optional.of(UnknownValue.get())),
+    ARRAY           (Optional.empty()),
+    BOOLEAN_ARRAY	(Optional.empty()),
+    INTEGER_ARRAY   (Optional.empty()),
+    REAL_ARRAY      (Optional.empty()),
+    STRING_ARRAY    (Optional.empty()),
+    STATE			(Optional.empty()),
+    OUTCOME			(Optional.of(NodeOutcome.UNKNOWN)),
+    FAILURE			(Optional.of(NodeFailureType.UNKNOWN)),
+    COMMAND_HANDLE	(Optional.of(CommandHandleState.UNKNOWN)),
+    NODEREF         (Optional.empty());
     // TODO: TIME ??????
 
-    private final PValue unknown;
+    private final Optional<PValue> unknown;
 
-    private PlexilType(PValue unknown) {
+    private PlexilType(Optional<PValue>unknown) {
+    	
         this.unknown = unknown;
     }
 
@@ -32,10 +35,7 @@ public enum PlexilType {
      * @return
      */
     public PValue getUnknown() {
-        if (unknown == null) {
-            throw new RuntimeException(this+" does not have an UNKNOWN value");
-        }
-        return unknown;
+        return unknown.orElseThrow(() -> new RuntimeException(this+" does not have an UNKNOWN value"));
     }
     
     /**

@@ -27,9 +27,6 @@ public class ILExprToJava {
 	static final String TEMP_VAR_NAME = "temp";
     
     public static JExpression toJava(ILExpression expr, JCodeModel cm) {
-        if (expr == null) {
-            throw new NullPointerException();
-        }
         return expr.accept(new IL2Java(), cm);
     }
     

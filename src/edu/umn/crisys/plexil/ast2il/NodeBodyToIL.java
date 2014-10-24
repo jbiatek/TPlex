@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.ast2il;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
@@ -56,7 +57,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		@Override
 		public Void visitAssignment(AssignmentBody assignment, Void p) {
 		    Expression lhsUntranslated = assignment.getLeftHandSide();
-		    ILExpression lhsExpr = nodeToIL.resolveVariableforWriting(lhsUntranslated);
+		    ILExpression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated);
 		    ILExpression rhs = nodeToIL.toIL(assignment.getRightHandSide());
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
@@ -99,12 +100,12 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		@Override
 		public Void visitCommand(CommandBody cmd, Void p) {
 		    ILExpression name = nodeToIL.toIL(cmd.getCommandName());
-		    ILExpression returnTo = null;
-		    if (cmd.getVarToAssign() != null) {
-		    	returnTo = nodeToIL.resolveVariableforWriting(cmd.getVarToAssign());
-		    }
+		    Optional<ILExpression> returnTo = cmd.getVarToAssign().map(
+		    		nodeToIL::resolveVariableForWriting);
 		    List<ILExpression> args = nodeToIL.toIL(cmd.getCommandArguments());
+		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);
+		    
 		    map.get(NodeState.EXECUTING).addEntryAction(issueCmd);
 		    map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
 		    

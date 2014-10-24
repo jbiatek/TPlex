@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il2java;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.sun.codemodel.JBlock;
@@ -44,6 +45,75 @@ import edu.umn.crisys.util.Pair;
 
 public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	
+	/**
+	 * Add an assignment to the block. The right hand side can be any Java
+	 * expression, technically, but of course it won't compile if you do 
+	 * something silly. The left hand side must be assignable. 
+	 * 
+	 * You'll probably also want to 
+	 * commit the variable afterward. This method will return the ILVariable
+	 * that was used for the assignment, if any, which you can then 
+	 * perform the commit on. 
+	 * 
+	 * @param block
+	 * @param lhs
+	 * @param rhs
+	 * @param cm
+	 */
+	public static Optional<ILVariable> addAssignment(JBlock block, ILExpression lhs, JExpression rhs, JCodeModel cm) {
+		if (lhs.isAssignable()) {
+			if (lhs instanceof SimpleVar) {
+				block.invoke(JExpr.ref(ILExprToJava.getFieldName((SimpleVar)lhs)), "setNext")
+					.arg(rhs);
+				return Optional.of((SimpleVar)lhs);
+			} else if (lhs instanceof ArrayVar) {
+				// Must be a whole array assignment.
+				block.invoke(JExpr.ref(ILExprToJava.getFieldName((ArrayVar) lhs)), 
+						"arrayAssign").arg(rhs);
+				return Optional.of((ArrayVar) lhs);
+			} else if (lhs instanceof ArrayIndexExpr) {
+				// Just an index. 
+				ArrayIndexExpr arrayIndex = (ArrayIndexExpr) lhs;
+				ArrayVar array = (ArrayVar) arrayIndex.getArray();
+				ILExpression index = (ILExpression) arrayIndex.getIndex();
+				
+				block.invoke(JExpr.ref(ILExprToJava.getFieldName(array)), "indexAssign")
+					.arg(ILExprToJava.toJava(index, cm)).arg(rhs);
+				
+				return Optional.of(array);
+			} else if (lhs instanceof AliasExpr) {
+				AliasExpr alias = (AliasExpr) lhs;
+				// Pass this through the interface for assignment.
+		        block.add( JExpr.invoke("getInterface").invoke("performAssignment")
+		        		.arg(alias.getName()).arg(rhs).arg(JExpr.lit(0)));
+	
+		        // No variable to return, so return empty.
+		        return Optional.empty();
+			} else {
+				throw new RuntimeException(lhs+" claims to be assignable, but I don't know it.");
+			}
+			
+			
+			
+		} else {
+			throw new RuntimeException(lhs+" is not assignable!");
+		}
+		
+	}
+
+	public static void addImmediateCommit(JBlock block, ILVariable varToCommit) {
+		block.invoke(JExpr.ref(ILExprToJava.getFieldName(varToCommit)), "commit");
+	}
+	
+	public static void addCommitAfterMicroStep(JBlock block, ILVariable varToCommit) {
+        block.invoke("commitAfterMicroStep").arg(JExpr.ref(ILExprToJava.getFieldName(varToCommit)));
+	}
+	
+	public static void addCommitAfterMacroStep(JBlock block, ILVariable varToCommit) {
+        block.invoke("commitAfterMacroStep").arg(JExpr.ref(ILExprToJava.getFieldName(varToCommit)));
+	}
+	
+	
 	private JCodeModel cm;
 	private Plan ilPlan;
 	
@@ -78,96 +148,33 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 									.plus(ILExprToJava.toJava(assign.getRHS(), cm))
 									));
 		}
-								
-		ILVariable varToCommit = addAssignment(block, assign.getLHS(), 
-        		ILExprToJava.toJava(assign.getRHS(), cm), cm);
-		if (varToCommit != null) {
-			block.invoke("commitAfterMicroStep").arg(
-					JExpr.ref(ILExprToJava.getFieldName(varToCommit)));
-		}
 		
-		
+		// Assign and commit result after micro step
+		addAssignment(block, assign.getLHS(), ILExprToJava.toJava(assign.getRHS(), cm), cm)
+			.ifPresent((varToCommit) -> addCommitAfterMicroStep(block, varToCommit));
         
 		return null;
 	}
 
-    /**
-     * Add an assignment to the block. The right hand side can be any Java
-     * expression, technically, but of course it won't compile if you do 
-     * something silly. 
-     * 
-     * The left hand side must be assignable. You'll probably also want to 
-     * commit the variable afterward. This method will return the ILVariable
-     * that was used for the assignment, if any, which you can then 
-     * perform the commit on. 
-     * 
-     * @param block
-     * @param lhs
-     * @param rhs
-     * @param cm
-     */
-    public static ILVariable addAssignment(JBlock block, ILExpression lhs, JExpression rhs, JCodeModel cm) {
-    	if (lhs.isAssignable()) {
-    		if (lhs instanceof SimpleVar) {
-    			block.invoke(JExpr.ref(ILExprToJava.getFieldName((SimpleVar)lhs)), "setNext")
-    				.arg(rhs);
-    			return (SimpleVar)lhs;
-    		} else if (lhs instanceof ArrayVar) {
-    			// Must be a whole array assignment.
-    			block.invoke(JExpr.ref(ILExprToJava.getFieldName((ArrayVar) lhs)), 
-    					"arrayAssign").arg(rhs);
-    			return (ArrayVar) lhs;
-    		} else if (lhs instanceof ArrayIndexExpr) {
-    			// Just an index. 
-    			ArrayIndexExpr arrayIndex = (ArrayIndexExpr) lhs;
-    			ArrayVar array = (ArrayVar) arrayIndex.getArray();
-    			ILExpression index = (ILExpression) arrayIndex.getIndex();
-    			
-    			block.invoke(JExpr.ref(ILExprToJava.getFieldName(array)), "indexAssign")
-    				.arg(ILExprToJava.toJava(index, cm)).arg(rhs);
-    			
-    			return array;
-    		} else if (lhs instanceof AliasExpr) {
-    			AliasExpr alias = (AliasExpr) lhs;
-    			// Pass this through the interface for assignment.
-    	        block.add( JExpr.invoke("getInterface").invoke("performAssignment")
-    	        		.arg(alias.getName()).arg(rhs).arg(JExpr.lit(0)));
-
-    	        // No variable to return, so return null.
-    	        return null;
-    		} else {
-    			throw new RuntimeException(lhs+" claims to be assignable, but I don't know it.");
-    		}
-    		
-    		
-    		
-    	} else {
-    		throw new RuntimeException(lhs+" is not assignable!");
-    	}
-    	
-    }
-
-	
-	@Override
+    @Override
 	public Void visitCommand(CommandAction cmd, JBlock block) {
 		// We need to wrap the SimpleCurrentNext in a CommandHandle interface.
 		// That interface lets the ExternalWorld set the state of the handle,
 		// as well as return a value.
 		
 		JClass wrapper = cm.ref(CommandHandle.class);
-		if (cmd.getPossibleLeftHandSide() != null) {
+		if (cmd.getPossibleLeftHandSide().isPresent()) {
 			// Ah, there is an assignment. We actually need an anonymous class,
 			// so that we can override the assignment method. 
 			JDefinedClass wrapperClass = cm.anonymousClass(CommandHandle.class);
-			ILExpression assignTo = cmd.getPossibleLeftHandSide();
+			ILExpression assignTo = cmd.getPossibleLeftHandSide().get();
 			JMethod cmdReturnMethod = wrapperClass.method(JMod.PUBLIC, cm.VOID, "commandReturns");
 			JVar value = cmdReturnMethod.param(cm.ref(PValue.class), "value");
 			
-			ILVariable varToCommit = addAssignment(cmdReturnMethod.body(), assignTo, value, cm);
-			if (varToCommit != null) {
-				// If it's a variable, it should be committed right away too.
-				cmdReturnMethod.body().invoke(JExpr.ref(ILExprToJava.getFieldName(varToCommit)), "commit");
-			}
+			// If it's a variable, it should be committed right away too.
+			addAssignment(cmdReturnMethod.body(), assignTo, value, cm)
+				.ifPresent((varToCommit) -> addImmediateCommit(cmdReturnMethod.body(), varToCommit)); 
+
 			wrapper = wrapperClass;
 		}
 		
@@ -192,15 +199,15 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 
 				@Override
 				public Void visitSimple(SimpleVar var, JBlock block) {
-					addAssignment(block, var, ILExprToJava.toJava(var.getInitialValue(), cm), cm);
-		            block.invoke("commitAfterMicroStep").arg(JExpr.ref(ILExprToJava.getFieldName(var)));
+					addAssignment(block, var, ILExprToJava.toJava(var.getInitialValue(), cm), cm)
+						.ifPresent((varToCommit) -> addCommitAfterMicroStep(block, varToCommit));
 					return null;
 				}
 
 				@Override
 				public Void visitArray(ArrayVar array, JBlock block) {
-					addAssignment(block, array, ILExprToJava.toJava(array.getInitialValue(), cm), cm);
-		            block.invoke("commitAfterMicroStep").arg(JExpr.ref(ILExprToJava.getFieldName(array)));
+					addAssignment(block, array, ILExprToJava.toJava(array.getInitialValue(), cm), cm)
+						.ifPresent((varToCommit) -> addCommitAfterMicroStep(block, varToCommit));
 					return null;
 				}
 
@@ -219,7 +226,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	public Void visitRunLibraryNode(RunLibraryNodeAction lib, JBlock block) {
         block.add(JExpr.ref(
         		ILExprToJava.getLibraryFieldName(lib.getLibNode().getNodeUID()))
-        		.invoke("doMicroStep"));
+        			.invoke("doMicroStep"));
 		return null;
 	}
 

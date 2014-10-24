@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.ast.nodebody;
 
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -8,22 +9,27 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
 public class CommandBody extends NodeBody {
 
     // TODO: Someday... resources.
-    private ASTExpression varToAssign;
+    private Optional<ASTExpression> varToAssign;
     private ASTExpression cmdName;
     private List<ASTExpression> args;
 
     public CommandBody(ASTExpression cmdName, List<ASTExpression> args) {
-        PlexilType.STRING.typeCheck(cmdName.getType());
-        this.cmdName = cmdName;
-        this.args = args;
+        this(Optional.empty(), cmdName, args);
     }
     
     public CommandBody(ASTExpression varToAssign, ASTExpression cmdName, List<ASTExpression> args) {
-    	if ( ! varToAssign.isAssignable()) {
-    		throw new RuntimeException(varToAssign + " is not assignable.");
-    	}
-        this.varToAssign = varToAssign;
+    	this(Optional.of(varToAssign), cmdName, args);
+    }
+
+    
+    public CommandBody(Optional<ASTExpression> varToAssign, 
+    		ASTExpression cmdName, List<ASTExpression> args) {
+    	varToAssign.ifPresent((ASTExpression var) -> {
+    		if ( ! var.isAssignable()) throw new RuntimeException(varToAssign + " is not assignable.");
+    	});
         PlexilType.STRING.typeCheck(cmdName.getType());
+    	
+        this.varToAssign = varToAssign;
         this.cmdName = cmdName;
         this.args = args;
     }
@@ -32,7 +38,7 @@ public class CommandBody extends NodeBody {
      * @return the variable to store the command's result to, or null if it 
      * isn't saved.
      */
-    public ASTExpression getVarToAssign() {
+    public Optional<ASTExpression> getVarToAssign() {
         return varToAssign;
     }
     

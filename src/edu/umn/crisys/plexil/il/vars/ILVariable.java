@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.il.vars;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -43,14 +42,6 @@ public abstract class ILVariable implements ILExpression {
 	@Override
 	public String asString() {
 		return name;
-	}
-	
-	@Override
-	public final <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
-		if (visitor instanceof ILExprVisitor<?,?>) {
-			return this.accept((ILExprVisitor<P, R>)visitor, param);
-		}
-		throw new RuntimeException("Visitor "+visitor+" cannot visit IL Expressions");
 	}
 	
 	public final <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {

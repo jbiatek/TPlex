@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il2java;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
@@ -89,11 +90,11 @@ public class PlanToJava {
                     		varNamePA.invoke("equals").arg(JExpr.lit(alias)));
                 }
                 // Now we have a conditional, fill its body with the assignment
-                ILVariable varToCommit = ActionToJava.addAssignment(condAssign._then(), target, value, cm);
-                if (varToCommit != null) {
+                Optional<ILVariable> varToCommit = ActionToJava.addAssignment(condAssign._then(), target, value, cm);
+                if (varToCommit.isPresent()) {
                 	// We need to commit this variable after we assign it.
                 	condAssign._then().invoke("commitAfterMicroStep").arg(
-                			JExpr.ref(ILExprToJava.getFieldName(varToCommit)));
+                			JExpr.ref(ILExprToJava.getFieldName(varToCommit.get())));
                 	condAssign._then().invoke("endMacroStep");
                 }
             }
