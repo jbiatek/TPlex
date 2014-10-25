@@ -35,8 +35,7 @@ public class CommandBody extends NodeBody {
     }
     
     /**
-     * @return the variable to store the command's result to, or null if it 
-     * isn't saved.
+     * @return the variable to store the command's result to (optional)
      */
     public Optional<ASTExpression> getVarToAssign() {
         return varToAssign;

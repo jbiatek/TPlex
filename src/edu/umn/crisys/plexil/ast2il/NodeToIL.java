@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
@@ -67,7 +67,7 @@ public class NodeToIL {
     
     private Node myNode;
     private NodeUID myUid;
-    private NodeToIL parent;
+    private Optional<NodeToIL> parent;
     private ASTExprToILExpr exprToIL = new ASTExprToILExpr(this);
     
     private List<NodeToIL> children = new ArrayList<NodeToIL>();
@@ -81,17 +81,18 @@ public class NodeToIL {
     
     public NodeToIL(Node node, NodeToIL parent) {
         this.myNode = node;
-        this.parent = parent;
-        if (parent == null) {
-            myUid = new NodeUID(node.getPlexilID());
-        } else {
+        this.parent = Optional.ofNullable(parent);
+        
+        if (this.parent.isPresent()) {
             myUid = new NodeUID(parent.myUid, node.getPlexilID());
+        } else {
+            myUid = new NodeUID(node.getPlexilID());
         }
         // We should create the IL variables now.
         createILVars();
         checkForChildren();
         
-        if (parent == null) {
+        if ( ! this.parent.isPresent()) {
             // Okay, now we can do this.
             parentsAreReady();
         }
@@ -230,7 +231,7 @@ public class NodeToIL {
     	return myNode.getPriority();
     }
     
-    public String getPlexilID() {
+    public Optional<String> getPlexilID() {
     	return myNode.getPlexilID();
     }
     
@@ -238,7 +239,7 @@ public class NodeToIL {
     	return myNode.getNodeBody();
     }
 
-    public NodeToIL getParent() {
+    public Optional<NodeToIL> getParent() {
     	return parent;
     }
     
@@ -296,53 +297,21 @@ public class NodeToIL {
     }
     
     ILExpression getThisOrAncestorsExits() {
-        if (myNode.getExitCondition() instanceof BooleanValue && 
-        		((BooleanValue) myNode.getExitCondition()).isFalse()) {
-        	// We don't even need it.
-        	if (parent != null) return parent.getThisOrAncestorsExits();
-        	else return new RootAncestorExitExpr();
-        }
-    	
         ILExpression myExit = toIL(myNode.getExitCondition());
-        if (parent != null) {
-            return Operation.or(myExit, parent.getThisOrAncestorsExits());
-        } else {
-            return Operation.or(myExit, new RootAncestorExitExpr());
-        }
+        return parent.map((parent) -> Operation.or(myExit, parent.getThisOrAncestorsExits()))
+        		.orElse(Operation.or(myExit, new RootAncestorExitExpr()));
     }
 
     ILExpression getThisOrAncestorsEnds() {
-        if (myNode.getEndCondition() instanceof BooleanValue && 
-        		((BooleanValue) myNode.getEndCondition()).isFalse()) {
-        	// We don't even need it.
-        	if (parent != null) return parent.getThisOrAncestorsEnds();
-        	else return new RootAncestorEndExpr();
-        }
-
-    	
         ILExpression myEnd = toIL(myNode.getEndCondition());
-        if (parent != null) {
-            return Operation.or(myEnd, parent.getThisOrAncestorsEnds());
-        } else {
-            return Operation.or(myEnd, new RootAncestorEndExpr());
-        }
+        return parent.map((parent) -> Operation.or(myEnd, parent.getThisOrAncestorsEnds()))
+        		.orElse(Operation.or(myEnd, new RootAncestorEndExpr()));
     }
 
     ILExpression getThisAndAncestorsInvariants() {
-        if (myNode.getInvariantCondition() instanceof BooleanValue && 
-        		((BooleanValue) myNode.getInvariantCondition()).isTrue()) {
-        	// We don't even need it.
-        	if (parent != null) return parent.getThisAndAncestorsInvariants();
-        	else return new RootAncestorInvariantExpr();
-        }
-
-    	
         ILExpression myInv = toIL(myNode.getInvariantCondition());
-        if (parent != null) {
-            return Operation.and(myInv, parent.getThisAndAncestorsInvariants());
-        } else {
-            return Operation.and(myInv, new RootAncestorInvariantExpr());
-        }
+        return parent.map((parent) -> Operation.and(myInv, parent.getThisAndAncestorsInvariants()))
+        		.orElse(Operation.and(myInv, new RootAncestorInvariantExpr()));
     }
 
     public NodeUID getUID() {
@@ -371,19 +340,19 @@ public class NodeToIL {
      * @param writing
      * @return
      */
-    private ILExpression resolveVariableInternal(String name, boolean writing) {
+    private Optional<ILExpression> resolveVariableInternal(String name, boolean writing) {
         // Variables have lexical scope, which mean they are visible only 
         // within the action and any descendants of the action. Scope can be 
         // explicitly limited using the Interface clause. 
         
         // Is it in this Node? That would be pretty easy.
         if (getAllVariables().contains(name)) {
-            return getVariable(name);
+            return Optional.of(getVariable(name));
         }
         
         // Or if we have it as an alias, that works too.
         if (aliases.containsKey(name)) {
-        	return aliases.get(name);
+        	return Optional.of(aliases.get(name));
         }
         
         // It's not here. We need to make sure that our interface
@@ -397,14 +366,10 @@ public class NodeToIL {
             throw new RuntimeException("Cannot write to variable "+name+" in "+getUID());
         }
         
-        // We are allowed to look further. Is there a parent?
-        if (parent == null) {
-            // Nope, we are the root node. It's either an alias or an error.
-        	return null;
-        } else {
-            // This is their problem now.
-            return parent.resolveVariableInternal(name, writing);
-        }
+        // We are allowed to look further. Ask our parent, otherwise we've
+        // run out of options.
+        return parent.map((parent) -> parent.resolveVariableInternal(name, writing))
+        	.orElse(Optional.empty());
     }
 
     /**
@@ -416,8 +381,8 @@ public class NodeToIL {
      * @return
      */
     public ILExpression resolveVariable(String name, PlexilType type) {
-        ILExpression expr = resolveVariableInternal(name, false);
-        if (expr == null) {
+        Optional<ILExpression> expr = resolveVariableInternal(name, false);
+        if ( ! expr.isPresent()) {
         	// We went all the way up to the root, and no one claimed this
         	// variable as their own. It could be that this PLEXIL plan is a 
         	// library, and this variable is a part of our Interface.
@@ -438,7 +403,18 @@ public class NodeToIL {
 
         	
         }
-        return expr;
+        return expr.get();
+    }
+    
+    private List<NodeToIL> getParents() {
+    	List<NodeToIL> list = new ArrayList<NodeToIL>();
+    	
+    	Optional<NodeToIL> lastNode =  Optional.of(this);
+    	while (lastNode.isPresent()) {
+    		list.add(lastNode.get());
+    		lastNode = lastNode.get().getParent();
+    	}
+    	return list;
     }
     
     private ILExpression createAlias(String name, boolean writeable) {
@@ -447,27 +423,16 @@ public class NodeToIL {
     	// checking, and print a warning if they probably didn't mean it. 
     	// Let's go back up the parent tree, and see if someone has an
     	// Interface. 
-    	NodeToIL pointer = this;
-    	boolean foundInterface = false;
-    	while (pointer != null) {
-    		if (pointer.myNode.getInterface().isDefined() &&
-    				pointer.myNode.getInterface().isReadable(name)) {
-    			if (writeable && ! pointer.myNode.getInterface().isWritable(name)) {
-    				throw new RuntimeException("Trying to write to read-only alias: "+name);
-    			}
-    			// Here we go. They probably didn't typo this, so don't bug 
-    			// them.
-    			foundInterface = true;
-    			break;
-    		} else {
-    			pointer = pointer.parent;
-    		}
-    	}
+    	boolean foundInterface = getParents().stream()
+    			.anyMatch((node) -> node.myNode.getInterface().isDefined()
+    					&& node.myNode.getInterface().isReadable(name));
+    	
     	if ( ! foundInterface) {
     		// No interfaces explicitly mention this variable. Technically,
     		// this is still valid PLEXIL code. But it's not written well,
     		// and it's possible that this is a variable that got typo'd.
-    		System.err.println("Warning: Variable "+name+" is not clearly defined in node "+myNode.getPlexilID()+".");
+    		System.err.println("Warning: Variable "+name+" is not clearly defined in node "+
+    				myNode.getPlexilID().orElse("(anonymous)")+".");
     		System.err.println("If this plan isn't used as a library inside of a plan that defines "+name+", it will crash.");
     	}
     	
@@ -481,12 +446,8 @@ public class NodeToIL {
     	
         if (e instanceof UnresolvedVariableExpr) {
             UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
-            ILExpression expr = resolveVariableInternal(var.getName(), true);
-            if (expr == null) {
-            	// Must be an alias then. Or a typo.
-            	return createAlias(var.getName(), true);
-            }
-            return expr;
+            Optional<ILExpression> expr = resolveVariableInternal(var.getName(), true);
+            return expr.orElseGet( () -> createAlias(var.getName(), true));
         } else if (e instanceof ArrayIndexExpr) {
             ArrayIndexExpr arr = (ArrayIndexExpr) e;
             return new ArrayIndexExpr(
@@ -504,16 +465,17 @@ public class NodeToIL {
         // TODO: Also, I'm taking "children" to mean "immediate children", which
         // I think is right but [citation needed]. 
     	
-    	if (plexilId.equals(this.myNode.getPlexilID())) {
+    	if (getPlexilID().isPresent() && getPlexilID().get().equals(plexilId)) {
     		// Well, that was easy.
     		return this;
     	}
         
     	// Expand the search to siblings.
-        if (parent != null) {
-            List<NodeToIL> siblings = parent.getChildren();
+        if (parent.isPresent()) {
+            List<NodeToIL> siblings = parent.get().getChildren();
             for (NodeToIL sibling : siblings) {
-                if (sibling.myNode.getPlexilID().equals(plexilId)) {
+                if (sibling.getPlexilID().isPresent() &&
+                		sibling.getPlexilID().get().equals(plexilId)) {
                     return sibling;
                 }
             }
@@ -521,23 +483,19 @@ public class NodeToIL {
         
         // Children next.
         for (NodeToIL child : children) {
-            if (child.myNode.getPlexilID().equals(plexilId)) {
+            if (child.getPlexilID().isPresent() && 
+            		child.getPlexilID().get().equals(plexilId)) {
                 return child;
             }
-
         }
         
-        // Now ancestors. We do it ourselves because it's not too much work,
-        // and also we don't want them to check their children, siblings, etc.
-        NodeToIL ptr = this.parent;
-        while (ptr != null) {
-            if (ptr.myNode.getPlexilID().equals(plexilId)) {
-                return ptr;
-            } else {
-                ptr = ptr.parent;
-            }
+        // Now ancestors. 
+        for (NodeToIL parent : getParents()) {
+        	if (parent.getPlexilID().isPresent() 
+        			&& parent.getPlexilID().get().equals(plexilId)) {
+        		return parent;
+        	}
         }
-        
         throw new RuntimeException("Plexil node ID not found: "+plexilId);
     }
     
@@ -569,7 +527,7 @@ public class NodeToIL {
         // All done with the state machine, add it to the plan. 
         ilPlan.addStateMachine(nsm);
         // Are we root?
-        if (parent == null) {
+        if ( ! parent.isPresent()) {
             ilPlan.setRoot(nsm, getState(), getOutcome());
         }
         

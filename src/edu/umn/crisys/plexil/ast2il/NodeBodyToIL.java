@@ -151,7 +151,8 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitUpdate(UpdateBody update, Void p) {
-		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), nodeToIL.getPlexilID());
+		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), 
+		    		nodeToIL.getUID().getShortName());
 		    for ( Pair<String, ASTExpression> pair : update.getUpdates()) {
 		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second));
 		    }

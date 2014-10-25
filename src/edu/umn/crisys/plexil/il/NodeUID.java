@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il;
 
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.NameUtils;
@@ -16,32 +17,20 @@ public class NodeUID {
      * Create a UID for this Node. Guaranteed unique within this plan.
      * @param node
      */
-    public NodeUID(NodeUID parent, String localName) {
+    public NodeUID(NodeUID parent, Optional<String> localName) {
         if (parent == null) {
-            construct(localName, null, null);
+            construct(localName, null);
         } else {
-            construct(localName, parent, parent.childNames);
+            construct(localName, parent);
         }
     }
     
     /**
-     * Create a UID for a Node with the given parent and siblings. 
-     * @param shortName The "Plexil ID" of this node, or null if it is 
-     * anonymous.
-     * @param parentId The parent's already created NodeUID.
-     * @param siblings All the NodeUIDs that have already been made for siblings
-     * of this node. This UID will be added to it.
-     */
-    public NodeUID(String shortName, NodeUID parentId, Set<NodeUID> siblings) {
-        construct(shortName, parentId, siblings);
-    }
-    
-    /**
-     * Create a UID for a root node. Pass in null if it's anonymous.
+     * Create a UID for a root node. Pass in empty if it's anonymous.
      * @param rootName
      */
-    public NodeUID(String rootName) {
-        construct(rootName, null, null);
+    public NodeUID(Optional<String> rootName) {
+        construct(rootName, null);
     }
     
     /**
@@ -52,17 +41,17 @@ public class NodeUID {
      * @param parentPath
      * @param siblings
      */
-    private void construct(String localName, NodeUID parentPath, Set<NodeUID> siblings) {
-        if (localName == null) {
-            if (parentPath == null) {
+    private void construct(Optional<String> localName, NodeUID parentPath) {
+        if (localName.isPresent()) {
+        	this.shortName = localName.get();
+        } else {
+        	if (parentPath == null) {
                 // We are an anonymous root node.
-                localName = "Root node";
+                this.shortName = "Root node";
             } else {
                 // We are an anonymous node
-                localName = "Anonymous node";
+                this.shortName = "Anonymous node";
             }
-        } else {
-            this.shortName = localName;
         }
         
         if (parentPath == null) {
@@ -70,12 +59,12 @@ public class NodeUID {
         } else {
             // Let's find a unique path for ourselves keeping in mind our siblings
             Set<String> sibStrs = new HashSet<String>();
-            for (NodeUID uid : siblings) {
+            for (NodeUID uid : parentPath.childNames) {
                 sibStrs.add(uid.toString());
             }
             uniquePath = NameUtils.getUniqueName(sibStrs, parentPath+"/"+this.shortName);
             // Put our name into the pool of taken names
-            siblings.add(this);
+            parentPath.childNames.add(this);
         }
         
     }

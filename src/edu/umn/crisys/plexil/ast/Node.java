@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
@@ -18,8 +19,8 @@ import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 
 public class Node {
 	
-    private Node parent = null;
-    private String plexilId;
+    private Optional<Node> parent = Optional.empty();
+    private Optional<String> plexilId = Optional.empty();
 
     private PlexilPlan thePlan;
     private NodeBody body = new NodeBody();
@@ -46,7 +47,6 @@ public class Node {
      */
     public Node(PlexilPlan plan) {
     	this.thePlan = plan;
-    	this.parent = null;
     }
     
     /** Construct a Node with a parent.
@@ -54,14 +54,14 @@ public class Node {
      * @param parent
      */
     public Node(Node parent) {
-        this.parent = parent;
+        this.parent = Optional.of(parent);
         this.thePlan = parent.getPlan();
     }
     
     /**
-	 * @return this node's parent, or null if it is the root node
+	 * @return this node's parent
 	 */
-	public Node getParent() {
+	public Optional<Node> getParent() {
 	    return parent;
 	}
 
@@ -124,10 +124,10 @@ public class Node {
     /**
      * @return The native Plexil node ID. Can be null.
      */
-    public String getPlexilID() {
+    public Optional<String> getPlexilID() {
         return plexilId;
     }
-    public void setPlexilID(String id) { plexilId = id; }
+    public void setPlexilID(String id) { plexilId = Optional.of(id); }
     
     public PlexilPlan getPlan() { return thePlan; }
 

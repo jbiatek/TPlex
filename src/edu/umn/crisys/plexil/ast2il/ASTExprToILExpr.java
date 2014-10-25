@@ -127,19 +127,21 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     		NodeRefExpr ref = (NodeRefExpr) e;
     		switch (ref) {
     		case PARENT: 
-    			if (context.getParent() == null) throw new NullPointerException();
-    			return context.getParent();
+    			return context.getParent().orElseThrow(
+    					() -> new RuntimeException(context+" has no parent!"));
     		case CHILD: 
     			if (context.getChildren().size() != 1) {
     				throw new RuntimeException("Which child?");
     			}
     			return context.getChildren().get(0);
     		case SIBLING:
-    			if (context.getParent().getChildren().size() != 2) {
+    			NodeToIL parent = context.getParent().orElseThrow(
+    					() -> new RuntimeException(context+" has no parent!"));
+    			if (parent.getChildren().size() != 2) {
     				throw new RuntimeException("Which sibling?");
     			}
-    			NodeToIL sibling0 = context.getParent().getChildren().get(0);
-    			NodeToIL sibling1 = context.getParent().getChildren().get(1);
+    			NodeToIL sibling0 = parent.getChildren().get(0);
+    			NodeToIL sibling1 = parent.getChildren().get(1);
     			if (sibling0 == context) {
     				return sibling1;
     			} else {

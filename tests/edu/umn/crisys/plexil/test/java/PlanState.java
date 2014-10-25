@@ -4,10 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -31,20 +30,11 @@ public class PlanState {
     private Map<String, PValue> vars = new HashMap<String, PValue>();
 
     public PlanState(String id) {
-        uid = new NodeUID(id);
+        uid = new NodeUID(Optional.of(id));
     }
     
     public PlanState(String id, PlanState parent) {
-        uid = new NodeUID(id, parent.uid, parent.getChildUIDs());
-    }
-    
-    private Set<NodeUID> getChildUIDs() {
-        Set<NodeUID> childUIDs = new HashSet<NodeUID>();
-        
-        for (PlanState child : children) {
-            childUIDs.add(child.uid);
-        }
-        return childUIDs;
+        uid = new NodeUID(parent.uid, Optional.of(id));
     }
     
     public NodeUID getUID() {

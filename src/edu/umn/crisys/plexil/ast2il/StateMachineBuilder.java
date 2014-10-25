@@ -446,32 +446,27 @@ public class StateMachineBuilder {
     
     private TransitionGuard ancestorEndsDisjoined(Condition cond) {
         if ( ! ilExprCache.containsKey(Description.ANCESTOR_ENDS_DISJOINED)) {
-        	ILExpression ancEnds = translator.getParent() == null?
-        			new RootAncestorEndExpr() : 
-        			translator.getParent().getThisOrAncestorsEnds();
-
-        	ilExprCache.put(Description.ANCESTOR_ENDS_DISJOINED, ancEnds);
+        	ilExprCache.put(Description.ANCESTOR_ENDS_DISJOINED, 
+                	translator.getParent().map(NodeToIL::getThisOrAncestorsEnds)
+            		.orElse(new RootAncestorEndExpr()));
         }
         return makeGuard(Description.ANCESTOR_ENDS_DISJOINED, cond);
     }
     
     private TransitionGuard ancestorExitsDisjoined(Condition cond) {
         if ( ! ilExprCache.containsKey(Description.ANCESTOR_EXITS_DISJOINED)) {
-        	ILExpression ancExits = translator.getParent() == null?
-        			new RootAncestorExitExpr():
-        			translator.getParent().getThisOrAncestorsExits();
-        	ilExprCache.put(Description.ANCESTOR_EXITS_DISJOINED, ancExits);
+        	ilExprCache.put(Description.ANCESTOR_EXITS_DISJOINED, 
+        			translator.getParent().map(NodeToIL::getThisOrAncestorsExits)
+        			.orElse(new RootAncestorExitExpr()));
         }
         return makeGuard(Description.ANCESTOR_EXITS_DISJOINED, cond);
     }
     
     private TransitionGuard ancestorInvariantsConjoined(Condition cond) {
     	if ( ! ilExprCache.containsKey(Description.ANCESTOR_INVARIANTS_CONJOINED)) {
-    		ILExpression ancInvs = translator.getParent() == null ?
-    				new RootAncestorInvariantExpr() :
-    				translator.getParent().getThisAndAncestorsInvariants();
-
-    		ilExprCache.put(Description.ANCESTOR_INVARIANTS_CONJOINED, ancInvs);
+    		ilExprCache.put(Description.ANCESTOR_INVARIANTS_CONJOINED, 
+    				translator.getParent().map(NodeToIL::getThisAndAncestorsInvariants)
+    				.orElse(new RootAncestorInvariantExpr()));
     	}
     	return makeGuard(Description.ANCESTOR_INVARIANTS_CONJOINED, cond);
     }
@@ -490,19 +485,10 @@ public class StateMachineBuilder {
 
     private TransitionGuard getParentIsInState(NodeState state, Description d, Condition cond) {
         if ( ! ilExprCache.containsKey(d) ) {
-            if (translator.getParent() == null) {
-                ilExprCache.put(d, 
-                        Operation.eq(
-                                new RootParentStateExpr(),
-                                state
-                        ));
-            } else {
-                ilExprCache.put(d,
-                        Operation.eq(
-                        		translator.getParent().getState(), 
-                                state));
-            }
-
+        	ilExprCache.put(d, Operation.eq(state, 
+        			translator.getParent().map((parent) -> (ILExpression)parent.getState())
+        			.orElse(new RootParentStateExpr())
+        			));
         }
         return makeGuard(d, cond);
     }

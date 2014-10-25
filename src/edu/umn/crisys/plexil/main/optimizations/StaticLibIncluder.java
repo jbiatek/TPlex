@@ -12,7 +12,7 @@ public class StaticLibIncluder {
 		if (node.hasLibraryHandle()) {
 			// If we've got one to put here, let's do it.
 			for (String name : libs.keySet()) {
-				String rootID = libs.get(name).getRootNode().getPlexilID();
+				String rootID = libs.get(name).getRootNode().getPlexilID().orElse("<empty");
 				if (node.getLibraryHandle().getLibraryPlexilID().equals(rootID)) {
 					// Success!
 					System.out.println("Statically including "+rootID);

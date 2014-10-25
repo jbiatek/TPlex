@@ -227,7 +227,8 @@ public class Main {
 		// to create.
 		Map<String,String> idToFile = new HashMap<String, String>();
 		for (String filename : asts.keySet()) {
-			idToFile.put(asts.get(filename).getRootNode().getPlexilID(), NameUtils.clean(filename));
+			asts.get(filename).getRootNode().getPlexilID().ifPresent(
+					(id) -> idToFile.put(id, NameUtils.clean(filename)));
 		}
 		
 		Set<Plan> ilPlans = new HashSet<Plan>();

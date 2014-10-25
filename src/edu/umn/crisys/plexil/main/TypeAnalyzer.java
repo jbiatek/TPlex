@@ -202,13 +202,12 @@ public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyV
 	}
 
 	private static PlexilType resolveVariableType(String name, Node n) {
-		if (n == null) {
-			return PlexilType.UNKNOWN;
-		}
 		if (n.containsVar(name)) {
 			return n.getVariableInfo(name).getType();
+		} else if (n.getParent().isPresent()) {
+			return resolveVariableType(name, n.getParent().get());
 		} else {
-			return resolveVariableType(name, n.getParent());
+			return PlexilType.UNKNOWN;
 		}
 	}
 
