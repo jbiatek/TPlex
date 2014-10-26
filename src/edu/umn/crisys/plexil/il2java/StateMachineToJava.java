@@ -91,7 +91,7 @@ public class StateMachineToJava {
 				JCase mainCase = sw._case(JExpr.lit(nsm.indexOf(t.start)));
 				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+"__"+t.start.getIndex()));
 				// Need to declare a temp variable inside each method. 
-				ILExprToJava.insertShortCircuitHack(methodMap.get(t.start).body(), cm);
+				//ILExprToJava.insertShortCircuitHack(methodMap.get(t.start).body(), cm);
 				
 				// The case just needs to invoke the new method.
 				mainCase.body().invoke(methodMap.get(t.start));
