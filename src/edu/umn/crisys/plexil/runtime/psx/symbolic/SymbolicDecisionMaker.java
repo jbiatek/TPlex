@@ -80,32 +80,39 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 		
 	}
 	
-	private class IncreasingNumber<T extends PNumeric> implements ValueGenerator<T> {
-		private PlexilType type;
-		private T lastValue;
+	private class IncreasingReal implements ValueGenerator<PReal> {
+		private PReal lastValue;
 		
-		public IncreasingNumber(PlexilType type, T init) {
-			if ( ! type.isNumeric()) {
-				throw new RuntimeException("Cannot create non-numeric increasing lookup");
-			}
-			this.type = type; this.lastValue = init;
+		public IncreasingReal(PReal init) {
+			this.lastValue = init;
 		}
 		
-		public IncreasingNumber(PlexilType type) {
-			this(type, null);
+		public IncreasingReal() {
+			this(RealValue.get(0.0));
 		}
 		
 		@SuppressWarnings("unchecked")
 		@Override
-		public T generateNewValue() {
-			PNumeric newVal = (PNumeric) getSymbolicPValueOfType(type);
-			lastValue = (T) lastValue.max(newVal);
-			return lastValue;
-			// Abandon this line of execution if the new value is less than 
-			// the old one. 
-//			source.continueOnlyIf(lastValue != null && newVal.ge(lastValue).isTrue());
-//			lastValue = (T) newVal.castTo(type);
-//			return lastValue;
+		public PReal generateNewValue() {
+			return getRealGreaterEqualTo(lastValue.getRealValue());
+		}
+	}
+	
+	private class IncreasingInt implements ValueGenerator<PInteger> {
+		private PInteger lastValue;
+		
+		public IncreasingInt(PInteger init) {
+			this.lastValue = init;
+		}
+		
+		public IncreasingInt() {
+			this(IntegerValue.get(0));
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public PInteger generateNewValue() {
+			return getIntGreaterEqualTo(lastValue.getIntValue());
 		}
 	}
 	
@@ -137,6 +144,24 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	
 	boolean symbolicBoolean() {
 		return source.symbolicBoolean(true);
+	}
+	
+	private PInteger getIntGreaterEqualTo(int i) {
+		int newSymb = source.symbolicInteger(0);
+		if (newSymb > i) {
+			return IntegerValue.get(newSymb);
+		} else {
+			return IntegerValue.get(i);
+		}
+	}
+	
+	private PReal getRealGreaterEqualTo(double f) {
+		double newSymb = source.symbolicDouble(0);
+		if (newSymb > f) {
+			return RealValue.get(newSymb);
+		} else {
+			return RealValue.get(f);
+		} 
 	}
 	
 	private PValue getSymbolicPValueOfType(PlexilType t) {
@@ -186,15 +211,19 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	}
 	
 	public void addIncreasingLookup(String lookup, PlexilType type) {
-		lookupGenerators.put(lookup, new IncreasingNumber<PNumeric>(type));
+		if (type == PlexilType.INTEGER) {
+			lookupGenerators.put(lookup, new IncreasingInt());
+		} else {
+			lookupGenerators.put(lookup, new IncreasingReal());
+		}
 	}
 	
 	public void addIncreasingLookup(String lookup, double initialValue) {
-		lookupGenerators.put(lookup, new IncreasingNumber<PReal>(PlexilType.REAL, RealValue.get(initialValue)));
+		lookupGenerators.put(lookup, new IncreasingReal(RealValue.get(initialValue)));
 	}
 	
 	public void addIncreasingLookup(String lookup, int initialValue) {
-		lookupGenerators.put(lookup, new IncreasingNumber<PInteger>(PlexilType.INTEGER, IntegerValue.get(initialValue)));
+		lookupGenerators.put(lookup, new IncreasingInt(IntegerValue.get(initialValue)));
 	}
 	
 	/**
