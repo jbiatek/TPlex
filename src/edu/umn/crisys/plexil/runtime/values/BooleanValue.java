@@ -32,10 +32,14 @@ public class BooleanValue implements PBoolean {
 	}
 	
 	/**
-	 * Create a known BooleanValue with the given value.
-	 * @param value
+	 * Create a known BooleanValue with the given value. Unless you're doing 
+	 * unusual things, such as using symbolic values, you'll probably get 
+	 * better performance using BooleanValue.get() rather than creating a bunch
+	 * of identical objects. 
+	 * 
+	 * @param value The value to wrap
 	 */
-	private BooleanValue(boolean value) {
+	public BooleanValue(boolean value) {
 		this.bool = value;
 	}
 	

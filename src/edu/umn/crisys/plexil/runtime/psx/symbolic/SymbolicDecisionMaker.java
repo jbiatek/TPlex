@@ -9,7 +9,6 @@ import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
 import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -91,7 +90,6 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 			this(RealValue.get(0.0));
 		}
 		
-		@SuppressWarnings("unchecked")
 		@Override
 		public PReal generateNewValue() {
 			return getRealGreaterEqualTo(lastValue.getRealValue());
@@ -109,7 +107,6 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 			this(IntegerValue.get(0));
 		}
 		
-		@SuppressWarnings("unchecked")
 		@Override
 		public PInteger generateNewValue() {
 			return getIntGreaterEqualTo(lastValue.getIntValue());
@@ -167,12 +164,12 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	private PValue getSymbolicPValueOfType(PlexilType t) {
 		switch (t) {
 		case BOOLEAN:
-			return BooleanValue.get(source.symbolicBoolean(true));
+			return new BooleanValue(source.symbolicBoolean(true));
 		case INTEGER:
-			return IntegerValue.get(source.symbolicInteger(0));
+			return new IntegerValue(source.symbolicInteger(0));
 		case REAL:
 		case NUMERIC:
-			return RealValue.get(source.symbolicDouble(0.0));
+			return new RealValue(source.symbolicDouble(0.0));
 		default:
 			throw new RuntimeException("Type "+t+
 					" does not have a symbolic method");
