@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/codemodel-2.6.jar" sourcepath="lib/codemodel-2.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcute.jar"/>
+	<classpathentry kind="lib" path="lib/jkind-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
