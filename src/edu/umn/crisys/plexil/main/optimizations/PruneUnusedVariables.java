@@ -13,7 +13,6 @@ import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
 import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
-import edu.umn.crisys.plexil.il.action.ResetNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
@@ -89,14 +88,6 @@ public class PruneUnusedVariables {
 				AssignAction assign = (AssignAction) a;
 				if (killedVars.contains(assign.getLHS())) {
 						iter.remove();
-				}
-			} else if (a instanceof ResetNodeAction) {
-				Iterator<ILVariable> resetIter = ((ResetNodeAction) a).getVars().iterator();
-				while (resetIter.hasNext()) {
-					ILVariable v = resetIter.next();
-					if (killedVars.contains(v)) {
-						resetIter.remove();
-					}
 				}
 			} else if (a instanceof CompositeAction) {
 				CompositeAction composite = (CompositeAction) a;

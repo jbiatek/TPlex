@@ -25,15 +25,12 @@ import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.EndMacroStep;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
-import edu.umn.crisys.plexil.il.action.ResetNodeAction;
 import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.il.vars.ILVarVisitor;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
-import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.runtime.plx.CommandHandle;
@@ -179,38 +176,6 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
             .arg(ILExprToJava.toJava(cmd.getName(), cm));
         for (ILExpression arg : cmd.getArgs()) {
             cmdCall.arg(ILExprToJava.toJava(arg, cm));
-        }
-		return null;
-	}
-
-	@Override
-	public Void visitResetNode(ResetNodeAction reset, JBlock block) {
-        for (ILVariable var : reset.getVars()) {
-        	// TODO: Minor refactoring. Can't SimpleVar and ArrayVar share this in common?
-        	// Library should probably implement an interface but not share a superclass with these guys.
-        	ILVarVisitor<JBlock, Void> visitor = new ILVarVisitor<JBlock, Void>() {
-
-				@Override
-				public Void visitSimple(SimpleVar var, JBlock block) {
-					addAssignment(block, var, ILExprToJava.toJava(var.getInitialValue(), cm), cm);
-		            block.invoke("commitAfterMicroStep").arg(JExpr.ref(ILExprToJava.getFieldName(var)));
-					return null;
-				}
-
-				@Override
-				public Void visitArray(ArrayVar array, JBlock block) {
-					addAssignment(block, array, ILExprToJava.toJava(array.getInitialValue(), cm), cm);
-		            block.invoke("commitAfterMicroStep").arg(JExpr.ref(ILExprToJava.getFieldName(array)));
-					return null;
-				}
-
-				@Override
-				public Void visitLibrary(LibraryVar lib, JBlock block) {
-					return null;
-				}
-			};
-			
-			var.accept(visitor, block);
         }
 		return null;
 	}

@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il.statemachine;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +10,9 @@ import edu.umn.crisys.plexil.il.action.PlexilAction;
 public class Transition implements Comparable<Transition> {
 	
     public String description; 
+    /**
+     * #1 goes first, then #2, then #3, etc. 
+     */
 	public int priority;
 	public State start;
 	public State end;
@@ -40,6 +44,16 @@ public class Transition implements Comparable<Transition> {
 	        }
 	    }
 	    return true;
+	}
+	
+	public void pruneGuards() {
+		Iterator<TransitionGuard> iterator = guards.iterator();
+		while (iterator.hasNext()) {
+			TransitionGuard g = iterator.next();
+			if (g.isAlwaysActive()) {
+				iterator.remove();
+			}
+		}
 	}
 	
 	public Transition addAction(PlexilAction action) {

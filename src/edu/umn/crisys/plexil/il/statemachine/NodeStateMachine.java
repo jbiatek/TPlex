@@ -1,8 +1,10 @@
 package edu.umn.crisys.plexil.il.statemachine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -80,6 +82,20 @@ public class NodeStateMachine {
 	public Transition addTransition(Transition t) {
 	    transitions.add(t);
 	    return t;
+	}
+	
+	public Set<Transition> getHigherTransitionsThan(Transition theTransition) {
+		if (! transitions.contains(theTransition)) {
+			throw new RuntimeException("This is a foreign transition!");
+		}
+		Set<Transition> matches = new HashSet<Transition>();
+		
+		for (Transition t : transitions) {
+			if (t.start == theTransition.start && t.priority < theTransition.priority ) {
+				matches.add(t);
+			}
+		}
+		return matches;
 	}
 
 
