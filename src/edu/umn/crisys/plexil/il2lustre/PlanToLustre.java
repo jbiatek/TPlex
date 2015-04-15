@@ -4,14 +4,16 @@ import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.BoolExpr;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
+import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
@@ -20,8 +22,10 @@ import jkind.lustre.builders.ProgramBuilder;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
+import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
@@ -30,7 +34,7 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
 public class PlanToLustre {
 	
 	public static Program toLustre(Plan p, PlexilPlan originalAst) {
-		ProgramBuilder pb = new ProgramBuilder();
+		ProgramBuilder pb = getProgramWithPlexilTypes();
 		NodeBuilder nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
 		
 		for (LookupDecl lookup : originalAst.getStateDeclarations()) {
@@ -46,6 +50,9 @@ public class PlanToLustre {
 		
 		for (ILVariable v : p.getVariables()) {
 			addVariable(v, p, nb);
+			if (v.getName().contains("previous_value")) {
+				System.err.println(v);
+			}
 		}
 		
 		ActionsToLustre a2l = new ActionsToLustre();
@@ -56,6 +63,70 @@ public class PlanToLustre {
 		return pb.build();
 	}
 	
+	private static ProgramBuilder getProgramWithPlexilTypes() {
+		ProgramBuilder pb = new ProgramBuilder();
+		addEnumType(pb, ILExprToLustre.PBOOLEAN);
+		addEnumType(pb, ILExprToLustre.PSTATE);
+		addEnumType(pb, ILExprToLustre.PCOMMAND);
+		addEnumType(pb, ILExprToLustre.POUTCOME);
+		addEnumType(pb, ILExprToLustre.PFAILURE);
+		
+		// Some Plexil operators too
+		NodeBuilder p_and = new NodeBuilder("p_and");
+		p_and.addInput(new VarDecl("first", ILExprToLustre.PBOOLEAN));
+		p_and.addInput(new VarDecl("second", ILExprToLustre.PBOOLEAN));
+		p_and.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		p_and.addEquation(new Equation(new IdExpr("result"), 
+				new IdExpr("if (first = p_false or second = p_false) then p_false\n"
+           +"else if (first = p_unknown or second = p_unknown) then p_unknown\n"
+           +"else p_true")));
+		pb.addNode(p_and.build());
+		
+		NodeBuilder p_or = new NodeBuilder("p_or");
+		p_or.addInput(new VarDecl("first", ILExprToLustre.PBOOLEAN));
+		p_or.addInput(new VarDecl("second", ILExprToLustre.PBOOLEAN));
+		p_or.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		p_or.addEquation(new Equation(new IdExpr("result"), 
+				new IdExpr("if (first = p_true or second = p_true) then p_true\n"
+           +"else if (first = p_unknown or second = p_unknown) then p_unknown\n"
+           +"else p_false")));
+		pb.addNode(p_or.build());
+		
+		
+
+		NodeBuilder p_not = new NodeBuilder("p_not");
+		p_not.addInput(new VarDecl("value", ILExprToLustre.PBOOLEAN));
+		p_not.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		p_not.addEquation(new Equation(new IdExpr("result"), 
+				new IdExpr("if value = p_true then p_false\n"
+           +"else if value = p_false then p_true\n"
+           +"else p_unknown")));
+		pb.addNode(p_not.build());
+		
+		NodeBuilder p_eq_bool = new NodeBuilder("p_eq_boolean");
+		p_eq_bool.addInput(new VarDecl("first", ILExprToLustre.PBOOLEAN));
+		p_eq_bool.addInput(new VarDecl("second", ILExprToLustre.PBOOLEAN));
+		p_eq_bool.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		p_eq_bool.addEquation(new Equation(new IdExpr("result"), 
+				new IdExpr("if (first = p_unknown or second = p_unknown) then p_unknown\n"
+           +"else if (first = second) then p_true\n"
+           +"else p_false")));
+		pb.addNode(p_eq_bool.build());
+		
+
+		NodeBuilder to_pboolean = new NodeBuilder("to_pboolean");
+		to_pboolean.addInput(new VarDecl("value", NamedType.BOOL));
+		to_pboolean.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		to_pboolean.addEquation(new Equation(new IdExpr("result"), 
+				new IdExpr("if value then p_true else p_false")));
+		pb.addNode(to_pboolean.build());
+		
+		return pb;
+	}
+	
+	private static void addEnumType(ProgramBuilder pb, EnumType et) {
+		pb.addType(new TypeDef(et.id, et));
+	}
 	private static Type getLustreType(PlexilType t) {
 		switch (t) {
 		case BOOLEAN:
@@ -66,30 +137,79 @@ public class PlanToLustre {
 			return NamedType.BOOL;
 		case STATE:
 			return NamedType.INT;
-		default: 
-			return new NamedType(t.toString().toLowerCase());
+		case COMMAND_HANDLE:
+			return ILExprToLustre.PCOMMAND;
+		case OUTCOME:
+			return ILExprToLustre.POUTCOME;
+		case FAILURE:
+			return ILExprToLustre.PFAILURE;
+		case ARRAY:
+		case BOOLEAN_ARRAY:
+		case INTEGER_ARRAY:
+		case REAL_ARRAY:
+			throw new RuntimeException("Arrays not supported yet");
+		case STRING:
+		case STRING_ARRAY:
+			throw new RuntimeException("Strings not supported yet");
+		case UNKNOWN:
+		default:
+			throw new RuntimeException("Lustre needs everything to be typed!");
 		}
 	}
 	
 	private static void addVariable(ILVariable v, Plan p, NodeBuilder nb) {
-		nb.addLocal(new VarDecl(ILExprToLustre.getVarName(v), getLustreType(v.getType())));
-		// Assignments are handled by actions. 
+		// Assignments are handled by actions. We'll do the declaration 
+		// and leave the rest to them. 
+		nb.addLocal(new VarDecl(ILExprToLustre.getVariableId(v), getLustreType(v.getType())));
 	}
 
+	private static String getStateId(NodeStateMachine nsm) {
+		return NameUtils.clean(nsm.getStateMachineId());
+	}
+	
+	private static IdExpr getStateExpr(NodeStateMachine nsm) {
+		return new IdExpr(getStateId(nsm));
+	}
+	
+	private static String getStateMapperId(NodeUID uid) {
+		return NameUtils.clean(uid.toString()+"__state");
+	}
+	
+	public static Expr getPlexilStateExprForNode(NodeUID uid) {
+		return new UnaryExpr(UnaryOp.PRE, new IdExpr(getStateMapperId(uid)));
+	}
 
 	private static void addStateMachine(NodeStateMachine nsm, NodeBuilder nb) {
-		String id = NameUtils.clean(nsm.getStateMachineId());
+		String id = getStateId(nsm);
 		
 		VarDecl stateVar = new VarDecl(id, NamedType.INT);
 		
 		nb.addLocal(stateVar);
-		IdExpr idExpr = new IdExpr(id);
-		nb.addEquation(new Equation(idExpr, stateMachineExpr(idExpr, nsm)));
+		nb.addEquation(new Equation(getStateExpr(nsm), stateMachineExpr(nsm)));
+		
+		// We also need to map back to Plexil state.
+		for (NodeUID uid : nsm.getNodeIds()) {
+			VarDecl mapper = new VarDecl(getStateMapperId(uid), ILExprToLustre.PSTATE);
+			Expr map = new IdExpr("inactive");
+			for (State s : nsm.getStates()) {
+				map = new IfThenElseExpr(
+						// if the real state variable is this one
+						new BinaryExpr(new IdExpr(getStateId(nsm)), BinaryOp.EQUAL, 
+								new IdExpr(s.getIndex()+"")),
+						// then return the tag
+						ILExprToLustre.toLustre(s.tags.get(uid), PlexilType.STATE),
+						// else, the rest
+						map);
+			}
+			
+			nb.addLocal(mapper);
+			nb.addEquation(new Equation(new IdExpr(getStateMapperId(uid)), map));
+		}
 	}
 	
-	private static Expr stateMachineExpr(Expr stateId, NodeStateMachine nsm) {
+	private static Expr stateMachineExpr(NodeStateMachine nsm) {
 		// If no transitions are active, don't change states.
-		Expr bigIf = new UnaryExpr(UnaryOp.PRE, stateId);
+		Expr bigIf = new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm));
 		
 		// Move backward and build up the big if statement
 		for (int i = nsm.getTransitions().size()-1; i >= 0; i--) {
@@ -97,7 +217,7 @@ public class PlanToLustre {
 			
 			// If guard is satisfied, then pick this end state, else
 			// (the rest of the transitions)
-			bigIf = new IfThenElseExpr(createCompleteGuard(stateId, t), 
+			bigIf = new IfThenElseExpr(createGuardWithStateCheck(getStateExpr(nsm), t), 
 					new IdExpr(t.end.getIndex()+""), 
 					bigIf);
 		}
@@ -143,12 +263,13 @@ public class PlanToLustre {
 			default:
 				throw new RuntimeException("Unknown case!");	
 			}
+			// Add in the proper comparison
+			thisGuardExpr = new BinaryExpr(thisGuardExpr, op, compareTo);
 			// Whatever we had before, and also this one
 			if (guardExpr == null) {
 				guardExpr = thisGuardExpr;
 			} else {
-				guardExpr = new BinaryExpr(guardExpr, BinaryOp.AND,
-						new BinaryExpr(thisGuardExpr, op, compareTo));
+				guardExpr = new BinaryExpr(guardExpr, BinaryOp.AND, thisGuardExpr);
 			}
 		}
 		
@@ -169,10 +290,10 @@ public class PlanToLustre {
 	 * @param stateId
 	 * @return
 	 */
-	public static Expr getGuardForThisSpecificTransition(Transition t, NodeStateMachine nsm, Expr stateId) {
+	public static Expr getGuardForThisSpecificTransition(Transition t, NodeStateMachine nsm) {
 		// This transition has to be active, but also all the transitions before 
 		// it have to be inactive. 
-		Expr specificGuard = createCompleteGuard(stateId, t);
+		Expr specificGuard = createGuardWithStateCheck(getStateExpr(nsm), t);
 		
 		Set<Transition> highers = nsm.getHigherTransitionsThan(t);
 		
@@ -181,7 +302,7 @@ public class PlanToLustre {
 					new UnaryExpr(UnaryOp.NOT, getGuardExprFor(higherPriority)));
 		}
 		
-		return null;
+		return specificGuard;
 	}
 	
 	/**
@@ -192,7 +313,7 @@ public class PlanToLustre {
 	 * @param t
 	 * @return
 	 */
-	public static Expr createCompleteGuard(Expr stateId, Transition t) {
+	public static Expr createGuardWithStateCheck(Expr stateId, Transition t) {
 		// First off, we need to have been in the start state.
 		Expr guardExpr = new BinaryExpr(
 				new UnaryExpr(UnaryOp.PRE, stateId), 
