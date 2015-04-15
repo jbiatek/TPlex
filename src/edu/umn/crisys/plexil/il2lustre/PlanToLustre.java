@@ -37,11 +37,22 @@ public class PlanToLustre {
 		ProgramBuilder pb = getProgramWithPlexilTypes();
 		NodeBuilder nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
 		
+		
+		// Add in declared lookups
 		for (LookupDecl lookup : originalAst.getStateDeclarations()) {
-			nb.addInput(new VarDecl(
-					ILExprToLustre.getLookupId(lookup.getName()),
-					getLustreType(lookup.getReturnValue().getType())));
-					
+			String rawInputId = ILExprToLustre.getRawLookupId(lookup.getName());
+			String lookupId = ILExprToLustre.getLookupId(lookup.getName());
+			Type type = getLustreType(lookup.getReturnValue().getType());
+			nb.addInput(new VarDecl(rawInputId, type));
+			// The "real" lookup can only change between macro steps
+			nb.addLocal(new VarDecl(lookupId, type));
+			// if (macro step ended) then raw input else stay the same
+			nb.addEquation(new Equation(new IdExpr(lookupId), 
+					new IfThenElseExpr(
+							new IdExpr(ActionsToLustre.MACRO_STEP_ENDED_ID), 
+							new IdExpr(rawInputId), 
+							new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
+					));
 		}
 		
 		for (NodeStateMachine nsm : p.getMachines()) {
@@ -134,9 +145,9 @@ public class PlanToLustre {
 		case INTEGER:
 			return NamedType.INT;
 		case REAL:
-			return NamedType.BOOL;
+			return NamedType.REAL;
 		case STATE:
-			return NamedType.INT;
+			return ILExprToLustre.PSTATE;
 		case COMMAND_HANDLE:
 			return ILExprToLustre.PCOMMAND;
 		case OUTCOME:
@@ -303,6 +314,28 @@ public class PlanToLustre {
 		}
 		
 		return specificGuard;
+	}
+	
+	public static Expr getEnteringThisSpecificState(NodeStateMachine nsm, State s) {
+		Expr currentState = getStateExpr(nsm);
+		Expr previousState = new UnaryExpr(UnaryOp.PRE, currentState);
+		Expr specifiedState = new IdExpr(s.getIndex()+"");
+		return new BinaryExpr(
+				new BinaryExpr(previousState, BinaryOp.NOTEQUAL, specifiedState), 
+				BinaryOp.AND, 
+				new BinaryExpr(currentState, BinaryOp.EQUAL, specifiedState));
+	}
+	
+	public static Expr getCurrentlyInSpecificState(NodeStateMachine nsm, State s) {
+		Expr currentState = getStateExpr(nsm);
+		Expr specifiedState = new IdExpr(s.getIndex()+"");
+		return new BinaryExpr(currentState, BinaryOp.EQUAL, specifiedState);
+	}
+	
+	public static Expr getStateIsUnchanged(NodeStateMachine nsm) {
+		return new BinaryExpr(getStateExpr(nsm), 
+				BinaryOp.EQUAL, 
+				new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm)));
 	}
 	
 	/**

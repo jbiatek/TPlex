@@ -123,6 +123,10 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		return NameUtils.clean("Lookup/"+lookupName);
 	}
 	
+	public static String getRawLookupId(String lookupName) {
+		return getLookupId(lookupName+"/raw");
+	}
+	
 	public static String getInputName(LookupNowExpr lookup) {
 		return getLookupId(lookup.getLookupName());
 	}

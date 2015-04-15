@@ -12,8 +12,10 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
@@ -33,17 +35,31 @@ import edu.umn.crisys.plexil.il.vars.SimpleVar;
 
 public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
+	public static String MACRO_STEP_ENDED_ID = "macrostep_end";
+	
 	private Map<ILVariable, Expr> varNextValue = 
 			new HashMap<ILVariable, Expr>();
-	private Expr macroStepStatus;
+	private Expr macroStepIsEnded;
 	
 	public void navigate(Plan p) {
 		// For all variables, by default they don't change.
 		for (ILVariable v : p.getVariables()) {
-			varNextValue.put(v, new UnaryExpr(UnaryOp.PRE, ILExprToLustre.toLustre(v, v.getType())));
+			varNextValue.put(v, ILExprToLustre.toLustre(v, v.getType()));
 		}
 		// macroStepStatus = <every state machine is unmoved>
-
+		for (NodeStateMachine nsm : p.getMachines()) {
+			Expr thisMachineDoesntMove = PlanToLustre.getStateIsUnchanged(nsm);
+			if (macroStepIsEnded == null) {
+				macroStepIsEnded = thisMachineDoesntMove;
+			} else {
+				macroStepIsEnded = new BinaryExpr(
+						thisMachineDoesntMove, 
+						BinaryOp.AND, 
+						macroStepIsEnded);
+			}
+		}
+		
+		
 		// Now we find each action, and pass along the condition in which it
 		// should fire. 
 		for (NodeStateMachine nsm : p.getMachines()) {
@@ -56,14 +72,14 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			for (State s : nsm.getStates()) {
 				for (PlexilAction a : s.entryActions) {
 					// expr = pre(id) != state and id=state
+					a.accept(this, PlanToLustre.getEnteringThisSpecificState(nsm, s));
 				}
 				for (PlexilAction a : s.inActions) {
 					// expr = id = state
+					a.accept(this, PlanToLustre.getCurrentlyInSpecificState(nsm, s));
 				}
 			}
 		}
-		
-		// Then traverse and add conditions
 	}
 	
 	public void toLustre(NodeBuilder nb) {
@@ -82,14 +98,15 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			nb.addEquation(new Equation(new IdExpr(ILExprToLustre.getVariableId(v)),
 					fullThing));
 		}
-		// TODO: Write in quiescence semantics. 
-		// Transitions which end the macro step
-		// All state machines are the same
+		
+		nb.addLocal(new VarDecl(MACRO_STEP_ENDED_ID, NamedType.BOOL));
+		nb.addEquation(new Equation(new IdExpr(MACRO_STEP_ENDED_ID), 
+				new BinaryExpr(new IdExpr("false"),  BinaryOp.ARROW, macroStepIsEnded)));
 		
 	}
 
 	@Override
-	public Void visitAlsoRunNodes(AlsoRunNodesAction run, Expr param) {
+	public Void visitAlsoRunNodes(AlsoRunNodesAction run, Expr actionCondition) {
 		// Nothing to be done here, we don't use this in Lustre. 
 		return null;
 	}
@@ -110,33 +127,33 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	}
 
 	@Override
-	public Void visitCommand(CommandAction cmd, Expr param) {
+	public Void visitCommand(CommandAction cmd, Expr actionCondition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Void visitEndMacroStep(EndMacroStep end, Expr param) {
+	public Void visitEndMacroStep(EndMacroStep end, Expr actionCondition) {
+		macroStepIsEnded = new BinaryExpr(actionCondition, BinaryOp.OR, macroStepIsEnded);
+		return null;
+	}
+
+	@Override
+	public Void visitRunLibraryNode(RunLibraryNodeAction lib, Expr actionCondition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Void visitRunLibraryNode(RunLibraryNodeAction lib, Expr param) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Void visitComposite(CompositeAction composite, Expr param) {
+	public Void visitComposite(CompositeAction composite, Expr actionCondition) {
 		for (PlexilAction a : composite.getActions()) {
-			a.accept(this, param);
+			a.accept(this, actionCondition);
 		}
 		return null;
 	}
 
 	@Override
-	public Void visitUpdate(UpdateAction update, Expr param) {
+	public Void visitUpdate(UpdateAction update, Expr actionCondition) {
 		// TODO Auto-generated method stub
 		return null;
 	}
