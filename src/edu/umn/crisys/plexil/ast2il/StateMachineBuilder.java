@@ -14,7 +14,6 @@ import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
-import edu.umn.crisys.plexil.il.action.ResetNodeAction;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
@@ -25,6 +24,10 @@ import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Condition;
 import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Description;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.vars.ILVariable;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
@@ -258,10 +261,23 @@ public class StateMachineBuilder {
         return new TransitionGuard(d, ilExprCache.get(d), cond);
     }
     
-    private ResetNodeAction getResetNodeAction() {
-        ResetNodeAction reset = new ResetNodeAction();
+    private CompositeAction getResetNodeAction() {
+        CompositeAction reset = new CompositeAction();
         for (String v : translator.getAllVariables()) {
-            reset.addVariableToReset(translator.getVariable(v));
+        	ILVariable ilVar = translator.getVariable(v);
+        	if (ilVar instanceof SimpleVar) {
+        		SimpleVar simple = (SimpleVar) ilVar;
+        		reset.getActions().add(
+        				new AssignAction(simple, simple.getInitialValue(), 0));
+        	} else if (ilVar instanceof ArrayVar) {
+        		ArrayVar array = (ArrayVar) ilVar;
+        		reset.getActions().add(
+        				new AssignAction(array, array.getInitialValue(), 0));
+        	} else if (ilVar instanceof LibraryVar) {
+        		continue;
+        	} else {
+        		throw new RuntimeException("Can't reset variables of type "+ilVar.getClass());
+        	}
         }
         return reset;
     }

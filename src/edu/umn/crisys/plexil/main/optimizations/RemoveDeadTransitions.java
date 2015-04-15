@@ -41,10 +41,13 @@ public class RemoveDeadTransitions {
         for (Iterator<Transition> it = chart.iterator();
                 it.hasNext();) {
             Transition t = it.next();
+            t.pruneGuards();
             
             if (t.isNeverTaken()) {
                 it.remove();
             } else if (t.isAlwaysTaken()) {
+            	// Obviously these guards are all "true". Let's just clear them.
+            	t.guards.clear();
                 // Is this the highest priority "always true" one that we've seen?
                 if (alwaysTaken.containsKey(t.start)) {
                     if (alwaysTaken.get(t.start) > t.priority ) {

@@ -8,7 +8,13 @@ public class RealValue implements PReal {
 		return new RealValue(value);
 	}
 	
-	private RealValue(double value) {
+	/**
+	 * Wrap this value in PLEXIL. Please only use this if you're doing 
+	 * something unusual such as symbolic execution, otherwise the factory
+	 * method RealValue.get() is the canonical way to get a wrapped double.
+	 * @param value
+	 */
+	public RealValue(double value) {
 		this.value = value;
 	}
 	

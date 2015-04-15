@@ -8,7 +8,13 @@ public class IntegerValue implements PInteger {
 		return new IntegerValue(v);
 	}
 	
-	private IntegerValue(int v) {
+	/**
+	 * Wrap this value in PLEXIL. Please only use this if you're doing 
+	 * something unusual such as symbolic execution, otherwise the factory
+	 * method IntegerValue.get() is the canonical way to get a wrapped int.
+	 * @param v
+	 */
+	public IntegerValue(int v) {
 		value = v;
 	}
 	

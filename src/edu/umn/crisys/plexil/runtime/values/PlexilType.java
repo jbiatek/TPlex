@@ -93,6 +93,25 @@ public enum PlexilType {
         }        
     }
     
+    public boolean isSpecificType() {
+    	return this != NUMERIC && this != UNKNOWN &&  this != ARRAY;
+    }
+    
+    public PlexilType getMoreSpecific(PlexilType other) {
+    	if (this.isSpecificType() && !other.isSpecificType()) {
+    		this.typeCheck(other);
+    		return this;
+    	} else if (other.isSpecificType() && !this.isSpecificType()) {
+    		other.typeCheck(this);
+    		return other;
+    	}
+    	if (this != other) {
+    		throw new RuntimeException("Trying to compare "+this+" and "+other);
+    	}
+    	// They are equal
+    	return this;
+    }
+    
     /**
      * Takes a guess at what PlexilType this String is trying to indicate. 
      * @param originalName

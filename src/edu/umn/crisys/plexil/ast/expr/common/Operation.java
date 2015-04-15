@@ -413,6 +413,18 @@ public class Operation extends CompositeExpr {
         return argType;
     }
 
+    public PlexilType getActualArgumentType() {
+    	if (argType != PlexilType.UNKNOWN &&
+    			argType != PlexilType.NUMERIC) {
+    		return argType;
+    	}
+    	PlexilType mostSpecific = argType;
+    	for (Expression e : args) {
+    		mostSpecific = argType.getMoreSpecific(e.getType());
+    	}
+    	return mostSpecific;
+    }
+    
     @Override
     public List<Expression> getArguments() {
         return args;
