@@ -149,8 +149,8 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
     @Override
     public String visitCommand(CommandBody cmd, Void p) {
         StringBuilder str = new StringBuilder("\n"+tab(indent+TAB));
-        if (cmd.getVarToAssign() != null) {
-            str.append(cmd.getVarToAssign()+" = ");
+        if (cmd.getVarToAssign().isPresent()) {
+            str.append(cmd.getVarToAssign().get()+" = ");
         }
         if (cmd.getCommandName() instanceof StringValue) {
             // We want to avoid the parens if it's just a single value.

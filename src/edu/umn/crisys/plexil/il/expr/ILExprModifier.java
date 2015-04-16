@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il.expr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
@@ -10,6 +11,11 @@ import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
@@ -36,7 +42,28 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  *
  * @param <Param>
  */
-public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, ILExpression> {
+public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, ILExpression>, NativeExprVisitor<Param, NativeExpr> {
+
+	@Override
+	public NativeExpr visitNativeConstant(NativeConstant c, Param param) {
+		return c;
+	}
+
+	@Override
+	public NativeExpr visitNativeOperation(NativeOperation op, Param param) {
+		return new NativeOperation(op.getOperation(), 
+				op.getArgs().stream().map((arg) -> arg.accept(this, param))
+				.collect(Collectors.toList())
+				);
+	}
+
+	@Override
+	public NativeExpr visitPlexilExprToNative(PlexilExprToNative pen,
+			Param param) {
+		return new PlexilExprToNative(
+				pen.getPlexilExpr().accept(this, param), 
+				pen.getCondition());
+	}
 
 	public ILExpression visitComposite(CompositeExpr composite, Param param) {
 		List<Expression> modified = new ArrayList<Expression>();

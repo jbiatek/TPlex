@@ -4,9 +4,7 @@ import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -15,10 +13,7 @@ import jkind.lustre.BinaryOp;
 import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.RecordType;
-import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import edu.umn.crisys.plexil.NameUtils;
@@ -28,7 +23,6 @@ import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
-import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
@@ -52,7 +46,6 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
-import edu.umn.crisys.util.Pair;
 
 public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Expr>{
 	
@@ -141,15 +134,6 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	public static String stringToEnum(StringValue v) {
 		return NameUtils.clean(v.getString());
-	}
-	
-	@SafeVarargs
-	private static <K, V> Map<K,V> mapify(Pair<K,V>... pairs) {
-		Map<K, V> ret = new HashMap<K, V>();
-		for (Pair<K,V> pair : pairs) {
-			ret.put(pair.first, pair.second);
-		}
-		return ret;
 	}
 	
 	private ILExprToLustre() {}

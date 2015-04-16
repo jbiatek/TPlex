@@ -3,11 +3,25 @@
  */
 package edu.umn.crisys.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Whalen
  *
  */
 public class Pair<T1, T2> {
+	
+	
+	@SafeVarargs
+	public static <K, V> Map<K,V> mapify(Pair<K,V>... pairs) {
+		Map<K, V> ret = new HashMap<K, V>();
+		for (Pair<K,V> pair : pairs) {
+			ret.put(pair.first, pair.second);
+		}
+		return ret;
+	}
+	
 	public T1 first;
 	public T2 second; 
 	

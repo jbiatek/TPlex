@@ -1,11 +1,15 @@
 package edu.umn.crisys.plexil.il.statemachine;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.il.action.PlexilAction;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeEval;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
 
 public class Transition implements Comparable<Transition> {
 	
@@ -16,44 +20,32 @@ public class Transition implements Comparable<Transition> {
 	public int priority;
 	public State start;
 	public State end;
-	public List<TransitionGuard> guards;
+	public NativeExpr guard;
 	public List<PlexilAction> actions = new LinkedList<PlexilAction>() ; 
 	
 	public Transition(String description, int priority, State start, State end, 
-			TransitionGuard... guards) {
+			NativeExpr... guards) {
 	    this.description = description;
 		this.priority = priority;
 		this.start = start;
-		this.guards = new LinkedList<TransitionGuard>(Arrays.asList(guards));
+		if (guards.length == 0) {
+			this.guard = NativeConstant.TRUE;
+		} else if (guards.length == 1) {
+			this.guard = guards[0];
+		} else {
+			this.guard = new NativeOperation(NativeOp.AND, guards);
+		}
 		this.end = end;
 	}
 	
 	public boolean isNeverTaken() {
-	    for (TransitionGuard guard : guards) {
-	        if ( guard.isNeverActive()) {
-	            return true;
-	        }
-	    }
-	    return false;
+	    Optional<Boolean> result = guard.accept(new NativeEval(), null);
+	    return result.isPresent() && result.get() == false;
 	}
 	
 	public boolean isAlwaysTaken() {
-	    for (TransitionGuard guard : guards) {
-	        if ( ! guard.isAlwaysActive()) {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
-	
-	public void pruneGuards() {
-		Iterator<TransitionGuard> iterator = guards.iterator();
-		while (iterator.hasNext()) {
-			TransitionGuard g = iterator.next();
-			if (g.isAlwaysActive()) {
-				iterator.remove();
-			}
-		}
+	    Optional<Boolean> result = guard.accept(new NativeEval(), null);
+	    return result.isPresent() && result.get();
 	}
 	
 	public Transition addAction(PlexilAction action) {
@@ -61,17 +53,26 @@ public class Transition implements Comparable<Transition> {
 	    return this;
 	}
 	
-	public void addGuard(TransitionGuard guard) {
-	    guards.add(guard);
+	/**
+	 * Add an additional guard. This will be ANDed to the existing guard(s).
+	 * @param newGuard
+	 */
+	public void addGuard(NativeExpr newGuard) {
+	    if (newGuard instanceof NativeOperation) {
+	    	NativeOperation op = (NativeOperation) newGuard;
+	    	if (op.getOperation() == NativeOp.AND) {
+	    		op.getArgs().add(newGuard);
+	    		return;
+	    	}
+	    }
+		this.guard = new NativeOperation(NativeOp.AND, this.guard, newGuard);
 	}
 	
 	@Override
 	public String toString() {
 		String ret = "("+start+") priority "+priority+" ----> \n";
 		ret += description + "\n";
-		for (TransitionGuard guard : guards) {
-		    ret += guard.toString() + "\n";
-		}
+		ret += guard.toString() + "\n";
 		for (PlexilAction action : actions) {
 		    ret += "[ " +action.toString()+" ]\n";
 		}

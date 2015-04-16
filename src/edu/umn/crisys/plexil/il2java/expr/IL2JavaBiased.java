@@ -15,6 +15,7 @@ import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
@@ -132,7 +133,7 @@ class IL2JavaBiased implements ILExprVisitor<JCodeModel, JExpression> {
         for (Expression childExpr : op.getArguments()) {
         	ILExpression child = (ILExpression) childExpr;
         	// Should we remove this child?
-        	if (IL2Java.clauseIsSkippable(op.getOperator(), child)) {
+        	if (ILEval.clauseIsSkippable(op.getOperator(), child)) {
     			continue;
         	}
         	children.add(child);

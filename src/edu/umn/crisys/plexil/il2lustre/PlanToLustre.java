@@ -10,7 +10,6 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -27,7 +26,6 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
@@ -247,50 +245,7 @@ public class PlanToLustre {
 	 * @return
 	 */
 	public static Expr getGuardExprFor(Transition t) {
-		Expr guardExpr = null;
-		for (TransitionGuard guard : t.guards) {
-			Expr thisGuardExpr = ILExprToLustre.toLustre(guard.getExpression(), PlexilType.BOOLEAN);
-			BinaryOp op;
-			Expr compareTo;
-			switch (guard.getCondition()) {
-			case TRUE:
-				op = BinaryOp.EQUAL; compareTo = ILExprToLustre.P_TRUE;
-				break;
-			case FALSE:
-				op = BinaryOp.EQUAL; compareTo = ILExprToLustre.P_FALSE;
-				break;
-			case UNKNOWN:
-				op = BinaryOp.EQUAL; compareTo = ILExprToLustre.P_UNKNOWN;
-				break;
-			case NOTTRUE:
-				op = BinaryOp.NOTEQUAL; compareTo = ILExprToLustre.P_TRUE;
-				break;
-			case NOTFALSE:
-				op = BinaryOp.NOTEQUAL; compareTo = ILExprToLustre.P_FALSE;
-				break;
-			case KNOWN:
-				op = BinaryOp.NOTEQUAL; compareTo = ILExprToLustre.P_UNKNOWN;
-				break;
-			default:
-				throw new RuntimeException("Unknown case!");	
-			}
-			// Add in the proper comparison
-			thisGuardExpr = new BinaryExpr(thisGuardExpr, op, compareTo);
-			// Whatever we had before, and also this one
-			if (guardExpr == null) {
-				guardExpr = thisGuardExpr;
-			} else {
-				guardExpr = new BinaryExpr(guardExpr, BinaryOp.AND, thisGuardExpr);
-			}
-		}
-		
-		if (guardExpr == null) {
-			// No guards, so return true I guess!
-			return new IdExpr("true");
-		}
-		
-		return guardExpr;
-
+		return t.guard.accept(new NativeExprToLustre(), null);
 	}
 	
 	/**
@@ -354,7 +309,7 @@ public class PlanToLustre {
 				new IdExpr(t.start.getIndex()+""));
 		
 		// Then the transition's guards have to apply, if any.
-		if (t.guards.size() == 0) {
+		if (t.isAlwaysTaken()) {
 			// Oh, it's always taken. Well we're done then. 
 			return guardExpr;
 		}

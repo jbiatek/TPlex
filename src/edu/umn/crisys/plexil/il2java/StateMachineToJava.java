@@ -20,16 +20,14 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JSwitch;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
-import edu.umn.crisys.plexil.il.statemachine.TransitionGuard.Condition;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
+import edu.umn.crisys.plexil.il2java.expr.NativeExprToJava;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -91,7 +89,7 @@ public class StateMachineToJava {
 				JCase mainCase = sw._case(JExpr.lit(nsm.indexOf(t.start)));
 				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+"__"+t.start.getIndex()));
 				// Need to declare a temp variable inside each method. 
-				//ILExprToJava.insertShortCircuitHack(methodMap.get(t.start).body(), cm);
+				ILExprToJava.insertShortCircuitHack(methodMap.get(t.start).body(), cm);
 				
 				// The case just needs to invoke the new method.
 				mainCase.body().invoke(methodMap.get(t.start));
@@ -183,17 +181,9 @@ public class StateMachineToJava {
 	    
 		// Is each of our guards satisfied?
 	    JExpression condExp = null;
-		for (TransitionGuard guard : t.guards) {
-		    if (guard.isAlwaysActive()) {
-		        // We can skip this, it's just going to be true
-		        continue;
-		    }
-		    if (condExp != null) {
-		        condExp = condExp.cand(wrap(guard, cm));
-		    } else {
-		        condExp = wrap(guard, cm);
-		    }
-		}
+	    if ( ! t.isAlwaysTaken()) {
+	    	condExp = t.guard.accept(new NativeExprToJava(), cm);
+	    }
 		
 		// Figure out if we're doing if, else if, nothing at all...
 		JConditional current;
@@ -253,51 +243,6 @@ public class StateMachineToJava {
 	
 	
 
-    /**
-     * Create a Java boolean expression indicating whether this Plexil
-     * expression has this Condition.
-     * @param expr
-     * @return
-     */
-    private static JExpression wrap(TransitionGuard guard, JCodeModel cm) {
-    	ILExpression expr = guard.getExpression();
-    	Condition cond = guard.getCondition();
-        if (BIASING) {
-            switch (cond) {
-            case TRUE:
-                return ILExprToJava.toJavaBiased(expr, cm, true);
-            case FALSE:
-                return ILExprToJava.toJavaBiased(expr, cm, false);
-            case UNKNOWN:
-                return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
-            case NOTTRUE:
-                return ILExprToJava.toJavaBiased(expr, cm, true).not();
-            case NOTFALSE:
-                return ILExprToJava.toJavaBiased(expr, cm, false).not();
-            case KNOWN:
-                return ILExprToJava.toJava(expr, cm).invoke("isKnown");
-            }
-            throw new RuntimeException("Add this case to wrap(): "+cond);
-        } else {
-            switch (cond) {
-            case TRUE:
-                return ILExprToJava.toJava(expr, cm).invoke("isTrue");
-            case FALSE:
-                return ILExprToJava.toJava(expr, cm).invoke("isFalse");
-            case UNKNOWN:
-                return ILExprToJava.toJava(expr, cm).invoke("isUnknown");
-            case NOTTRUE:
-                return ILExprToJava.toJava(expr, cm).invoke("isNotTrue");
-            case NOTFALSE:
-                return ILExprToJava.toJava(expr, cm).invoke("isNotFalse");
-            case KNOWN:
-                return ILExprToJava.toJava(expr, cm).invoke("isKnown");
-            }
-            throw new RuntimeException("Add this case to wrap(): "+cond);
-
-        }
-
-    }
 }
 
 

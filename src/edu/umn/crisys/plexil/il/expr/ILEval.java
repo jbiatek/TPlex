@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il.expr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
@@ -19,86 +20,57 @@ import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ILEval implements ILExprVisitor<Void, edu.umn.crisys.plexil.il.expr.ILEval.EvalResult> {
-	
-	private static final ILEval EVALUATOR = new ILEval();
-	private ILEval() {}
+public class ILEval implements ILExprVisitor<Void, Optional<PValue>> {
 	
 	/**
-	 * You can basically ignore this, it's an internal thing. 
-	 * @author jbiatek
-	 *
+	 * If this expression is a clause in a larger `op` operation, this method
+	 * returns true if the clause can simply be deleted without changing the
+	 * result of the equation (for example, in "false || foo", the "false" clause
+	 * can be dropped.)
+	 * @param op
+	 * @param expr
+	 * @return
 	 */
-	public static interface EvalResult {
-		public boolean isConstant();
-		public PValue getConstantValue();
-	}
-	
-	private static class ConstantResult implements EvalResult {
-		private PValue value;
-		
-		public ConstantResult(PValue value) {
-			this.value = value;
-		}
-
-		@Override
-		public boolean isConstant() {
-			return true;
-		}
-
-		@Override
-		public PValue getConstantValue() {
-			return value;
-		}
-	}
-	
-	private static class VariableResult implements EvalResult {
-
-		public static final VariableResult SINGLETON = new VariableResult();
-		
-		@Override
-		public boolean isConstant() {
-			return false;
-		}
-
-		@Override
-		public PValue getConstantValue() {
-			throw new RuntimeException("This expression isn't constant!");
-		}
-		
-	}
-
-    public static boolean isConstant(ILExpression ilExpr) {
-        return ilExpr.accept(EVALUATOR, null).isConstant();
-    }
-    
-    public static PValue eval(ILExpression ilExpr) {
-        return ilExpr.accept(EVALUATOR, null).getConstantValue();
+    public static boolean clauseIsSkippable(Operator op, ILExpression expr) {
+    	if ((op == Operator.AND || op == Operator.OR)) {
+    		Optional<PValue> result = expr.accept(new ILEval(), null);
+    		if (result.isPresent()) {
+    			PBoolean theValue = (PBoolean) result.get();
+	    		// Maybe. It's a constant, and we're using a known operator.
+	    		if (op == Operator.AND && theValue.isTrue()
+	    				|| op == Operator.OR && theValue.isFalse()) {
+	    			return true;
+	    		}
+    		}
+    	}
+    	return false;
     }
 
+	
 	@Override
-	public EvalResult visitArrayIndex(ArrayIndexExpr array, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitArrayIndex(ArrayIndexExpr array, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitLookupNow(LookupNowExpr lookup, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitLookupNow(LookupNowExpr lookup, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitOperation(Operation op, Void param) {
+	public Optional<PValue> visitOperation(Operation op, Void param) {
 		// OR and AND have short circuiting, which is slightly different
 		// from everything else. 
 		PValue shortCircuiter = null;
@@ -110,120 +82,120 @@ public class ILEval implements ILExprVisitor<Void, edu.umn.crisys.plexil.il.expr
 		
 		List<PValue> values = new ArrayList<PValue>();
 		for (Expression arg : op.getArguments()) {
-			EvalResult argResult = arg.accept(this, null);
-			if (argResult.isConstant()) {
-				if (shortCircuiter != null && argResult.getConstantValue().equals(shortCircuiter)) {
+			Optional<PValue> argResult = arg.accept(this, null);
+			if (argResult.isPresent()) {
+				if (shortCircuiter != null && argResult.get().equals(shortCircuiter)) {
 					// We have short circuited! This is always going to be it.
 					return argResult;
 				} else {
 					// Just a regular constant. 
-					values.add(argResult.getConstantValue());
+					values.add(argResult.get());
 				}
 			} else {
 				// Not constant. Could be anything.
-				return VariableResult.SINGLETON;
+				return Optional.empty();
 			}
 		}
 		// All the arguments were constant, so this should be constant too. 
-		return new ConstantResult(op.getOperator().eval(values));
+		return Optional.of(op.getOperator().eval(values));
 	}
 	
 	@Override
-	public EvalResult visitRootParentState(RootParentStateExpr state, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitRootParentState(RootParentStateExpr state, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitRootParentExit(RootAncestorExitExpr ancExit,
+	public Optional<PValue> visitRootParentExit(RootAncestorExitExpr ancExit,
 			Void param) {
-		return VariableResult.SINGLETON;
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitRootParentInvariant(
+	public Optional<PValue> visitRootParentInvariant(
 			RootAncestorInvariantExpr ancInv, Void param) {
-		return VariableResult.SINGLETON;
+		return Optional.empty();
 	}
 
 
 	@Override
-	public EvalResult visitSimple(SimpleVar var, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitSimple(SimpleVar var, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitArray(ArrayVar array, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitArray(ArrayVar array, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitLibrary(LibraryVar lib, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitLibrary(LibraryVar lib, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitAlias(AliasExpr alias, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitAlias(AliasExpr alias, Void param) {
+		return Optional.empty();
 	}
 
 	@Override
-	public EvalResult visitGetNodeState(GetNodeStateExpr state, Void param) {
-		return VariableResult.SINGLETON;
+	public Optional<PValue> visitGetNodeState(GetNodeStateExpr state, Void param) {
+		return Optional.empty();
 	}
 	
 	@Override
-	public EvalResult visitBooleanValue(BooleanValue bool, Void param) {
-		return new ConstantResult(bool);
+	public Optional<PValue> visitBooleanValue(BooleanValue bool, Void param) {
+		return Optional.of(bool);
 	}
 
 	@Override
-	public EvalResult visitIntegerValue(IntegerValue integer, Void param) {
-		return new ConstantResult(integer);
+	public Optional<PValue> visitIntegerValue(IntegerValue integer, Void param) {
+		return Optional.of(integer);
 	}
 
 	@Override
-	public EvalResult visitRealValue(RealValue real, Void param) {
-		return new ConstantResult(real);
+	public Optional<PValue> visitRealValue(RealValue real, Void param) {
+		return Optional.of(real);
 	}
 
 	@Override
-	public EvalResult visitStringValue(StringValue string, Void param) {
-		return new ConstantResult(string);
+	public Optional<PValue> visitStringValue(StringValue string, Void param) {
+		return Optional.of(string);
 	}
 
 	@Override
-	public EvalResult visitUnknownValue(UnknownValue unk, Void param) {
-		return new ConstantResult(unk);
+	public Optional<PValue> visitUnknownValue(UnknownValue unk, Void param) {
+		return Optional.of(unk);
 	}
 
 	@Override
-	public EvalResult visitPValueList(PValueList<?> list, Void param) {
-		return new ConstantResult(list);
+	public Optional<PValue> visitPValueList(PValueList<?> list, Void param) {
+		return Optional.of(list);
 	}
 
 	@Override
-	public EvalResult visitCommandHandleState(CommandHandleState state, Void param) {
-		return new ConstantResult(state);
+	public Optional<PValue> visitCommandHandleState(CommandHandleState state, Void param) {
+		return Optional.of(state);
 	}
 
 	@Override
-	public EvalResult visitNodeFailure(NodeFailureType type, Void param) {
-		return new ConstantResult(type);
+	public Optional<PValue> visitNodeFailure(NodeFailureType type, Void param) {
+		return Optional.of(type);
 	}
 
 	@Override
-	public EvalResult visitNodeOutcome(NodeOutcome outcome, Void param) {
-		return new ConstantResult(outcome);
+	public Optional<PValue> visitNodeOutcome(NodeOutcome outcome, Void param) {
+		return Optional.of(outcome);
 	}
 
 	@Override
-	public EvalResult visitNodeState(NodeState state, Void param) {
-		return new ConstantResult(state);
+	public Optional<PValue> visitNodeState(NodeState state, Void param) {
+		return Optional.of(state);
 	}
 
 	

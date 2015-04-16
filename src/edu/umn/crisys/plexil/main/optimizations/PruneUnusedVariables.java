@@ -14,10 +14,14 @@ import edu.umn.crisys.plexil.il.action.CommandAction;
 import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.util.Pair;
@@ -35,9 +39,7 @@ public class PruneUnusedVariables {
 	    safeList.add(ilPlan.getRootNodeState());
 	    for (NodeStateMachine sm : ilPlan.getMachines()) {
 	        for (Transition t : sm.getTransitions()) {
-	            for (TransitionGuard g : t.guards) {
-	                saveAllVariablesInExpression(g.getExpression(), safeList);
-	            }
+	            saveAllVariablesInNative(t.guard, safeList);
 	            for (PlexilAction a : t.actions) {
 	                scanAllExpressionsInAction(a, safeList);
 	            }
@@ -116,6 +118,32 @@ public class PruneUnusedVariables {
             }
         }
 
+	}
+	
+	private static void saveAllVariablesInNative(NativeExpr expr, Set<ILExpression> safeList) {
+		expr.accept(new NativeExprVisitor<Set<ILExpression>, Void>() {
+
+			@Override
+			public Void visitNativeOperation(NativeOperation op,
+					Set<ILExpression> param) {
+				op.getArgs().forEach((arg) -> arg.accept(this, param));
+				return null;
+			}
+
+			@Override
+			public Void visitPlexilExprToNative(PlexilExprToNative pen,
+					Set<ILExpression> param) {
+				saveAllVariablesInExpression(pen.getPlexilExpr(), param);
+				return null;
+			}
+
+			@Override
+			public Void visitNativeConstant(NativeConstant c,
+					Set<ILExpression> param) {
+				// No need to do anything
+				return null;
+			}
+		}, safeList);
 	}
 
 	private static void saveAllVariablesInExpressions(List<ILExpression> es, Set<ILExpression> s) {

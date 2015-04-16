@@ -10,7 +10,6 @@ import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.statemachine.TransitionGuard;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 
@@ -29,10 +28,7 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 		
 		for (NodeStateMachine nsm : ilPlan.getMachines()) {
 			for (Transition t : nsm.getTransitions()) {
-				for (TransitionGuard g : t.guards) {
-					// Swap the guard out with whatever we say
-					g.setExpression(g.getExpression().accept(visitor, null));
-				}
+				t.guard = t.guard.accept(visitor, null);
 			}
 		}
 	}
