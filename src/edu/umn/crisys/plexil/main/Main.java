@@ -36,6 +36,7 @@ import edu.umn.crisys.plexil.main.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.main.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.main.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.main.optimizations.StaticLibIncluder;
+import edu.umn.crisys.plexil.main.optimizations.UnknownBiasing;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
@@ -102,6 +103,7 @@ public class Main {
 		File outputDir = new File("src");
 		String pkg = "";
 		boolean optimize = true;
+		boolean biasing = true;
 		boolean produceJava = true;
 		boolean produceSourceCode = false;
 		boolean createSnapshotMethod = true;
@@ -137,7 +139,7 @@ public class Main {
 				} else if (args[i].equals("--no-optimizations")) {
 					optimize = false;
 				} else if (args[i].equals("--no-biasing")) { 
-					StateMachineToJava.BIASING = false;
+					biasing = false;
 				} else if (args[i].equals("--no-short-circuiting")) {
 					ILExprToJava.SHORT_CIRCUITING = false;
 				} else if (args[i].equals("--no-debug")) {
@@ -253,6 +255,9 @@ public class Main {
 					System.out.println("If I'm wrong, you can either add an interface or use the \"--libs\" option.");
 					AssumeTopLevelPlan.optimize(ilPlan);
 					couldBeLibrary = false;
+				}
+				if (biasing) {
+					UnknownBiasing.optimize(ilPlan);
 				}
 				PruneUnusedVariables.optimize(ilPlan);
 				RemoveDeadTransitions.optimize(ilPlan);

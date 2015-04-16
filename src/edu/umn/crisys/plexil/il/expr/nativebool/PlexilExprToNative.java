@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.il.expr.nativebool;
 
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -7,28 +8,28 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class PlexilExprToNative implements NativeExpr {
 
-	public static PlexilExprToNative isTrue(ILExpression e) {
-		return new PlexilExprToNative(e, Condition.TRUE);
+	public static PlexilExprToNative isTrue(Expression e) {
+		return new PlexilExprToNative((ILExpression) e, Condition.TRUE);
 	}
 	
-	public static PlexilExprToNative isFalse(ILExpression e) {
-		return new PlexilExprToNative(e, Condition.FALSE);
+	public static PlexilExprToNative isFalse(Expression e) {
+		return new PlexilExprToNative((ILExpression) e, Condition.FALSE);
 	}
 	
-	public static PlexilExprToNative isUnknown(ILExpression e) {
-		return new PlexilExprToNative(e, Condition.UNKNOWN);
+	public static PlexilExprToNative isUnknown(Expression e) {
+		return new PlexilExprToNative((ILExpression) e, Condition.UNKNOWN);
 	}
 	
-	public static PlexilExprToNative isNotTrue(ILExpression e) {
-		return new PlexilExprToNative(e, Condition.NOTTRUE);
+	public static PlexilExprToNative isNotTrue(Expression e) {
+		return new PlexilExprToNative((ILExpression) e, Condition.NOTTRUE);
 	}
 	
-	public static PlexilExprToNative isNotFalse(ILExpression e) {
-		return new PlexilExprToNative(e, Condition.NOTFALSE);
+	public static PlexilExprToNative isNotFalse(Expression e) {
+		return new PlexilExprToNative((ILExpression) e, Condition.NOTFALSE);
 	}
 	
-	public static PlexilExprToNative isKnown(ILExpression e) {
-		return new PlexilExprToNative(e, Condition.KNOWN);
+	public static PlexilExprToNative isKnown(Expression e) {
+		return new PlexilExprToNative((ILExpression) e, Condition.KNOWN);
 	}
 	
 	public static enum Condition {

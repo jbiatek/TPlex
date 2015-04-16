@@ -54,9 +54,9 @@ public class NativeOperation implements NativeExpr {
 	@Override
 	public String toString() {
 		if (operation == NativeOp.NOT) {
-			return "!("+args.get(0)+")";
+			return "not ("+args.get(0)+")";
 		}
-		String operator = operation == NativeOp.AND ? " && " : " || ";
+		String operator = operation == NativeOp.AND ? " and " : " or ";
 		return args.stream()
 				.map((arg) -> "("+arg+")")
 				.collect(Collectors.joining(operator));

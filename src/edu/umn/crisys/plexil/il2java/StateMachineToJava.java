@@ -26,7 +26,6 @@ import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.il2java.expr.NativeExprToJava;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
@@ -34,7 +33,6 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 
 public class StateMachineToJava {
 
-    public static boolean BIASING = true;
     public static boolean DEBUG_STATEMENTS = true;
 	
 	private StateMachineToJava() {}
@@ -89,7 +87,7 @@ public class StateMachineToJava {
 				JCase mainCase = sw._case(JExpr.lit(nsm.indexOf(t.start)));
 				methodMap.put(t.start, clazz.method(JMod.PRIVATE, cm.VOID, getStepMethodName(nsm)+"__"+t.start.getIndex()));
 				// Need to declare a temp variable inside each method. 
-				ILExprToJava.insertShortCircuitHack(methodMap.get(t.start).body(), cm);
+				//ILExprToJava.insertShortCircuitHack(methodMap.get(t.start).body(), cm);
 				
 				// The case just needs to invoke the new method.
 				mainCase.body().invoke(methodMap.get(t.start));
