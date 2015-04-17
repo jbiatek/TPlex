@@ -7,9 +7,9 @@ import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.main.optimizations.AssumeTopLevelPlan;
-import edu.umn.crisys.plexil.main.optimizations.PruneUnusedVariables;
-import edu.umn.crisys.plexil.main.optimizations.RemoveDeadTransitions;
+import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
+import edu.umn.crisys.plexil.il.optimizations.PruneUnusedVariables;
+import edu.umn.crisys.plexil.il.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 
 public class LustrePreTest {

@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.main.optimizations;
+package edu.umn.crisys.plexil.il.optimizations;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;

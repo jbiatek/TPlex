@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.main.optimizations;
+package edu.umn.crisys.plexil.il.optimizations;
 
 import java.util.HashSet;
 import java.util.Iterator;
