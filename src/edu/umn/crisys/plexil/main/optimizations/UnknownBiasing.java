@@ -126,13 +126,29 @@ public class UnknownBiasing implements NativeExprVisitor<Void, NativeExpr> {
 				// Remove the NOT operator and just flip the bias around.
 				switch(original.getCondition()) {
 				case TRUE:
+					// (!a).isTrue() -> a.isFalse()
 					ret = PlexilExprToNative.isFalse(oper.getArguments().get(0));
 					break;
 				case FALSE:
+					// (!a).isFalse() -> a.isTrue();
 					ret = PlexilExprToNative.isTrue(oper.getArguments().get(0));
 					break;
+				case UNKNOWN:
+					// (!a).isUnknown() -> a.isUnknown();
+					ret = PlexilExprToNative.isUnknown(oper.getArguments().get(0));
+					break;
+				case NOTTRUE:
+					// (!a).isNotTrue() -> a.isNotFalse();
+					ret = PlexilExprToNative.isNotFalse(oper.getArguments().get(0));
+					break;
+				case NOTFALSE: 
+					ret = PlexilExprToNative.isNotTrue(oper.getArguments().get(0));
+					break;
+				case KNOWN:
+					ret = PlexilExprToNative.isKnown(oper.getArguments().get(0));
+					break;
 				default:
-					return original;
+					throw new RuntimeException("Missing case");
 				}
 				break;
 			default:
