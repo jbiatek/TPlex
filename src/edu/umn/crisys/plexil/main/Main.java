@@ -30,6 +30,7 @@ import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
+import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
 import edu.umn.crisys.plexil.il.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.il.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.optimizations.UnknownBiasing;
@@ -261,6 +262,7 @@ public class Main {
 				}
 				PruneUnusedVariables.optimize(ilPlan);
 				RemoveDeadTransitions.optimize(ilPlan);
+				ConstantPropagation.optimize(ilPlan);
 			}
 			
 			JDefinedClass clazz = PlanToJava.toJava(ilPlan, cm, pkg, couldBeLibrary, idToFile);

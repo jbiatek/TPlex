@@ -17,6 +17,12 @@ import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative.Condition;
 
 public class UnknownBiasing implements NativeExprVisitor<Void, NativeExpr> {
 	
+	/**
+	 * Replace some 3-valued operations with 2-valued ones, allowing more
+	 * native expressions to be used. 
+	 * 
+	 * @param ilPlan
+	 */
 	public static void optimize(Plan ilPlan) {
 		ilPlan.getMachines().stream()
 		.forEach((nsm) -> nsm.getTransitions().stream()

@@ -10,14 +10,12 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JOp;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.il.expr.AliasExpr;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
-import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
@@ -81,9 +79,6 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
     @Override
     public JExpression visitOperation(Operation op, JCodeModel cm) {
         List<JExpression> children = op.getArguments().stream()
-        		// Don't bother including skippable parts
-        		.filter(arg -> ! ILEval.clauseIsSkippable(op.getOperator(), 
-        				(ILExpression)arg))
         		// Translate args to Java
         		.map(arg -> arg.accept(this, cm))
         		.collect(Collectors.toList());

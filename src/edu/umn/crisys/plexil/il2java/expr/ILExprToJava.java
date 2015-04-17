@@ -63,10 +63,6 @@ public class ILExprToJava {
     	return false;
     }
     
-    public static JExpression toJavaBiased(ILExpression expr, JCodeModel cm, boolean isThis) {
-        return expr.accept(new IL2JavaBiased(isThis), cm);
-    }
-    
     public static JExpression plexilTypeAsJava(PlexilType type, JCodeModel cm) {
     	return cm.ref(PlexilType.class).staticRef(type.toString());
     }
