@@ -19,4 +19,8 @@ public class NativeConstant implements NativeExpr {
 		return value;
 	}
 
+	@Override
+	public String toString() {
+		return value ? "True" : "False";
+	}
 }
