@@ -16,6 +16,13 @@ public class RemoveDeadTransitions {
 	
 	private RemoveDeadTransitions() {}
 	
+	/**
+	 * Go through each state machine and delete transitions that will never 
+	 * be active, either because their guard is always false, or because
+	 * a higher priority transition will always be active. 
+	 * 
+	 * @param ilPlan
+	 */
 	public static void optimize(Plan ilPlan) {
 		for (NodeStateMachine nsm : ilPlan.getMachines()) {
 			removeImpossibleTransitions(nsm);

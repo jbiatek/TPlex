@@ -23,6 +23,15 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 	
 	private AssumeTopLevelPlan() {}
 
+	/**
+	 * In Plexil semantics, a plan that is not being used as a Library node
+	 * operates as if its parent is an Executing node where nothing goes wrong.
+	 * If the plan will never be used as a library, you can replace the 
+	 * root node's parent checks with constants, which is exactly what this
+	 * optimization does. 
+	 * 
+	 * @param ilPlan
+	 */
 	public static void optimize(Plan ilPlan) {
 		AssumeTopLevelPlan visitor = new AssumeTopLevelPlan();
 		

@@ -30,6 +30,14 @@ public class PruneUnusedVariables {
 	
 	private PruneUnusedVariables() {}
 
+	/**
+	 * Search through the plan for variables that appear in transition guards,
+	 * actions, and library node calls. Any variable that we don't find is
+	 * removed from the Plan, and any assignment to it is removed as well 
+	 * (that variable is written to but never read, commonly node timepoints.)
+	 * 
+	 * @param ilPlan
+	 */
 	public static void optimize(Plan ilPlan) {
 	    Set<ILExpression> safeList = new HashSet<ILExpression>();
 	    

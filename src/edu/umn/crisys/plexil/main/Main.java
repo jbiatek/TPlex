@@ -27,11 +27,11 @@ import com.sun.codemodel.JDefinedClass;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.il.optimizations.RemoveDeadTransitions;
-import edu.umn.crisys.plexil.il.optimizations.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.optimizations.UnknownBiasing;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
@@ -240,7 +240,7 @@ public class Main {
 			NodeToIL toIl = new NodeToIL(plan.getRootNode());
 
 			if (optimize && staticLibraries) {
-				StaticLibIncluder.optimize(toIl, asts);
+				StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
 			}
 			
 			Plan ilPlan = new Plan(filename);
