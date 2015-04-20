@@ -40,6 +40,7 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 				t.guard = t.guard.accept(visitor, null);
 			}
 		}
+		ilPlan.setTopLevelPlan(true);
 	}
 
 	@Override

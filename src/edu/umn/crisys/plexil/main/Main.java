@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.main;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -16,11 +15,16 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import com.sun.codemodel.JClassAlreadyExistsException;
+import jkind.lustre.Program;
+import jkind.lustre.visitors.PrettyPrintVisitor;
+
+import com.beust.jcommander.IStringConverter;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 
@@ -38,226 +42,260 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
+import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
-import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 
 public class Main {
 	
-									 
+	@Parameter(names = "--help", description = "Print this help message.", help = true)
+	boolean help = false;
 
-	private static void printUsage(PrintStream out) {
-		//           0         1         2         3         4         5         6         7         8
-		//           012345678901234567890123456789012345678901234567890123456789012345678901234567890
-		out.println("Usage: java -jar TPlex.jar [options] FILE1 [FILE2...]\n");
-		out.println("    where FILEs are PSX or PLX files. ");
-		out.println("Use --help or -h to see this help message.");
-		out.println("Options include:");
-		out.println("    --package com.example.something");
-		out.println("                                Put generated files in the given package");
-		out.println("                                (instead of the default empty package)");
-		out.println();
-		out.println("    --output-dir src/           Output files to the given directory. If a ");
-		out.println("                                package is specified, the package will be placed");
-		out.println("                                in this directory ");
-		out.println("                                (e.g. src/com/example/something/)");
-		out.println("                                If not specified, this defaults to \"src/\".");
-		out.println();
-		out.println("    --directory DIR             Include all .plx and .psx files in the given");
-		out.println("                                directory.");
-		out.println("    --static-libs               Include Library nodes statically, instead of");
-		out.println("                                producing a separate class for each library.");
-		out.println("                                Incompatible with --force-lib.");
-		out.println("    --no-optimizations          Disable various dead code removal optimizations.");
-		out.println("    --no-biasing                Disable boolean biasing, all expressions will ");
-		out.println("                                use the PLEXIL logic library");
-		out.println("    --no-short-circuiting       Disable use of the conditional operator (?:) ");
-		out.println("                                in AND and OR operations");
-		out.println("    --force-lib                 Disable optimization that guesses which plans");
-		out.println("                                are meant to be used as top level plans, and");
-		out.println("                                removes some code from them.");
-		out.println("    --no-debug                  Disable optional JavaPlan.DEBUG statements");
-		out.println("    --no-plan-state             Disable method for generating plan snapshots");
-		out.println("    --int-timepoints            Store node timepoints as integers");
-		out.println("    --just-parse                Just read in files, don't output to Java.");
-		out.println("                                Useful for just printing information.");
-		out.println("    --output-as-source          Any .plx will be written as PLEXIL source");
-		out.println("                                instead of Java code.");
-		out.println("    --print-type-info           Print an analysis of Lookup and Command types");
-		out.println("                                using some basic heuristics.");
-		out.println("    --print-reachable-states    Print the reachable PLEXIL states for each ");
-		out.println("                                translated plan.");
+	@Parameter(names = "--output-dir", description = "The directory to output files to. For Java, this is where the package will be placed.")
+	File outputDir = new File("./");
+	
+	@Parameter(description="FILE1.{plx|psx} [FILE2.{plx|psx} ...]", variableArity = true)
+	List<File> files = new ArrayList<>();
+	
+	@Parameter(names="--directory", variableArity = true,
+			description = "Also include all PLX and PSX files found in the given directories.",
+			converter = FileConverter.class)
+	List<File> dirs = new ArrayList<>();
+	
+	@Parameter(names = "--lang", 
+			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'plexil' can be used to turn a .plx file in to a more readable .ple file.",
+			converter = OutputLanguage.OutputLangConverter.class)
+	OutputLanguage outputLanguage = OutputLanguage.NONE;
+	
+	@Parameter(names = "--static-libs", description="When translating libraries, first try to go through all the specified PLX files. If the correct ID is found, the library is included statically.")
+	boolean staticLibraries = false;
+	
+	@Parameter(names = "--no-optimizations", description="Disable all optimizations.")
+	boolean skipAllOptimizations = false;
+	
+	@Parameter(names = "--no-biasing", description="Disable the optimization which biases 3-valued logic expressions.")
+	boolean noBiasing = false;
+	
+	@Parameter(names = "--no-root-plans", description="Disable the optimization which removes some code from plans that look like they aren't going to be used as libraries. ")
+	boolean guessTopLevelPlans = false;
+	
+	@Parameter(names = "--no-real-timepoints", description="When generating node timepoints, set the type as Integer.")
+	boolean forceIntTimepoints = false;
+	
+	@Parameter(names = "--print-type-info", description="After any translating, print an analysis of Lookup and Command types.")
+	boolean analyzeTypes = false;
+	
+	@Parameter(names = "--print-reachable-states", description="After any translating, print an analysis of reachable PLEXIL states.")
+	boolean reachableStates = false;
+
+	
+	
+	//Java-specific options
+	@Parameter(names = "--java-package", 
+			description = "Java package for generated files (default is empty)"
+			)
+	String javaPackage = "";
+	@Parameter(names = "--java-no-snapshot-method",
+			description = "Don't generate the Java getSnapshot() method (useful for debugging and unit testing)")
+	boolean javaNoSnapshotMethod = false;
+	@Parameter(names = "--java-no-debug", description="In Java, don't generate code that prints everything that happens to stdout.",
+			arity = 1)
+	boolean javaNoDebugStatements = false;
+	@Parameter(names = "--java-no-ternary", description="In Java, don't use the ternary operator (?:). This will disable short-circuiting of some AND and OR expressions.",
+			arity = 1)
+	boolean javaNoTernaryOperator = false;
+
+
+	//Variables to use during translation
+	Map<String, PlexilPlan> asts = new HashMap<>();
+	Map<String, PlexilScript> scripts = new HashMap<>();
+	Set<Plan> ilPlans = new HashSet<>();
+	Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
+	Map<Plan, PlexilPlan> originalAst = new HashMap<>();
+	Map<String, String> idToFile = new HashMap<>();
+	
+	/**
+	 * Our own usage string, as set by JCommander/the main method. 
+	 */
+	private String usage;
+
+	
+	private static enum OutputLanguage {
+		JAVA, LUSTRE, PLEXIL, NONE;
+		
+		private static class OutputLangConverter implements IStringConverter<OutputLanguage> {
+
+			@Override
+			public OutputLanguage convert(String value) {
+				return OutputLanguage.valueOf(value.toUpperCase());
+			}
+			
+		}
+		
+		@Override
+		public String toString() {
+			return super.toString().toLowerCase();
+		}
 		
 	}
 	
 	
-	private Main() {}
+	public static void main(String... args) {
+		Main m = new Main();
+		
+		JCommander cmd = new JCommander(m);
+		cmd.setProgramName("java -jar TPlex.jar");
+		cmd.setColumnSize(75);
+		
+		StringBuilder usage = new StringBuilder();
+		cmd.usage(usage);
+		m.usage = usage.toString();
 
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			System.out.println("No arguments passed in.");
-			printUsage(System.out);
+		try {
+			cmd.parse(args);
+		} catch (ParameterException e) {
+			System.err.println(e.getMessage());
 			return;
 		}
 		
-		File outputDir = new File("src");
-		String pkg = "";
-		boolean optimize = true;
-		boolean biasing = true;
-		boolean produceJava = true;
-		boolean produceSourceCode = false;
-		boolean createSnapshotMethod = true;
-		boolean guessTopLevelPlans = true;
-		boolean staticLibraries = false;
-		boolean analyzeTypes = false;
-		boolean reachableStates = false;
-		List<File> files = new ArrayList<File>();
+		m.execute();
+	}
+	
+	public boolean execute() {
+		return  readOptions()
+				&& parsePlexilFiles()
+				&& translateToIL()
+				&& optimizeIL()
+				&& generateOutput()
+				&& printReports();
+	}
+
+	public void printUsage(PrintStream out) {
+		out.println(usage);
+	}
+	
+	public boolean readOptions() {
+		if (help) {
+			printUsage(System.out);
+			return false;
+		}
 		
-		// Some simple parsing of options.
-		for (int i=0; i<args.length; i++) {
-			if (args[i].startsWith("--")) {
-				if (args[i].equals("--package")) {
-					pkg = args[i+1];
-					i++;
-				} else if (args[i].equals("--output-dir")) {
-					outputDir = new File(args[i+1]);
-					i++;
-				} else if (args[i].equals("--directory")) {
-					File dir = new File(args[i+1]);
-					i++;
-					files.addAll(Arrays.asList(
-							
-							dir.listFiles(new FilenameFilter() {
-						
-						@Override
-						public boolean accept(File dir, String name) {
-							return name.endsWith(".plx") || name.endsWith(".psx");
-						}
-					})));
-				} else if (args[i].equals("--static-libs")) {
-					staticLibraries = true;
-				} else if (args[i].equals("--no-optimizations")) {
-					optimize = false;
-				} else if (args[i].equals("--no-biasing")) { 
-					biasing = false;
-				} else if (args[i].equals("--no-short-circuiting")) {
-					ILExprToJava.SHORT_CIRCUITING = false;
-				} else if (args[i].equals("--no-debug")) {
-					StateMachineToJava.DEBUG_STATEMENTS = false;
-				} else if (args[i].equals("--no-plan-state")) {
-					createSnapshotMethod = false;
-				} else if (args[i].equals("--int-timepoints")) {
-					NodeToIL.TIMEPOINT_TYPE = PlexilType.INTEGER;
-				} else if (args[i].equals("--force-lib")) {
-					guessTopLevelPlans = false;
-				} else if (args[i].equals("--just-parse")) {
-					produceJava = false;
-				} else if (args[i].equals("--output-as-source")) {
-					produceJava = false;
-					produceSourceCode = true;
-				} else if (args[i].equals("--print-type-info")) {
-					analyzeTypes = true;
-				} else if (args[i].equals("--print-reachable-states")) {
-					reachableStates= true;
-				} else if (args[i].equals("-h") || args[i].equals("--help")) {
-					printUsage(System.out);
-					return;
-				} else {
-					System.err.println("Error: Unrecognized option "+args[i]+". Try --help.");
-					return;
+		// Parse the --directories option into files
+		for (File d  : dirs) {
+			files.addAll(Arrays.asList(
+					
+					d.listFiles(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".plx") || name.endsWith(".psx");
 				}
-			} else {
-				// Must be a file.
-				File file = new File(args[i]);
-				if ( ! file.isFile()) {
-					System.err.println("File "+args[i]+" is not a standard file.");
-					return;
-				} else if (file.getName().endsWith(".ple") || file.getName().endsWith(".pst")
-						   || file.getName().endsWith(".pli")) {
-					System.err.println("Error: "+file.getName()+" is not a compiled PLEXIL file.");
-					System.err.println("Use plexilc to compile it to XML first.");
-				} else if ( ! file.getName().endsWith(".plx") && ! file.getName().endsWith(".psx")) {
-					System.err.println("Error: File extension of "+file+" is not recognized.");
-				}
-				files.add(file);
+			})));
+		}
+		if (forceIntTimepoints) {
+			NodeToIL.TIMEPOINT_TYPE = PlexilType.INTEGER;
+		}
+		
+		if (javaNoTernaryOperator) {
+			ILExprToJava.SHORT_CIRCUITING = false;
+		}
+		if (javaNoDebugStatements) {
+			StateMachineToJava.DEBUG_STATEMENTS = false;
+		}
+		
+		// Check our list of all files
+		for (File file : files) {
+			if ( ! file.isFile()) {
+				System.err.println("File "+file+" is not a standard file.");
+				return false;
+			} else if (file.getName().endsWith(".ple") || file.getName().endsWith(".pst")
+					   || file.getName().endsWith(".pli")) {
+				System.err.println("Error: "+file.getName()+" is not a compiled PLEXIL file.");
+				System.err.println("Use plexilc to compile it to XML first.");
+				return false;
+			} else if ( ! file.getName().endsWith(".plx") && ! file.getName().endsWith(".psx")) {
+				System.err.println("Error: File extension of "+file+" is not recognized.");
+				return false;
 			}
 		}
 		
 		if (files.size() == 0) {
 			System.err.println("Error: No files specified for translation.");
-			for (String arg : args) {
-				System.out.println(arg);
-			}
-			printUsage(System.err);
-			return;
+			return false;
 		}
-		
-		// Now we can translate.
-		Map<String,PlexilPlan> asts = new HashMap<String, PlexilPlan>();
-		JCodeModel cm = new JCodeModel();
+		return true;
+	}
+
+	public boolean parsePlexilFiles() {
 		for (File f : files) {
 			if (f.getName().endsWith(".plx")) {
 				try {
 					asts.put(f.getName().replaceAll("\\.plx$", ""), PlxParser.parseFile(f));
 				} catch (IOException e) {
 					System.err.println(f+": "+e.getMessage());
-					return;
+					return false;
 				} catch (XMLStreamException e) {
 					System.err.println("XML Parsing error: "+e.getMessage());
-					return;
+					return false;
 				} catch (FactoryConfigurationError e) {
 					System.err.println("Error starting XML parser: "+e.getMessage());
-					return;
+					return false;
 				}
 			} else if (f.getName().endsWith(".psx")) {
 				try {
-					PsxToJava(f, pkg, cm);
+					scripts.put(f.getName(), ScriptParser.parse(f));
 				} catch (FileNotFoundException e) {
 					System.err.println(f+": "+e.getMessage());
-					return;
+					return false;
 				} catch (XMLStreamException e) {
 					System.err.println("XML Parsing error: "+e.getMessage());
-					return;
-				} catch (JClassAlreadyExistsException e) {
-					System.err.println("Tried to create two classes with the same name: "+f.getName());
-					return;
-				}
+					return false;
+				} 
 			}
 		}
 		// Now we can map file names to root node IDs. Since file names become 
 		// Java class names, libraries need these to find the correct object
 		// to create.
-		Map<String,String> idToFile = new HashMap<String, String>();
+		idToFile = new HashMap<String, String>();
 		for (String filename : asts.keySet()) {
 			asts.get(filename).getRootNode().getPlexilID().ifPresent(
 					(id) -> idToFile.put(id, NameUtils.clean(filename)));
-		}
-		
-		Set<Plan> ilPlans = new HashSet<Plan>();
-		// Finally, we translate each file into our JCodeModel.
+		}	
+		return true;
+	}
+
+	public boolean translateToIL() {
+		// TODO Auto-generated method stub
 		for (String filename : asts.keySet()) {
 			PlexilPlan plan = asts.get(filename);
 			NodeToIL toIl = new NodeToIL(plan.getRootNode());
 
-			if (optimize && staticLibraries) {
+			if (!skipAllOptimizations && staticLibraries) {
 				StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
 			}
 			
 			Plan ilPlan = new Plan(filename);
 			toIl.translate(ilPlan);
 			ilPlans.add(ilPlan);
+			originalTranslator.put(ilPlan, toIl);
+			originalAst.put(ilPlan, plan);
 			
-			boolean couldBeLibrary = true;
-			
-			if (optimize) {
-				if (guessTopLevelPlans && AssumeTopLevelPlan.looksLikeTopLevelPlan(plan)) {
-					System.out.println("I think "+filename+" isn't a library, so I'm removing some code.");
-					System.out.println("If I'm wrong, you can either add an interface or use the \"--libs\" option.");
-					AssumeTopLevelPlan.optimize(ilPlan);
-					couldBeLibrary = false;
-				}
-				if (biasing) {
+			if (!skipAllOptimizations && guessTopLevelPlans && AssumeTopLevelPlan.looksLikeTopLevelPlan(plan)) {
+				System.out.println("I think "+filename+" isn't a library, so I'm removing some code.");
+				System.out.println("If I'm wrong, you can either add an interface or use the \"--libs\" option.");
+				AssumeTopLevelPlan.optimize(ilPlan);
+			}
+		}
+		return true;
+	}
+
+	public boolean optimizeIL() {
+		for (Plan ilPlan : ilPlans) {
+			if (!skipAllOptimizations) {
+
+				if (!noBiasing) {
 					UnknownBiasing.optimize(ilPlan);
 				}
 				PruneUnusedVariables.optimize(ilPlan);
@@ -265,41 +303,79 @@ public class Main {
 				ConstantPropagation.optimize(ilPlan);
 			}
 			
-			JDefinedClass clazz = PlanToJava.toJava(ilPlan, cm, pkg, couldBeLibrary, idToFile);
-			// Add the snapshot method too.
-			if (createSnapshotMethod) {
-				PlanToJava.addGetSnapshotMethod(ilPlan, toIl, clazz);
-			}
+		}
+		return true;
+	}
+
+	public boolean generateOutput() {
+		if (outputLanguage != OutputLanguage.NONE) {
+			outputDir.mkdirs();
+		}
+		switch(outputLanguage) {
+		case NONE: return true;
+		case JAVA: return generateJava();
+		case LUSTRE: return generateLustre();
+		case PLEXIL: return generatePlexil();
 		}
 		
-		// Now try to output the actual files
-		if (produceJava) {
-			outputDir.mkdirs();
+		return true;
+	}
+
+	private boolean generatePlexil() {
+		for (String filename : asts.keySet()) {
+			File outFile = new File(outputDir, filename+".ple");
+			String text = asts.get(filename).getFullPrintout();
 			try {
-				cm.build(outputDir);
+				FileWriter fw = new FileWriter(outFile);
+				fw.write(text);
+				fw.close();
 			} catch (IOException e) {
-				System.err.println("Error writing Java code to output directory: "+e.getMessage());
+				e.printStackTrace();
+				return false;
+			}
+			System.out.println(outFile.getName());
+		}
+		return true;
+	}
+
+	private boolean generateLustre() {
+		for (Plan p : ilPlans) {
+			Program lustre = PlanToLustre.toLustre(p, originalAst.get(p));
+			PrettyPrintVisitor pp = new PrettyPrintVisitor();
+			lustre.accept(pp);
+			
+			File output = new File(outputDir, p.getPlanName()+".lus");
+			try {
+				FileWriter fw = new FileWriter(output);
+				fw.write(pp.toString());
+				fw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			} 
+		}
+		return true;
+	}
+
+	private boolean generateJava() {
+		JCodeModel cm = new JCodeModel();
+		for (Plan p : ilPlans) {
+			JDefinedClass clazz = PlanToJava.toJava(p, cm, javaPackage, idToFile);
+			if ( ! javaNoSnapshotMethod) {
+				PlanToJava.addGetSnapshotMethod(p, originalTranslator.get(p), clazz);
 			}
 		}
-		
-		if (produceSourceCode) {
-			outputDir.mkdirs();
-			for (String filename : asts.keySet()) {
-				File outFile = new File(outputDir, filename+".ple");
-				String text = asts.get(filename).getFullPrintout();
-				try {
-					FileWriter fw = new FileWriter(outFile);
-					fw.write(text);
-					fw.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-					return;
-				}
-				System.out.println(outFile.getName());
-			}
+		// Write code to the output directory
+		try {
+			cm.build(outputDir);
+		} catch (IOException e) {
+			System.err.println("Error writing Java code to output directory: "+e.getMessage());
+			return false;
 		}
-		
-		// Yay, all done. Did they ask for a type analysis?
+		return true;
+	}
+
+	public boolean printReports() {
 		if (analyzeTypes) {
 			TypeAnalyzer all = new TypeAnalyzer();
 			System.out.println();
@@ -327,48 +403,8 @@ public class Main {
 				System.out.println(ilPlan.getPlanName()+": states == "+numStates);
 			}
 		}
-		
-	}
-	/*
-	public static Plan PlxToIL(File f, boolean optimize) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
-		// Parse to AST
-        PlexilPlan planXml = PlxParser.parseFile(f);
-        // Wrap AST in translator
-        NodeToIL translator = new NodeToIL(planXml.getRootNode());
-        // Create empty IL plan
-        Plan ilPlan = new Plan(f.getName().replaceAll("\\.plx$", ""));
-        // Tell the wrapper to fill it with content.
-        translator.translate(ilPlan);
+		return true;
 
-        if (optimize) {
-        	PruneUnusedTimepoints.optimize(ilPlan);
-        	RemoveDeadTransitions.optimize(ilPlan);
-        }
-        
-        return ilPlan;
 	}
 	
-	public static void PlxToJava(File f, String pkg, JCodeModel cm, boolean optimize) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
-		Plan ilPlan = PlxToIL(f, optimize);
-		// We're going to Java. (This will be more complicated once Java output
-		// is separated from the IL.)
-		PlanToJava.toJava(ilPlan, cm, pkg);
-	}
-	*/
-	
-	public static void PsxToJava(File f, String pkg, JCodeModel cm) throws FileNotFoundException, XMLStreamException, JClassAlreadyExistsException {
-        XMLInputFactory factory = XMLInputFactory.newFactory();
-        FileInputStream in = new FileInputStream(f);
-        XMLEventReader xml = factory.createXMLEventReader(in);
-        
-        String name = f.getName().replaceAll("\\.psx$", "") + "Script";
-        ScriptToJava.toJava(ScriptParser.parse(name, xml), cm, pkg);
-        xml.close();
-        try {
-			in.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 }

@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/codemodel-2.6.jar" sourcepath="lib/codemodel-2.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcute.jar"/>
 	<classpathentry kind="lib" path="lib/jkind-api.jar"/>
+	<classpathentry kind="lib" path="lib/jcommander-1.48.jar" sourcepath="lib/jcommander-1.48-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

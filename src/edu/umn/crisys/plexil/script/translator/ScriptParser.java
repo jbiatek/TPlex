@@ -4,10 +4,12 @@ import static edu.umn.crisys.util.xml.XMLUtils.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -61,6 +63,11 @@ public class ScriptParser {
 
     }
     
+    public static PlexilScript parse(File f) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
+    	XMLEventReader xml = XMLInputFactory.newInstance().createXMLEventReader(new FileInputStream(f));
+    	
+    	return parse(f.getName(), xml);
+    }
     
     public static PlexilScript parse(String scriptName, XMLEventReader xml) throws XMLStreamException {
         PlexilScript ret = new PlexilScript(scriptName);

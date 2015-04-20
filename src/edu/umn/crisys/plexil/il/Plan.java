@@ -24,6 +24,7 @@ public class Plan {
 	private ILVariable rootOutcome;
 	private GetNodeStateExpr rootState;
     private String planName;
+    private boolean isTopLevelPlan = false;
     
     public Plan(String planName) {
 	    this.planName = planName;
@@ -78,6 +79,14 @@ public class Plan {
 
 	public ILExpression getRootNodeState() {
 		return rootState;
+	}
+
+	public boolean isTopLevelPlan() {
+		return isTopLevelPlan;
+	}
+
+	public void setTopLevelPlan(boolean isTopLevelPlan) {
+		this.isTopLevelPlan = isTopLevelPlan;
 	}
 	
 }

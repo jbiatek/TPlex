@@ -234,11 +234,11 @@ public class PlanToJava {
 		v.accept(adder, clazz);
 	}
 	
-	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, boolean couldBeLibrary, 
+	public static JDefinedClass toJava(Plan p, JCodeModel cm, String pkg, 
 			final Map<String,String> idToClassName) {
 	    // Try to create a class for this Plan.
 		String fqcn = fullyQualifyName(pkg, NameUtils.clean(p.getPlanName()));
-	    JDefinedClass clazz = createJavaPlanClass(fqcn, couldBeLibrary, cm);
+	    JDefinedClass clazz = createJavaPlanClass(fqcn, !p.isTopLevelPlan(), cm);
         
         // Variables! We need to add them to the class.
 	    for (ILVariable v : p.getVariables()) {
