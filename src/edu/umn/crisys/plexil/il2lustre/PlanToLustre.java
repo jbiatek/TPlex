@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.il2lustre;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
@@ -20,6 +21,7 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -30,10 +32,24 @@ import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class PlanToLustre {
+
+	private static final String STRING_ENUM_NAME = "PlexilStrings";
+	private Plan p;
+	private PlexilPlan originalAst;
 	
-	public static Program toLustre(Plan p, PlexilPlan originalAst) {
-		ProgramBuilder pb = getProgramWithPlexilTypes();
-		NodeBuilder nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
+	private ProgramBuilder pb = getProgramWithPlexilTypes();
+	private NodeBuilder nb;
+	private ILExprToLustre ilToLustre = new ILExprToLustre();
+	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
+
+	public PlanToLustre(Plan p, PlexilPlan originalAst) {
+		this.p = p;
+		this.originalAst = originalAst;
+		
+		this.nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
+	}
+	
+	public Program toLustre() {
 		
 		
 		// Add in declared lookups
@@ -54,22 +70,35 @@ public class PlanToLustre {
 		}
 		
 		for (NodeStateMachine nsm : p.getMachines()) {
-			addStateMachine(nsm, nb);
+			addStateMachine(nsm);
 		}
 		
 		for (ILVariable v : p.getVariables()) {
-			addVariable(v, p, nb);
+			addVariable(v);
 			if (v.getName().contains("previous_value")) {
 				System.err.println(v);
 			}
 		}
 		
-		ActionsToLustre a2l = new ActionsToLustre();
+		// Translate actions
+		ActionsToLustre a2l = new ActionsToLustre(this);
 		a2l.navigate(p);
 		a2l.toLustre(nb);
 		
+		// Add string enum, if any
+		Set<String> expectedStrings = ilToLustre.getAllExpectedStrings();
+		if (! expectedStrings.isEmpty()) {
+			EnumType planStrings = new EnumType(STRING_ENUM_NAME, 
+				new ArrayList<String>(expectedStrings));
+			addEnumType(pb, planStrings);
+		}
+		
 		pb.addNode(nb.build());
 		return pb.build();
+	}
+	
+	public Expr toLustre(ILExpression e, PlexilType expectedType) {
+		return e.accept(ilToLustre, expectedType);
 	}
 	
 	private static ProgramBuilder getProgramWithPlexilTypes() {
@@ -144,6 +173,8 @@ public class PlanToLustre {
 			return NamedType.INT;
 		case REAL:
 			return NamedType.REAL;
+		case STRING:
+			return new NamedType(STRING_ENUM_NAME);
 		case STATE:
 			return ILExprToLustre.PSTATE;
 		case COMMAND_HANDLE:
@@ -156,17 +187,15 @@ public class PlanToLustre {
 		case BOOLEAN_ARRAY:
 		case INTEGER_ARRAY:
 		case REAL_ARRAY:
-			throw new RuntimeException("Arrays not supported yet");
-		case STRING:
 		case STRING_ARRAY:
-			throw new RuntimeException("Strings not supported yet");
+			throw new RuntimeException("Arrays not supported yet");
 		case UNKNOWN:
 		default:
 			throw new RuntimeException("Lustre needs everything to be typed!");
 		}
 	}
 	
-	private static void addVariable(ILVariable v, Plan p, NodeBuilder nb) {
+	private void addVariable(ILVariable v) {
 		// Assignments are handled by actions. We'll do the declaration 
 		// and leave the rest to them. 
 		nb.addLocal(new VarDecl(ILExprToLustre.getVariableId(v), getLustreType(v.getType())));
@@ -188,7 +217,7 @@ public class PlanToLustre {
 		return new UnaryExpr(UnaryOp.PRE, new IdExpr(getStateMapperId(uid)));
 	}
 
-	private static void addStateMachine(NodeStateMachine nsm, NodeBuilder nb) {
+	private void addStateMachine(NodeStateMachine nsm) {
 		String id = getStateId(nsm);
 		
 		VarDecl stateVar = new VarDecl(id, NamedType.INT);
@@ -206,7 +235,7 @@ public class PlanToLustre {
 						new BinaryExpr(new IdExpr(getStateId(nsm)), BinaryOp.EQUAL, 
 								new IdExpr(s.getIndex()+"")),
 						// then return the tag
-						ILExprToLustre.toLustre(s.tags.get(uid), PlexilType.STATE),
+						toLustre(s.tags.get(uid), PlexilType.STATE),
 						// else, the rest
 						map);
 			}
@@ -216,7 +245,7 @@ public class PlanToLustre {
 		}
 	}
 	
-	private static Expr stateMachineExpr(NodeStateMachine nsm) {
+	private Expr stateMachineExpr(NodeStateMachine nsm) {
 		// If no transitions are active, don't change states.
 		Expr bigIf = new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm));
 		
@@ -244,8 +273,8 @@ public class PlanToLustre {
 	 * @param t
 	 * @return
 	 */
-	public static Expr getGuardExprFor(Transition t) {
-		return t.guard.accept(new NativeExprToLustre(), null);
+	public Expr getGuardExprFor(Transition t) {
+		return t.guard.accept(nativeToLustre, null);
 	}
 	
 	/**
@@ -256,7 +285,7 @@ public class PlanToLustre {
 	 * @param stateId
 	 * @return
 	 */
-	public static Expr getGuardForThisSpecificTransition(Transition t, NodeStateMachine nsm) {
+	public Expr getGuardForThisSpecificTransition(Transition t, NodeStateMachine nsm) {
 		// This transition has to be active, but also all the transitions before 
 		// it have to be inactive. 
 		Expr specificGuard = createGuardWithStateCheck(getStateExpr(nsm), t);
@@ -301,7 +330,7 @@ public class PlanToLustre {
 	 * @param t
 	 * @return
 	 */
-	public static Expr createGuardWithStateCheck(Expr stateId, Transition t) {
+	public Expr createGuardWithStateCheck(Expr stateId, Transition t) {
 		// First off, we need to have been in the start state.
 		Expr guardExpr = new BinaryExpr(
 				new UnaryExpr(UnaryOp.PRE, stateId), 

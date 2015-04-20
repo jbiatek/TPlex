@@ -4,7 +4,9 @@ import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -75,11 +77,6 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 	public static final EnumType PFAILURE = new EnumType("node_failure", 
 			enumerator(NodeFailureType.values()));
 
-	private static final ILExprToLustre SINGLETON = new ILExprToLustre();
-	public static Expr toLustre(ILExpression e, PlexilType expectedType) {
-		return e.accept(SINGLETON, expectedType);
-	}
-	
 	private static List<String> enumerator(Enum<?>[] values) {
 		List<String> ret = new ArrayList<String>();
 		for (Enum<?> e : values) {
@@ -136,7 +133,13 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		return NameUtils.clean(v.getString());
 	}
 	
-	private ILExprToLustre() {}
+	private Set<String> allExpectedStrings = new HashSet<>();
+	
+	public ILExprToLustre() {}
+	
+	public Set<String> getAllExpectedStrings() {
+		return allExpectedStrings;
+	}
 	
 	@Override
 	public ArrayAccessExpr visitArrayIndex(ArrayIndexExpr array, PlexilType expectedType) {
@@ -323,6 +326,7 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	@Override
 	public Expr visitStringValue(StringValue string, PlexilType expectedType) {
+		allExpectedStrings.add(stringToEnum(string));
 		return id(stringToEnum(string));
 	}
 

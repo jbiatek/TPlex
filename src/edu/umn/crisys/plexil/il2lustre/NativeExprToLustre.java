@@ -15,6 +15,12 @@ import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class NativeExprToLustre implements NativeExprVisitor<Void, Expr> {
+	
+	private ILExprToLustre exprToLustre;
+	
+	public NativeExprToLustre(ILExprToLustre exprTranslator) {
+		this.exprToLustre = exprTranslator;
+	}
 
 	@Override
 	public Expr visitNativeOperation(NativeOperation op, Void param) {
@@ -34,7 +40,7 @@ public class NativeExprToLustre implements NativeExprVisitor<Void, Expr> {
 
 	@Override
 	public Expr visitPlexilExprToNative(PlexilExprToNative pen, Void param) {
-		Expr thisGuardExpr = ILExprToLustre.toLustre(pen.getPlexilExpr(), PlexilType.BOOLEAN);
+		Expr thisGuardExpr = pen.getPlexilExpr().accept(exprToLustre, PlexilType.BOOLEAN);
 		BinaryOp op;
 		Expr compareTo;
 		switch (pen.getCondition()) {

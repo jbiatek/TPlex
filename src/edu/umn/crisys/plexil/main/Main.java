@@ -122,10 +122,10 @@ public class Main {
 	private String usage;
 
 	
-	private static enum OutputLanguage {
+	static enum OutputLanguage {
 		JAVA, LUSTRE, PLEXIL, NONE;
 		
-		private static class OutputLangConverter implements IStringConverter<OutputLanguage> {
+		public static class OutputLangConverter implements IStringConverter<OutputLanguage> {
 
 			@Override
 			public OutputLanguage convert(String value) {
@@ -340,7 +340,8 @@ public class Main {
 
 	private boolean generateLustre() {
 		for (Plan p : ilPlans) {
-			Program lustre = PlanToLustre.toLustre(p, originalAst.get(p));
+			PlanToLustre p2l = new PlanToLustre(p, originalAst.get(p));
+			Program lustre = p2l.toLustre();
 			PrettyPrintVisitor pp = new PrettyPrintVisitor();
 			lustre.accept(pp);
 			

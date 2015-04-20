@@ -1,10 +1,7 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -13,8 +10,6 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import edu.umn.crisys.plexil.il.Plan;
@@ -41,10 +36,16 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			new HashMap<ILVariable, Expr>();
 	private Expr macroStepIsEnded;
 	
+	private PlanToLustre translator;
+	
+	public ActionsToLustre(PlanToLustre translator) {
+		this.translator = translator;
+	}
+	
 	public void navigate(Plan p) {
 		// For all variables, by default they don't change.
 		for (ILVariable v : p.getVariables()) {
-			varNextValue.put(v, ILExprToLustre.toLustre(v, v.getType()));
+			varNextValue.put(v, translator.toLustre(v, v.getType()));
 		}
 		// macroStepStatus = <every state machine is unmoved>
 		for (NodeStateMachine nsm : p.getMachines()) {
@@ -65,7 +66,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		for (NodeStateMachine nsm : p.getMachines()) {
 			for (Transition t : nsm.getTransitions()) {
 				for (PlexilAction a : t.actions) {
-					a.accept(this, PlanToLustre.getGuardForThisSpecificTransition(t, nsm));
+					a.accept(this, translator.getGuardForThisSpecificTransition(t, nsm));
 				}
 			}
 			// State actions
@@ -89,7 +90,8 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			// Start it out with its initial value
 			Expr init;
 			if (v instanceof SimpleVar) {
-				init = ILExprToLustre.toLustre(((SimpleVar) v).getInitialValue(), v.getType());
+				init = translator.toLustre(						
+						((SimpleVar) v).getInitialValue(), v.getType());
 			} else {
 				throw new RuntimeException("Not supported yet: "+v.getClass());
 			}
@@ -118,7 +120,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			
 			// Do the assignment, or else whatever we had before
 			varNextValue.put(v, new IfThenElseExpr(actionCondition, 
-					ILExprToLustre.toLustre(assign.getRHS(), v.getType()), 
+					translator.toLustre(assign.getRHS(), v.getType()), 
 					varNextValue.get(v)));
 		} else {
 			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported");
