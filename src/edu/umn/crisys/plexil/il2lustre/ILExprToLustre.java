@@ -238,7 +238,7 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		case CAST_NUMERIC:
 			return op.getArguments().get(0).accept(this, PlexilType.NUMERIC.getMoreSpecific(expectedType));
 		case CAST_STRING:
-			throw new RuntimeException("Strings not supported in Lustre");
+			return op.getArguments().get(0).accept(this, PlexilType.STRING);
 		// ---------------- Node operators, which don't belong in the IL
 		case GET_COMMAND_HANDLE:
 			throw new RuntimeException("Handles should be resolved by now!");

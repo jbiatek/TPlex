@@ -7,15 +7,15 @@ import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
 import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative.Condition;
 
-public class UnknownBiasing implements NativeExprVisitor<Void, NativeExpr> {
+public class UnknownBiasing extends ILExprModifier<Void> {
 	
 	/**
 	 * Replace some 3-valued operations with 2-valued ones, allowing more
@@ -24,9 +24,7 @@ public class UnknownBiasing implements NativeExprVisitor<Void, NativeExpr> {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-		ilPlan.getMachines().stream()
-		.forEach((nsm) -> nsm.getTransitions().stream()
-				.forEach((t) -> t.guard = t.guard.accept(new UnknownBiasing(), null)));
+		ilPlan.modifyAllExpressions(new UnknownBiasing(), null);
 	}
 
 	@Override

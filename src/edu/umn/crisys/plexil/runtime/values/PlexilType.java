@@ -104,6 +104,10 @@ public enum PlexilType {
     	} else if (other.isSpecificType() && !this.isSpecificType()) {
     		other.typeCheck(this);
     		return other;
+    	} else if (other == UNKNOWN) {
+    		return this;
+    	} else if (this == UNKNOWN) {
+    		return other;
     	}
     	if (this != other) {
     		throw new RuntimeException("Trying to compare "+this+" and "+other);

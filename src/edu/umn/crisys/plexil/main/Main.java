@@ -25,6 +25,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
+import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 
@@ -47,6 +48,7 @@ import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
+import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 
 public class Main {
 	
@@ -335,6 +337,7 @@ public class Main {
 			}
 			System.out.println(outFile.getName());
 		}
+		
 		return true;
 	}
 
@@ -366,6 +369,17 @@ public class Main {
 				PlanToJava.addGetSnapshotMethod(p, originalTranslator.get(p), clazz);
 			}
 		}
+		for (String filename : scripts.keySet()) {
+			PlexilScript script = scripts.get(filename);
+			try {
+				ScriptToJava.toJava(script, cm, javaPackage);
+			} catch (JClassAlreadyExistsException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		
 		// Write code to the output directory
 		try {
 			cm.build(outputDir);

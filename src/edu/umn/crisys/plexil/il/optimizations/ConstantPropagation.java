@@ -29,9 +29,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-		ilPlan.getMachines().forEach((nsm) ->
-			nsm.getTransitions().forEach(t -> 
-				t.guard = t.guard.accept(new ConstantPropagation(), null)));
+		ilPlan.modifyAllExpressions(new ConstantPropagation(), null);
 	}
 
 	@Override

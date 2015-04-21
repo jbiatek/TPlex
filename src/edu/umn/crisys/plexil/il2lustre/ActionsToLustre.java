@@ -12,6 +12,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
@@ -115,14 +116,18 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
 	@Override
 	public Void visitAssign(AssignAction assign, Expr actionCondition) {
-		if (assign.getLHS() instanceof ILVariable) {
-			ILVariable v = (ILVariable) assign.getLHS();
+		if (assign.getLHS() instanceof SimpleVar) {
+			SimpleVar v = (SimpleVar) assign.getLHS();
 			
 			// Do the assignment, or else whatever we had before
 			varNextValue.put(v, new IfThenElseExpr(actionCondition, 
 					translator.toLustre(assign.getRHS(), v.getType()), 
 					varNextValue.get(v)));
-		} else {
+		} else if (assign.getLHS() instanceof ArrayIndexExpr) {
+			
+		}
+		
+		else {
 			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported");
 		}
 		return null;

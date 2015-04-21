@@ -9,7 +9,7 @@ public interface ILActionVisitor<Param,Return> {
 	public Return visitCommand(CommandAction cmd, Param param);
 	public Return visitEndMacroStep(EndMacroStep end, Param param);
 	public Return visitRunLibraryNode(RunLibraryNodeAction lib, Param param);
-	public Return visitComposite(CompositeAction composite, Param param);
+	public Return visitComposite(CompositeAction composite, Param param); 
 	public Return visitUpdate(UpdateAction update, Param param);
 
 }

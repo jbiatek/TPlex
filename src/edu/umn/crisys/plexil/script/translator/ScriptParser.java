@@ -65,8 +65,9 @@ public class ScriptParser {
     
     public static PlexilScript parse(File f) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
     	XMLEventReader xml = XMLInputFactory.newInstance().createXMLEventReader(new FileInputStream(f));
-    	
-    	return parse(f.getName(), xml);
+		String scriptName = f.getName().replaceAll("\\.psx$", "")+"Script";
+
+    	return parse(scriptName, xml);
     }
     
     public static PlexilScript parse(String scriptName, XMLEventReader xml) throws XMLStreamException {

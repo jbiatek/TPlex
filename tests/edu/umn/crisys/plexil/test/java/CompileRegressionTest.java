@@ -26,9 +26,11 @@ public class CompileRegressionTest {
 	
 	private static void buildTest(TestSuite suite, File resources, File outputDir) throws Exception {
 		List<String> args = new ArrayList<String>();
+		args.add("--lang");
+		args.add("java");
 		args.add("--output-dir");
 		args.add(outputDir.getPath());
-		args.add("--package");
+		args.add("--java-package");
 		args.add(RegressionTest.TPLEX_OUTPUT_PACKAGE);
 		args.add(new File(resources, suite.planFile+".plx").getPath());
 		for (String scriptName : suite.planScripts) {

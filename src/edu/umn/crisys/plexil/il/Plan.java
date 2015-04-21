@@ -11,8 +11,13 @@ import java.util.List;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.il.action.ILActionVisitor;
+import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
+import edu.umn.crisys.plexil.il.statemachine.State;
+import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 
 public class Plan {
@@ -89,4 +94,30 @@ public class Plan {
 		this.isTopLevelPlan = isTopLevelPlan;
 	}
 	
+	public <P,R> void visitAllActions(ILActionVisitor<P,R> visitor, P param) {
+	    for (NodeStateMachine sm : getMachines()) {
+	        for (Transition t : sm.getTransitions()) {
+	            for (PlexilAction a : t.actions) {
+	            	a.accept(visitor, param);
+	            }
+	        }
+	        for (State s : sm.getStates()) {
+	            for (PlexilAction a : s.entryActions) {
+	                a.accept(visitor, param);
+	            }
+	            for (PlexilAction a : s.inActions) {
+	                a.accept(visitor, param);
+	            }
+	        }
+	    }
+	}
+	
+	public <Param> void modifyAllExpressions(ILExprModifier<Param> visitor, Param param) {
+		for (NodeStateMachine nsm : getMachines()) {
+			for (Transition t : nsm.getTransitions()) {
+				t.guard = t.guard.accept(visitor, param);
+			}
+		}
+
+	}
 }
