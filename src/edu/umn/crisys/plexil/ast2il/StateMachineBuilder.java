@@ -72,6 +72,8 @@ public class StateMachineBuilder {
         }
         
     }
+    
+    public static String TIME = "time";
 
 	private NodeToIL translator;
 	private Node astNode;
@@ -281,10 +283,10 @@ public class StateMachineBuilder {
         // Timepoints get set for every single transition
         // The starting state is now ending
         t.addAction(new AssignAction(translator.getNodeTimepoint(start, NodeTimepoint.END), 
-        		Operation.castToNumeric(new LookupNowExpr("time")), 0));
+        		Operation.castToNumeric(new LookupNowExpr(TIME)), 0));
         // And the destination state is now starting.
         t.addAction(new AssignAction(translator.getNodeTimepoint(end, NodeTimepoint.START), 
-        		Operation.castToNumeric(new LookupNowExpr("time")), 0));
+        		Operation.castToNumeric(new LookupNowExpr(TIME)), 0));
         
         return t;
     }

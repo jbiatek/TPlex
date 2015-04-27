@@ -4,8 +4,9 @@ import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jkind.lustre.ArrayAccessExpr;
@@ -20,7 +21,6 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
@@ -61,6 +61,9 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 	
 	public static final boolean KNOWN_FLAG = true;
 	public static final boolean UNKNOWN_FLAG = !KNOWN_FLAG;
+	
+	public static final String UNKNOWN_STRING = "_unknown_str_";
+	public static final String EMPTY_STRING = "_empty_str_";
 
 	public static final EnumType PBOOLEAN = new EnumType("pboolean", 
 			Arrays.asList(P_TRUE_ID, P_FALSE_ID, P_UNKNOWN_ID)); 
@@ -129,16 +132,38 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
 	}
 
-	public static String stringToEnum(StringValue v) {
-		return NameUtils.clean(v.getString());
+	private String stringToEnum(StringValue v) {
+		if (v.getString().equals("")) {
+			allExpectedStrings.put(EMPTY_STRING, v);
+			return EMPTY_STRING;
+		}
+		
+		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
+		if (toReturn.equals("")) {
+			throw new RuntimeException("Enumerated string was empty: "+v);
+		}
+		if (allExpectedStrings.containsKey(toReturn)) {
+			StringValue prev = allExpectedStrings.get(toReturn);
+			if (prev.equalTo(v).isFalse()) {
+				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
+			}
+		}
+		// Okay, it's all good. Save this mapping.
+		allExpectedStrings.put(toReturn, v);
+		return toReturn;
 	}
 	
-	private Set<String> allExpectedStrings = new HashSet<>();
+	private String stringToEnum(UnknownValue unk) {
+		allExpectedStrings.put(UNKNOWN_STRING, null);
+		return UNKNOWN_STRING;
+	}
+	
+	private Map<String, StringValue> allExpectedStrings = new HashMap<>();
 	
 	public ILExprToLustre() {}
 	
 	public Set<String> getAllExpectedStrings() {
-		return allExpectedStrings;
+		return allExpectedStrings.keySet();
 	}
 	
 	@Override
@@ -187,7 +212,7 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 				return new NodeCallExpr("p_not", 
 						binary(op.getArguments(), "p_eq_boolean", PlexilType.BOOLEAN));
 			default:
-				return binary(op.getArguments(), BinaryOp.NOTEQUAL, op.getExpectedArgumentType());
+				return toPBoolean(binary(op.getArguments(), BinaryOp.NOTEQUAL, op.getExpectedArgumentType()));
 			}
 		case ISKNOWN:
 			// TODO: need arg type, this expected type is always boolean
@@ -326,7 +351,6 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	@Override
 	public Expr visitStringValue(StringValue string, PlexilType expectedType) {
-		allExpectedStrings.add(stringToEnum(string));
 		return id(stringToEnum(string));
 	}
 
@@ -336,9 +360,13 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		case BOOLEAN:
 			return P_UNKNOWN;
 		case INTEGER:
-			return new IdExpr("0");
+			return id("0");
+		case REAL:
+			return id("0.0");
+		case STRING:
+			return id(stringToEnum(unk));
 		default: 
-			throw new RuntimeException("Unknowns not supported yet except booleans");	
+			throw new RuntimeException("Unknowns not supported yet except booleans -- "+expectedType);	
 		}
 	}
 

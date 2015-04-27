@@ -1,12 +1,14 @@
 package edu.umn.crisys.plexil.ast.expr.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public class LookupOnChangeExpr extends CompositeExpr {
 
@@ -24,8 +26,20 @@ public class LookupOnChangeExpr extends CompositeExpr {
 	    this.args = args;
 	}
 	
+	public LookupOnChangeExpr(Expression name, Expression tolerance, Expression... args) {
+		this(name, tolerance, Arrays.asList(args));
+	}
+	
 	public LookupOnChangeExpr(Expression name, List<Expression> args) {
 	    this(name, RealValue.get(0.0), args);
+	}
+	
+	public LookupOnChangeExpr(Expression name, Expression...args) {
+		this(name, RealValue.get(0.0), Arrays.asList(args));
+	}
+	
+	public LookupOnChangeExpr(String name, Expression...args) {
+		this(StringValue.get(name), args);
 	}
 	
 	@Override

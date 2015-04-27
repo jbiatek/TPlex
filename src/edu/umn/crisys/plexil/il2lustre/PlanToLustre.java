@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il2lustre;
 import java.util.ArrayList;
 import java.util.Set;
 
+import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.EnumType;
@@ -25,15 +26,24 @@ import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class PlanToLustre {
 
-	private static final String STRING_ENUM_NAME = "PlexilStrings";
+	public static enum Obligation {
+		NONE, EXECUTE
+	}
+
+	
+	private static final String STRING_ENUM_NAME = "PlexilString";
 	private Plan p;
 	private PlexilPlan originalAst;
 	
@@ -50,6 +60,10 @@ public class PlanToLustre {
 	}
 	
 	public Program toLustre() {
+		return toLustre(Obligation.NONE);
+	}
+	
+	public Program toLustre(Obligation obilgations) {
 		
 		
 		// Add in declared lookups
@@ -75,9 +89,6 @@ public class PlanToLustre {
 		
 		for (ILVariable v : p.getVariables()) {
 			addVariable(v);
-			if (v.getName().contains("previous_value")) {
-				System.err.println(v);
-			}
 		}
 		
 		// Translate actions
@@ -92,6 +103,28 @@ public class PlanToLustre {
 				new ArrayList<String>(expectedStrings));
 			addEnumType(pb, planStrings);
 		}
+		
+		switch(obilgations) {
+		case NONE: break;
+		case EXECUTE: 
+			p.getMachines().stream()
+			.flatMap(m -> m.getNodeIds().stream())
+			.forEach(uid -> {
+				String id = getStateMapperId(uid)+"_executes";
+				nb.addLocal(new VarDecl(id, NamedType.BOOL));
+				// This state could never be executing, right? Prove me wrong!
+				nb.addEquation(new Equation(new IdExpr(id), 
+						new BinaryExpr(new IdExpr(getStateMapperId(uid)), 
+								BinaryOp.NOTEQUAL, 
+								toLustre(NodeState.EXECUTING, PlexilType.STATE))
+						));
+				nb.addProperty(id);
+
+			});
+			
+			
+		}
+		
 		
 		pb.addNode(nb.build());
 		return pb.build();
@@ -183,22 +216,35 @@ public class PlanToLustre {
 			return ILExprToLustre.POUTCOME;
 		case FAILURE:
 			return ILExprToLustre.PFAILURE;
-		case ARRAY:
 		case BOOLEAN_ARRAY:
 		case INTEGER_ARRAY:
 		case REAL_ARRAY:
 		case STRING_ARRAY:
-			throw new RuntimeException("Arrays not supported yet");
+		case ARRAY:
+			throw new RuntimeException("Array types require a length");
 		case UNKNOWN:
 		default:
 			throw new RuntimeException("Lustre needs everything to be typed!");
 		}
 	}
 	
+	private static Type getLustreType(PlexilType arrayType, int size) {
+		return new ArrayType(getLustreType(arrayType.elementType()), size);
+	}
+	
+	
 	private void addVariable(ILVariable v) {
 		// Assignments are handled by actions. We'll do the declaration 
 		// and leave the rest to them. 
-		nb.addLocal(new VarDecl(ILExprToLustre.getVariableId(v), getLustreType(v.getType())));
+		Type t;
+		if (v instanceof ArrayVar) {
+			ArrayVar array = (ArrayVar) v;
+			t = getLustreType(array.getType(), array.getMaxSize());
+		} else {
+			t = getLustreType(v.getType());
+		}
+		
+		nb.addLocal(new VarDecl(ILExprToLustre.getVariableId(v), t));
 	}
 
 	private static String getStateId(NodeStateMachine nsm) {

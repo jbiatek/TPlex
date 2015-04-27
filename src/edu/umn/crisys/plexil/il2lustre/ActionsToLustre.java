@@ -10,6 +10,8 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
+import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
@@ -26,6 +28,7 @@ import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 
@@ -93,6 +96,17 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			if (v instanceof SimpleVar) {
 				init = translator.toLustre(						
 						((SimpleVar) v).getInitialValue(), v.getType());
+			} else if (v instanceof ArrayVar) { 
+				// Preliminary support for constant arrays
+				System.out.println("WARNING: Array "+v+" is being initialized, but isn't changing.");
+				
+				IdExpr id = new IdExpr(ILExprToLustre.getVariableId(v));
+				init = translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
+				// init -> pre(array);
+				Expr arrayEq = new BinaryExpr(init, BinaryOp.ARROW, 
+						new UnaryExpr(UnaryOp.PRE, id));
+				nb.addEquation(new Equation(id, arrayEq));
+				continue;
 			} else {
 				throw new RuntimeException("Not supported yet: "+v.getClass());
 			}
@@ -123,12 +137,8 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			varNextValue.put(v, new IfThenElseExpr(actionCondition, 
 					translator.toLustre(assign.getRHS(), v.getType()), 
 					varNextValue.get(v)));
-		} else if (assign.getLHS() instanceof ArrayIndexExpr) {
-			
-		}
-		
-		else {
-			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported");
+		} else {
+			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported in "+assign.toString());
 		}
 		return null;
 	}

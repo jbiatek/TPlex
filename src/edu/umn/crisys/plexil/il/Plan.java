@@ -35,6 +35,11 @@ public class Plan {
 	    this.planName = planName;
 	}
     
+    @Override
+    public String toString() {
+    	return planName;
+    }
+    
     public List<NodeStateMachine> getMachines() {
     	return stateMachines;
     }
@@ -94,7 +99,7 @@ public class Plan {
 		this.isTopLevelPlan = isTopLevelPlan;
 	}
 	
-	public <P,R> void visitAllActions(ILActionVisitor<P,R> visitor, P param) {
+	public <P> void visitAllActions(ILActionVisitor<P,?> visitor, P param) {
 	    for (NodeStateMachine sm : getMachines()) {
 	        for (Transition t : sm.getTransitions()) {
 	            for (PlexilAction a : t.actions) {
@@ -110,6 +115,22 @@ public class Plan {
 	            }
 	        }
 	    }
+	}
+	
+	public <P> void filterActions(ILActionVisitor<P,Boolean> visitor, final P param) {
+		getMachines().stream().forEach(
+				nsm -> {
+					nsm.getTransitions().stream().forEach(
+						t -> t.actions.removeIf(a-> ! a.accept(visitor, param)));
+					nsm.getStates().stream().forEach(
+						s -> {
+							s.entryActions.removeIf(a -> ! a.accept(visitor, param));
+							s.inActions.removeIf(a -> ! a.accept(visitor, param));
+						});
+				}
+				);
+
+		return;
 	}
 	
 	public <Param> void modifyAllExpressions(ILExprModifier<Param> visitor, Param param) {

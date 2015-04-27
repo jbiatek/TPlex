@@ -31,11 +31,17 @@ import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
+import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.ast2il.StateMachineBuilder;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
+import edu.umn.crisys.plexil.il.optimizations.HackOutArrayAssignments;
 import edu.umn.crisys.plexil.il.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.il.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.optimizations.UnknownBiasing;
@@ -44,8 +50,10 @@ import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
+import edu.umn.crisys.plexil.il2lustre.PlanToLustre.Obligation;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
@@ -53,70 +61,73 @@ import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 public class Main {
 	
 	@Parameter(names = "--help", description = "Print this help message.", help = true)
-	boolean help = false;
+	private boolean help = false;
 
 	@Parameter(names = "--output-dir", description = "The directory to output files to. For Java, this is where the package will be placed.")
-	File outputDir = new File("./");
+	private File outputDir = new File("./");
 	
 	@Parameter(description="FILE1.{plx|psx} [FILE2.{plx|psx} ...]", variableArity = true)
-	List<File> files = new ArrayList<>();
+	private List<File> files = new ArrayList<>();
 	
 	@Parameter(names="--directory", variableArity = true,
 			description = "Also include all PLX and PSX files found in the given directories.",
 			converter = FileConverter.class)
-	List<File> dirs = new ArrayList<>();
+	private List<File> dirs = new ArrayList<>();
 	
 	@Parameter(names = "--lang", 
-			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'plexil' can be used to turn a .plx file in to a more readable .ple file.",
-			converter = OutputLanguage.OutputLangConverter.class)
-	OutputLanguage outputLanguage = OutputLanguage.NONE;
+			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'plexil' can be used to turn a .plx file in to a more readable .ple file.")
+	private OutputLanguage outputLanguage = OutputLanguage.NONE;
 	
 	@Parameter(names = "--static-libs", description="When translating libraries, first try to go through all the specified PLX files. If the correct ID is found, the library is included statically.")
-	boolean staticLibraries = false;
+	private boolean staticLibraries = false;
 	
 	@Parameter(names = "--no-optimizations", description="Disable all optimizations.")
-	boolean skipAllOptimizations = false;
+	private boolean skipAllOptimizations = false;
 	
 	@Parameter(names = "--no-biasing", description="Disable the optimization which biases 3-valued logic expressions.")
-	boolean noBiasing = false;
+	private boolean noBiasing = false;
 	
 	@Parameter(names = "--no-root-plans", description="Disable the optimization which removes some code from plans that look like they aren't going to be used as libraries. ")
-	boolean guessTopLevelPlans = false;
+	private boolean noGuessTopLevelPlans = false;
 	
-	@Parameter(names = "--no-real-timepoints", description="When generating node timepoints, set the type as Integer.")
-	boolean forceIntTimepoints = false;
+	@Parameter(names = "--int-timepoints", description="When generating node timepoints, set the type as Integer. By default, they're assumed to be Real.")
+	private boolean forceIntTimepoints = false;
 	
 	@Parameter(names = "--print-type-info", description="After any translating, print an analysis of Lookup and Command types.")
-	boolean analyzeTypes = false;
+	private boolean analyzeTypes = false;
 	
 	@Parameter(names = "--print-reachable-states", description="After any translating, print an analysis of reachable PLEXIL states.")
-	boolean reachableStates = false;
+	private boolean reachableStates = false;
 
-	
-	
 	//Java-specific options
 	@Parameter(names = "--java-package", 
 			description = "Java package for generated files (default is empty)"
 			)
-	String javaPackage = "";
+	private String javaPackage = "";
 	@Parameter(names = "--java-no-snapshot-method",
 			description = "Don't generate the Java getSnapshot() method (useful for debugging and unit testing)")
-	boolean javaNoSnapshotMethod = false;
+	private boolean javaNoSnapshotMethod = false;
 	@Parameter(names = "--java-no-debug", description="In Java, don't generate code that prints everything that happens to stdout.",
 			arity = 1)
-	boolean javaNoDebugStatements = false;
+	private boolean javaNoDebugStatements = false;
 	@Parameter(names = "--java-no-ternary", description="In Java, don't use the ternary operator (?:). This will disable short-circuiting of some AND and OR expressions.",
 			arity = 1)
-	boolean javaNoTernaryOperator = false;
+	private boolean javaNoTernaryOperator = false;
 
+	
+	//Lustre-specific options
+	@Parameter(names = "--lustre-obligations", description = 
+			"Generate test generation properties to cover Plexil states.")
+	private PlanToLustre.Obligation obligation = Obligation.NONE;
+	
 
 	//Variables to use during translation
-	Map<String, PlexilPlan> asts = new HashMap<>();
-	Map<String, PlexilScript> scripts = new HashMap<>();
-	Set<Plan> ilPlans = new HashSet<>();
-	Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
-	Map<Plan, PlexilPlan> originalAst = new HashMap<>();
-	Map<String, String> idToFile = new HashMap<>();
+	private Map<String, PlexilPlan> asts = new HashMap<>();
+	private Map<String, PlexilScript> scripts = new HashMap<>();
+	private Set<Plan> ilPlans = new HashSet<>();
+	private Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
+	private Map<Plan, PlexilPlan> originalAst = new HashMap<>();
+	private Map<String, String> idToFile = new HashMap<>();
 	
 	/**
 	 * Our own usage string, as set by JCommander/the main method. 
@@ -127,16 +138,6 @@ public class Main {
 	static enum OutputLanguage {
 		JAVA, LUSTRE, PLEXIL, NONE;
 		
-		public static class OutputLangConverter implements IStringConverter<OutputLanguage> {
-
-			@Override
-			public OutputLanguage convert(String value) {
-				return OutputLanguage.valueOf(value.toUpperCase());
-			}
-			
-		}
-		
-		@Override
 		public String toString() {
 			return super.toString().toLowerCase();
 		}
@@ -206,6 +207,7 @@ public class Main {
 		if (javaNoDebugStatements) {
 			StateMachineToJava.DEBUG_STATEMENTS = false;
 		}
+		
 		
 		// Check our list of all files
 		for (File file : files) {
@@ -284,11 +286,6 @@ public class Main {
 			originalTranslator.put(ilPlan, toIl);
 			originalAst.put(ilPlan, plan);
 			
-			if (!skipAllOptimizations && guessTopLevelPlans && AssumeTopLevelPlan.looksLikeTopLevelPlan(plan)) {
-				System.out.println("I think "+filename+" isn't a library, so I'm removing some code.");
-				System.out.println("If I'm wrong, you can either add an interface or use the \"--libs\" option.");
-				AssumeTopLevelPlan.optimize(ilPlan);
-			}
 		}
 		return true;
 	}
@@ -297,6 +294,14 @@ public class Main {
 		for (Plan ilPlan : ilPlans) {
 			if (!skipAllOptimizations) {
 
+				if (!noGuessTopLevelPlans 
+						&& AssumeTopLevelPlan.looksLikeTopLevelPlan(originalAst.get(ilPlan))) {
+					System.out.println("I think "+ilPlan+" isn't a library, so I'm removing some code.");
+					System.out.println("If I'm wrong, either add an interface to the orignal PLEXIL code or use \nthe \"--libs\" option.");
+					AssumeTopLevelPlan.optimize(ilPlan);
+				}
+
+				
 				if (!noBiasing) {
 					UnknownBiasing.optimize(ilPlan);
 				}
@@ -343,8 +348,10 @@ public class Main {
 
 	private boolean generateLustre() {
 		for (Plan p : ilPlans) {
+			HackOutArrayAssignments.hack(p);
+			
 			PlanToLustre p2l = new PlanToLustre(p, originalAst.get(p));
-			Program lustre = p2l.toLustre();
+			Program lustre = p2l.toLustre(obligation);
 			PrettyPrintVisitor pp = new PrettyPrintVisitor();
 			lustre.accept(pp);
 			
