@@ -1,29 +1,28 @@
 package edu.umn.crisys.plexil.ast.expr.common;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
-public class LookupOnChangeExpr extends CompositeExpr {
-
-	private Expression name;
+public class LookupOnChangeExpr extends LookupExpr {
 
 	private Expression tolerance;
+	private PlexilType type;
 
-	private List<Expression> args;
-
-	public LookupOnChangeExpr(Expression name, Expression tolerance, List<Expression> args) {
-	    PlexilType.STRING.typeCheck(name.getType());
-	    this.name = name;
+	public LookupOnChangeExpr(PlexilType type, Expression name, Expression tolerance, List<Expression> args) {
+		super(name, args);
+		
 	    PlexilType.NUMERIC.typeCheck(tolerance.getType());
 	    this.tolerance = tolerance;
-	    this.args = args;
+	    this.type = type;
+	}
+	
+	public LookupOnChangeExpr(Expression name, Expression tolerance, List<Expression> args) {
+		this(PlexilType.UNKNOWN, name, tolerance, args);
 	}
 	
 	public LookupOnChangeExpr(Expression name, Expression tolerance, Expression... args) {
@@ -44,18 +43,18 @@ public class LookupOnChangeExpr extends CompositeExpr {
 	
 	@Override
 	public PlexilType getType() {
-	    return PlexilType.UNKNOWN;
+	    return type;
 	}
 
     @Override
     public String toString() {
-        String ret = "LookupOnChange("+name+", "+tolerance;
-        if (args.size() > 0) {
+        String ret = "LookupOnChange("+getLookupName()+", "+getTolerance();
+        if (getLookupArgs().size() > 0) {
             ret += ", ";
         }
-        for (int i=0; i<args.size(); i++) {
-            ret += args.get(i);
-            if (i != args.size()-1) {
+        for (int i=0; i<getLookupArgs().size(); i++) {
+            ret += getLookupArgs().get(i);
+            if (i != getLookupArgs().size()-1) {
                 ret += ", ";
             }
         }
@@ -65,22 +64,13 @@ public class LookupOnChangeExpr extends CompositeExpr {
     @Override
     public String asString() { return this.toString(); }
     
-    public Expression getLookupName() {
-        return name;
-    }
-    
     public Expression getTolerance() {
         return tolerance;
     }
     
-    public List<Expression> getLookupArgs() {
-        return args;
-    }
-
     @Override
     public List<Expression> getArguments() {
-        List<Expression> ret = new ArrayList<Expression>(args);
-        ret.add(0, name);
+        List<Expression> ret = super.getArguments();
         ret.add(1, tolerance);
         return ret;
     }
@@ -89,17 +79,12 @@ public class LookupOnChangeExpr extends CompositeExpr {
     public LookupOnChangeExpr getCloneWithArgs(List<Expression> args) {
         Expression cloneName = args.remove(0);
         Expression cloneTolerance = args.remove(0);
-        return new LookupOnChangeExpr(cloneName, cloneTolerance, args);
+        return new LookupOnChangeExpr(type, cloneName, cloneTolerance, args);
     }
 
     @Override
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitLookupOnChange(this, param);
     }
-
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 }

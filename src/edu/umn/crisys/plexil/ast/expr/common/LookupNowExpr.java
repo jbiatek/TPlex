@@ -3,49 +3,37 @@ package edu.umn.crisys.plexil.ast.expr.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
-public class LookupNowExpr extends CompositeExpr {
-	
-	private Expression name;
-	
-	private List<Expression> args;
+public class LookupNowExpr extends LookupExpr {
+
+	private PlexilType type = PlexilType.UNKNOWN;
 	
 	public LookupNowExpr(String state) {
-	    this(StringValue.get(state), new ArrayList<Expression>());
+	    super(StringValue.get(state), new ArrayList<Expression>());
 	}
 	
 	public LookupNowExpr(Expression state, List<Expression> args) {
-	    PlexilType.STRING.typeCheck(state.getType());
-	    name = state;
-	    this.args = args;
+		super(state,args);
 	}
 	
-	public Expression getLookupName() {
-	    return name;
+	public LookupNowExpr(PlexilType type, Expression state, List<Expression> args) {
+		super(state, args);
+		this.type = type;
 	}
 	
-	/**
-	 * Get the arguments, not including the Lookup name (which getArguments() does include.)
-	 * @return
-	 */
-	public List<Expression> getLookupArgs() {
-	    return args;
-	}
-
 	@Override
     public PlexilType getType() {
-        return PlexilType.UNKNOWN;
+        return type;
     }
 
 	@Override
 	public String toString() {
-	    String ret = "LookupNow("+name;
-	    for (int i=0; i<args.size(); i++) {
-	        ret += ", "+args.get(i);
+	    String ret = "LookupNow("+getLookupName();
+	    for (int i=0; i<getLookupArgs().size(); i++) {
+	        ret += ", "+getLookupArgs().get(i);
 	    }
 	    return ret+")";
 	}
@@ -54,26 +42,14 @@ public class LookupNowExpr extends CompositeExpr {
 	public String asString() { return this.toString(); }
 
     @Override
-    public List<Expression> getArguments() {
-        ArrayList<Expression> argList = new ArrayList<Expression>(args);
-        argList.add(0, name);
-        return argList;
-    }
-
-    @Override
     public LookupNowExpr getCloneWithArgs(List<Expression> args) {
         Expression cloneName = args.remove(0);
-        return new LookupNowExpr(cloneName, args);
+        return new LookupNowExpr(type, cloneName, args);
     }
 
     @Override
     public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
         return visitor.visitLookupNow(this, param);
     }
-
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 }
