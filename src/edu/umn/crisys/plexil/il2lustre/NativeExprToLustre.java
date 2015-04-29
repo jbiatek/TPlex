@@ -9,6 +9,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.LustreUtil;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
@@ -72,6 +73,13 @@ public class NativeExprToLustre implements NativeExprVisitor<Void, Expr> {
 	@Override
 	public Expr visitNativeConstant(NativeConstant c, Void param) {
 		return c.getValue() ? new IdExpr("true") : new IdExpr("false");
+	}
+
+	@Override
+	public Expr visitNativeEqual(NativeEqual e, Void param) {
+		return new BinaryExpr(e.getLeft().accept(exprToLustre, e.getLeft().getType()), 
+				BinaryOp.EQUAL, 
+				e.getRight().accept(exprToLustre, e.getRight().getType()));
 	}
 
 

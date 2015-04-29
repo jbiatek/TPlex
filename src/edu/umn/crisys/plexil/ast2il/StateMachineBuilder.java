@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
@@ -18,8 +17,11 @@ import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
 import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative.Condition;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
@@ -79,7 +81,8 @@ public class StateMachineBuilder {
 	private Node astNode;
     private Map<Description, ILExpression> ilExprCache = 
             new HashMap<Description, ILExpression>();
-
+	private Map<Description, NativeExpr> nativeExprCache = new HashMap<>();
+	    
 	
 	public StateMachineBuilder(NodeToIL translator, Node node) {
 		this.translator = translator;
@@ -103,11 +106,11 @@ public class StateMachineBuilder {
     public void addInactiveTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
         // TODO: Update this to the new semantics.
         nsm.addTransition(makeTransition(map, 1, NodeState.INACTIVE, NodeState.FINISHED,
-                parentIsFinished(Condition.TRUE)))
+                parentIsFinished()))
                 .addAction(setOutcome(NodeOutcome.SKIPPED));
 
         nsm.addTransition(makeTransition(map, 1, NodeState.INACTIVE, NodeState.WAITING, 
-                parentIsExecuting(Condition.TRUE)));
+                parentIsExecuting()));
     }
     
     public void addWaitingTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
@@ -195,11 +198,9 @@ public class StateMachineBuilder {
     public void addFinishingTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
         if (astNode.isCommandNode()) {
             addFinishingTransitions(commandHandleKnown(Condition.TRUE), nsm, map);
-        } else if (astNode.isListNode()) {
-            addFinishingTransitions(allChildrenWaitingOrFinished(Condition.TRUE), nsm, map);
-        } else if (astNode.isLibraryNode()) {
-            addFinishingTransitions(libraryChildWaitingOrFinished(Condition.TRUE), nsm, map);
-        }
+        } else if (astNode.isListNode() || astNode.isLibraryNode()) {
+            addFinishingTransitions(allChildrenWaitingOrFinished(), nsm, map);
+        } 
     }
     
     public void addFinishingTransitions(NativeExpr finishGuard, NodeStateMachine nsm, Map<NodeState,State> map) {
@@ -215,13 +216,13 @@ public class StateMachineBuilder {
     }
     
     public void addFailingTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
-        Transition parentExited = makeTransition(map, 1, NodeState.FAILING, NodeState.FINISHED, failureTypeIsParentExited(Condition.TRUE));
-        Transition parentFailed = makeTransition(map, 2, NodeState.FAILING, NodeState.FINISHED, failureTypeIsParentFailed(Condition.TRUE));
+        Transition parentExited = makeTransition(map, 1, NodeState.FAILING, NodeState.FINISHED, failureTypeIsParentExited());
+        Transition parentFailed = makeTransition(map, 2, NodeState.FAILING, NodeState.FINISHED, failureTypeIsParentFailed());
         Transition myFault = makeTransition(map, 3, NodeState.FAILING, NodeState.ITERATION_ENDED);
         
         // There are additional guards that have to be met for some nodes:
         if (astNode.isCommandNode()) {
-        	NativeExpr abortComplete = abortComplete(Condition.TRUE);
+        	NativeExpr abortComplete = abortComplete();
             parentExited.addGuard(abortComplete);
             parentFailed.addGuard(abortComplete);
             myFault.addGuard(abortComplete);
@@ -230,18 +231,12 @@ public class StateMachineBuilder {
             parentExited.addGuard(updateComplete);
             parentFailed.addGuard(updateComplete);
             myFault.addGuard(updateComplete);
-        } else if (astNode.isListNode()) {
-        	NativeExpr childrenWaitingOrFinished = allChildrenWaitingOrFinished(Condition.TRUE);
+        } else if (astNode.isListNode() || astNode.isLibraryNode()) {
+        	NativeExpr childrenWaitingOrFinished = allChildrenWaitingOrFinished();
             parentExited.addGuard(childrenWaitingOrFinished);
             parentFailed.addGuard(childrenWaitingOrFinished);
             myFault.addGuard(childrenWaitingOrFinished);
-        } else if (astNode.isLibraryNode()) {
-        	NativeExpr childWaitingOrFinished = libraryChildWaitingOrFinished(Condition.TRUE);
-            parentExited.addGuard(childWaitingOrFinished);
-            parentFailed.addGuard(childWaitingOrFinished);
-            myFault.addGuard(childWaitingOrFinished);
-
-        }
+        } 
         
         nsm.addTransition(parentExited);
         nsm.addTransition(parentFailed);
@@ -265,7 +260,7 @@ public class StateMachineBuilder {
     
     public void addFinishedTransitions(NodeStateMachine nsm, Map<NodeState,State> map) {
         nsm.addTransition(makeTransition(map, 1, NodeState.FINISHED, NodeState.INACTIVE, 
-                parentIsWaiting(Condition.TRUE)))
+                parentIsWaiting()))
                 .addAction(getResetNodeAction());
     }
 
@@ -524,48 +519,48 @@ public class StateMachineBuilder {
     	return makeGuard(Description.ANCESTOR_INVARIANTS_CONJOINED, cond);
     }
 
-    private NativeExpr parentIsFinished(Condition cond) {
-        return getParentIsInState(NodeState.FINISHED, Description.PARENT_FINISHED, cond);
+    private NativeExpr parentIsFinished() {
+        return getParentIsInState(NodeState.FINISHED, Description.PARENT_FINISHED);
     }
 
-    private NativeExpr parentIsExecuting(Condition cond) {
-        return getParentIsInState(NodeState.EXECUTING, Description.PARENT_EXECUTING, cond);
+    private NativeExpr parentIsExecuting() {
+        return getParentIsInState(NodeState.EXECUTING, Description.PARENT_EXECUTING);
     }
 
-    private NativeExpr parentIsWaiting(Condition cond) {
-        return getParentIsInState(NodeState.WAITING, Description.PARENT_WAITING, cond);
+    private NativeExpr parentIsWaiting() {
+        return getParentIsInState(NodeState.WAITING, Description.PARENT_WAITING);
     }
 
-    private NativeExpr getParentIsInState(NodeState state, Description d, Condition cond) {
-        if ( ! ilExprCache.containsKey(d) ) {
-        	ilExprCache.put(d, Operation.eq(state, 
+    private NativeExpr getParentIsInState(NodeState state, Description d) {
+        if ( ! nativeExprCache.containsKey(d) ) {
+        	nativeExprCache.put(d, new NativeEqual(state, 
         			translator.getParent().map((parent) -> (ILExpression)parent.getState())
         			.orElse(new RootParentStateExpr())
         			));
         }
-        return makeGuard(d, cond);
+        return nativeExprCache.get(d);
     }
 
-    private NativeExpr failureTypeIsParentFailed(Condition cond) {
-        if ( ! ilExprCache.containsKey(Description.FAILURE_IS_PARENT_FAIL)) {
-            ilExprCache.put(Description.FAILURE_IS_PARENT_FAIL,
-                    Operation.eq(
+    private NativeExpr failureTypeIsParentFailed() {
+        if ( ! nativeExprCache.containsKey(Description.FAILURE_IS_PARENT_FAIL)) {
+        	nativeExprCache.put(Description.FAILURE_IS_PARENT_FAIL,
+                    new NativeEqual(
                     		translator.getFailure(), 
                             NodeFailureType.PARENT_FAILED));
         }
         
-        return makeGuard(Description.FAILURE_IS_PARENT_FAIL, cond);
+        return nativeExprCache.get(Description.FAILURE_IS_PARENT_FAIL);
     }
 
-    private NativeExpr failureTypeIsParentExited(Condition cond) {
-        if ( ! ilExprCache.containsKey(Description.FAILURE_IS_PARENT_EXIT)) {
-            ilExprCache.put(Description.FAILURE_IS_PARENT_EXIT,
-                    Operation.eq(
+    private NativeExpr failureTypeIsParentExited() {
+        if ( ! nativeExprCache.containsKey(Description.FAILURE_IS_PARENT_EXIT)) {
+        	nativeExprCache.put(Description.FAILURE_IS_PARENT_EXIT,
+                    new NativeEqual(
                     		translator.getFailure(), 
                             NodeFailureType.PARENT_EXITED));
         }
         
-        return makeGuard(Description.FAILURE_IS_PARENT_EXIT, cond);
+        return nativeExprCache.get(Description.FAILURE_IS_PARENT_EXIT);
     }
     
     
@@ -573,46 +568,37 @@ public class StateMachineBuilder {
         return new PlexilExprToNative(Operation.isKnown(translator.getCommandHandle()), cond);
     }
 
-    private NativeExpr allChildrenWaitingOrFinished(Condition cond) {
-        if ( ! ilExprCache.containsKey(Description.ALL_CHILDREN_WAITING_OR_FINISHED)) {
-            List<Expression> clauses = new ArrayList<Expression>();
-            for (NodeToIL child : translator.getChildren()) {
-                clauses.add(
-                        Operation.or(
-                                Operation.eq(child.getState(), NodeState.WAITING),
-                                Operation.eq(child.getState(), NodeState.FINISHED)
-                            )
-                        );
-            }
-            ilExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, Operation.and(clauses));
-        }
-        return makeGuard(Description.ALL_CHILDREN_WAITING_OR_FINISHED, cond);
+    private NativeExpr allChildrenWaitingOrFinished() {
+    	if ( ! nativeExprCache.containsKey(Description.ALL_CHILDREN_WAITING_OR_FINISHED)) {
+    		if (translator.hasLibraryHandle()) {
+    			// Treat it as the child
+    			nativeExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, 
+    					new NativeOperation(
+    							NativeOp.OR,
+    							new NativeEqual(translator.getLibraryHandle(), NodeState.WAITING),
+    							new NativeEqual(translator.getLibraryHandle(), NodeState.FINISHED)
+    							)        				
+    					);
+    		} else {
+    			// Just a regular list node with children. 
+    			List<NativeExpr> clauses = new ArrayList<NativeExpr>();
+    			for (NodeToIL child : translator.getChildren()) {
+    				clauses.add(
+    						new NativeOperation(
+    								NativeOp.OR,
+    								new NativeEqual(child.getState(), NodeState.WAITING),
+    								new NativeEqual(child.getState(), NodeState.FINISHED)
+    								)
+    						);
+    			}
+    			nativeExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, 
+    					new NativeOperation(NativeOp.AND, clauses));
+    		}
+    	}
+    	return nativeExprCache.get(Description.ALL_CHILDREN_WAITING_OR_FINISHED);
     }
     
-    private NativeExpr libraryChildWaitingOrFinished(Condition cond) {
-        if ( ! ilExprCache.containsKey(Description.ALL_CHILDREN_WAITING_OR_FINISHED)) {
-        	if (translator.hasLibraryHandle()) {
-	            ilExprCache.put(Description.ALL_CHILDREN_WAITING_OR_FINISHED, 
-	                    Operation.or(
-	                            Operation.eq(translator.getLibraryHandle(), NodeState.WAITING),
-	                            Operation.eq(translator.getLibraryHandle(), NodeState.FINISHED)
-	                    ));
-        	} else {
-        		// A library node won't actually have a handle if the library
-        		// got statically included. In that case, it should be treated
-        		// as a list node. 
-        		return allChildrenWaitingOrFinished(cond);
-        	}
-        }
-        return makeGuard(Description.ALL_CHILDREN_WAITING_OR_FINISHED, cond);
-        
-    }
-    
-    private NativeExpr abortComplete(Condition cond) {
-        if ( ! ilExprCache.containsKey(Description.COMMAND_ABORT_COMPLETE)) {
-            ilExprCache.put(Description.COMMAND_ABORT_COMPLETE, 
-                    Operation.eq(translator.getCommandHandle(), CommandHandleState.COMMAND_ABORTED));
-        }
-        return makeGuard(Description.COMMAND_ABORT_COMPLETE, cond);
+    private NativeExpr abortComplete() {
+        return new NativeEqual(translator.getCommandHandle(), CommandHandleState.COMMAND_ABORTED);
     }
 }

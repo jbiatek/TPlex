@@ -58,10 +58,10 @@ public class Transition implements Comparable<Transition> {
 	 * @param newGuard
 	 */
 	public void addGuard(NativeExpr newGuard) {
-	    if (newGuard instanceof NativeOperation) {
-	    	NativeOperation op = (NativeOperation) newGuard;
-	    	if (op.getOperation() == NativeOp.AND) {
-	    		op.getArgs().add(newGuard);
+	    if (guard instanceof NativeOperation) {
+	    	NativeOperation guardAsOperation = (NativeOperation) guard;
+	    	if (guardAsOperation.getOperation() == NativeOp.AND) {
+	    		guardAsOperation.addClause(newGuard);
 	    		return;
 	    	}
 	    }

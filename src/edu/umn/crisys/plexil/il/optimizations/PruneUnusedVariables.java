@@ -15,6 +15,7 @@ import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
@@ -146,11 +147,19 @@ public class PruneUnusedVariables {
 			}
 
 			@Override
+			public Void visitNativeEqual(NativeEqual e, Set<ILExpression> param) {
+				saveAllVariablesInExpression(e.getLeft(), param);
+				saveAllVariablesInExpression(e.getRight(), param);
+				return null;
+			}
+			
+			@Override
 			public Void visitNativeConstant(NativeConstant c,
 					Set<ILExpression> param) {
 				// No need to do anything
 				return null;
 			}
+
 		}, safeList);
 	}
 

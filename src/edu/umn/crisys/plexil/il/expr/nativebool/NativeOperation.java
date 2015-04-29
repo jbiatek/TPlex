@@ -42,7 +42,21 @@ public class NativeOperation implements NativeExpr {
 		return args;
 	}
 	
+	public void addClause(NativeExpr newClause) {
+		if (newClause == this) {
+			throw new RuntimeException("Circular reference!!!!!");
+		} else if (operation == NativeOp.NOT) {
+			throw new RuntimeException("Can't add clauses to NOT");
+		}
+		args.add(newClause);
+	}
+	
 	public void setArgs(List<NativeExpr> newArgs) {
+		for (NativeExpr newArg : newArgs) {
+			if (newArg == this) {
+				throw new RuntimeException("Circular reference!!!!!");
+			}
+		}
 		this.args = new ArrayList<>(newArgs);
 	}
 

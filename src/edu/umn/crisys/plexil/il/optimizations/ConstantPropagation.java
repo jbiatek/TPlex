@@ -65,7 +65,8 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 			return pen;
 		}
 	}
-
+	
+	
 	@Override
 	public ILExpression visitOperation(Operation op, Void param) {
 		Optional<PValue> eval = op.accept(new ILEval(), null);

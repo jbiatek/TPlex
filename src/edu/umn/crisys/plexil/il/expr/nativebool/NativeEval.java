@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.expr.ILEval;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class NativeEval implements NativeExprVisitor<Void, Optional<Boolean>> {
 
@@ -42,6 +43,18 @@ public class NativeEval implements NativeExprVisitor<Void, Optional<Boolean>> {
 	@Override
 	public Optional<Boolean> visitNativeConstant(NativeConstant c, Void param) {
 		return Optional.of(c.getValue());
+	}
+
+	@Override
+	public Optional<Boolean> visitNativeEqual(NativeEqual e, Void param) {
+		Optional<PValue> left = e.getLeft().accept(new ILEval(), null);
+		Optional<PValue> right = e.getRight().accept(new ILEval(), null);
+		
+		if (left.isPresent() && right.isPresent()) {
+			return Optional.of(left.get().equals(right.get()));
+		} else {
+			return Optional.empty();
+		}
 	}
 
 }

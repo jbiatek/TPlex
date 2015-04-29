@@ -5,6 +5,7 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
@@ -40,6 +41,12 @@ public class NativeExprToJava implements
 	@Override
 	public JExpression visitNativeConstant(NativeConstant c, JCodeModel param) {
 		return c.getValue() ? JExpr.TRUE : JExpr.FALSE;
+	}
+
+	@Override
+	public JExpression visitNativeEqual(NativeEqual e, JCodeModel cm) {
+		return e.getLeft().accept(new IL2Java(), cm)
+				.invoke("equals").arg(e.getRight().accept(new IL2Java(), cm));
 	}
 
 }

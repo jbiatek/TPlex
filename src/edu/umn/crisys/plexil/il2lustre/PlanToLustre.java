@@ -26,13 +26,11 @@ import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
-import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
@@ -74,13 +72,15 @@ public class PlanToLustre {
 			nb.addInput(new VarDecl(rawInputId, type));
 			// The "real" lookup can only change between macro steps
 			nb.addLocal(new VarDecl(lookupId, type));
-			// if (macro step ended) then raw input else stay the same
+			// lookup = raw -> if (last macro step ended) then raw else pre(lookup)
 			nb.addEquation(new Equation(new IdExpr(lookupId), 
-					new IfThenElseExpr(
-							new IdExpr(ActionsToLustre.MACRO_STEP_ENDED_ID), 
-							new IdExpr(rawInputId), 
-							new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
-					));
+					new BinaryExpr(new IdExpr(rawInputId), 
+							BinaryOp.ARROW, 
+							new IfThenElseExpr(
+									new UnaryExpr(UnaryOp.PRE, new IdExpr(ActionsToLustre.MACRO_STEP_ENDED_ID)), 
+									new IdExpr(rawInputId), 
+									new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
+					)));
 		}
 		
 		for (NodeStateMachine nsm : p.getMachines()) {
