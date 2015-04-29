@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.util.Pair;
 
 /**
  * Almost all of Plexil's native operations. 
@@ -108,6 +109,14 @@ public class Operation extends CompositeExpr {
         return new Operation(Operator.CAST_NUMERIC, arg);
     }
     
+    public static Operation castToInteger(Expression arg) {
+        return new Operation(Operator.CAST_INT, arg);
+    }
+    
+    public static Operation castToReal(Expression arg) {
+        return new Operation(Operator.CAST_REAL, arg);
+    }
+    
     public static Operation castToString(Expression arg) {
         return new Operation(Operator.CAST_STRING, arg);
     }
@@ -196,6 +205,8 @@ public class Operation extends CompositeExpr {
         // TODO: Do we need casting?
         CAST_BOOL(1, "(PBoolean) (", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
         CAST_NUMERIC(1, "(PNumeric) (", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        CAST_INT(1, "(PInteger) (", PlexilType.NUMERIC, PlexilType.INTEGER),
+        CAST_REAL(1, "(PReal) (", PlexilType.NUMERIC, PlexilType.REAL),
         CAST_STRING(1, "(PString) (", PlexilType.STRING, PlexilType.STRING),
         
         ABS(1, "abs(", PlexilType.NUMERIC, PlexilType.NUMERIC),
@@ -258,6 +269,7 @@ public class Operation extends CompositeExpr {
         		for (PValue s : values) {
         			str = str.concat(str(s));
         		}
+        		return str;
         	case DIV:
         		return num(values.get(0)).div(num(values.get(1)));
         	case EQ:
@@ -428,6 +440,20 @@ public class Operation extends CompositeExpr {
     @Override
     public List<Expression> getArguments() {
         return args;
+    }
+    
+    public Expression getSingleExpectedArgument() {
+    	if (op.expectedArgs == 1 || args.size() == 1) {
+    		return args.get(0);
+    	} 
+    	throw new RuntimeException("Single argument was expected");
+    }
+    
+    public Pair<Expression,Expression> getBinaryExpectedArguments() {
+    	if (op.expectedArgs == 2 || args.size() == 2) {
+    		return new Pair<>(args.get(0), args.get(1));
+    	} 
+    	throw new RuntimeException("Two arguments expected");
     }
 
     @Override

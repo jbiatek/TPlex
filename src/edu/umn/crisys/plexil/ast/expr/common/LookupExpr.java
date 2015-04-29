@@ -27,6 +27,10 @@ public abstract class LookupExpr extends CompositeExpr {
 	    return name;
 	}
 	
+	public boolean hasConstantLookupName() {
+		return name instanceof StringValue;
+	}
+	
 	public String getLookupNameAsString() {
 		if (name instanceof StringValue) {
 			return ((StringValue) name).getString();

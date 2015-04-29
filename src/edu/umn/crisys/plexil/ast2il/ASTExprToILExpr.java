@@ -5,6 +5,8 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
+import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
@@ -32,6 +34,28 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     }
     
     @Override
+	public ILExpression visitLookupNow(LookupNowExpr lookup, Void param) {
+    	// Try to add some type information
+    	if (lookup.hasConstantLookupName()) {
+    		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
+    		return new LookupNowExpr(type, lookup.getLookupName(), lookup.getLookupArgs());
+    	}
+		return super.visitLookupNow(lookup, param);
+	}
+
+	@Override
+	public ILExpression visitLookupOnChange(LookupOnChangeExpr lookup,
+			Void param) {
+		// Try to add type information
+    	if (lookup.hasConstantLookupName()) {
+    		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
+    		return new LookupOnChangeExpr(type, lookup.getLookupName(), 
+    				lookup.getTolerance(), lookup.getLookupArgs());
+    	}
+		return super.visitLookupOnChange(lookup, param);
+	}
+
+	@Override
     public ILExpression visitVariable(UnresolvedVariableExpr expr, Void param) {
         if (expr.getType() == PlexilType.NODEREF) {
             throw new RuntimeException("Node references should be resolved by "

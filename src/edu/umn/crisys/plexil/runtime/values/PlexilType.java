@@ -108,6 +108,9 @@ public enum PlexilType {
     		return this;
     	} else if (this == UNKNOWN) {
     		return other;
+    	} else if ( (this == REAL && other.isNumeric())
+    			|| (other == REAL && this.isNumeric())) {
+    		return REAL;
     	}
     	if (this != other) {
     		throw new RuntimeException("Trying to compare "+this+" and "+other);

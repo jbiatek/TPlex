@@ -499,6 +499,14 @@ public class NodeToIL {
         throw new RuntimeException("Plexil node ID not found: "+plexilId);
     }
     
+    public PlexilType getTypeOfLookup(String lookupName) {
+    	return myNode.getPlan().getStateDeclarations().stream()
+    	.filter(ld -> ld.getName().equals(lookupName))
+    	.findFirst().map(ld -> ld.getReturnValue().map(vd -> vd.getType())
+    			.orElse(PlexilType.UNKNOWN))
+    			.orElse(PlexilType.UNKNOWN);
+    }
+    
     
     public void translate(final Plan ilPlan) {
         // The IL is basically a bag of variables and state machines.

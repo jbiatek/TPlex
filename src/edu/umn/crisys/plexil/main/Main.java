@@ -20,7 +20,6 @@ import javax.xml.stream.XMLStreamException;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 
-import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -31,14 +30,9 @@ import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
-import edu.umn.crisys.plexil.ast2il.StateMachineBuilder;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
 import edu.umn.crisys.plexil.il.optimizations.HackOutArrayAssignments;
@@ -53,14 +47,13 @@ import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre.Obligation;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
-import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 
 public class Main {
 	
-	@Parameter(names = "--help", description = "Print this help message.", help = true)
+	@Parameter(names = {"--help", "-h"}, description = "Print this help message.", help = true)
 	private boolean help = false;
 
 	@Parameter(names = "--output-dir", description = "The directory to output files to. For Java, this is where the package will be placed.")
@@ -271,7 +264,6 @@ public class Main {
 	}
 
 	public boolean translateToIL() {
-		// TODO Auto-generated method stub
 		for (String filename : asts.keySet()) {
 			PlexilPlan plan = asts.get(filename);
 			NodeToIL toIl = new NodeToIL(plan.getRootNode());
@@ -291,25 +283,23 @@ public class Main {
 	}
 
 	public boolean optimizeIL() {
+		if (skipAllOptimizations) return true;
+		
 		for (Plan ilPlan : ilPlans) {
-			if (!skipAllOptimizations) {
-
-				if (!noGuessTopLevelPlans 
-						&& AssumeTopLevelPlan.looksLikeTopLevelPlan(originalAst.get(ilPlan))) {
-					System.out.println("I think "+ilPlan+" isn't a library, so I'm removing some code.");
-					System.out.println("If I'm wrong, either add an interface to the orignal PLEXIL code or use \nthe \"--libs\" option.");
-					AssumeTopLevelPlan.optimize(ilPlan);
-				}
-
-				
-				if (!noBiasing) {
-					UnknownBiasing.optimize(ilPlan);
-				}
-				PruneUnusedVariables.optimize(ilPlan);
-				RemoveDeadTransitions.optimize(ilPlan);
-				ConstantPropagation.optimize(ilPlan);
+			if (!noGuessTopLevelPlans 
+					&& AssumeTopLevelPlan.looksLikeTopLevelPlan(originalAst.get(ilPlan))) {
+				System.out.println("I think "+ilPlan+" isn't a library, so I'm removing some code.");
+				System.out.println("If I'm wrong, either add an interface to the orignal PLEXIL code or use \nthe \"--no-root-plans\" option.");
+				AssumeTopLevelPlan.optimize(ilPlan);
 			}
-			
+
+
+			if (!noBiasing) {
+				UnknownBiasing.optimize(ilPlan);
+			}
+			PruneUnusedVariables.optimize(ilPlan);
+			RemoveDeadTransitions.optimize(ilPlan);
+			ConstantPropagation.optimize(ilPlan);
 		}
 		return true;
 	}

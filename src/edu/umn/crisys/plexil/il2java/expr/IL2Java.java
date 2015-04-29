@@ -33,7 +33,9 @@ import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
@@ -98,6 +100,10 @@ class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
             return JExpr.cast(cm.ref(PBoolean.class), children.get(0));
         case CAST_NUMERIC:
             return JExpr.cast(cm.ref(PNumeric.class), children.get(0));
+        case CAST_INT:
+        	return JExpr.cast(cm.ref(PInteger.class), children.get(0));
+        case CAST_REAL:
+        	return JExpr.cast(cm.ref(PReal.class), children.get(0));
         case CAST_STRING:
             return JExpr.cast(cm.ref(PString.class), children.get(0));
         case CONCAT:

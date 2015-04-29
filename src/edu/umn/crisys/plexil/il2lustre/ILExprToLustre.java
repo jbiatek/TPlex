@@ -230,9 +230,9 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		case ABS:
 			return unary(op.getArguments(), "abs", op.getActualArgumentType());
 		case ADD:
-			return multi(op.getArguments(), BinaryOp.PLUS, op.getActualArgumentType());
+			return reduce(op.getArguments(), BinaryOp.PLUS, op.getActualArgumentType());
 		case DIV:
-			return binary(op.getArguments(), BinaryOp.DIVIDE, op.getActualArgumentType());
+			return binaryReduce(op.getArguments(), BinaryOp.DIVIDE, op.getActualArgumentType());
 		case GE:
 			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATEREQUAL, PlexilType.NUMERIC));
 		case GT:
@@ -261,7 +261,11 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		case CAST_BOOL:
 			return op.getArguments().get(0).accept(this, PlexilType.BOOLEAN);
 		case CAST_NUMERIC:
-			return op.getArguments().get(0).accept(this, PlexilType.NUMERIC.getMoreSpecific(expectedType));
+			return op.getSingleExpectedArgument().accept(this, op.getActualArgumentType());
+		case CAST_INT:
+			return new NodeCallExpr("floor", op.getSingleExpectedArgument().accept(this, PlexilType.NUMERIC));
+		case CAST_REAL:
+			return new NodeCallExpr("real", op.getSingleExpectedArgument().accept(this, PlexilType.NUMERIC));
 		case CAST_STRING:
 			return op.getArguments().get(0).accept(this, PlexilType.STRING);
 		// ---------------- Node operators, which don't belong in the IL
@@ -276,6 +280,20 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		default:
 			throw new RuntimeException("Missing operator: "+op.getOperator());
 		}
+	}
+	
+	private Expr binaryReduce(List<Expression> args, BinaryOp op, PlexilType argType) {
+		if (args.size() != 2) {
+			throw new RuntimeException("Expected 2 args, found "+args.size());
+		}
+		return reduce(args, op, argType);
+	}
+	
+	private Expr reduce(List<Expression> args, BinaryOp op, PlexilType argType) {
+		return args.stream()
+				.map((arg) -> arg.ensureType(argType).accept(this, argType))
+				.reduce((l, r) -> new BinaryExpr(l, op, r))
+				.orElseThrow(() -> new RuntimeException("No arguments passed in!"));
 	}
 
 
