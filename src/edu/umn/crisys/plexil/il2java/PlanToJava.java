@@ -132,8 +132,12 @@ public class PlanToJava {
         // We can assume the getter isn't null, because there should
         // have been at least 1 alias. We just need to handle the else case,
         // just like above. 
-        condGetter._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
-                .arg(JExpr.lit("I don't know about a var named ").plus(varNameGV)));
+        if (condGetter != null) {
+        	condGetter._else()._throw(JExpr._new(cm.ref(RuntimeException.class))
+        			.arg(JExpr.lit("I don't know about a var named ").plus(varNameGV)));
+        } else {
+        	throw new RuntimeException("There were no aliases?!");
+        }
 
 	}
 	

@@ -142,13 +142,19 @@ public class StateMachineToJava {
 
 			// Big switch statement on all States. The tag for this nodeId tells
 			// us what to return. 
-			JSwitch sw = stateMethod.body()._switch(stateVar.invoke("getCurrent"));
+			JSwitch theSwitch = stateMethod.body()._switch(stateVar.invoke("getCurrent"));
+			
 			for (NodeState ns : reverseMapping.keySet()) {
+				// For this PLEXIL state, these are the IL state numbers that match
 				List<Integer> ints = reverseMapping.get(ns);
-				JCase lastCase = null;
-				for (Integer stateInt : ints) {
-					lastCase = sw._case(JExpr.lit(stateInt));
-				}
+				JCase lastCase = ints.stream().sequential()
+						// Add each integer as a case on this switch
+						.map((stateInt) -> theSwitch._case(JExpr.lit(stateInt)))
+						// We only need to save the last one
+						.reduce((first,second) -> second)
+						.orElseThrow(() -> new RuntimeException("No numbers in case statement?"));
+				// For that last one (and therefore all the ones before it) return
+				// this state. 
 				lastCase.body()._return(cm.ref(NodeState.class).staticRef(ns.toString()));
 			}
 			stateMethod.body()._throw(JExpr._new(cm.ref(RuntimeException.class))

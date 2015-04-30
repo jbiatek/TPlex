@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.runtime.plx;
 
+import java.util.Optional;
+
 /**
  * Simple class implementing synchronous changes. Setting the next value won't
  * affect getCurrent() until a commit() occurs. Doesn't support reset, doesn't
@@ -12,7 +14,7 @@ public class SimpleCurrentNext<T> {
 
     private T current;
     
-    private T next = null;
+    private Optional<T> next = Optional.empty();
     
     public SimpleCurrentNext(T initial) {
         current = initial;
@@ -23,24 +25,15 @@ public class SimpleCurrentNext<T> {
     }
     
     public T getNext() {
-        if (next == null) {
-            // We are staying the same next step.
-            return current;
-        }
-        return next;
+    	return next.orElse(current);
     }
     
     public void setNext(T next) {
-        this.next = next;
+        this.next = Optional.of(next);
     }
     
     public void commit() {
-        if (next == null) {
-            // Stay the same.
-            return;
-        }
-            
-        current = next;
-        next = null;
+    	next.ifPresent((value) -> current = value);
+    	next = Optional.empty();
     }
 }
