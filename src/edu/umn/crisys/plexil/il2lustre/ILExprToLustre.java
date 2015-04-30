@@ -444,23 +444,23 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	@Override
 	public Expr visitRootParentState(RootParentStateExpr state, PlexilType expectedType) {
-		return id(NodeState.EXECUTING.toString().toLowerCase());
+		throw new RuntimeException("Libraries aren't supported");
 	}
 
 	@Override
 	public Expr visitRootParentExit(RootAncestorExitExpr ancExit, PlexilType expectedType) {
-		return P_FALSE;
+		throw new RuntimeException("Libraries aren't supported");
 	}
 
 	@Override
 	public Expr visitRootParentEnd(RootAncestorEndExpr ancEnd, PlexilType expectedType) {
-		return P_FALSE;
+		throw new RuntimeException("Libraries aren't supported");
 	}
 
 	@Override
 	public Expr visitRootParentInvariant(RootAncestorInvariantExpr ancInv,
 			PlexilType expectedType) {
-		return P_TRUE;
+		throw new RuntimeException("Libraries aren't supported");
 	}
 
 }
