@@ -9,15 +9,16 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public abstract class LookupExpr extends CompositeExpr {
+
 	private Expression name;
-	
+	private PlexilType type = PlexilType.UNKNOWN;
 	private List<Expression> args;
 	
-	public LookupExpr(String state) {
-	    this(StringValue.get(state), new ArrayList<Expression>());
+	public LookupExpr(PlexilType type, String state) {
+	    this(type, StringValue.get(state), new ArrayList<Expression>());
 	}
 	
-	public LookupExpr(Expression state, List<Expression> args) {
+	public LookupExpr(PlexilType type, Expression state, List<Expression> args) {
 	    PlexilType.STRING.typeCheck(state.getType());
 	    name = state;
 	    this.args = args;
@@ -26,6 +27,12 @@ public abstract class LookupExpr extends CompositeExpr {
 	public Expression getLookupName() {
 	    return name;
 	}
+
+	@Override
+    public PlexilType getType() {
+        return type;
+    }
+
 	
 	public boolean hasConstantLookupName() {
 		return name instanceof StringValue;

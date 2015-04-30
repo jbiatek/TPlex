@@ -9,26 +9,18 @@ import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public class LookupNowExpr extends LookupExpr {
 
-	private PlexilType type = PlexilType.UNKNOWN;
-	
 	public LookupNowExpr(String state) {
-	    super(StringValue.get(state), new ArrayList<Expression>());
+	    this(PlexilType.UNKNOWN, StringValue.get(state), new ArrayList<Expression>());
 	}
 	
 	public LookupNowExpr(Expression state, List<Expression> args) {
-		super(state,args);
+		this(PlexilType.UNKNOWN, state,args);
 	}
 	
 	public LookupNowExpr(PlexilType type, Expression state, List<Expression> args) {
-		super(state, args);
-		this.type = type;
+		super(type, state, args);
 	}
 	
-	@Override
-    public PlexilType getType() {
-        return type;
-    }
-
 	@Override
 	public String toString() {
 	    String ret = "LookupNow("+getLookupName();
@@ -44,7 +36,7 @@ public class LookupNowExpr extends LookupExpr {
     @Override
     public LookupNowExpr getCloneWithArgs(List<Expression> args) {
         Expression cloneName = args.remove(0);
-        return new LookupNowExpr(type, cloneName, args);
+        return new LookupNowExpr(getType(), cloneName, args);
     }
 
     @Override

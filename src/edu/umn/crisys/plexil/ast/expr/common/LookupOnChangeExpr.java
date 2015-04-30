@@ -11,14 +11,12 @@ import edu.umn.crisys.plexil.runtime.values.StringValue;
 public class LookupOnChangeExpr extends LookupExpr {
 
 	private Expression tolerance;
-	private PlexilType type;
 
 	public LookupOnChangeExpr(PlexilType type, Expression name, Expression tolerance, List<Expression> args) {
-		super(name, args);
+		super(type, name, args);
 		
 	    PlexilType.NUMERIC.typeCheck(tolerance.getType());
 	    this.tolerance = tolerance;
-	    this.type = type;
 	}
 	
 	public LookupOnChangeExpr(Expression name, Expression tolerance, List<Expression> args) {
@@ -41,11 +39,6 @@ public class LookupOnChangeExpr extends LookupExpr {
 		this(StringValue.get(name), args);
 	}
 	
-	@Override
-	public PlexilType getType() {
-	    return type;
-	}
-
     @Override
     public String toString() {
         String ret = "LookupOnChange("+getLookupName()+", "+getTolerance();
@@ -79,7 +72,7 @@ public class LookupOnChangeExpr extends LookupExpr {
     public LookupOnChangeExpr getCloneWithArgs(List<Expression> args) {
         Expression cloneName = args.remove(0);
         Expression cloneTolerance = args.remove(0);
-        return new LookupOnChangeExpr(type, cloneName, cloneTolerance, args);
+        return new LookupOnChangeExpr(getType(), cloneName, cloneTolerance, args);
     }
 
     @Override
