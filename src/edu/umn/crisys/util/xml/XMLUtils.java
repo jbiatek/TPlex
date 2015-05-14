@@ -357,13 +357,11 @@ public class XMLUtils {
      * @param indent
      * @throws XMLStreamException
      */
-    public static String printEvents(XMLEvent current, XMLEventReader xml)
-            throws XMLStreamException {
+    public static String printEvents(XMLEvent current, XMLEventReader xml) {
                 return printEvents(current, xml, 0);
             }
 
-    private static String printEvents(XMLEvent start, XMLEventReader xml, int indent)
-            throws XMLStreamException {
+    private static String printEvents(XMLEvent start, XMLEventReader xml, int indent) {
                 String ret = "\n";
                 for (int i=0; i<indent; i++) {
                     ret += " ";
@@ -373,7 +371,7 @@ public class XMLUtils {
                 XMLEvent next = null;
                 // Keep processing events...
                 while (xml.hasNext()) {
-                    next = xml.nextEvent();
+                    next = nextEvent(xml);
                     // Delegate start tags to a new indentation level
                     if (next.isStartElement()) {
                         printEvents(next, xml, indent+4);
