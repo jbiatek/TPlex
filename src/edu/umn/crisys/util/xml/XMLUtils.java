@@ -323,6 +323,32 @@ public class XMLUtils {
     }
     
     /**
+     * Take all events up to the end tag of this element out of the reader. 
+     * 
+     * @param start 
+     * @param xml
+     */
+    public static void consumeAllOf(StartElement start, XMLEventReader xml) {
+    	while (xml.hasNext()) {
+    		XMLEvent next = peek(xml);
+    		if (next.isStartElement()) {
+    			consumeAllOf(nextEvent(xml).asStartElement(), xml);
+    		} else if (next.isEndElement()) {
+    			// That should be it!
+    			assertClosedTag(start, xml);
+    			return;
+    		} else if (next.isEndDocument()) {
+    			throw new RuntimeException(
+    					"Document ended in the middle of this tag: "+start);
+    		} else {
+    			// It's something harmless. Eat it and move on.
+    			nextEvent(xml);
+    		}
+    	}
+    	throw new RuntimeException("Stream ran out of events in this tag: "+start);
+    }
+    
+    /**
      * Print this tag and its contents. This will consume everything up to the
      * matching end tag.
      * 

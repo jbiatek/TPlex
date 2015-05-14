@@ -191,13 +191,13 @@ public enum PlexilType {
         case STRING:
             return StringValue.get(value);
         case STATE:
-            return NodeState.valueOf(value);
+            return NodeState.valueOf(value.toUpperCase());
         case OUTCOME:
-            return NodeOutcome.valueOf(value);
+            return NodeOutcome.valueOf(value.toUpperCase());
         case FAILURE:
-            return NodeFailureType.valueOf(value);
+            return NodeFailureType.valueOf(value.toUpperCase());
         case COMMAND_HANDLE:
-            return CommandHandleState.valueOf(value);
+            return CommandHandleState.valueOf(value.toUpperCase());
         default:
         	throw new RuntimeException("Cannot parse values of "+this);
         }

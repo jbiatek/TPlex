@@ -113,6 +113,10 @@ public class Main {
 			"Generate test generation properties to cover Plexil states.")
 	private PlanToLustre.Obligation obligation = Obligation.NONE;
 	
+	@Parameter(names = "--lustre-to-scripts", description = 
+			"Translate a JKind .xml file with counterexamples to the output directory as PlexilScript.")
+	private String lustreResultsToTranslate = "";
+	
 
 	//Variables to use during translation
 	private Map<String, PlexilPlan> asts = new HashMap<>();
@@ -219,8 +223,7 @@ public class Main {
 		}
 		
 		if (files.size() == 0) {
-			System.err.println("Error: No files specified for translation.");
-			return false;
+			System.err.println("Warning: No files specified for translation.");
 		}
 		return true;
 	}
