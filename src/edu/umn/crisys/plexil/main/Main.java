@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import jkind.lustre.Program;
@@ -45,11 +48,13 @@ import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre.Obligation;
+import edu.umn.crisys.plexil.jkind.results.JKindXmlParser;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
+import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 
 public class Main {
 	
@@ -222,7 +227,7 @@ public class Main {
 			}
 		}
 		
-		if (files.size() == 0) {
+		if (files.size() == 0 && lustreResultsToTranslate.equals("")) {
 			System.err.println("Warning: No files specified for translation.");
 		}
 		return true;
@@ -418,6 +423,41 @@ public class Main {
 				System.out.println(ilPlan.getPlanName()+": states == "+numStates);
 			}
 		}
+		
+		if ( ! lustreResultsToTranslate.equals("")) {
+			File lustreXml = new File(lustreResultsToTranslate);
+			if (lustreXml.isFile()) {
+				List<PlexilScript> scripts;
+				String baseName = lustreXml.getName().replaceAll("\\.xml$", "");
+				try {
+					XMLEventReader xml = XMLInputFactory.newInstance().createXMLEventReader(
+							new FileReader(lustreXml));
+					scripts = JKindXmlParser.translateToScripts(xml);
+				} catch (Exception e) {
+					System.err.println("Error parsing JKind XML file: ");
+					e.printStackTrace();
+					return false;
+				}
+				
+				
+				outputDir.mkdirs();
+				int i = 0;
+				for (PlexilScript script : scripts) {
+					i++;
+					try {
+						String filename = baseName+"."+i+".psx";
+						System.out.println(filename);
+						ScriptToXML.writeToFile(new File(outputDir, 
+								filename), script);
+					} catch (FileNotFoundException e) {
+						System.err.println("Error writing PlexilScript to file: ");
+						e.printStackTrace();
+						return false;
+					}
+				}
+			}
+		}
+
 		return true;
 
 	}

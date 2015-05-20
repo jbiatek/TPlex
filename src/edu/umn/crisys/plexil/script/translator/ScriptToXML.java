@@ -1,7 +1,12 @@
 package edu.umn.crisys.plexil.script.translator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -10,6 +15,7 @@ import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
 import edu.umn.crisys.plexil.script.ast.Event;
 import edu.umn.crisys.plexil.script.ast.FunctionCall;
+import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.ast.ScriptEventVisitor;
 import edu.umn.crisys.plexil.script.ast.Simultaneous;
 import edu.umn.crisys.plexil.script.ast.StateChange;
@@ -70,6 +76,56 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 		out.flush();
 		out.close();
 
+	}
+	
+	/**
+	 * Write the given PlexilScript to the given file. 
+	 * 
+	 * @param f
+	 * @param script
+	 * @throws FileNotFoundException
+	 */
+	public static void writeToFile(File f, PlexilScript script) throws FileNotFoundException {
+		writeToStream(new PrintWriter(f), script);
+	}
+	
+	/**
+	 * Write the given PlexilScript to the given stream. 
+	 * 
+	 * @param out
+	 * @param events
+	 */
+	public static void writeToStream(PrintWriter out, PlexilScript script) {
+		out.println("<PLEXILScript>");
+		
+		// Initial state first, if any
+		if ( ! script.getInitialEvents().isEmpty()) {
+			List<Event> cleanedInitial = new ArrayList<Event>(script.getInitialEvents());
+			// Delete delay events, they're pointless in initial state
+			cleanedInitial.removeIf(e -> e instanceof Delay);
+			// Flatten out Simultaneous-es, the entire initial state is basically
+			// one big simultaneous. 
+			cleanedInitial = cleanedInitial.stream()
+					.flatMap(e -> e instanceof Simultaneous ? 
+							((Simultaneous)e).getEvents().stream() 
+							: Stream.of(e))
+					.collect(Collectors.toList());
+			
+			// Print out the events!
+			out.println("<InitialState>");
+			cleanedInitial.stream()
+				.forEach((e) -> e.accept(SINGLETON, out));
+			out.println("</InitialState>");
+		}
+
+		// Now for the main events. 
+		out.println("<Script>");
+		script.getMainEvents().forEach(e -> e.accept(SINGLETON, out));
+		out.println("</Script>");
+		out.println("</PLEXILScript>");
+		
+		out.flush();
+		out.close();
 	}
 	
 	private static void printParameterized(String tag, String resultTag, FunctionCall call, PValue result, PrintWriter out ) {

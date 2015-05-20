@@ -51,9 +51,9 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Expr>{
 	
-	private static final String P_TRUE_ID = "p_true";
-	private static final String P_FALSE_ID = "p_false";
-	private static final String P_UNKNOWN_ID = "p_unknown";
+	public static final String P_TRUE_ID = "p_true";
+	public static final String P_FALSE_ID = "p_false";
+	public static final String P_UNKNOWN_ID = "p_unknown";
 	
 	public static final IdExpr P_TRUE = new IdExpr(P_TRUE_ID);
 	public static final IdExpr P_FALSE = new IdExpr(P_FALSE_ID);

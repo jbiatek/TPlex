@@ -1,36 +1,31 @@
 package edu.umn.crisys.plexil.jkind.results;
 
+import java.io.File;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.Comment;
-import javax.xml.stream.events.DTD;
-import javax.xml.stream.events.EndDocument;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.EntityDeclaration;
-import javax.xml.stream.events.EntityReference;
-import javax.xml.stream.events.Namespace;
-import javax.xml.stream.events.ProcessingInstruction;
-import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 
+import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.script.ast.Event;
+import edu.umn.crisys.plexil.script.ast.FunctionCall;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
+import edu.umn.crisys.plexil.script.ast.Simultaneous;
+import edu.umn.crisys.plexil.script.ast.StateChange;
+import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 import edu.umn.crisys.util.xml.XMLUtils;
 
 public class JKindXmlParser extends XMLUtils {
@@ -46,14 +41,57 @@ public class JKindXmlParser extends XMLUtils {
 		List<List<XmlRawData>> results = parseResults(XMLInputFactory.newInstance().createXMLEventReader(
 				new FileReader("/Users/jbiatek/Repositories/DriveToSchool/DriveToSchool.lus.xml")));
 		System.out.println("Parsed in "+results.size()+" counterexamples.");
+		List<PlexilScript> scripts = results.stream()
+				.map(d -> translateToScript(d, "DriveToSchoolLustre"))
+				.collect(Collectors.toList());
+		File outputDir = new File("/Users/jbiatek/Repositories/DriveToSchool/LustreTests");
+		outputDir.mkdir();
+		for (int i=0; i < scripts.size(); i++) {
+			ScriptToXML.writeToStream(new PrintWriter(
+					new File(outputDir, "DriveToSchool"+i+".psx")), 
+					scripts.get(i));
+		}
 	}
 	
+	public static List<PlexilScript> translateToScripts(XMLEventReader lustreXml) {
+		List<List<XmlRawData>> results = parseResults(lustreXml);
+		return results.stream()
+				.map(d -> translateToScript(d, ""))
+				.collect(Collectors.toList());
+	}
+	
+	
 	public static PlexilScript translateToScript(List<XmlRawData> data, String name) {
-		PlexilScript s = new PlexilScript(name);
+		PlexilScript script = new PlexilScript(name);
 		
+		List<XmlRawData> relevant = data.stream()
+				.filter(d -> d.signal.startsWith("Lookup")
+						&& !d.signal.endsWith("__raw"))
+				.collect(Collectors.toList());
+		int length = data.get(0).dataOverTime.size();
 		
-		
-		return s;
+		for (int i=0; i < length; i++) {
+			Simultaneous event = new Simultaneous();
+			
+			for (XmlRawData d : relevant) {
+				event.addEvent(toScriptEvent(d.signal, d.dataOverTime.get(i)));
+			}
+			if (i == 0 ) {
+				script.addInitialEvent(event.getCleanestEvent());
+			} else {
+				script.addMainEvent(event.getCleanestEvent());
+			}
+		}
+		return script;
+	}
+	
+	private static Event toScriptEvent(String signal, PValue v) {
+		if (signal.startsWith("Lookup__")) {
+			String stateName = signal.replaceFirst("Lookup__", "");
+			return new StateChange(new FunctionCall(stateName), v);
+		}
+		throw new RuntimeException("Signal "+signal
+				+" doesn't have a translation to PlexilScript");
 	}
 	
 	
@@ -118,6 +156,13 @@ public class JKindXmlParser extends XMLUtils {
 			return IntegerValue.get(Integer.parseInt(value));
 		case "pboolean":
 		case "bool":
+			if (value.equals(ILExprToLustre.P_TRUE_ID)) {
+				return BooleanValue.get(true);
+			} else if (value.equals(ILExprToLustre.P_FALSE_ID)) {
+				return BooleanValue.get(false);
+			} else if (value.equals(ILExprToLustre.P_UNKNOWN_ID)) {
+				return UnknownValue.get();
+			}
 			return PlexilType.BOOLEAN.parseValue(value);
 		case "pstate":
 			return PlexilType.STATE.parseValue(value);
