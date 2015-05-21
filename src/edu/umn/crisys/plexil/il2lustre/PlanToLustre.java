@@ -1,6 +1,8 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import jkind.lustre.ArrayType;
@@ -33,6 +35,7 @@ import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public class PlanToLustre {
 
@@ -41,7 +44,7 @@ public class PlanToLustre {
 	}
 
 	
-	private static final String STRING_ENUM_NAME = "PlexilString";
+	public static final String STRING_ENUM_NAME = "PlexilString";
 	private Plan p;
 	private PlexilPlan originalAst;
 	
@@ -132,6 +135,14 @@ public class PlanToLustre {
 	
 	public Expr toLustre(ILExpression e, PlexilType expectedType) {
 		return e.accept(ilToLustre, expectedType);
+	}
+	
+	public Optional<Map<String,StringValue>> getStringMap() {
+		if (ilToLustre.getFullStringMap().isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(ilToLustre.getFullStringMap());
+		}
 	}
 	
 	private static ProgramBuilder getProgramWithPlexilTypes() {

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -27,6 +28,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
@@ -51,6 +54,7 @@ import edu.umn.crisys.plexil.il2lustre.PlanToLustre.Obligation;
 import edu.umn.crisys.plexil.jkind.results.JKindXmlParser;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
@@ -362,6 +366,19 @@ public class Main {
 				e.printStackTrace();
 				return false;
 			} 
+			
+			p2l.getStringMap().ifPresent((map) -> {
+				File stringOut = new File(outputDir, p.getPlanName()+".strings.txt");
+				String json = new Gson().toJson(map);
+				try {
+					FileWriter fw = new FileWriter(stringOut);
+					fw.write(json);
+					fw.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			
 		}
 		return true;
 	}
@@ -425,41 +442,69 @@ public class Main {
 		}
 		
 		if ( ! lustreResultsToTranslate.equals("")) {
-			File lustreXml = new File(lustreResultsToTranslate);
-			if (lustreXml.isFile()) {
-				List<PlexilScript> scripts;
-				String baseName = lustreXml.getName().replaceAll("\\.xml$", "");
-				try {
-					XMLEventReader xml = XMLInputFactory.newInstance().createXMLEventReader(
-							new FileReader(lustreXml));
-					scripts = JKindXmlParser.translateToScripts(xml);
-				} catch (Exception e) {
-					System.err.println("Error parsing JKind XML file: ");
-					e.printStackTrace();
-					return false;
-				}
-				
-				
-				outputDir.mkdirs();
-				int i = 0;
-				for (PlexilScript script : scripts) {
-					i++;
-					try {
-						String filename = baseName+"."+i+".psx";
-						System.out.println(filename);
-						ScriptToXML.writeToFile(new File(outputDir, 
-								filename), script);
-					} catch (FileNotFoundException e) {
-						System.err.println("Error writing PlexilScript to file: ");
-						e.printStackTrace();
-						return false;
-					}
-				}
-			}
+			translateLustreResults();
 		}
 
 		return true;
 
+	}
+	
+	private void translateLustreResults() {
+		File lustreXml = new File(lustreResultsToTranslate);
+		if (lustreXml.isFile()) {
+			Optional<Map<String,StringValue>> stringMap = getStringMapFor(lustreXml);
+			List<PlexilScript> parsedScripts = new ArrayList<PlexilScript>();
+			
+			
+			try {
+				XMLEventReader xml = XMLInputFactory.newInstance().createXMLEventReader(
+						new FileReader(lustreXml));
+				parsedScripts = JKindXmlParser.translateToScripts(xml, stringMap);
+			} catch (Exception e) {
+				System.err.println("Error parsing JKind XML file: ");
+				e.printStackTrace();
+				return;
+			}
+			
+			
+			outputDir.mkdirs();
+			for (PlexilScript script : parsedScripts) {
+				try {
+					String filename = script.getScriptName()+".psx";
+					System.out.println(filename);
+					ScriptToXML.writeToFile(new File(outputDir, 
+							filename), script);
+				} catch (FileNotFoundException e) {
+					System.err.println("Error writing PlexilScript to file: ");
+					e.printStackTrace();
+					return;
+				}
+			}
+		} else {
+			throw new RuntimeException(
+					new FileNotFoundException(lustreResultsToTranslate));
+		}
+
+	}
+	
+	private Optional<Map<String,StringValue>> getStringMapFor(File lustreXml) {
+		String baseName = lustreXml.getName().replaceAll("\\.lus\\.xml$", "");
+		File stringsFile = new File(lustreXml.getParentFile(), 
+				baseName+".strings.txt");
+		if (stringsFile.isFile()) {
+			try { 
+				Map<String,StringValue> map = new Gson()
+					.fromJson(new FileReader(stringsFile), 
+						new TypeToken<Map<String,StringValue>>(){}.getType());
+				return Optional.of(map);
+			} catch (Exception e ) {
+				System.err.println("Error parsing strings file "+stringsFile+":");
+				e.printStackTrace();
+			}
+		}
+
+		System.out.println("Warning: Strings file "+stringsFile+" not found.");
+		return Optional.empty();
 	}
 	
 }

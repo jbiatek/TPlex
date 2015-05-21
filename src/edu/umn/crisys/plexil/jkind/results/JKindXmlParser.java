@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLEventReader;
@@ -12,6 +14,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.StartElement;
 
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
+import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -19,6 +22,7 @@ import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 import edu.umn.crisys.plexil.script.ast.Event;
 import edu.umn.crisys.plexil.script.ast.FunctionCall;
@@ -37,12 +41,18 @@ public class JKindXmlParser extends XMLUtils {
 		
 	}
 	
+	private static class Counterexample {
+		private String name;
+		private List<XmlRawData> data;
+	}
+	
 	public static void main(String... args) throws Exception {
-		List<List<XmlRawData>> results = parseResults(XMLInputFactory.newInstance().createXMLEventReader(
-				new FileReader("/Users/jbiatek/Repositories/DriveToSchool/DriveToSchool.lus.xml")));
+		List<Counterexample> results = parseResults(XMLInputFactory.newInstance().createXMLEventReader(
+				new FileReader("/Users/jbiatek/Repositories/DriveToSchool/DriveToSchool.lus.xml")),
+				Optional.empty());
 		System.out.println("Parsed in "+results.size()+" counterexamples.");
 		List<PlexilScript> scripts = results.stream()
-				.map(d -> translateToScript(d, "DriveToSchoolLustre"))
+				.map(JKindXmlParser::translateToScript)
 				.collect(Collectors.toList());
 		File outputDir = new File("/Users/jbiatek/Repositories/DriveToSchool/LustreTests");
 		outputDir.mkdir();
@@ -53,22 +63,23 @@ public class JKindXmlParser extends XMLUtils {
 		}
 	}
 	
-	public static List<PlexilScript> translateToScripts(XMLEventReader lustreXml) {
-		List<List<XmlRawData>> results = parseResults(lustreXml);
+	public static List<PlexilScript> translateToScripts(XMLEventReader lustreXml, 
+			Optional<Map<String,StringValue>> stringMap) {
+		List<Counterexample> results = parseResults(lustreXml, stringMap);
 		return results.stream()
-				.map(d -> translateToScript(d, ""))
+				.map(JKindXmlParser::translateToScript)
 				.collect(Collectors.toList());
 	}
 	
 	
-	public static PlexilScript translateToScript(List<XmlRawData> data, String name) {
-		PlexilScript script = new PlexilScript(name);
+	public static PlexilScript translateToScript(Counterexample cex) {
+		PlexilScript script = new PlexilScript(cex.name);
 		
-		List<XmlRawData> relevant = data.stream()
+		List<XmlRawData> relevant = cex.data.stream()
 				.filter(d -> d.signal.startsWith("Lookup")
 						&& !d.signal.endsWith("__raw"))
 				.collect(Collectors.toList());
-		int length = data.get(0).dataOverTime.size();
+		int length = cex.data.get(0).dataOverTime.size();
 		
 		for (int i=0; i < length; i++) {
 			Simultaneous event = new Simultaneous();
@@ -102,8 +113,9 @@ public class JKindXmlParser extends XMLUtils {
 	 * @return a list containing counterexamples (where a counterexample is a 
 	 * list of values over time)
 	 */
-	public static List<List<XmlRawData>> parseResults(XMLEventReader xml) {
-		List<List<XmlRawData>> counterexamples = new ArrayList<>();
+	public static List<Counterexample> parseResults(XMLEventReader xml, 
+			Optional<Map<String,StringValue>> stringMap) {
+		List<Counterexample> counterexamples = new ArrayList<>();
 		
 		// First tag is supposed to be "Results"
 		StartElement rootTag = assertStart("Results", nextTag(xml));
@@ -111,10 +123,13 @@ public class JKindXmlParser extends XMLUtils {
 		for (StartElement rootChild : allChildTagsOf(rootTag, xml)) {
 			if (isTag(rootChild, "Property")) {
 				// That's the one!
+				String name = attribute(rootChild, "name");
 				for (StartElement propChild : allChildTagsOf(rootChild, xml)) {
 					if (isTag(propChild, "Counterexample")) {
 						// This we care about
-						counterexamples.add(getCounterexample(propChild, xml));
+						Counterexample cex = getCounterexample(propChild, xml, stringMap);
+						cex.name = name;
+						counterexamples.add(cex);
 					} else {
 						// We don't care about this
 						consumeAllOf(propChild, xml);
@@ -130,9 +145,10 @@ public class JKindXmlParser extends XMLUtils {
 		return counterexamples;
 	}
 	
-	private static List<XmlRawData> getCounterexample(StartElement cex, XMLEventReader xml) {
+	private static Counterexample getCounterexample(StartElement cex, XMLEventReader xml,
+			Optional<Map<String,StringValue>> stringMap) {
 		assertStart("Counterexample", cex);
-		List<XmlRawData> counterex = new ArrayList<>();
+		List<XmlRawData> dataList = new ArrayList<>();
 		for (StartElement signal : allChildTagsOf(cex, xml)) {
 			assertStart("Signal", signal);
 			XmlRawData signalData = new XmlRawData();
@@ -142,15 +158,18 @@ public class JKindXmlParser extends XMLUtils {
 			for (StartElement value : allChildTagsOf(signal, xml)) {
 				assertStart("Value", value);
 				signalData.dataOverTime.add(parseValue(
-						getStringContent(value, xml), type));
+						getStringContent(value, xml), type, stringMap));
 			}
-			counterex.add(signalData);
+			dataList.add(signalData);
 		}
-		return counterex;
+		Counterexample cexObj = new Counterexample();
+		cexObj.data = dataList;
+		return cexObj;
 
 	}
 	
-	private static PValue parseValue(String value, String type) {
+	private static PValue parseValue(String value, String type, 
+			Optional<Map<String,StringValue>> stringMap) {
 		switch(type) {
 		case "int":
 			return IntegerValue.get(Integer.parseInt(value));
@@ -164,6 +183,20 @@ public class JKindXmlParser extends XMLUtils {
 				return UnknownValue.get();
 			}
 			return PlexilType.BOOLEAN.parseValue(value);
+		case PlanToLustre.STRING_ENUM_NAME: 
+			if (value.equals(ILExprToLustre.UNKNOWN_STRING)) {
+				return UnknownValue.get();
+			}
+			if (value.equals(ILExprToLustre.EMPTY_STRING)) {
+				return StringValue.get("");
+			}
+			if (! stringMap.isPresent()) {
+				throw new RuntimeException("Need to translate Lustre enum "+value+
+						" back to Plexil, but string map wasn't provided");
+			}
+			return stringMap.map(actual -> actual.get(value))
+					.orElseThrow(() -> new RuntimeException(
+							"Lustre string "+value+" not found in string map."));
 		case "pstate":
 			return PlexilType.STATE.parseValue(value);
 		case "node_outcome":

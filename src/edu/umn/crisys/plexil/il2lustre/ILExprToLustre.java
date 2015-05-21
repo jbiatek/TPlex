@@ -166,6 +166,10 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		return allExpectedStrings.keySet();
 	}
 	
+	public Map<String,StringValue> getFullStringMap() {
+		return allExpectedStrings;
+	}
+	
 	@Override
 	public ArrayAccessExpr visitArrayIndex(ArrayIndexExpr array, PlexilType expectedType) {
 		return new ArrayAccessExpr(array.getArray().accept(this, null), 
