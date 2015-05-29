@@ -129,6 +129,11 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 	}
 	
 	private static void printParameterized(String tag, String resultTag, FunctionCall call, PValue result, PrintWriter out ) {
+		if (result.isUnknown()) {
+			System.out.println("Warning: tried to write unknown value into a script.");
+			System.out.println("PSX doesn't support this, so it's being commented out. ");
+			out.println("<!--");
+		}
 		String type = toPsxTypeString(result.getType());
 		
 		out.println("<"+tag+" name=\""+call.getName()+"\" type=\""+type+"\">");
@@ -137,6 +142,10 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 		}
 		printSimpleTag(resultTag, result, out);
 		out.println("</"+tag+">");
+		
+		if (result.isUnknown()) {
+			out.println("-->");
+		}
 	}
 	
 	private static void printParam(PValue arg, PrintWriter out) {
