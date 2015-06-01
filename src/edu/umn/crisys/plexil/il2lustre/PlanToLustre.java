@@ -77,6 +77,12 @@ public class PlanToLustre {
 		
 		// Add in declared lookups
 		for (LookupDecl lookup : originalAst.getStateDeclarations()) {
+			if (lookup.getParameters().size() > 0) {
+				System.err.println("Warning: Lookup parameters are not "
+						+ "supported in Lustre translation: "+lookup.getName());
+			}
+			
+			
 			String rawInputId = ILExprToLustre.getRawLookupId(lookup.getName());
 			String lookupId = ILExprToLustre.getLookupId(lookup.getName());
 			Type type = getLustreType(lookup.getReturnValue().get().getType());
