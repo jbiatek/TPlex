@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il.statemachine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,10 @@ public class NodeStateMachine {
         nsmId = nId.toString();
         this.thePlan = thePlan;
     }
+	
+	public void orderTransitionsByPriority() {
+		Collections.sort(transitions);
+	}
 	
 	public List<Transition> getTransitions() {
 		return transitions;

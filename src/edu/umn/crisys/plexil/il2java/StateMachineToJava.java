@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.il2java;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,7 @@ public class StateMachineToJava {
 		
 		JSwitch sw = stepMethod.body()._switch(stateVar.invoke("getCurrent"));
 		// Now to go through the transitions. They need to be sorted by priority for this.
-		Collections.sort(nsm.getTransitions());
+		nsm.orderTransitionsByPriority();
 
 		// We're going in order of priority, but the final code will be ordered by the
 		// starting state. This map will let us grab the correct code block to add on to.

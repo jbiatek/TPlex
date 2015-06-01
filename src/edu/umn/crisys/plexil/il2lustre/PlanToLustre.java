@@ -336,6 +336,9 @@ public class PlanToLustre {
 	}
 	
 	public Expr stateMachineExpr(NodeStateMachine nsm) {
+		// Make sure we're doing this in order.
+		nsm.orderTransitionsByPriority();
+		
 		// If no transitions are active, don't change states.
 		Expr bigIf = new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm));
 		
