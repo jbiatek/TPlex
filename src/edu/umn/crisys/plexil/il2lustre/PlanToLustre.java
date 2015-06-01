@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +37,7 @@ import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class PlanToLustre {
 
@@ -45,12 +47,18 @@ public class PlanToLustre {
 
 	
 	public static final String STRING_ENUM_NAME = "PlexilString";
+	public static final String UNKNOWN_STRING = "_unknown_str_";
+	public static final String EMPTY_STRING = "_empty_str_";
+	
 	private Plan p;
 	private PlexilPlan originalAst;
 	
 	private ProgramBuilder pb = getProgramWithPlexilTypes();
 	private NodeBuilder nb;
-	private ILExprToLustre ilToLustre = new ILExprToLustre();
+	private Map<String, StringValue> allExpectedStrings = new HashMap<>();
+	
+	
+	private ILExprToLustre ilToLustre = new ILExprToLustre(this);
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 
 	public PlanToLustre(Plan p, PlexilPlan originalAst) {
@@ -100,10 +108,9 @@ public class PlanToLustre {
 		a2l.toLustre(nb);
 		
 		// Add string enum, if any
-		Set<String> expectedStrings = ilToLustre.getAllExpectedStrings();
-		if (! expectedStrings.isEmpty()) {
+		if (! allExpectedStrings.keySet().isEmpty()) {
 			EnumType planStrings = new EnumType(STRING_ENUM_NAME, 
-				new ArrayList<String>(expectedStrings));
+				new ArrayList<String>(allExpectedStrings.keySet()));
 			addEnumType(pb, planStrings);
 		}
 		
@@ -138,10 +145,10 @@ public class PlanToLustre {
 	}
 	
 	public Optional<Map<String,StringValue>> getStringMap() {
-		if (ilToLustre.getFullStringMap().isEmpty()) {
+		if (allExpectedStrings.isEmpty()) {
 			return Optional.empty();
 		} else {
-			return Optional.of(ilToLustre.getFullStringMap());
+			return Optional.of(allExpectedStrings);
 		}
 	}
 	
@@ -302,7 +309,33 @@ public class PlanToLustre {
 		}
 	}
 	
-	private Expr stateMachineExpr(NodeStateMachine nsm) {
+	public String stringToEnum(StringValue v) {
+		if (v.getString().equals("")) {
+			allExpectedStrings.put(EMPTY_STRING, v);
+			return EMPTY_STRING;
+		}
+		
+		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
+		if (toReturn.equals("")) {
+			throw new RuntimeException("Enumerated string was empty: "+v);
+		}
+		if (allExpectedStrings.containsKey(toReturn)) {
+			StringValue prev = allExpectedStrings.get(toReturn);
+			if (prev.equalTo(v).isFalse()) {
+				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
+			}
+		}
+		// Okay, it's all good. Save this mapping.
+		allExpectedStrings.put(toReturn, v);
+		return toReturn;
+	}
+	
+	public String stringToEnum(UnknownValue unk) {
+		allExpectedStrings.put(UNKNOWN_STRING, null);
+		return UNKNOWN_STRING;
+	}
+	
+	public Expr stateMachineExpr(NodeStateMachine nsm) {
 		// If no transitions are active, don't change states.
 		Expr bigIf = new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm));
 		

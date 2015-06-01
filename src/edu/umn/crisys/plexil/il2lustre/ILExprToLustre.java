@@ -4,10 +4,7 @@ import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -62,9 +59,6 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 	public static final boolean KNOWN_FLAG = true;
 	public static final boolean UNKNOWN_FLAG = !KNOWN_FLAG;
 	
-	public static final String UNKNOWN_STRING = "_unknown_str_";
-	public static final String EMPTY_STRING = "_empty_str_";
-
 	public static final EnumType PBOOLEAN = new EnumType("pboolean", 
 			Arrays.asList(P_TRUE_ID, P_FALSE_ID, P_UNKNOWN_ID)); 
 	
@@ -132,42 +126,10 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
 	}
 
-	private String stringToEnum(StringValue v) {
-		if (v.getString().equals("")) {
-			allExpectedStrings.put(EMPTY_STRING, v);
-			return EMPTY_STRING;
-		}
-		
-		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
-		if (toReturn.equals("")) {
-			throw new RuntimeException("Enumerated string was empty: "+v);
-		}
-		if (allExpectedStrings.containsKey(toReturn)) {
-			StringValue prev = allExpectedStrings.get(toReturn);
-			if (prev.equalTo(v).isFalse()) {
-				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
-			}
-		}
-		// Okay, it's all good. Save this mapping.
-		allExpectedStrings.put(toReturn, v);
-		return toReturn;
-	}
+	private PlanToLustre translator;
 	
-	private String stringToEnum(UnknownValue unk) {
-		allExpectedStrings.put(UNKNOWN_STRING, null);
-		return UNKNOWN_STRING;
-	}
-	
-	private Map<String, StringValue> allExpectedStrings = new HashMap<>();
-	
-	public ILExprToLustre() {}
-	
-	public Set<String> getAllExpectedStrings() {
-		return allExpectedStrings.keySet();
-	}
-	
-	public Map<String,StringValue> getFullStringMap() {
-		return allExpectedStrings;
+	public ILExprToLustre(PlanToLustre translator) {
+		this.translator = translator;
 	}
 	
 	@Override
@@ -373,7 +335,7 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	@Override
 	public Expr visitStringValue(StringValue string, PlexilType expectedType) {
-		return id(stringToEnum(string));
+		return id(translator.stringToEnum(string));
 	}
 
 	@Override
@@ -386,7 +348,7 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		case REAL:
 			return id("0.0");
 		case STRING:
-			return id(stringToEnum(unk));
+			return id(translator.stringToEnum(unk));
 		default: 
 			throw new RuntimeException("Unknowns not supported yet except booleans -- "+expectedType);	
 		}

@@ -184,10 +184,10 @@ public class JKindXmlParser extends XMLUtils {
 			}
 			return PlexilType.BOOLEAN.parseValue(value);
 		case PlanToLustre.STRING_ENUM_NAME: 
-			if (value.equals(ILExprToLustre.UNKNOWN_STRING)) {
+			if (value.equals(PlanToLustre.UNKNOWN_STRING)) {
 				return UnknownValue.get();
 			}
-			if (value.equals(ILExprToLustre.EMPTY_STRING)) {
+			if (value.equals(PlanToLustre.EMPTY_STRING)) {
 				return StringValue.get("");
 			}
 			if (! stringMap.isPresent()) {
