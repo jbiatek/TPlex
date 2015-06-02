@@ -50,6 +50,8 @@ public class LustreNamingConventions {
 	public static final EnumType PFAILURE = new EnumType("node_failure", 
 			enumerator(NodeFailureType.values()));
 	
+	public static String MACRO_STEP_ENDED_ID = "macrostep_end";
+	
 	public static final String AND_OPERATOR = "p_and";
 	public static final String OR_OPERATOR = "p_or";
 	public static final String NOT_OPERATOR = "p_not";

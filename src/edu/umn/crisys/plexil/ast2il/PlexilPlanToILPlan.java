@@ -9,6 +9,9 @@ public class PlexilPlanToILPlan {
     
     public static Plan translate(PlexilPlan p) {
         Plan ilPlan = new Plan(p.getName());
+        ilPlan.setCommandDecls(p.getCommandDeclarations());
+        ilPlan.setStateDecls(p.getStateDeclarations());
+        ilPlan.setLibraryDecls(p.getLibraryDeclarations());
         NodeToIL rootTranslator = new NodeToIL(p.getRootNode());
         rootTranslator.translate(ilPlan);
         return ilPlan;

@@ -33,8 +33,6 @@ import edu.umn.crisys.plexil.il.vars.SimpleVar;
 
 public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
-	public static String MACRO_STEP_ENDED_ID = "macrostep_end";
-	
 	private Map<ILVariable, Expr> varNextValue = 
 			new HashMap<ILVariable, Expr>();
 	private Expr macroStepIsEnded;
@@ -115,8 +113,8 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 					fullThing));
 		}
 		
-		nb.addLocal(new VarDecl(MACRO_STEP_ENDED_ID, NamedType.BOOL));
-		nb.addEquation(new Equation(new IdExpr(MACRO_STEP_ENDED_ID), 
+		nb.addLocal(new VarDecl(LustreNamingConventions.MACRO_STEP_ENDED_ID, NamedType.BOOL));
+		nb.addEquation(new Equation(new IdExpr(LustreNamingConventions.MACRO_STEP_ENDED_ID), 
 				new BinaryExpr(new IdExpr("false"),  BinaryOp.ARROW, macroStepIsEnded)));
 		
 	}

@@ -5,12 +5,16 @@
 
 package edu.umn.crisys.plexil.il;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
@@ -25,6 +29,21 @@ public class Plan {
 	private List<NodeStateMachine> stateMachines = new LinkedList<NodeStateMachine>(); 
 	private Set<ILVariable> variables = new HashSet<ILVariable>();
 	
+    /**
+     * Commands declared in the original Plexil plan
+     */
+	private List<CommandDecl> commandDecls = new ArrayList<CommandDecl>();
+    
+    /**
+     * State declarations (aka lookups) declared in the original Plexil plan
+     */
+	private List<LookupDecl> stateDecls = new ArrayList<LookupDecl>();
+    
+    /**
+     *  Library node declarations from the original Plexil plan
+     */
+	private List<LibraryDecl> libraryDecls = new ArrayList<LibraryDecl>();
+
 	private NodeStateMachine root;
 	private ILVariable rootOutcome;
 	private GetNodeStateExpr rootState;
@@ -40,7 +59,31 @@ public class Plan {
     	return planName;
     }
     
-    public List<NodeStateMachine> getMachines() {
+    public List<LibraryDecl> getLibraryDecls() {
+		return libraryDecls;
+	}
+
+	public void setLibraryDecls(List<LibraryDecl> libraryDecls) {
+		this.libraryDecls = libraryDecls;
+	}
+
+	public List<LookupDecl> getStateDecls() {
+		return stateDecls;
+	}
+
+	public void setStateDecls(List<LookupDecl> stateDecls) {
+		this.stateDecls = stateDecls;
+	}
+
+	public List<CommandDecl> getCommandDecls() {
+		return commandDecls;
+	}
+
+	public void setCommandDecls(List<CommandDecl> commandDecls) {
+		this.commandDecls = commandDecls;
+	}
+
+	public List<NodeStateMachine> getMachines() {
     	return stateMachines;
     }
     

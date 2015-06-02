@@ -352,7 +352,7 @@ public class Main {
 		for (Plan p : ilPlans) {
 			HackOutArrayAssignments.hack(p);
 			
-			PlanToLustre p2l = new PlanToLustre(p, originalAst.get(p));
+			PlanToLustre p2l = new PlanToLustre(p);
 			Program lustre = p2l.toLustre(obligation);
 			PrettyPrintVisitor pp = new PrettyPrintVisitor();
 			lustre.accept(pp);

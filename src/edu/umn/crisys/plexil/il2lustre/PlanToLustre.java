@@ -24,7 +24,6 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -47,7 +46,6 @@ public class PlanToLustre {
 	}
 	
 	private Plan p;
-	private PlexilPlan originalAst;
 	
 	private ProgramBuilder pb = getProgramWithPlexilTypes();
 	private NodeBuilder nb;
@@ -57,9 +55,8 @@ public class PlanToLustre {
 	private ILExprToLustre ilToLustre = new ILExprToLustre(this);
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 
-	public PlanToLustre(Plan p, PlexilPlan originalAst) {
+	public PlanToLustre(Plan p) {
 		this.p = p;
-		this.originalAst = originalAst;
 		
 		this.nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
 	}
@@ -72,28 +69,8 @@ public class PlanToLustre {
 		
 		
 		// Add in declared lookups
-		for (LookupDecl lookup : originalAst.getStateDeclarations()) {
-			if (lookup.getParameters().size() > 0) {
-				System.err.println("Warning: Lookup parameters are not "
-						+ "supported in Lustre translation: "+lookup.getName());
-			}
-			
-			
-			String rawInputId = LustreNamingConventions.getRawLookupId(lookup.getName());
-			String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
-			Type type = getLustreType(lookup.getReturnValue().get().getType());
-			nb.addInput(new VarDecl(rawInputId, type));
-			// The "real" lookup can only change between macro steps
-			nb.addLocal(new VarDecl(lookupId, type));
-			// lookup = raw -> if (last macro step ended) then raw else pre(lookup)
-			nb.addEquation(new Equation(new IdExpr(lookupId), 
-					new BinaryExpr(new IdExpr(rawInputId), 
-							BinaryOp.ARROW, 
-							new IfThenElseExpr(
-									new UnaryExpr(UnaryOp.PRE, new IdExpr(ActionsToLustre.MACRO_STEP_ENDED_ID)), 
-									new IdExpr(rawInputId), 
-									new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
-					)));
+		for (LookupDecl lookup : p.getStateDecls()) {
+			addLookup(lookup);
 		}
 		
 		for (NodeStateMachine nsm : p.getMachines()) {
@@ -141,6 +118,30 @@ public class PlanToLustre {
 		
 		pb.addNode(nb.build());
 		return pb.build();
+	}
+	
+	private void addLookup(LookupDecl lookup) {
+		if (lookup.getParameters().size() > 0) {
+			System.err.println("Warning: Lookup parameters are not "
+					+ "supported in Lustre translation: "+lookup.getName());
+		}
+		
+		
+		String rawInputId = LustreNamingConventions.getRawLookupId(lookup.getName());
+		String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
+		Type type = getLustreType(lookup.getReturnValue().get().getType());
+		nb.addInput(new VarDecl(rawInputId, type));
+		// The "real" lookup can only change between macro steps
+		nb.addLocal(new VarDecl(lookupId, type));
+		// lookup = raw -> if (last macro step ended) then raw else pre(lookup)
+		nb.addEquation(new Equation(new IdExpr(lookupId), 
+				new BinaryExpr(new IdExpr(rawInputId), 
+						BinaryOp.ARROW, 
+						new IfThenElseExpr(
+								new UnaryExpr(UnaryOp.PRE, new IdExpr(LustreNamingConventions.MACRO_STEP_ENDED_ID)), 
+								new IdExpr(rawInputId), 
+								new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
+				)));
 	}
 	
 	public Expr toLustre(ILExpression e, PlexilType expectedType) {
