@@ -35,6 +35,7 @@ import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
@@ -44,18 +45,13 @@ public class PlanToLustre {
 	public static enum Obligation {
 		NONE, EXECUTE
 	}
-
-	
-	public static final String STRING_ENUM_NAME = "PlexilString";
-	public static final String UNKNOWN_STRING = "_unknown_str_";
-	public static final String EMPTY_STRING = "_empty_str_";
 	
 	private Plan p;
 	private PlexilPlan originalAst;
 	
 	private ProgramBuilder pb = getProgramWithPlexilTypes();
 	private NodeBuilder nb;
-	private Map<String, StringValue> allExpectedStrings = new HashMap<>();
+	private Map<String, PString> allExpectedStrings = new HashMap<>();
 	
 	
 	private ILExprToLustre ilToLustre = new ILExprToLustre(this);
@@ -83,8 +79,8 @@ public class PlanToLustre {
 			}
 			
 			
-			String rawInputId = ILExprToLustre.getRawLookupId(lookup.getName());
-			String lookupId = ILExprToLustre.getLookupId(lookup.getName());
+			String rawInputId = LustreNamingConventions.getRawLookupId(lookup.getName());
+			String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
 			Type type = getLustreType(lookup.getReturnValue().get().getType());
 			nb.addInput(new VarDecl(rawInputId, type));
 			// The "real" lookup can only change between macro steps
@@ -115,7 +111,7 @@ public class PlanToLustre {
 		
 		// Add string enum, if any
 		if (! allExpectedStrings.keySet().isEmpty()) {
-			EnumType planStrings = new EnumType(STRING_ENUM_NAME, 
+			EnumType planStrings = new EnumType(LustreNamingConventions.STRING_ENUM_NAME, 
 				new ArrayList<String>(allExpectedStrings.keySet()));
 			addEnumType(pb, planStrings);
 		}
@@ -126,11 +122,12 @@ public class PlanToLustre {
 			p.getMachines().stream()
 			.flatMap(m -> m.getNodeIds().stream())
 			.forEach(uid -> {
-				String id = getStateMapperId(uid)+"_executes";
+				String id = LustreNamingConventions.getStateMapperId(uid)+"_executes";
 				nb.addLocal(new VarDecl(id, NamedType.BOOL));
 				// This state could never be executing, right? Prove me wrong!
 				nb.addEquation(new Equation(new IdExpr(id), 
-						new BinaryExpr(new IdExpr(getStateMapperId(uid)), 
+						new BinaryExpr(
+								new IdExpr(LustreNamingConventions.getStateMapperId(uid)), 
 								BinaryOp.NOTEQUAL, 
 								toLustre(NodeState.EXECUTING, PlexilType.STATE))
 						));
@@ -150,7 +147,7 @@ public class PlanToLustre {
 		return e.accept(ilToLustre, expectedType);
 	}
 	
-	public Optional<Map<String,StringValue>> getStringMap() {
+	public Optional<Map<String,PString>> getStringMap() {
 		if (allExpectedStrings.isEmpty()) {
 			return Optional.empty();
 		} else {
@@ -160,27 +157,27 @@ public class PlanToLustre {
 	
 	private static ProgramBuilder getProgramWithPlexilTypes() {
 		ProgramBuilder pb = new ProgramBuilder();
-		addEnumType(pb, ILExprToLustre.PBOOLEAN);
-		addEnumType(pb, ILExprToLustre.PSTATE);
-		addEnumType(pb, ILExprToLustre.PCOMMAND);
-		addEnumType(pb, ILExprToLustre.POUTCOME);
-		addEnumType(pb, ILExprToLustre.PFAILURE);
+		addEnumType(pb, LustreNamingConventions.PBOOLEAN);
+		addEnumType(pb, LustreNamingConventions.PSTATE);
+		addEnumType(pb, LustreNamingConventions.PCOMMAND);
+		addEnumType(pb, LustreNamingConventions.POUTCOME);
+		addEnumType(pb, LustreNamingConventions.PFAILURE);
 		
 		// Some Plexil operators too
-		NodeBuilder p_and = new NodeBuilder("p_and");
-		p_and.addInput(new VarDecl("first", ILExprToLustre.PBOOLEAN));
-		p_and.addInput(new VarDecl("second", ILExprToLustre.PBOOLEAN));
-		p_and.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		NodeBuilder p_and = new NodeBuilder(LustreNamingConventions.AND_OPERATOR);
+		p_and.addInput(new VarDecl("first", LustreNamingConventions.PBOOLEAN));
+		p_and.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
+		p_and.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_and.addEquation(new Equation(new IdExpr("result"), 
 				new IdExpr("if (first = p_false or second = p_false) then p_false\n"
            +"else if (first = p_unknown or second = p_unknown) then p_unknown\n"
            +"else p_true")));
 		pb.addNode(p_and.build());
 		
-		NodeBuilder p_or = new NodeBuilder("p_or");
-		p_or.addInput(new VarDecl("first", ILExprToLustre.PBOOLEAN));
-		p_or.addInput(new VarDecl("second", ILExprToLustre.PBOOLEAN));
-		p_or.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		NodeBuilder p_or = new NodeBuilder(LustreNamingConventions.OR_OPERATOR);
+		p_or.addInput(new VarDecl("first", LustreNamingConventions.PBOOLEAN));
+		p_or.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
+		p_or.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_or.addEquation(new Equation(new IdExpr("result"), 
 				new IdExpr("if (first = p_true or second = p_true) then p_true\n"
            +"else if (first = p_unknown or second = p_unknown) then p_unknown\n"
@@ -189,19 +186,19 @@ public class PlanToLustre {
 		
 		
 
-		NodeBuilder p_not = new NodeBuilder("p_not");
-		p_not.addInput(new VarDecl("value", ILExprToLustre.PBOOLEAN));
-		p_not.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		NodeBuilder p_not = new NodeBuilder(LustreNamingConventions.NOT_OPERATOR);
+		p_not.addInput(new VarDecl("value", LustreNamingConventions.PBOOLEAN));
+		p_not.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_not.addEquation(new Equation(new IdExpr("result"), 
 				new IdExpr("if value = p_true then p_false\n"
            +"else if value = p_false then p_true\n"
            +"else p_unknown")));
 		pb.addNode(p_not.build());
 		
-		NodeBuilder p_eq_bool = new NodeBuilder("p_eq_boolean");
-		p_eq_bool.addInput(new VarDecl("first", ILExprToLustre.PBOOLEAN));
-		p_eq_bool.addInput(new VarDecl("second", ILExprToLustre.PBOOLEAN));
-		p_eq_bool.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		NodeBuilder p_eq_bool = new NodeBuilder(LustreNamingConventions.EQ_BOOL_OPERATOR);
+		p_eq_bool.addInput(new VarDecl("first", LustreNamingConventions.PBOOLEAN));
+		p_eq_bool.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
+		p_eq_bool.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_eq_bool.addEquation(new Equation(new IdExpr("result"), 
 				new IdExpr("if (first = p_unknown or second = p_unknown) then p_unknown\n"
            +"else if (first = second) then p_true\n"
@@ -209,9 +206,9 @@ public class PlanToLustre {
 		pb.addNode(p_eq_bool.build());
 		
 
-		NodeBuilder to_pboolean = new NodeBuilder("to_pboolean");
+		NodeBuilder to_pboolean = new NodeBuilder(LustreNamingConventions.TO_PBOOLEAN_OPERATOR);
 		to_pboolean.addInput(new VarDecl("value", NamedType.BOOL));
-		to_pboolean.addOutput(new VarDecl("result", ILExprToLustre.PBOOLEAN));
+		to_pboolean.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		to_pboolean.addEquation(new Equation(new IdExpr("result"), 
 				new IdExpr("if value then p_true else p_false")));
 		pb.addNode(to_pboolean.build());
@@ -222,24 +219,25 @@ public class PlanToLustre {
 	private static void addEnumType(ProgramBuilder pb, EnumType et) {
 		pb.addType(new TypeDef(et.id, et));
 	}
+	
 	private static Type getLustreType(PlexilType t) {
 		switch (t) {
 		case BOOLEAN:
-			return ILExprToLustre.PBOOLEAN;
+			return LustreNamingConventions.PBOOLEAN;
 		case INTEGER:
 			return NamedType.INT;
 		case REAL:
 			return NamedType.REAL;
 		case STRING:
-			return new NamedType(STRING_ENUM_NAME);
+			return new NamedType(LustreNamingConventions.STRING_ENUM_NAME);
 		case STATE:
-			return ILExprToLustre.PSTATE;
+			return LustreNamingConventions.PSTATE;
 		case COMMAND_HANDLE:
-			return ILExprToLustre.PCOMMAND;
+			return LustreNamingConventions.PCOMMAND;
 		case OUTCOME:
-			return ILExprToLustre.POUTCOME;
+			return LustreNamingConventions.POUTCOME;
 		case FAILURE:
-			return ILExprToLustre.PFAILURE;
+			return LustreNamingConventions.PFAILURE;
 		case BOOLEAN_ARRAY:
 		case INTEGER_ARRAY:
 		case REAL_ARRAY:
@@ -268,27 +266,20 @@ public class PlanToLustre {
 			t = getLustreType(v.getType());
 		}
 		
-		nb.addLocal(new VarDecl(ILExprToLustre.getVariableId(v), t));
+		nb.addLocal(new VarDecl(LustreNamingConventions.getVariableId(v), t));
 	}
 
-	private static String getStateId(NodeStateMachine nsm) {
-		return NameUtils.clean(nsm.getStateMachineId());
-	}
-	
 	private static IdExpr getStateExpr(NodeStateMachine nsm) {
-		return new IdExpr(getStateId(nsm));
-	}
-	
-	private static String getStateMapperId(NodeUID uid) {
-		return NameUtils.clean(uid.toString()+"__state");
+		return new IdExpr(LustreNamingConventions.getStateId(nsm));
 	}
 	
 	public static Expr getPlexilStateExprForNode(NodeUID uid) {
-		return new UnaryExpr(UnaryOp.PRE, new IdExpr(getStateMapperId(uid)));
+		return new UnaryExpr(UnaryOp.PRE, new IdExpr(
+				LustreNamingConventions.getStateMapperId(uid)));
 	}
 
 	private void addStateMachine(NodeStateMachine nsm) {
-		String id = getStateId(nsm);
+		String id = LustreNamingConventions.getStateId(nsm);
 		
 		VarDecl stateVar = new VarDecl(id, NamedType.INT);
 		
@@ -297,12 +288,13 @@ public class PlanToLustre {
 		
 		// We also need to map back to Plexil state.
 		for (NodeUID uid : nsm.getNodeIds()) {
-			VarDecl mapper = new VarDecl(getStateMapperId(uid), ILExprToLustre.PSTATE);
-			Expr map = new IdExpr("inactive");
+			VarDecl mapper = new VarDecl(LustreNamingConventions.getStateMapperId(uid), 
+					LustreNamingConventions.PSTATE);
+			Expr map = ilToLustre.visitNodeState(NodeState.INACTIVE, PlexilType.STATE);
 			for (State s : nsm.getStates()) {
 				map = new IfThenElseExpr(
 						// if the real state variable is this one
-						new BinaryExpr(new IdExpr(getStateId(nsm)), BinaryOp.EQUAL, 
+						new BinaryExpr(getStateExpr(nsm), BinaryOp.EQUAL, 
 								new IdExpr(s.getIndex()+"")),
 						// then return the tag
 						toLustre(s.tags.get(uid), PlexilType.STATE),
@@ -311,14 +303,15 @@ public class PlanToLustre {
 			}
 			
 			nb.addLocal(mapper);
-			nb.addEquation(new Equation(new IdExpr(getStateMapperId(uid)), map));
+			nb.addEquation(new Equation(new IdExpr(
+					LustreNamingConventions.getStateMapperId(uid)), map));
 		}
 	}
 	
 	public String stringToEnum(StringValue v) {
 		if (v.getString().equals("")) {
-			allExpectedStrings.put(EMPTY_STRING, v);
-			return EMPTY_STRING;
+			allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, v);
+			return LustreNamingConventions.EMPTY_STRING;
 		}
 		
 		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
@@ -326,8 +319,8 @@ public class PlanToLustre {
 			throw new RuntimeException("Enumerated string was empty: "+v);
 		}
 		if (allExpectedStrings.containsKey(toReturn)) {
-			StringValue prev = allExpectedStrings.get(toReturn);
-			if (prev.equalTo(v).isFalse()) {
+			PString prev = allExpectedStrings.get(toReturn);
+			if (prev.equalTo(v).isNotTrue()) {
 				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
 			}
 		}
@@ -337,8 +330,8 @@ public class PlanToLustre {
 	}
 	
 	public String stringToEnum(UnknownValue unk) {
-		allExpectedStrings.put(UNKNOWN_STRING, null);
-		return UNKNOWN_STRING;
+		allExpectedStrings.put(LustreNamingConventions.UNKNOWN_STRING, unk);
+		return LustreNamingConventions.UNKNOWN_STRING;
 	}
 	
 	public Expr stateMachineExpr(NodeStateMachine nsm) {

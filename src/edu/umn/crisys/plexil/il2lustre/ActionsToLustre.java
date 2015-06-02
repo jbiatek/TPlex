@@ -99,7 +99,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 				// Preliminary support for constant arrays
 				System.out.println("WARNING: Array "+v+" is being initialized, but isn't changing.");
 				
-				IdExpr id = new IdExpr(ILExprToLustre.getVariableId(v));
+				IdExpr id = new IdExpr(LustreNamingConventions.getVariableId(v));
 				init = translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
 				// init -> pre(array);
 				Expr arrayEq = new BinaryExpr(init, BinaryOp.ARROW, 
@@ -111,7 +111,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			}
 			// After that, do the big if then else that we made.
 			Expr fullThing = new BinaryExpr(init, BinaryOp.ARROW, varNextValue.get(v));
-			nb.addEquation(new Equation(new IdExpr(ILExprToLustre.getVariableId(v)),
+			nb.addEquation(new Equation(new IdExpr(LustreNamingConventions.getVariableId(v)),
 					fullThing));
 		}
 		
@@ -144,7 +144,12 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
 	@Override
 	public Void visitCommand(CommandAction cmd, Expr actionCondition) {
-		// TODO Auto-generated method stub
+		// We need a command handle input
+		
+		
+		// and an optional assignment to a variable.
+		// (Can happen once per execution, right?)
+		
 		return null;
 	}
 

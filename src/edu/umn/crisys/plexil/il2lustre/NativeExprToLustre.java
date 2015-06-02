@@ -46,22 +46,22 @@ public class NativeExprToLustre implements NativeExprVisitor<Void, Expr> {
 		Expr compareTo;
 		switch (pen.getCondition()) {
 		case TRUE:
-			op = BinaryOp.EQUAL; compareTo = ILExprToLustre.P_TRUE;
+			op = BinaryOp.EQUAL; compareTo = LustreNamingConventions.P_TRUE;
 			break;
 		case FALSE:
-			op = BinaryOp.EQUAL; compareTo = ILExprToLustre.P_FALSE;
+			op = BinaryOp.EQUAL; compareTo = LustreNamingConventions.P_FALSE;
 			break;
 		case UNKNOWN:
-			op = BinaryOp.EQUAL; compareTo = ILExprToLustre.P_UNKNOWN;
+			op = BinaryOp.EQUAL; compareTo = LustreNamingConventions.P_UNKNOWN;
 			break;
 		case NOTTRUE:
-			op = BinaryOp.NOTEQUAL; compareTo = ILExprToLustre.P_TRUE;
+			op = BinaryOp.NOTEQUAL; compareTo = LustreNamingConventions.P_TRUE;
 			break;
 		case NOTFALSE:
-			op = BinaryOp.NOTEQUAL; compareTo = ILExprToLustre.P_FALSE;
+			op = BinaryOp.NOTEQUAL; compareTo = LustreNamingConventions.P_FALSE;
 			break;
 		case KNOWN:
-			op = BinaryOp.NOTEQUAL; compareTo = ILExprToLustre.P_UNKNOWN;
+			op = BinaryOp.NOTEQUAL; compareTo = LustreNamingConventions.P_UNKNOWN;
 			break;
 		default:
 			throw new RuntimeException("Unknown case!");	

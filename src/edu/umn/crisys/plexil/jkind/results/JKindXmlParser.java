@@ -13,8 +13,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.StartElement;
 
-import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
-import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
+import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -175,19 +174,19 @@ public class JKindXmlParser extends XMLUtils {
 			return IntegerValue.get(Integer.parseInt(value));
 		case "pboolean":
 		case "bool":
-			if (value.equals(ILExprToLustre.P_TRUE_ID)) {
+			if (value.equals(LustreNamingConventions.P_TRUE_ID)) {
 				return BooleanValue.get(true);
-			} else if (value.equals(ILExprToLustre.P_FALSE_ID)) {
+			} else if (value.equals(LustreNamingConventions.P_FALSE_ID)) {
 				return BooleanValue.get(false);
-			} else if (value.equals(ILExprToLustre.P_UNKNOWN_ID)) {
+			} else if (value.equals(LustreNamingConventions.P_UNKNOWN_ID)) {
 				return UnknownValue.get();
 			}
 			return PlexilType.BOOLEAN.parseValue(value);
-		case PlanToLustre.STRING_ENUM_NAME: 
-			if (value.equals(PlanToLustre.UNKNOWN_STRING)) {
+		case LustreNamingConventions.STRING_ENUM_NAME: 
+			if (value.equals(LustreNamingConventions.UNKNOWN_STRING)) {
 				return UnknownValue.get();
 			}
-			if (value.equals(PlanToLustre.EMPTY_STRING)) {
+			if (value.equals(LustreNamingConventions.EMPTY_STRING)) {
 				return StringValue.get("");
 			}
 			if (! stringMap.isPresent()) {

@@ -3,20 +3,16 @@ package edu.umn.crisys.plexil.il2lustre;
 import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
@@ -30,7 +26,6 @@ import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -48,82 +43,8 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Expr>{
 	
-	public static final String P_TRUE_ID = "p_true";
-	public static final String P_FALSE_ID = "p_false";
-	public static final String P_UNKNOWN_ID = "p_unknown";
-	
-	public static final IdExpr P_TRUE = new IdExpr(P_TRUE_ID);
-	public static final IdExpr P_FALSE = new IdExpr(P_FALSE_ID);
-	public static final IdExpr P_UNKNOWN = new IdExpr(P_UNKNOWN_ID);
-	
-	public static final boolean KNOWN_FLAG = true;
-	public static final boolean UNKNOWN_FLAG = !KNOWN_FLAG;
-	
-	public static final EnumType PBOOLEAN = new EnumType("pboolean", 
-			Arrays.asList(P_TRUE_ID, P_FALSE_ID, P_UNKNOWN_ID)); 
-	
-	public static final EnumType PSTATE = new EnumType("pstate", 
-			enumerator(NodeState.values()));
-	
-	public static final EnumType PCOMMAND = new EnumType("command_handle", 
-			enumerator(CommandHandleState.values()));
-
-	public static final EnumType POUTCOME = new EnumType("node_outcome", 
-			enumerator(NodeOutcome.values()));
-	
-	public static final EnumType PFAILURE = new EnumType("node_failure", 
-			enumerator(NodeFailureType.values()));
-
-	private static List<String> enumerator(Enum<?>[] values) {
-		List<String> ret = new ArrayList<String>();
-		for (Enum<?> e : values) {
-			ret.add(getEnumId(e));
-		}
-		return ret;
-	}
-	
-	private static String getEnumId(Enum<?> value) {
-		if (value.name().equalsIgnoreCase("unknown")) {
-			return value.getClass().getSimpleName().toString().toLowerCase()
-					+"_"+value.name().toLowerCase();
-		}
-		return value.name().toLowerCase();
-	}
-
 	private static Expr pre(Expr arg) {
 		return new UnaryExpr(UnaryOp.PRE, arg);
-	}
-	
-	private static String getLookupId(Expression rawName) {
-		//TODO: Lookup parameters, right now only one value per lookup name
-		
-		if (rawName instanceof StringValue) {
-			StringValue name = (StringValue) rawName;
-			return getLookupId(name.asString());
-		}
-		// I don't think we're ever going to be able to support non-constant
-		// lookup names in Lustre.
-		throw new RuntimeException(rawName+" is dynamic.");
-	}
-	
-	public static String getLookupId(String lookupName) {
-		return NameUtils.clean("Lookup/"+lookupName);
-	}
-	
-	public static String getRawLookupId(String lookupName) {
-		return getLookupId(lookupName+"/raw");
-	}
-	
-	public static String getInputName(LookupNowExpr lookup) {
-		return getLookupId(lookup.getLookupName());
-	}
-	
-	public static String getInputName(LookupOnChangeExpr lookup) {
-		return getLookupId(lookup.getLookupName());
-	}
-	
-	public static String getVariableId(ILVariable v) {
-		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
 	}
 
 	private PlanToLustre translator;
@@ -140,12 +61,12 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	@Override
 	public Expr visitLookupNow(LookupNowExpr lookup, PlexilType expectedType) {
-		return id(getInputName(lookup));
+		return id(LustreNamingConventions.getInputName(lookup));
 	}
 
 	@Override
 	public Expr visitLookupOnChange(LookupOnChangeExpr lookup, PlexilType expectedType) {
-		return id(getInputName(lookup));
+		return id(LustreNamingConventions.getInputName(lookup));
 	}
 
 	private static Expr toPBoolean(Expr e) {
@@ -158,25 +79,25 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 		switch (op.getOperator()) {
 		// ---------------- Boolean operators
 		case AND:
-			return multi(op.getArguments(), "p_and", PlexilType.BOOLEAN);
+			return multi(op.getArguments(), LustreNamingConventions.AND_OPERATOR, PlexilType.BOOLEAN);
 		case NOT:
-			return unary(op.getArguments(), "p_not", PlexilType.BOOLEAN);
+			return unary(op.getArguments(), LustreNamingConventions.NOT_OPERATOR, PlexilType.BOOLEAN);
 		case OR:
-			return multi(op.getArguments(), "p_or", PlexilType.BOOLEAN);
+			return multi(op.getArguments(), LustreNamingConventions.OR_OPERATOR, PlexilType.BOOLEAN);
 		case XOR:
-			return binary(op.getArguments(), "p_xor", PlexilType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.XOR_OPERATOR, PlexilType.BOOLEAN);
 		case EQ:
 			switch (op.getActualArgumentType()) {
 			case BOOLEAN: 
-				return binary(op.getArguments(), "p_eq_boolean", PlexilType.BOOLEAN);
+				return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, PlexilType.BOOLEAN);
 			default:
 				return toPBoolean(binary(op.getArguments(), BinaryOp.EQUAL, op.getExpectedArgumentType()));
 			}
 		case NE:
 			switch (op.getActualArgumentType()) {
 			case BOOLEAN:
-				return new NodeCallExpr("p_not", 
-						binary(op.getArguments(), "p_eq_boolean", PlexilType.BOOLEAN));
+				return new NodeCallExpr(LustreNamingConventions.NOT_OPERATOR, 
+						binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, PlexilType.BOOLEAN));
 			default:
 				return toPBoolean(binary(op.getArguments(), BinaryOp.NOTEQUAL, op.getExpectedArgumentType()));
 			}
@@ -187,9 +108,9 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 				return new BinaryExpr(
 						op.getArguments().get(0).accept(this, PlexilType.BOOLEAN), 
 						BinaryOp.NOTEQUAL, 
-						P_UNKNOWN);
+						LustreNamingConventions.P_UNKNOWN);
 			default:
-				return P_TRUE;
+				return LustreNamingConventions.P_TRUE;
 			}
 
 		// ---------------- Numeric operators
@@ -315,12 +236,12 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 	@Override
 	public Expr visitBooleanValue(BooleanValue bool, PlexilType expectedType) {
 		if (bool.isTrue()) {
-			return P_TRUE;
+			return LustreNamingConventions.P_TRUE;
 		}
 		if (bool.isFalse()) {
-			return P_FALSE;
+			return LustreNamingConventions.P_FALSE;
 		}
-		return P_UNKNOWN;
+		return LustreNamingConventions.P_UNKNOWN;
 	}
 
 	@Override
@@ -342,7 +263,7 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 	public Expr visitUnknownValue(UnknownValue unk, PlexilType expectedType) {
 		switch(expectedType) {
 		case BOOLEAN:
-			return P_UNKNOWN;
+			return LustreNamingConventions.P_UNKNOWN;
 		case INTEGER:
 			return id("0");
 		case REAL:
@@ -365,32 +286,32 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 
 	@Override
 	public Expr visitCommandHandleState(CommandHandleState state, PlexilType expectedType) {
-		return id(getEnumId(state));
+		return id(LustreNamingConventions.getEnumId(state));
 	}
 
 	@Override
 	public Expr visitNodeFailure(NodeFailureType type, PlexilType expectedType) {
-		return id(getEnumId(type));
+		return id(LustreNamingConventions.getEnumId(type));
 	}
 
 	@Override
 	public Expr visitNodeOutcome(NodeOutcome outcome, PlexilType expectedType) {
-		return id(getEnumId(outcome));
+		return id(LustreNamingConventions.getEnumId(outcome));
 	}
 
 	@Override
 	public Expr visitNodeState(NodeState state, PlexilType expectedType) {
-		return id(getEnumId(state));
+		return id(LustreNamingConventions.getEnumId(state));
 	}
 
 	@Override
 	public Expr visitSimple(SimpleVar var, PlexilType expectedType) {
-		return pre(id(getVariableId(var)));
+		return pre(id(LustreNamingConventions.getVariableId(var)));
 	}
 
 	@Override
 	public Expr visitArray(ArrayVar array, PlexilType expectedType) {
-		return pre(id(getVariableId(array)));
+		return pre(id(LustreNamingConventions.getVariableId(array)));
 	}
 
 	@Override
