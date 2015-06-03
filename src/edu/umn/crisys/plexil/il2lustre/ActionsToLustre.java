@@ -14,6 +14,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
@@ -24,12 +25,17 @@ import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
 
 public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
@@ -95,7 +101,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 						((SimpleVar) v).getInitialValue(), v.getType());
 			} else if (v instanceof ArrayVar) { 
 				// Preliminary support for constant arrays
-				System.out.println("WARNING: Array "+v+" is being initialized, but isn't changing.");
+				System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
 				
 				IdExpr id = new IdExpr(LustreNamingConventions.getVariableId(v));
 				init = translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
@@ -143,10 +149,36 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	@Override
 	public Void visitCommand(CommandAction cmd, Expr actionCondition) {
 		// We need a command handle input
+		String rawId = translator.addRawCommandHandleInputFor(cmd.getHandle());
+		
+		/*
+		 * It kind of looks like handles only change in EXECUTING, FINISHING,
+		 * and FAILING maybe. Before that, no command has been issued, and
+		 * afterward the node is all done and there have been some checks 
+		 * to ensure that at least something happened with the command.  
+		 */
+		//TODO: Check with Plexil team and see if this is acceptable.
+		NodeUID node = cmd.getHandle().getNodeUID();
+		NativeEqual executing = new NativeEqual(NodeState.EXECUTING, new GetNodeStateExpr(node));
+		NativeEqual finishing = new NativeEqual(NodeState.FINISHING, new GetNodeStateExpr(node));
+		NativeEqual failing = new NativeEqual(NodeState.FAILING, new GetNodeStateExpr(node));
+		NativeOperation inChangeableState = new NativeOperation(NativeOp.OR, executing, finishing, failing);
+		// Need to be at a macro step boundary, and in one of those states.
+		Expr guard = new BinaryExpr(new IdExpr(LustreNamingConventions.MACRO_STEP_ENDED_ID),
+				BinaryOp.AND,
+				translator.toLustre(inChangeableState));
 		
 		
-		// and an optional assignment to a variable.
-		// (Can happen once per execution, right?)
+		// If we're in any of those states, take from the raw input, else
+		// return whatever we've already seen
+		varNextValue.put(cmd.getHandle(), new IfThenElseExpr(
+				guard,
+				new IdExpr(rawId), 
+				varNextValue.get(cmd.getHandle())));
+		
+		if (cmd.getPossibleLeftHandSide().isPresent()) {
+			System.err.println("WARNING: Variable assignments from commands not supported yet!");
+		}
 		
 		return null;
 	}

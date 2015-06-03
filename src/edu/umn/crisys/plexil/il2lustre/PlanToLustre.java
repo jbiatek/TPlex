@@ -28,6 +28,7 @@ import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
@@ -51,7 +52,6 @@ public class PlanToLustre {
 	private NodeBuilder nb;
 	private Map<String, PString> allExpectedStrings = new HashMap<>();
 	
-	
 	private ILExprToLustre ilToLustre = new ILExprToLustre(this);
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 
@@ -70,15 +70,15 @@ public class PlanToLustre {
 		
 		// Add in declared lookups
 		for (LookupDecl lookup : p.getStateDecls()) {
-			addLookup(lookup);
+			addLookupToNode(lookup);
 		}
 		
 		for (NodeStateMachine nsm : p.getMachines()) {
-			addStateMachine(nsm);
+			addStateMachineToNode(nsm);
 		}
 		
 		for (ILVariable v : p.getVariables()) {
-			addVariable(v);
+			addVariableToNode(v);
 		}
 		
 		// Translate actions
@@ -120,7 +120,27 @@ public class PlanToLustre {
 		return pb.build();
 	}
 	
-	private void addLookup(LookupDecl lookup) {
+	
+	/**
+	 * Adds an input to the NodeBuilder for this command handle. This
+	 * is *raw* input, so it is completely unconstrained. ActionsToLustre, the
+	 * class responsible for finding and translating Actions like assigning 
+	 * variables and issuing commands, is probably the only class that should
+	 * use this. (It will create a constrained variable that uses this input
+	 * as a source of nondeterminism but adheres to Plexil's semantics.)
+	 * @param handle The actual Plexil handle (for naming purposes)
+	 * @return the Lustre ID for the new input, which is also available from 
+	 * LustreNamingConventions.getRawCommandHandleId(). 
+	 */
+	public String addRawCommandHandleInputFor(ILVariable handle) {
+		// We'll need a raw input of type command handle
+		String rawInputId = LustreNamingConventions.getRawCommandHandleId(handle);
+		Type cmdType = LustreNamingConventions.PCOMMAND;
+		nb.addInput(new VarDecl(rawInputId, cmdType));
+		return rawInputId;
+	}
+
+	private void addLookupToNode(LookupDecl lookup) {
 		if (lookup.getParameters().size() > 0) {
 			System.err.println("Warning: Lookup parameters are not "
 					+ "supported in Lustre translation: "+lookup.getName());
@@ -146,6 +166,10 @@ public class PlanToLustre {
 	
 	public Expr toLustre(ILExpression e, PlexilType expectedType) {
 		return e.accept(ilToLustre, expectedType);
+	}
+	
+	public Expr toLustre(NativeExpr e) {
+		return e.accept(nativeToLustre, null);
 	}
 	
 	public Optional<Map<String,PString>> getStringMap() {
@@ -256,7 +280,7 @@ public class PlanToLustre {
 	}
 	
 	
-	private void addVariable(ILVariable v) {
+	private void addVariableToNode(ILVariable v) {
 		// Assignments are handled by actions. We'll do the declaration 
 		// and leave the rest to them. 
 		Type t;
@@ -279,7 +303,7 @@ public class PlanToLustre {
 				LustreNamingConventions.getStateMapperId(uid)));
 	}
 
-	private void addStateMachine(NodeStateMachine nsm) {
+	private void addStateMachineToNode(NodeStateMachine nsm) {
 		String id = LustreNamingConventions.getStateId(nsm);
 		
 		VarDecl stateVar = new VarDecl(id, NamedType.INT);
@@ -367,7 +391,7 @@ public class PlanToLustre {
 	 * @return
 	 */
 	public Expr getGuardExprFor(Transition t) {
-		return t.guard.accept(nativeToLustre, null);
+		return toLustre(t.guard);
 	}
 	
 	/**

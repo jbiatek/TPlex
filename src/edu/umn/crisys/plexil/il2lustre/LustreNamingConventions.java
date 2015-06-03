@@ -104,6 +104,10 @@ public class LustreNamingConventions {
 		return getLookupId(lookup.getLookupName());
 	}
 	
+	public static String getRawCommandHandleId(ILVariable cmdHandle) {
+		return getVariableId(cmdHandle)+NameUtils.clean("/raw");
+	}
+	
 	public static String getVariableId(ILVariable v) {
 		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
 	}
