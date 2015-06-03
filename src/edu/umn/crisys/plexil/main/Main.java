@@ -37,6 +37,7 @@ import com.sun.codemodel.JDefinedClass;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
@@ -284,8 +285,7 @@ public class Main {
 				StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
 			}
 			
-			Plan ilPlan = new Plan(filename);
-			toIl.translate(ilPlan);
+			Plan ilPlan = PlexilPlanToILPlan.translate(plan);
 			ilPlans.add(ilPlan);
 			originalTranslator.put(ilPlan, toIl);
 			originalAst.put(ilPlan, plan);
