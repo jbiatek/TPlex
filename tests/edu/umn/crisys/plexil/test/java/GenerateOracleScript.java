@@ -25,7 +25,7 @@ public class GenerateOracleScript {
         out.println("#!/bin/sh");
         
         // Run complex tests:
-        for (TestSuite suite : RegressionTest.getTestSuites()) {
+        for (TestSuite suite : RegressionTest.getJavaTestSuites()) {
         	if (suite.planScripts.length == 0) {
         		printRun(out, suite.planFile, "empty");
         	} else {

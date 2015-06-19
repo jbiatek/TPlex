@@ -39,6 +39,7 @@ public class RegressionTest {
 	public static final File TESTING_DIRECTORY = new File("tests");
 	public static final File RESOURCES = new File("tests/edu/umn/crisys/plexil/test/resources/");
 	public static final File ORACLE_LOGS = new File("tests/generated/oracle");
+	public static final File LUSTRE_FILES = new File("tests/generated/lustre");
 	public static final String TPLEX_OUTPUT_PACKAGE = "generated.java";
 	
 	public static class TestSuite {
@@ -100,9 +101,9 @@ public class RegressionTest {
 	}
 	
 	/**
-	 * @return all of the TestSuites in the regression test suite. 
+	 * @return all of the TestSuites in the regression test suite for Java.
 	 */
-	public static List<TestSuite> getTestSuites() {
+	public static List<TestSuite> getJavaTestSuites() {
 		List<TestSuite> ret = new ArrayList<RegressionTest.TestSuite>();
 		ret.addAll(Arrays.asList(MANUAL_TESTS));
 		
@@ -115,6 +116,14 @@ public class RegressionTest {
 		}
 		
 		return ret;
+	}
+	
+	/**
+	 * @return all of the TestSuites for Lustre regression testing. 
+	 */
+	public static List<TestSuite> getLustreTestSuites() {
+		// Preeeeety limited for now. 
+		return Arrays.asList(produceSameNameTest("DriveToSchool"));
 	}
 	
 	
@@ -256,6 +265,16 @@ public class RegressionTest {
 	}
 
 	private void runSingleTest(String planName, String scriptName) throws Exception {
+		List<PlanState> expected = parseLogFile(
+		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
+		
+		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
+
+		runSingleTestJava(planName, scriptName, expected);
+	}
+	
+	private void runSingleTestJava(String planName, String scriptName, 
+			List<PlanState> expected) throws Exception {
         System.out.println("Running "+planName+" with script "+scriptName);
         
 	    String script = NameUtils.clean(scriptName);
@@ -274,10 +293,6 @@ public class RegressionTest {
 		PlexilTestable root = (PlexilTestable) main.getConstructor(ExternalWorld.class).newInstance(world);
 		
 		// And finally the log file
-		List<PlanState> expected = parseLogFile(
-		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
-		
-		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
         
         System.out.println("World set, ready to go");
         for (int i = 0; i < expected.size(); i++) {
