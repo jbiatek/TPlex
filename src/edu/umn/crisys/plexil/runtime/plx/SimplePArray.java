@@ -43,6 +43,15 @@ public class SimplePArray<T extends PValue> {
 		next = new ArrayList<T>(current);
 	}
 	
+	public SimplePArray(PlexilType t, int size, PValueList<T> init) {
+		this.current = init;
+		this.type = t;
+		this.maxSize = size;
+		this.modified = new boolean[maxSize];
+		
+		next = new ArrayList<T>(current);
+	}
+	
 	public PValueList<T> getCurrent() {
 		return current;
 	}

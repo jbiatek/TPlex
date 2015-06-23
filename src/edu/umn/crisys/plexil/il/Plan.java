@@ -44,6 +44,8 @@ public class Plan {
      */
 	private List<LibraryDecl> libraryDecls = new ArrayList<LibraryDecl>();
 
+	private OriginalHierarchy snapshot;
+	
 	private NodeStateMachine root;
 	private ILVariable rootOutcome;
 	private GetNodeStateExpr rootState;
@@ -183,5 +185,13 @@ public class Plan {
 			}
 		}
 
+	}
+
+	public OriginalHierarchy getOriginalHierarchy() {
+		return snapshot;
+	}
+
+	public void setOriginalHierarchy(OriginalHierarchy snapshot) {
+		this.snapshot = snapshot;
 	}
 }

@@ -251,7 +251,12 @@ public class RegressionTest {
 	    runTestSuite(increment2);
 	}
 	
-	private List<PlanState> parseLogFile(File logFile) throws Exception {
+	public static List<PlanState> parseLogFile(String planName, String scriptName) throws Exception{
+		return parseLogFile(
+		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
+	}
+	
+	public static List<PlanState> parseLogFile(File logFile) throws Exception {
 		List<PlanState> oracles = new ArrayList<PlanState>();
 		BufferedReader in = new BufferedReader(new FileReader(logFile));
 		PlanState state = PlanState.parseLogFile(in);
@@ -264,16 +269,15 @@ public class RegressionTest {
 		return oracles;
 	}
 
-	private void runSingleTest(String planName, String scriptName) throws Exception {
-		List<PlanState> expected = parseLogFile(
-		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
+	public static void runSingleTest(String planName, String scriptName) throws Exception {
+		List<PlanState> expected = parseLogFile(planName, scriptName);
 		
 		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
 
 		runSingleTestJava(planName, scriptName, expected);
 	}
 	
-	private void runSingleTestJava(String planName, String scriptName, 
+	public static void runSingleTestJava(String planName, String scriptName, 
 			List<PlanState> expected) throws Exception {
         System.out.println("Running "+planName+" with script "+scriptName);
         
@@ -292,8 +296,11 @@ public class RegressionTest {
 		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
 		PlexilTestable root = (PlexilTestable) main.getConstructor(ExternalWorld.class).newInstance(world);
 		
-		// And finally the log file
-        
+		runTest(root, world, expected);
+	}
+	
+	public static void runTest(PlexilTestable root, ExternalWorld world, 
+			List<PlanState> expected) {
         System.out.println("World set, ready to go");
         for (int i = 0; i < expected.size(); i++) {
             System.out.println("==> Starting step "+(i+1));
@@ -315,9 +322,10 @@ public class RegressionTest {
             world.quiescenceReached((JavaPlan)root);
         }
         System.out.println("Finished.");
+
 	}
 	
-	private void runTestSuite(TestSuite suite) throws Exception {
+	public static void runTestSuite(TestSuite suite) throws Exception {
 	    for (String script : suite.planScripts) {
 	        runSingleTest(suite.planFile, script);
 	    }

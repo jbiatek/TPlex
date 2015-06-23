@@ -64,77 +64,77 @@ import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 public class Main {
 	
 	@Parameter(names = {"--help", "-h"}, description = "Print this help message.", help = true)
-	private boolean help = false;
+	public boolean help = false;
 
 	@Parameter(names = "--output-dir", description = "The directory to output files to. For Java, this is where the package will be placed.")
-	private File outputDir = new File("./");
+	public File outputDir = new File("./");
 	
 	@Parameter(description="FILE1.{plx|psx} [FILE2.{plx|psx} ...]", variableArity = true)
-	private List<File> files = new ArrayList<>();
+	public List<File> files = new ArrayList<>();
 	
 	@Parameter(names="--directory", variableArity = true,
 			description = "Also include all PLX and PSX files found in the given directories.",
 			converter = FileConverter.class)
-	private List<File> dirs = new ArrayList<>();
+	public List<File> dirs = new ArrayList<>();
 	
 	@Parameter(names = "--lang", 
 			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'plexil' can be used to turn a .plx file in to a more readable .ple file.")
-	private OutputLanguage outputLanguage = OutputLanguage.NONE;
+	public OutputLanguage outputLanguage = OutputLanguage.NONE;
 	
 	@Parameter(names = "--static-libs", description="When translating libraries, first try to go through all the specified PLX files. If the correct ID is found, the library is included statically.")
-	private boolean staticLibraries = false;
+	public boolean staticLibraries = false;
 	
 	@Parameter(names = "--no-optimizations", description="Disable all optimizations.")
-	private boolean skipAllOptimizations = false;
+	public boolean skipAllOptimizations = false;
 	
 	@Parameter(names = "--no-biasing", description="Disable the optimization which biases 3-valued logic expressions.")
-	private boolean noBiasing = false;
+	public boolean noBiasing = false;
 	
 	@Parameter(names = "--no-root-plans", description="Disable the optimization which removes some code from plans that look like they aren't going to be used as libraries. ")
-	private boolean noGuessTopLevelPlans = false;
+	public boolean noGuessTopLevelPlans = false;
 	
 	@Parameter(names = "--int-timepoints", description="When generating node timepoints, set the type as Integer. By default, they're assumed to be Real.")
-	private boolean forceIntTimepoints = false;
+	public boolean forceIntTimepoints = false;
 	
 	@Parameter(names = "--print-type-info", description="After any translating, print an analysis of Lookup and Command types.")
-	private boolean analyzeTypes = false;
+	public boolean analyzeTypes = false;
 	
 	@Parameter(names = "--print-reachable-states", description="After any translating, print an analysis of reachable PLEXIL states.")
-	private boolean reachableStates = false;
+	public boolean reachableStates = false;
 
 	//Java-specific options
 	@Parameter(names = "--java-package", 
 			description = "Java package for generated files (default is empty)"
 			)
-	private String javaPackage = "";
+	public String javaPackage = "";
 	@Parameter(names = "--java-no-snapshot-method",
 			description = "Don't generate the Java getSnapshot() method (useful for debugging and unit testing)")
-	private boolean javaNoSnapshotMethod = false;
+	public boolean javaNoSnapshotMethod = false;
 	@Parameter(names = "--java-no-debug", description="In Java, don't generate code that prints everything that happens to stdout.",
 			arity = 1)
-	private boolean javaNoDebugStatements = false;
+	public boolean javaNoDebugStatements = false;
 	@Parameter(names = "--java-no-ternary", description="In Java, don't use the ternary operator (?:). This will disable short-circuiting of some AND and OR expressions.",
 			arity = 1)
-	private boolean javaNoTernaryOperator = false;
+	public boolean javaNoTernaryOperator = false;
 
 	
 	//Lustre-specific options
 	@Parameter(names = "--lustre-obligations", description = 
 			"Generate test generation properties to cover Plexil states.")
-	private PlanToLustre.Obligation obligation = Obligation.NONE;
+	public PlanToLustre.Obligation obligation = Obligation.NONE;
 	
 	@Parameter(names = "--lustre-to-scripts", description = 
 			"Translate a JKind .xml file with counterexamples to the output directory as PlexilScript.")
-	private String lustreResultsToTranslate = "";
+	public String lustreResultsToTranslate = "";
 	
 
 	//Variables to use during translation
-	private Map<String, PlexilPlan> asts = new HashMap<>();
-	private Map<String, PlexilScript> scripts = new HashMap<>();
-	private Set<Plan> ilPlans = new HashSet<>();
-	private Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
-	private Map<Plan, PlexilPlan> originalAst = new HashMap<>();
-	private Map<String, String> idToFile = new HashMap<>();
+	public Map<String, PlexilPlan> asts = new HashMap<>();
+	public Map<String, PlexilScript> scripts = new HashMap<>();
+	public Set<Plan> ilPlans = new HashSet<>();
+	public Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
+	public Map<Plan, PlexilPlan> originalAst = new HashMap<>();
+	public Map<String, String> idToFile = new HashMap<>();
 	
 	/**
 	 * Our own usage string, as set by JCommander/the main method. 
@@ -142,7 +142,7 @@ public class Main {
 	private String usage;
 
 	
-	static enum OutputLanguage {
+	public static enum OutputLanguage {
 		JAVA, LUSTRE, PLEXIL, NONE;
 		
 		public String toString() {
@@ -388,7 +388,7 @@ public class Main {
 		for (Plan p : ilPlans) {
 			JDefinedClass clazz = PlanToJava.toJava(p, cm, javaPackage, idToFile);
 			if ( ! javaNoSnapshotMethod) {
-				PlanToJava.addGetSnapshotMethod(p, originalTranslator.get(p), clazz);
+				PlanToJava.addGetSnapshotMethod(p, clazz);
 			}
 		}
 		for (String filename : scripts.keySet()) {

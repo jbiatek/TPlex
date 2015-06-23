@@ -18,7 +18,7 @@ import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
-import edu.umn.crisys.plexil.ast2il.NodeToIL;
+import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.vars.ArrayVar;
@@ -321,21 +321,23 @@ public class PlanToJava {
 	
 	
 
-	public static void addGetSnapshotMethod(Plan ilPlan, NodeToIL translator,
-            JDefinedClass javaCode) {
+	public static void addGetSnapshotMethod(Plan ilPlan, JDefinedClass javaCode) {
         
         javaCode._implements(PlexilTestable.class);
         
         JCodeModel cm = javaCode.owner();
         JMethod m = javaCode.method(JMod.PUBLIC, cm.ref(PlanState.class), "getSnapshot");
         
+    	// Some variables might have been removed along the way due to 
+    	// optimizations and whatnot, so make sure that those are removed first
+    	ilPlan.getOriginalHierarchy().removeDeletedVariables(ilPlan);
+        
         // For every Plexil node, we need to grab its variables and put them
         // into a PlanState node.
-        
-        JVar root = addSnapshotInfo(ilPlan, translator, null, m.body(), cm);
+        JVar root = addSnapshotInfo(ilPlan, ilPlan.getOriginalHierarchy(), 
+        		Optional.empty(), m.body(), cm);
         
         m.body()._return(root);
-        
     }
     
     /**
@@ -347,46 +349,28 @@ public class PlanToJava {
      * @param cm
      * @return the local variable that was made.
      */
-    private static JVar addSnapshotInfo(Plan ilPlan, NodeToIL translator, JVar parent, JBlock b,
-            JCodeModel cm) {
+    private static JVar addSnapshotInfo(Plan ilPlan, OriginalHierarchy node, 
+    		Optional<JVar> parent, JBlock b, JCodeModel cm) {
         JInvocation planStateInit = JExpr._new(cm.ref(PlanState.class))
-            .arg(translator.getUID().getShortName());
-        if (parent != null) {
-            planStateInit.arg(parent);
-        } 
-        JVar ps = b.decl(cm.ref(PlanState.class), translator.getUID().toCleanString(), planStateInit);
+            .arg(node.getUID().getShortName());
+        parent.ifPresent(var -> planStateInit.arg(var));
+        JVar ps = b.decl(cm.ref(PlanState.class), node.getUID().toCleanString(), planStateInit);
         
-        // State variables aren't IL variables, so add that specifically
-        b.invoke(ps, "addVariable").arg(".state").arg(ILExprToJava.toJava(translator.getState(), cm));
-        
-        for (String varName : translator.getAllVariables()) {
-            ILVariable v = translator.getVariable(varName);
-            if ( ! ilPlan.getVariables().contains(v)) {
-            	// This variable didn't make it into the final version.
-            	continue;
-            }
-            
-            
-            String name = v.getName();
-            
-//            if (name.startsWith(".")) {
-//            	// Internal variables are named "ShortName.command_handle", etc.
-//            	name = v.getNodeUID().getShortName()+name;
-//            }
-            
-            b.invoke(ps, "addVariable").arg(name).arg(ILExprToJava.toJava(v, cm));
+        for (String varName : node.getVariables().keySet()) {
+            ILExpression v = node.getVariables().get(varName);
+            b.invoke(ps, "addVariable").arg(varName).arg(ILExprToJava.toJava(v, cm));
         }
         
-        for (NodeToIL child : translator.getChildren()) {
-            JVar childVar = addSnapshotInfo(ilPlan, child, ps, b, cm);
+        for (OriginalHierarchy child : node.getChildren()) {
+            JVar childVar = addSnapshotInfo(ilPlan, child, Optional.of(ps), b, cm);
             b.invoke(ps, "addChild").arg(childVar);
         }
         
-        if (translator.hasLibraryHandle()) {
+        if (node.getLibraryChild().isPresent()) {
         	// We need direct access to the field here.
             b.invoke(ps, "addChild").arg(
                     JExpr.invoke(JExpr.cast(cm.ref(PlexilTestable.class), 
-                    JExpr.ref(ILExprToJava.getLibraryFieldName(translator.getUID()))), "getSnapshot"));
+                    JExpr.ref(ILExprToJava.getLibraryFieldName(node.getUID()))), "getSnapshot"));
 
         }
         

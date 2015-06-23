@@ -1,9 +1,9 @@
 package edu.umn.crisys.plexil.test.java;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
+import edu.umn.crisys.plexil.main.Main;
+import edu.umn.crisys.plexil.main.Main.OutputLanguage;
 import edu.umn.crisys.plexil.test.java.RegressionTest.TestSuite;
 
 public class CompileRegressionTest {
@@ -28,33 +28,31 @@ public class CompileRegressionTest {
 	}
 	
 	private static void buildTestJava(TestSuite suite, File resources, File outputDir) throws Exception {
-		List<String> args = new ArrayList<String>();
-		args.add("--lang"); args.add("java");
-		args.add("--output-dir"); args.add(outputDir.getPath());
-		args.add("--java-package"); args.add(RegressionTest.TPLEX_OUTPUT_PACKAGE);
+		Main tplex = new Main();
+		tplex.outputLanguage = OutputLanguage.JAVA;
+		tplex.outputDir = outputDir;
+		tplex.javaPackage = RegressionTest.TPLEX_OUTPUT_PACKAGE;
 		
-		args.add(new File(resources, suite.planFile+".plx").getPath());
-		
+		tplex.files.add(new File(resources, suite.planFile+".plx"));
 		for (String scriptName : suite.planScripts) {
-			args.add(new File(resources, scriptName+".psx").getPath());
+			tplex.files.add(new File(resources, scriptName+".psx"));
 		}
 		for (String libName : suite.libs) {
-			args.add(new File(resources, libName+".plx").getPath());
+			tplex.files.add(new File(resources, libName+".plx"));
 		}
-		
-		edu.umn.crisys.plexil.main.Main.main(args.toArray(new String[]{}));
+
+		tplex.execute();
 	}
 	
 	private static void buildTestLustre(TestSuite suite, File resources, File outputDir) throws Exception {
-		List<String> args = new ArrayList<String>();
-		args.add("--lang"); args.add("lustre");
-		args.add("--output-dir"); args.add(outputDir.getPath());
-		
-		args.add(new File(resources, suite.planFile+".plx").getPath());
-		
-		edu.umn.crisys.plexil.main.Main.main(args.toArray(new String[]{}));
+		Main tplex = new Main();
+		tplex.outputLanguage = OutputLanguage.LUSTRE;
+		tplex.outputDir = outputDir;
 
 		
+		tplex.files.add(new File(resources, suite.planFile+".plx"));
+		
+		tplex.execute();
 		
 		for (String scriptName : suite.planScripts) {
 			throw new RuntimeException("Scripts need to be translated to CSVs for simulation");

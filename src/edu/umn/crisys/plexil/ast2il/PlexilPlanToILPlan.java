@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.ast2il;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
+import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
 
 public class PlexilPlanToILPlan {
@@ -14,6 +15,7 @@ public class PlexilPlanToILPlan {
         ilPlan.setLibraryDecls(p.getLibraryDeclarations());
         NodeToIL rootTranslator = new NodeToIL(p.getRootNode());
         rootTranslator.translate(ilPlan);
+        ilPlan.setOriginalHierarchy(new OriginalHierarchy(rootTranslator));
         return ilPlan;
     }
 }
