@@ -16,6 +16,7 @@ import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -128,7 +129,7 @@ public class ILExprToJava {
         String nativeJava = v.toString();
         if (v.getType() == PlexilType.STRING) {
         	// We're dumping this directly, so it needs quotes.
-            nativeJava = "\"" + nativeJava + "\"";
+            nativeJava = "\"" + ((PString)v).getString() + "\"";
         }
         return cm.ref(type.getConcreteTypeClass()).staticInvoke("get").arg(JExpr.direct(nativeJava));
 
