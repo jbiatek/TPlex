@@ -18,6 +18,7 @@ import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
 import edu.umn.crisys.plexil.script.ast.Event;
 import edu.umn.crisys.plexil.script.ast.FunctionCall;
+import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.ast.Simultaneous;
 import edu.umn.crisys.plexil.script.ast.StateChange;
 import edu.umn.crisys.plexil.script.ast.UpdateAck;
@@ -28,6 +29,20 @@ public class JavaPlexilScript implements ExternalWorld {
 
 	private List<Event> events = new ArrayList<Event>();
 	private int eventCounter = 0;
+	
+	public JavaPlexilScript() {
+		// Nothing to do, we're a perfectly valid empty PLEXILScript
+	}
+	
+	public JavaPlexilScript(PlexilScript astScript) {
+		// Initial event first, we hold it as 1 simultaneous over here.
+		events.add(new Simultaneous(astScript.getInitialEvents()));
+		// Then add the rest
+		events.addAll(astScript.getMainEvents());
+		
+		// Finally, reset ourselves so that we're ready to go
+		reset();
+	}
 	
     public void reset() {
     	env.reset();

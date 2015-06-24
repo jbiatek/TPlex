@@ -1,9 +1,7 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import jkind.lustre.ArrayType;
@@ -37,8 +35,6 @@ import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
-import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class PlanToLustre {
 
@@ -50,9 +46,8 @@ public class PlanToLustre {
 	
 	private ProgramBuilder pb = getProgramWithPlexilTypes();
 	private NodeBuilder nb;
-	private Map<String, PString> allExpectedStrings = new HashMap<>();
 	
-	private ILExprToLustre ilToLustre = new ILExprToLustre(this);
+	private ILExprToLustre ilToLustre = new ILExprToLustre();
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 
 	public PlanToLustre(Plan p) {
@@ -87,6 +82,7 @@ public class PlanToLustre {
 		a2l.toLustre(nb);
 		
 		// Add string enum, if any
+		Map<String, PString> allExpectedStrings = getStringMap();
 		if (! allExpectedStrings.keySet().isEmpty()) {
 			EnumType planStrings = new EnumType(LustreNamingConventions.STRING_ENUM_NAME, 
 				new ArrayList<String>(allExpectedStrings.keySet()));
@@ -172,12 +168,8 @@ public class PlanToLustre {
 		return e.accept(nativeToLustre, null);
 	}
 	
-	public Optional<Map<String,PString>> getStringMap() {
-		if (allExpectedStrings.isEmpty()) {
-			return Optional.empty();
-		} else {
-			return Optional.of(allExpectedStrings);
-		}
+	public Map<String,PString> getStringMap() {
+		return ilToLustre.getAllExpectedStrings();
 	}
 	
 	private static ProgramBuilder getProgramWithPlexilTypes() {
@@ -331,32 +323,6 @@ public class PlanToLustre {
 			nb.addEquation(new Equation(new IdExpr(
 					LustreNamingConventions.getStateMapperId(uid)), map));
 		}
-	}
-	
-	public String stringToEnum(StringValue v) {
-		if (v.getString().equals("")) {
-			allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, v);
-			return LustreNamingConventions.EMPTY_STRING;
-		}
-		
-		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
-		if (toReturn.equals("")) {
-			throw new RuntimeException("Enumerated string was empty: "+v);
-		}
-		if (allExpectedStrings.containsKey(toReturn)) {
-			PString prev = allExpectedStrings.get(toReturn);
-			if (prev.equalTo(v).isNotTrue()) {
-				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
-			}
-		}
-		// Okay, it's all good. Save this mapping.
-		allExpectedStrings.put(toReturn, v);
-		return toReturn;
-	}
-	
-	public String stringToEnum(UnknownValue unk) {
-		allExpectedStrings.put(LustreNamingConventions.UNKNOWN_STRING, unk);
-		return LustreNamingConventions.UNKNOWN_STRING;
 	}
 	
 	public Expr stateMachineExpr(NodeStateMachine nsm) {

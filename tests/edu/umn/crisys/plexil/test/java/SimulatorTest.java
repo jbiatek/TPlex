@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.test.java;
 
 import java.io.File;
+import java.util.Map.Entry;
 
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
@@ -24,8 +25,8 @@ public class SimulatorTest {
 			throw new RuntimeException("Which one do I want? ");
 		}
 		
-		for (Plan plan : tplex.ilPlans) {
-			return plan;
+		for ( Entry<String, Plan> entry : tplex.ilPlans.entrySet()) {
+			return entry.getValue();
 		}
 		throw new RuntimeException("this is unreachable");
 	}

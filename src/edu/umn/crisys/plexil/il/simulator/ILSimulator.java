@@ -101,7 +101,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 				PValue theIndex = theIndexResult.get();
 				if (theArray instanceof PValueList && theIndex instanceof PInteger) {
 					return Optional.of(
-							((PValueList)theArray).get(((PInteger)theIndex)));
+							((PValueList<?>)theArray).get(((PInteger)theIndex)));
 				}
 			}
 			return Optional.empty();
@@ -179,7 +179,6 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 	}
 
 	private void init(Plan ilPlan) {
-		JavaPlan.DEBUG = true;
 		this.ilPlan = ilPlan;
 		// Clean out the snapshots to get rid of optimized-out variables
 		ilPlan.getOriginalHierarchy().removeDeletedVariables(ilPlan);
@@ -218,7 +217,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 		}
 	}
 	
-	private PValue eval(Expression e) {
+	public PValue eval(Expression e) {
 		return ((ILExpression)e).accept(myEvaluator, null)
 				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
 	}
@@ -374,7 +373,9 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 			State currentState = nsm.getStates().get(states.get(nsm).getCurrent());
 			for (Transition t : nsm.getTransitions()) {
 				if (t.start.equals(currentState) && eval(t.guard) ) {
-					System.out.println(t.toString());
+					if (JavaPlan.DEBUG) {
+						System.out.println(t.toString());
+					}
 					// Perform this transition's actions
 					t.actions.forEach(this::exec);
 					// Perform actions for the new state
@@ -391,6 +392,8 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 			State newState = nsm.getStates().get(states.get(nsm).getNext());
 			newState.inActions.forEach(this::exec);
 		}
+		// Now notify listeners that the step is over.
+		notifyMicroStep();
 	}
 	@Override
 	public NodeOutcome getRootNodeOutcome() {

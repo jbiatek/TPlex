@@ -48,21 +48,19 @@ public class CompileRegressionTest {
 		TPlex tplex = new TPlex();
 		tplex.outputLanguage = OutputLanguage.LUSTRE;
 		tplex.outputDir = outputDir;
-
+		tplex.lustreSimulateScriptsAgainst = suite.planFile;
 		
 		tplex.files.add(new File(resources, suite.planFile+".plx"));
 		
-		tplex.execute();
-		
 		for (String scriptName : suite.planScripts) {
-			throw new RuntimeException("Scripts need to be translated to CSVs for simulation");
-			//args.add(new File(resources, scriptName+".psx").getPath());
+			tplex.files.add(new File(resources, scriptName+".psx"));
 		}
 		for (String libName : suite.libs) {
 			throw new RuntimeException("Libraries not supported in Lustre testing yet");
 			//args.add(new File(resources, libName+".plx").getPath());
 		}
 		
+		tplex.execute();
 	}
 
 }
