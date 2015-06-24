@@ -7,13 +7,17 @@ public interface JavaPlanObserver {
 	 * Called after PLEXIL has reached quiescence. When something changes,
 	 * return so that PLEXIL can run again, this time with the new event. 
 	 */
-	public void quiescenceReached(JavaPlan plan);
+	public default void quiescenceReached(JavaPlan plan) {
+		
+	}
 	
 	/**
 	 * Called if the PLEXIL plan ended its macro step early due to an
 	 * assignment, command, or update. 
 	 */
-	public void prematureEndOfMacroStep(JavaPlan plan);
+	public default void prematureEndOfMacroStep(JavaPlan plan) {
+		
+	}
 	
 	/**
 	 * Called at the end of every micro step. External worlds should NOT
@@ -22,10 +26,14 @@ public interface JavaPlanObserver {
 	 * only. 
 	 * @param plan
 	 */
-	public void endOfMicroStep(JavaPlan plan);
+	public default void endOfMicroStep(JavaPlan plan) {
+		
+	}
 	
 	/**
 	 * Called when execution has halted.
 	 */
-	public void endOfExecution(JavaPlan plan);
+	public default void endOfExecution(JavaPlan plan) {
+		
+	}
 }
