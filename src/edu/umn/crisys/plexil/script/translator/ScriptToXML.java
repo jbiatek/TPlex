@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
@@ -149,8 +150,14 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 	}
 	
 	private static void printParam(PValue arg, PrintWriter out) {
+		String argStr = arg.toString();
+		if (arg instanceof StringValue) {
+			// Grab the actual string value for these, the toString() method
+			// might include quotes or something
+			argStr = ((StringValue) arg).getString();
+		}
 		out.println("    <Param type=\""+toPsxTypeString(arg.getType())+"\">"
-				+arg.toString()+"</Param>");
+				+argStr+"</Param>");
 	}
 	
 	private static void printSimpleTag(String tagName, PValue arg, PrintWriter out) {

@@ -142,7 +142,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	}
 	
 	private PValue lookup(PString stateName, PValue...args ) {
-		FunctionCall key = new FunctionCall(stateName.toString(), args);
+		FunctionCall key = new FunctionCall(stateName.getString(), args);
 		if (lookup.containsKey(key)) {
 		    return lookup.get(key);
 		} else if (stateName.getString().equals("time")) {
@@ -161,7 +161,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	public void command(CommandHandler caller, PString name,
 			PValue... args) {
 		Pair<CommandHandler,FunctionCall> e = new Pair<CommandHandler, FunctionCall>(caller, 
-				new FunctionCall(name.toString(), args));
+				new FunctionCall(name.getString(), args));
 		// Handle utility commands right away
 		// (See PLEXIL's TestExternalInterface.cc, they do it the same way:
 		// immediately acknowledge with SUCCESS, and don't add it to the queue)
