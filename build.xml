@@ -6,7 +6,7 @@
         <jar destfile="TPlex.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="edu.umn.crisys.plexil.main.Main"/>
+                <attribute name="Rsrc-Main-Class" value="edu.umn.crisys.plexil.main.TPlex"/>
                 <attribute name="Class-Path" value="."/>
                 <attribute name="Rsrc-Class-Path" value="./ codemodel-2.6.jar jcommander-1.48.jar jkind-api.jar gson-2.3.1.jar"/>
             </manifest>

@@ -2,8 +2,8 @@ package edu.umn.crisys.plexil.test.java;
 
 import java.io.File;
 
-import edu.umn.crisys.plexil.main.Main;
-import edu.umn.crisys.plexil.main.Main.OutputLanguage;
+import edu.umn.crisys.plexil.main.TPlex;
+import edu.umn.crisys.plexil.main.TPlex.OutputLanguage;
 import edu.umn.crisys.plexil.test.java.RegressionTest.TestSuite;
 
 public class CompileRegressionTest {
@@ -28,7 +28,7 @@ public class CompileRegressionTest {
 	}
 	
 	private static void buildTestJava(TestSuite suite, File resources, File outputDir) throws Exception {
-		Main tplex = new Main();
+		TPlex tplex = new TPlex();
 		tplex.outputLanguage = OutputLanguage.JAVA;
 		tplex.outputDir = outputDir;
 		tplex.javaPackage = RegressionTest.TPLEX_OUTPUT_PACKAGE;
@@ -45,7 +45,7 @@ public class CompileRegressionTest {
 	}
 	
 	private static void buildTestLustre(TestSuite suite, File resources, File outputDir) throws Exception {
-		Main tplex = new Main();
+		TPlex tplex = new TPlex();
 		tplex.outputLanguage = OutputLanguage.LUSTRE;
 		tplex.outputDir = outputDir;
 

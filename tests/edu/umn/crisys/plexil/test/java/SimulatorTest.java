@@ -4,7 +4,7 @@ import java.io.File;
 
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
-import edu.umn.crisys.plexil.main.Main;
+import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import generated.java.DriveToSchoolScript;
 
@@ -13,10 +13,10 @@ import org.junit.Test;
 public class SimulatorTest {
 
 	public static Plan getPlanAsIL(String name) {
-		Main tplex = new Main();
+		TPlex tplex = new TPlex();
 		
 		tplex.files.add(new File(RegressionTest.RESOURCES, name+".plx"));
-		tplex.outputLanguage = Main.OutputLanguage.NONE;
+		tplex.outputLanguage = TPlex.OutputLanguage.NONE;
 		
 		tplex.execute();
 		

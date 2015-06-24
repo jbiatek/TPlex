@@ -61,7 +61,7 @@ import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 
-public class Main {
+public class TPlex {
 	
 	@Parameter(names = {"--help", "-h"}, description = "Print this help message.", help = true)
 	public boolean help = false;
@@ -153,7 +153,7 @@ public class Main {
 	
 	
 	public static void main(String... args) {
-		Main m = new Main();
+		TPlex m = new TPlex();
 		
 		JCommander cmd = new JCommander(m);
 		cmd.setProgramName("java -jar TPlex.jar");
