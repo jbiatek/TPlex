@@ -178,6 +178,13 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 		init(ilPlan);
 	}
 
+	public void reset() {
+		simpleVars.clear();
+		arrayVars.clear();
+		states.clear();
+		init(ilPlan);
+	}
+	
 	private void init(Plan ilPlan) {
 		this.ilPlan = ilPlan;
 		// Clean out the snapshots to get rid of optimized-out variables

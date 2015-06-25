@@ -7,13 +7,33 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import jkind.lustre.values.Value;
+import lustre.LustreProgram;
+import lustre.LustreTrace;
+import lustre.LustreVariable;
+import main.LustreMain;
 
 import org.junit.*;
 
+import simulation.LustreSimulator;
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.simulator.ILSimulator;
+import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
+import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
 
@@ -128,34 +148,44 @@ public class RegressionTest {
 	
 	
 	@Before
-	public void debug() {
+	public void turnOnVerbosity() {
+		debugOn();
+	}
+	
+	public static void debugOn() {
 		JavaPlan.DEBUG = true;
 		PlanState.DEBUG = true;
 	}
 	
+	public static void debugOff() {
+		JavaPlan.DEBUG = false;
+		PlanState.DEBUG = false;
+	}
+	
 	@Test
 	public void CruiseControl() throws Exception {
-		runSingleTest("CruiseControl", "CruiseControl");
+		runSingleTestJava("CruiseControl", "CruiseControl");
 	}
 	
 	@Test
 	public void DriveToSchool() throws Exception {
-		runSingleTest("DriveToSchool", "DriveToSchool");
+		runSingleTestJava("DriveToSchool", "DriveToSchool");
+		runSingleTestLustre("DriveToSchool", "DriveToSchool");
 	}
 	
 	@Test
 	public void DriveToTarget() throws Exception {
-		runSingleTest("DriveToTarget", "DriveToTarget");
+		runSingleTestJava("DriveToTarget", "DriveToTarget");
 	}
 	
 	@Test
 	public void SafeDrive() throws Exception {
-		runSingleTest("SafeDrive", "SafeDrive");
+		runSingleTestJava("SafeDrive", "SafeDrive");
 	}
 	
 	@Test
 	public void SimpleDrive() throws Exception {
-		runSingleTest("SimpleDrive", "SimpleDrive");
+		runSingleTestJava("SimpleDrive", "SimpleDrive");
 	}
 	
 	@Test
@@ -165,83 +195,83 @@ public class RegressionTest {
 
 	@Test
 	public void AncestorReferenceTest() throws Exception {
-	    runSingleTest("AncestorReferenceTest", "empty");
+	    runSingleTestJava("AncestorReferenceTest", "empty");
 	}
 	
 	@Test @Ignore
     public void assign_failure_with_conflict() throws Exception {
-        runSingleTest("assign-failure-with-conflict", "empty");
+        runSingleTestJava("assign-failure-with-conflict", "empty");
     }
 	
 	@Test
     public void assign_to_parent() throws Exception {
-        runSingleTest("assign-to-parent-exit", "empty");
-        runSingleTest("assign-to-parent-invariant", "empty");
+        runSingleTestJava("assign-to-parent-exit", "empty");
+        runSingleTestJava("assign-to-parent-invariant", "empty");
     }
 	
 	@Test
     public void atomic_assignment() throws Exception {
-        runSingleTest("atomic-assignment", "atomic-assignment");
+        runSingleTestJava("atomic-assignment", "atomic-assignment");
     }
 	
 	public void boolean1() throws Exception {
-	    runSingleTest("boolean1", "boolean1");
+	    runSingleTestJava("boolean1", "boolean1");
 	}
 
 	public void change_lookup_test() throws Exception {
-        runSingleTest("change-lookup-test", "change-lookup-test");
+        runSingleTestJava("change-lookup-test", "change-lookup-test");
     }
 	
     @Test
 	public void long_command() throws Exception {
-	    runSingleTest("long_command", "long_command");
+	    runSingleTestJava("long_command", "long_command");
 	}
 	
 	@Test
 	public void uncle_command() throws Exception {
-	    runSingleTest("uncle_command", "uncle_command");
+	    runSingleTestJava("uncle_command", "uncle_command");
 	}
 	
 	@Test
 	public void arrayTests() throws Exception {
-	    runSingleTest("array-in-loop", "empty");
-	    runSingleTest("array1", "array1");
-	    runSingleTest("array2", "empty");
-	    runSingleTest("array3", "array3");
-	    runSingleTest("array4", "array4");
-	    runSingleTest("array5", "empty");
-	    runSingleTest("array6", "empty");
-	    runSingleTest("array8", "array8");
-	    runSingleTest("array9", "empty");
+	    runSingleTestJava("array-in-loop", "empty");
+	    runSingleTestJava("array1", "array1");
+	    runSingleTestJava("array2", "empty");
+	    runSingleTestJava("array3", "array3");
+	    runSingleTestJava("array4", "array4");
+	    runSingleTestJava("array5", "empty");
+	    runSingleTestJava("array6", "empty");
+	    runSingleTestJava("array8", "array8");
+	    runSingleTestJava("array9", "empty");
 	}
 	
 	   
     @Test
     public void repeatTests() throws Exception {
-        runSingleTest("repeat1", "empty");
-        runSingleTest("repeat2", "repeat2");
-        runSingleTest("repeat3", "empty");
-        runSingleTest("repeat4", "empty");
-        runSingleTest("repeat5", "repeat5");
-        runSingleTest("repeat7", "repeat7");
-        runSingleTest("repeat8", "repeat8");
+        runSingleTestJava("repeat1", "empty");
+        runSingleTestJava("repeat2", "repeat2");
+        runSingleTestJava("repeat3", "empty");
+        runSingleTestJava("repeat4", "empty");
+        runSingleTestJava("repeat5", "repeat5");
+        runSingleTestJava("repeat7", "repeat7");
+        runSingleTestJava("repeat8", "repeat8");
     }
 	
 	@Test
 	public void commandTests() throws Exception {
-	    runSingleTest("command1", "command1");
-	    runSingleTest("command2", "command2");
-	    runSingleTest("command3", "command3");
-	    runSingleTest("command4", "command4");
-	    runSingleTest("command5", "command5");
+	    runSingleTestJava("command1", "command1");
+	    runSingleTestJava("command2", "command2");
+	    runSingleTestJava("command3", "command3");
+	    runSingleTestJava("command4", "command4");
+	    runSingleTestJava("command5", "command5");
 	}
 	
 	@Test
 	public void failureTypeTests() throws Exception {
-	    runSingleTest("failure-type1", "empty");
-        runSingleTest("failure-type2", "empty");
-        runSingleTest("failure-type3", "empty");
-        runSingleTest("failure-type4", "empty");
+	    runSingleTestJava("failure-type1", "empty");
+        runSingleTestJava("failure-type2", "empty");
+        runSingleTestJava("failure-type3", "empty");
+        runSingleTestJava("failure-type4", "empty");
 
 	}
 	
@@ -268,36 +298,169 @@ public class RegressionTest {
 		}
 		return oracles;
 	}
+	
+	public static Plan getPlanAsIL(String name) {
+		TPlex tplex = new TPlex();
+		
+		tplex.files.add(new File(RegressionTest.RESOURCES, name+".plx"));
+		tplex.outputLanguage = TPlex.OutputLanguage.NONE;
+		
+		tplex.execute();
+		
+		if (tplex.ilPlans.size() != 1) {
+			throw new RuntimeException("Which one do I want? ");
+		}
+		
+		for ( Entry<String, Plan> entry : tplex.ilPlans.entrySet()) {
+			return entry.getValue();
+		}
+		throw new RuntimeException("this is unreachable");
+	}
 
-	public static void runSingleTest(String planName, String scriptName) throws Exception {
+	public static JavaPlexilScript getScript(String scriptName) throws ReflectiveOperationException {
+		if (scriptName.equals("empty")) {
+		    return new JavaPlexilScript();
+		} else {
+		    Class<?> scriptClass = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+scriptName+"Script");
+		    return (JavaPlexilScript) 
+		        scriptClass.getConstructor().newInstance();
+		}
+	}
+	
+	public static void runSingleTestJava(String planName, String scriptName) throws Exception {
 		List<PlanState> expected = parseLogFile(planName, scriptName);
 		
 		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
 
-		runSingleTestJava(planName, scriptName, expected);
-	}
-	
-	public static void runSingleTestJava(String planName, String scriptName, 
-			List<PlanState> expected) throws Exception {
+		
         System.out.println("Running "+planName+" with script "+scriptName);
         
-	    String script = NameUtils.clean(scriptName);
 //		root.fullReset();
 		// Get the script
-		JavaPlexilScript world;
-		if (scriptName.equals("empty")) {
-		    world = new JavaPlexilScript();
-		} else {
-		    Class<?> scriptClass = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+script+"Script");
-		    world = (JavaPlexilScript) 
-		        scriptClass.getConstructor().newInstance();
-		}
+		JavaPlexilScript world = getScript(scriptName);
 		// Need to find the root node
 		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
 		PlexilTestable root = (PlexilTestable) main.getConstructor(ExternalWorld.class).newInstance(world);
 		
 		runTest(root, world, expected);
 	}
+	
+	public static void runSingleTestLustre(String planName, String scriptName) throws Exception {
+		// We're actually going to use the IL simulator to test the Lustre code. 
+		// So first, make sure that the simulator matches the executive logs.
+		JavaPlexilScript script = getScript(scriptName);
+		Plan ilPlan = getPlanAsIL(planName);
+		List<PlanState> expected = parseLogFile(planName, scriptName);
+		ILSimulator sim = new ILSimulator(ilPlan, script);
+		debugOff();
+		runTest(sim, script, expected);
+		debugOn();
+
+		// Okey dokey, if we got to here, our IL plan conforms to the oracle.
+		// Now we compare the IL plan to the Lustre plan. 
+		// Reset everything so we can start again
+		script.reset();
+		sim.reset();
+		
+		// Simulate the Lustre code and get trace data out
+		Map<String, LustreVariable> stringTrace = new HashMap<>();
+		LustreTrace traceWrap = getLustreTraceData(planName, scriptName);
+		traceWrap.getVariableNames().forEach(
+				name -> stringTrace.put(name, traceWrap.getVariable(name)));
+		
+		// Swap out these Strings for IL expressions where possible.
+		final Map<ILExpression, LustreVariable> ilTrace = new HashMap<>();
+		// States aren't stored as variables, so those first
+		ilPlan.getMachines().forEach(nsm -> 
+				nsm.getNodeIds().forEach(uid -> 
+				attachILExprToLustreVar(new GetNodeStateExpr(uid), 
+						stringTrace, ilTrace)));
+		// Then all variables from the plan
+		ilPlan.getVariables().forEach(var -> 
+				attachILExprToLustreVar(var, stringTrace, ilTrace));
+		
+		// Attach an observer to check these values against the IL sim
+		sim.addObserver(new JavaPlanObserver() {
+
+			private int step = 0;
+			private List<String> errors = new ArrayList<String>();
+			
+			@Override
+			public void endOfMicroStep(JavaPlan plan) {
+				ILSimulator sim = (ILSimulator) plan;
+				for (ILExpression expr : ilTrace.keySet()) {
+					checkValue(expr, sim);
+				}
+				if (errors.size() != 0) {
+					throw new RuntimeException(errors.stream().collect(Collectors.joining(", ")));
+				} else {
+					step++;
+				}
+			}
+			
+			private void checkValue(ILExpression e, ILSimulator sim) {
+				PValue expected = sim.eval(e);
+				Value actual = ilTrace.get(e).getValue(step);
+				String expectedStr = hackyILExprToLustre(expected, e.getType());
+				
+				//TODO: is this really the best way to compare them?
+				if ( ! expectedStr.equals(actual.toString())) {
+					errors.add("Values don't match: expected "+expected+", "
+							+"which should be "+expectedStr
+							+" in Lustre, but instead saw "+actual);
+				}
+			}
+			
+		});
+		
+		// Here we go!
+		sim.runPlanToCompletion();
+	}
+	
+	private static String hackyILExprToLustre(ILExpression e, PlexilType type) {
+		ILExprToLustre il2lustre = new ILExprToLustre();
+		String lustreString = ILExprToLustre.exprToString(e.accept(il2lustre, type));
+		//TODO: This is a massive hack, there should be a better way to do this
+		return lustreString.replaceFirst("^\\(pre ", "").replaceFirst("\\)$", "");
+	}
+	
+	private static void attachILExprToLustreVar(ILExpression e, 
+			Map<String, LustreVariable> stringTrace,
+			Map<ILExpression, LustreVariable> ilTrace) {
+		String lustreString = hackyILExprToLustre(e, e.getType());
+		
+		if (stringTrace.containsKey(lustreString)) {
+			ilTrace.put(e, stringTrace.get(lustreString));
+		} else {
+			System.err.println("Warning: Didn't find IL expression in Lustre trace: "
+					+e+", in Lustre as "+lustreString);
+		}
+	}
+	
+	
+	public static LustreTrace getLustreTraceData(String planName, String scriptName) throws Exception{
+		LustreMain.initialize();
+		
+		File lustreFile = new File(LUSTRE_FILES, planName+".lus");
+		File inputCsv = new File(LUSTRE_FILES, planName+"__"+scriptName+".csv");
+
+		LustreProgram program = new LustreProgram(lustreFile.getPath(), planName);
+		
+		List<LustreTrace> inputs = testsuite.TestSuite
+				.readTestsFromFile(program, inputCsv.getPath());
+		LustreSimulator lustreSim = new LustreSimulator(program);
+		
+		
+		
+		List<LustreTrace> ret = lustreSim.simulate(inputs, null);
+		
+		LustreMain.terminate();
+		
+		assertEquals("Only should have gotten 1 trace back", 1, ret.size());
+		
+		return ret.get(0);
+	}
+	
 	
 	public static void runTest(PlexilTestable root, ExternalWorld world, 
 			List<PlanState> expected) {
@@ -327,7 +490,7 @@ public class RegressionTest {
 	
 	public static void runTestSuite(TestSuite suite) throws Exception {
 	    for (String script : suite.planScripts) {
-	        runSingleTest(suite.planFile, script);
+	        runSingleTestJava(suite.planFile, script);
 	    }
 	}
 	

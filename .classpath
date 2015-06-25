@@ -6,12 +6,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/codemodel-2.6.jar" sourcepath="lib/codemodel-2.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcute.jar"/>
-	<classpathentry kind="lib" path="lib/jkind-api.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.48.jar" sourcepath="lib/jcommander-1.48-sources.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.3.1.jar" sourcepath="lib/gson-2.3.1-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/TPlex/lib/gson-2.3.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/LustreMain.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -15,6 +15,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
@@ -46,6 +47,12 @@ import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Expr>{
+	
+	public static String exprToString(Expr lustre) {
+		PrettyPrintVisitor pp = new PrettyPrintVisitor();
+		lustre.accept(pp);
+		return pp.toString();
+	}
 	
 	private static Expr pre(Expr arg) {
 		return new UnaryExpr(UnaryOp.PRE, arg);
