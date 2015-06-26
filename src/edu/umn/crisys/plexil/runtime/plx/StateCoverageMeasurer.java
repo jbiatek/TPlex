@@ -89,7 +89,7 @@ public class StateCoverageMeasurer implements JavaPlanObserver {
 	}
 
 	@Override
-	public void endOfMicroStep(JavaPlan plan) {
+	public void endOfMicroStepBeforeCommit(JavaPlan plan) {
 		collectCoverage((PlexilTestable) plan);
 	}
 

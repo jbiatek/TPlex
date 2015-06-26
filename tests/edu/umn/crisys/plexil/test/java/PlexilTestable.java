@@ -9,4 +9,6 @@ public interface PlexilTestable {
     public void doMacroStep();
     
     public NodeOutcome getRootNodeOutcome();
+    
+    public void commitMicroStepVars();
 }

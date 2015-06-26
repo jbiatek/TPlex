@@ -116,16 +116,6 @@ public class JavaPlexilScript implements ExternalWorld {
 	
 
 	@Override
-	public void endOfExecution(JavaPlan plan) {
-		// Nothing needs to happen when the plan ends.
-	}
-
-	@Override
-	public void endOfMicroStep(JavaPlan plan) {
-		// Do nothing until the macro step ends.
-	}
-
-	@Override
 	public boolean stop() {
 		return outOfEvents();
 	}

@@ -288,9 +288,8 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 						if (maybeLhs.isPresent()) {
 							// Just assuming it's a simple var :P
 							simpleVars.get(maybeLhs.get()).setNext(value);
-							// Commit it immediately, this is happening between
-							// steps. 
-							simpleVars.get(maybeLhs.get()).commit();
+							// Commit it now, we're between steps
+							simpleVars.get(maybeLhs.get()).commit();;
 						} else {
 							throw new RuntimeException("Tried to return to a Command "
 									+ "node that doesn't have an assignment.");
@@ -328,7 +327,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 					@Override
 					public void acknowledgeUpdate() {
 						simpleVars.get(update.getHandle()).setNext(BooleanValue.get(true));
-						// Immediately commit, we're between steps when this happens
+						// Commit this immediately since we're between steps
 						simpleVars.get(update.getHandle()).commit();
 					}
 
@@ -399,8 +398,6 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 			State newState = nsm.getStates().get(states.get(nsm).getNext());
 			newState.inActions.forEach(this::exec);
 		}
-		// Now notify listeners that the step is over.
-		notifyMicroStep();
 	}
 	@Override
 	public NodeOutcome getRootNodeOutcome() {

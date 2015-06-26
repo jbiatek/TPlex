@@ -510,7 +510,7 @@ public class TPlex {
 		
 		sim.addObserver(new JavaPlanObserver() {
 			@Override
-			public void endOfMicroStep(JavaPlan plan) {
+			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
 				for ( Entry<ILExpression, List<PValue>> e : csv.entrySet()) {
 					e.getValue().add(sim.eval(e.getKey()));
 				}

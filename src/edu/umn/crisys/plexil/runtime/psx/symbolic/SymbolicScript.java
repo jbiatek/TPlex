@@ -108,11 +108,6 @@ public class SymbolicScript implements ExternalWorld {
 	}
 
 	@Override
-	public void endOfMicroStep(JavaPlan plan) {
-		// Do nothing at all.
-	}
-
-	@Override
 	public void update(UpdateHandler node, String key, PValue value) {
 		env.update(node, key, value);
 	}

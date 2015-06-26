@@ -28,6 +28,7 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
+import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
@@ -321,7 +322,8 @@ public class RegressionTest {
 		if (scriptName.equals("empty")) {
 		    return new JavaPlexilScript();
 		} else {
-		    Class<?> scriptClass = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+scriptName+"Script");
+			String cleanName = NameUtils.clean(scriptName);
+		    Class<?> scriptClass = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+cleanName+"Script");
 		    return (JavaPlexilScript) 
 		        scriptClass.getConstructor().newInstance();
 		}
@@ -384,17 +386,69 @@ public class RegressionTest {
 
 			private int step = 0;
 			private List<String> errors = new ArrayList<String>();
+			private boolean lustreSaysMacroStepEnded = false;
+			
+			
+			
 			
 			@Override
-			public void endOfMicroStep(JavaPlan plan) {
-				ILSimulator sim = (ILSimulator) plan;
+			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
+				// Normally, we want to see the results of the step, not the
+				// state beforehand. However, for the first step this is our
+				// only chance to see the initial state.
+				if (step == 0) {
+					checkThisStep(((ILSimulator) plan));
+				}
+			}
+
+			@Override
+			public void endOfMicroStepAfterCommit(JavaPlan plan) {
+				// Check everything now that it has been committed. 
+				checkThisStep(((ILSimulator) plan));
+			}
+
+			private void checkThisStep(ILSimulator sim) {
+				if (lustreSaysMacroStepEnded) {
+					// Oops, this didn't get cleared. We didn't see a macro step
+					// ending, Lustre was wrong.
+					errors.add("At step "+(step)+", Lustre said the macro step"
+							+ " would end, but it didn't.");
+				} else if (stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID)
+						.getValue(step).toString().equalsIgnoreCase("true")) {
+					// This step should be the last one in the macro step. 
+					lustreSaysMacroStepEnded = true;
+				}
+
+				
 				for (ILExpression expr : ilTrace.keySet()) {
 					checkValue(expr, sim);
 				}
 				if (errors.size() != 0) {
-					throw new RuntimeException(errors.stream().collect(Collectors.joining(", ")));
+					// Print a trace to disk for inspection
+//					try {
+//						FileWriter fw = new FileWriter(new File("trace.csv"));
+//						fw.write(traceWrap.toString());
+//						fw.close();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+					
+					throw new RuntimeException("Error(s) at microstep "+step+": "
+							+errors.stream().collect(Collectors.joining(", ")));
 				} else {
 					step++;
+				}
+				
+			}
+
+			private void endOfMacroStep(String reason) {
+				if ( ! lustreSaysMacroStepEnded) {
+					// Ooh, Lustre didn't see this coming. That's not right.
+					errors.add("At step "+step+", Lustre said the macro step"
+							+ " wasn't over, but it was because "+reason);
+				} else {
+					lustreSaysMacroStepEnded = false;
 				}
 			}
 			
@@ -405,12 +459,35 @@ public class RegressionTest {
 				
 				//TODO: is this really the best way to compare them?
 				if ( ! expectedStr.equals(actual.toString())) {
-					errors.add("Values don't match: expected "+expected+", "
+					//This is an error, give some info back
+					String history = " (history: ";
+					for (int i = Math.max(0, step-2); i < Math.min(ilTrace.get(e).getLength(), step+3); i++) {
+						if (i == step) {
+							history += "["+ilTrace.get(e).getValue(i)+"] ";
+						} else {
+							history += ilTrace.get(e).getValue(i)+" ";
+						}
+					}
+					history += ")";
+					
+					errors.add("Values for "+e+" don't match: expected "+expected+", "
 							+"which should be "+expectedStr
-							+" in Lustre, but instead saw "+actual);
+							+" in Lustre, but instead saw "+actual
+							+ history);
 				}
 			}
 			
+
+			@Override
+			public void quiescenceReached(JavaPlan plan) {
+				endOfMacroStep("quiescence was reached");
+			}
+
+			@Override
+			public void prematureEndOfMacroStep(JavaPlan plan) {
+				endOfMacroStep("something ended it prematurely");
+			}
+
 		});
 		
 		// Here we go!
@@ -432,7 +509,7 @@ public class RegressionTest {
 		if (stringTrace.containsKey(lustreString)) {
 			ilTrace.put(e, stringTrace.get(lustreString));
 		} else {
-			System.err.println("Warning: Didn't find IL expression in Lustre trace: "
+			fail("Didn't find IL expression in Lustre trace: "
 					+e+", in Lustre as "+lustreString);
 		}
 	}

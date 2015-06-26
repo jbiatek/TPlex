@@ -152,10 +152,19 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		String rawId = translator.addRawCommandHandleInputFor(cmd.getHandle());
 		
 		/*
-		 * It kind of looks like handles only change in EXECUTING, FINISHING,
-		 * and FAILING maybe. Before that, no command has been issued, and
-		 * afterward the node is all done and there have been some checks 
-		 * to ensure that at least something happened with the command.  
+		 * It kind of looks like handles should only change in EXECUTING, 
+		 * FINISHING, and FAILING maybe. Before that, no command has been 
+		 * issued, and afterward the node is all done and there have been some 
+		 * checks to ensure that at least something happened with the command. 
+		 * 
+		 * In theory, in the PLEXIL exec, I don't think there's anything
+		 * stopping an ill-behaved environment from doing weird things with
+		 * command handles, like marking them as successful before they even
+		 * start or changing their status after they finish. Maybe the exec
+		 * guards against that, and we can make these guarantees. If not,
+		 * it would probably be good to make this check optional in the
+		 * translator, since one might want to make sure that properties hold
+		 * even in the face of a badly behaved environment. 
 		 */
 		//TODO: Check with Plexil team and see if this is acceptable.
 		NodeUID node = cmd.getHandle().getNodeUID();
@@ -163,8 +172,10 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		NativeEqual finishing = new NativeEqual(NodeState.FINISHING, new GetNodeStateExpr(node));
 		NativeEqual failing = new NativeEqual(NodeState.FAILING, new GetNodeStateExpr(node));
 		NativeOperation inChangeableState = new NativeOperation(NativeOp.OR, executing, finishing, failing);
-		// Need to be at a macro step boundary, and in one of those states.
-		Expr guard = new BinaryExpr(new IdExpr(LustreNamingConventions.MACRO_STEP_ENDED_ID),
+		// Need to be starting a new macro step, and in one of those states.
+		Expr guard = new BinaryExpr(
+				new UnaryExpr(UnaryOp.PRE, new IdExpr(
+						LustreNamingConventions.MACRO_STEP_ENDED_ID)),
 				BinaryOp.AND,
 				translator.toLustre(inChangeableState));
 		

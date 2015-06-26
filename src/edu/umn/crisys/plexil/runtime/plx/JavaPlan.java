@@ -75,13 +75,23 @@ public abstract class JavaPlan {
      * Notify listeners that a micro step has ended. Only call this inside
      * of an implementation of doMicroStep() please.
      */
-    public void notifyMicroStep() {
+    public void notifyMicroStepBeforeCommit() {
     	if (isLibrary) {
-    		parent.getParentPlan().notifyMicroStep();
+    		parent.getParentPlan().notifyMicroStepBeforeCommit();
     		return;
     	}
     	for (JavaPlanObserver obs : observers) {
-    		obs.endOfMicroStep(this);
+    		obs.endOfMicroStepBeforeCommit(this);
+    	}
+    }
+    
+    public void notifyMicroStepAfterCommit() {
+    	if (isLibrary) {
+    		parent.getParentPlan().notifyMicroStepAfterCommit();
+    		return;
+    	}
+    	for (JavaPlanObserver obs : observers) {
+    		obs.endOfMicroStepAfterCommit(this);
     	}
     }
 
@@ -149,7 +159,10 @@ public abstract class JavaPlan {
             changeOccurred = false;
             doMicroStep();
             
+            // Commit variables
+            notifyMicroStepBeforeCommit();
             commitMicroStepVars();
+            notifyMicroStepAfterCommit();
             
             // Check for a timeout
             counter++;

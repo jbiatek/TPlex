@@ -265,7 +265,6 @@ public class PlanToJava {
 		
         JMethod doMicroStep = clazz.method(JMod.PUBLIC, cm.VOID, "doMicroStep"); 
         StateMachineToJava.callStepFunction(p.getRootMachine(), doMicroStep.body());
-        doMicroStep.body().invoke("notifyMicroStep");
         
         clazz.method(JMod.PUBLIC, cm.ref(NodeOutcome.class), "getRootNodeOutcome").body()
             ._return(ILExprToJava.toJava(p.getRootNodeOutcome(), cm));

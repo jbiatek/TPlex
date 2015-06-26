@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.PNumeric;
 import edu.umn.crisys.plexil.runtime.values.PString;
@@ -97,26 +96,6 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 		return Collections.unmodifiableList(updaters);
 	}
 	
-	@Override
-	public void quiescenceReached(JavaPlan plan) {
-		// Don't do anything, that's for others to figure out.
-	}
-
-	@Override
-	public void prematureEndOfMacroStep(JavaPlan plan) {
-		// Don't do anything, that's for others to figure out.
-	}
-
-	@Override
-	public void endOfExecution(JavaPlan plan) {
-		// We don't need to do anything when the plan ends.
-	}
-
-	@Override
-	public final void endOfMicroStep(JavaPlan plan) {
-		// Don't do anything, and nothing else should do anything either really.
-	}
-
 	@Override
 	public boolean stop() {
 		return false;
