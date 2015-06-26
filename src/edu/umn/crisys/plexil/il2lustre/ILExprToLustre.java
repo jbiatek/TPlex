@@ -144,15 +144,31 @@ public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Ex
 				return toPBoolean(binary(op.getArguments(), BinaryOp.NOTEQUAL, op.getExpectedArgumentType()));
 			}
 		case ISKNOWN:
-			// TODO: need arg type, this expected type is always boolean
-			switch (op.getExpectedArgumentType()) {
+			// TODO: get stricter types so this wrapping and unwrapping goes away!
+			switch (op.getActualArgumentType()) {
 			case BOOLEAN:
-				return new BinaryExpr(
+				return toPBoolean(new BinaryExpr(
 						op.getArguments().get(0).accept(this, PlexilType.BOOLEAN), 
 						BinaryOp.NOTEQUAL, 
-						LustreNamingConventions.P_UNKNOWN);
-			default:
+						LustreNamingConventions.P_UNKNOWN));
+			case OUTCOME:
+			case FAILURE:
+			case COMMAND_HANDLE:
+				// All of these are simple enums
+				return toPBoolean(new BinaryExpr(
+						op.getArguments().get(0).accept(this, op.getActualArgumentType()),
+						BinaryOp.NOTEQUAL,
+						op.getActualArgumentType().getUnknown().accept(this, op.getActualArgumentType())));
+			case ARRAY:
+			case BOOLEAN_ARRAY:
+			case INTEGER_ARRAY:
+			case REAL_ARRAY:
+			case STRING_ARRAY:
+			case STATE:
+				// All of these are always known
 				return LustreNamingConventions.P_TRUE;
+			default:
+				System.err.println("Missing case in isKnown translation: "+op.getActualArgumentType());
 			}
 
 		// ---------------- Numeric operators
