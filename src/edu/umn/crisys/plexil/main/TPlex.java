@@ -509,8 +509,26 @@ public class TPlex {
 		}
 		
 		sim.addObserver(new JavaPlanObserver() {
+			
+			private boolean gotFirstStep = false;
+			
 			@Override
 			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
+				// This is our only shot at the initial state of the plan. 
+				// After that, we want the post-commit values of everything.
+				if ( ! gotFirstStep) {
+					captureState(plan);
+					gotFirstStep = true;
+				}
+			}
+			
+			@Override
+			public void endOfMicroStepAfterCommit(JavaPlan plan) {
+				// Capture every state after it gets committed
+				captureState(plan);
+			}
+			
+			private void captureState(JavaPlan plan) {
 				for ( Entry<ILExpression, List<PValue>> e : csv.entrySet()) {
 					e.getValue().add(sim.eval(e.getKey()));
 				}

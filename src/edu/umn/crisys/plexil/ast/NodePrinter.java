@@ -46,7 +46,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
     public String prettyPrint() {
         StringBuilder str = new StringBuilder(tab(indent));
         
-        str.append(n.getPlexilID()+":"); newLine(str, indent);
+        str.append(n.getPlexilID().orElse("")+":"); newLine(str, indent);
         str.append("{"); newLine(str, indent);
         
         // Variables and the Interface must come first

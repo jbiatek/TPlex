@@ -33,6 +33,7 @@ import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
@@ -156,11 +157,13 @@ public class RegressionTest {
 	public static void debugOn() {
 		JavaPlan.DEBUG = true;
 		PlanState.DEBUG = true;
+		ScriptedEnvironment.DEBUG = true;
 	}
 	
 	public static void debugOff() {
 		JavaPlan.DEBUG = false;
 		PlanState.DEBUG = false;
+		ScriptedEnvironment.DEBUG = false;
 	}
 	
 	@Test
@@ -354,7 +357,7 @@ public class RegressionTest {
 		Plan ilPlan = getPlanAsIL(planName);
 		List<PlanState> expected = parseLogFile(planName, scriptName);
 		ILSimulator sim = new ILSimulator(ilPlan, script);
-		debugOff();
+		//debugOff();
 		runTest(sim, script, expected);
 		debugOn();
 
@@ -380,6 +383,11 @@ public class RegressionTest {
 		// Then all variables from the plan
 		ilPlan.getVariables().forEach(var -> 
 				attachILExprToLustreVar(var, stringTrace, ilTrace));
+		// This isn't an IL variable, but part of the PLEXIL semantics being
+		// implemented in Lustre. If this is wrong, we'll want to know because
+		// it'll screw up a lot of other stuff too. 
+		final LustreVariable macrostepEnded = 
+				stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID);
 		
 		// Attach an observer to check these values against the IL sim
 		sim.addObserver(new JavaPlanObserver() {
@@ -388,14 +396,12 @@ public class RegressionTest {
 			private List<String> errors = new ArrayList<String>();
 			private boolean lustreSaysMacroStepEnded = false;
 			
-			
-			
-			
 			@Override
 			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
 				// Normally, we want to see the results of the step, not the
-				// state beforehand. However, for the first step this is our
-				// only chance to see the initial state.
+				// state beforehand. However, if this is the very first step,
+				// this is our only chance to see the initial state of the
+				// plan before the results of step 1 are committed. 
 				if (step == 0) {
 					checkThisStep(((ILSimulator) plan));
 				}
@@ -408,14 +414,17 @@ public class RegressionTest {
 			}
 
 			private void checkThisStep(ILSimulator sim) {
+				System.out.println("Checking microstep "+step);
 				if (lustreSaysMacroStepEnded) {
 					// Oops, this didn't get cleared. We didn't see a macro step
 					// ending, Lustre was wrong.
 					errors.add("At step "+(step)+", Lustre said the macro step"
 							+ " would end, but it didn't.");
-				} else if (stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID)
-						.getValue(step).toString().equalsIgnoreCase("true")) {
-					// This step should be the last one in the macro step. 
+				} else if (macrostepEnded.getValue(step)
+						.toString().equalsIgnoreCase("true")) {
+					// This step should be the last one in the macro step. The
+					// macro step method should get called and it'll turn this 
+					// back off. 
 					lustreSaysMacroStepEnded = true;
 				}
 
@@ -510,7 +519,7 @@ public class RegressionTest {
 			ilTrace.put(e, stringTrace.get(lustreString));
 		} else {
 			fail("Didn't find IL expression in Lustre trace: "
-					+e+", in Lustre as "+lustreString);
+					+e+", was looking for it in Lustre as "+lustreString);
 		}
 	}
 	
