@@ -8,7 +8,6 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
@@ -49,13 +48,11 @@ public class ILExprToJava {
     			return true; // these are the ones we're looking for
     		}
     	}
-    	
-    	if (expr instanceof CompositeExpr) {
-    		// Could be one hiding in here somewhere
-    		for (Expression child : ((CompositeExpr) expr).getArguments()) {
-    			if (requiresShortCircuitHack((Expression) child)) {
-    				return true;
-    			}
+
+    	// Could be one hiding in here somewhere
+    	for (Expression child : expr.getArguments()) {
+    		if (requiresShortCircuitHack((Expression) child)) {
+    			return true;
     		}
     	}
     	

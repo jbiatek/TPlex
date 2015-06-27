@@ -3,7 +3,6 @@ package edu.umn.crisys.plexil.il.expr;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
@@ -71,7 +70,7 @@ public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, Expr
 				e.getRight().accept(this, param));
 	}
 
-	public Expression visitComposite(CompositeExpr composite, Param param) {
+	public Expression visitComposite(Expression composite, Param param) {
 		List<Expression> modified = new ArrayList<Expression>();
 		for (Expression child : composite.getArguments()) {
 			modified.add(child.accept(this, param));

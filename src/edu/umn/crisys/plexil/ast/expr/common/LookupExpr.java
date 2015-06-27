@@ -3,12 +3,11 @@ package edu.umn.crisys.plexil.ast.expr.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
-public abstract class LookupExpr extends CompositeExpr {
+public abstract class LookupExpr implements Expression {
 
 	private Expression name;
 	private PlexilType type = PlexilType.UNKNOWN;

@@ -3,7 +3,6 @@ package edu.umn.crisys.plexil.ast.expr.common;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -22,7 +21,7 @@ import edu.umn.crisys.util.Pair;
  * @author jbiatek
  *
  */
-public class Operation extends CompositeExpr {
+public class Operation implements Expression {
     
     public static PlexilType getArgType(String opName) {
         return Operator.valueOf(opName.toUpperCase()).argType;

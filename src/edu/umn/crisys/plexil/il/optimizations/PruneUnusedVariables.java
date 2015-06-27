@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AssignAction;
@@ -187,12 +186,9 @@ public class PruneUnusedVariables {
 		    }
 	        return;
 	    }
-	    if (e instanceof CompositeExpr) {
-	        CompositeExpr comp = (CompositeExpr) e;
-	        for (Expression arg : comp.getArguments()) {
-	            saveAllVariablesInExpression((Expression) arg, s);
-	        }    
-	    }
+	    for (Expression arg : e.getArguments()) {
+	    	saveAllVariablesInExpression((Expression) arg, s);
+	    }    
 	}
 
 	

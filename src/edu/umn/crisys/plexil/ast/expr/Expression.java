@@ -1,5 +1,8 @@
 package edu.umn.crisys.plexil.ast.expr;
 
+import java.util.Collections;
+import java.util.List;
+
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -9,6 +12,31 @@ public interface Expression {
     public <P,R> R accept(CommonExprVisitor<P,R> visitor, P param);
     
     public PlexilType getType();
+    
+    /**
+     * Get all arguments to this expression. 
+     * @return
+     */
+    public default List<Expression> getArguments() {
+    	return Collections.emptyList();
+    }
+    
+    /**
+     * Get a new Expression that's the same as this one but with the given
+     * arguments. Use this to make changes to this Expression while keeping 
+     * them immutable.
+     * 
+     * @param args The new arguments to the expression
+     * @return An expression of the same type but with these arguments instead.
+     */
+    public default Expression getCloneWithArgs(List<Expression> args) {
+    	if (args.size() != 0) {
+    		throw new RuntimeException("Tried to clone "+this+" with args");
+    	}
+    	return this;
+    }
+
+
     
     /**
      * @return a human readable string. It's not toString() so that no one 
