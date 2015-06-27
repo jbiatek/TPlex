@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public enum NodeRefExpr implements ASTExpression {
@@ -11,7 +12,7 @@ public enum NodeRefExpr implements ASTExpression {
 	SELF;
 	
 	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
 		return visitor.visitNodeReference(this, param);
 	}
 

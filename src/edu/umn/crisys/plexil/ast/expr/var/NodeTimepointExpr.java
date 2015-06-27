@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.ast.expr.var;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -49,7 +50,7 @@ public class NodeTimepointExpr implements ASTExpression {
 	}
 
 	@Override
-	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
 		return visitor.visitNodeTimepoint(this, param);
 	}
 }

@@ -7,22 +7,22 @@ import edu.umn.crisys.plexil.ast.expr.var.NodeTimepointExpr;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.il.vars.ILVarVisitor;
 
-public interface ILExprVisitor<Param, Return> 
-extends CommonExprVisitor<Param, Return>, ILVarVisitor<Param, Return>
+public interface ILExprVisitor<P, R> 
+extends CommonExprVisitor<P, R>, ILVarVisitor<P, R>
 {
 
-    public default Return visitVariable(UnresolvedVariableExpr expr, Param param) {
+    public default R visitVariable(UnresolvedVariableExpr expr, P param) {
     	throw new RuntimeException("This is an AST expression: "+expr);
     }
-    public default Return visitNodeReference(NodeRefExpr ref, Param param) {
+    public default R visitNodeReference(NodeRefExpr ref, P param) {
     	throw new RuntimeException("This is an AST expression: "+ref);
 
     }
-    public default Return visitDefaultEnd(DefaultEndExpr end, Param param) {
+    public default R visitDefaultEnd(DefaultEndExpr end, P param) {
     	throw new RuntimeException("This is an AST expression: "+end);
 
     }
-    public default Return visitNodeTimepoint(NodeTimepointExpr timept, Param param) {
+    public default R visitNodeTimepoint(NodeTimepointExpr timept, P param) {
     	throw new RuntimeException("This is an AST expression: "+timept);
     }
 

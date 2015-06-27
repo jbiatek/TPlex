@@ -3,8 +3,6 @@ package edu.umn.crisys.plexil.ast.expr;
 import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 
 /**
  * A CompositeExpression is an Expression that contains other expressions. 
@@ -32,17 +30,4 @@ public abstract class CompositeExpr implements ASTExpression, ILExpression {
      */
     public abstract CompositeExpr getCloneWithArgs(List<Expression> args);
 
-    @Override // un-default this expression from AST and IL versions
-    public abstract <P, R> R accept(CommonExprVisitor<P, R> visitor, P param);
-    
-    @Override
-    public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-        return this.accept((CommonExprVisitor<P,R>)visitor, param);
-    }
-
-    @Override
-    public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-        return this.accept((CommonExprVisitor<P,R>)visitor, param);
-    }
-    
 }

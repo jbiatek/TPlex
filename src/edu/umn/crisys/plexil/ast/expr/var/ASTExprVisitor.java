@@ -11,33 +11,33 @@ import edu.umn.crisys.plexil.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.vars.SimpleVar;
 
-public interface ASTExprVisitor<Param, Return> extends CommonExprVisitor<Param, Return>{
+public interface ASTExprVisitor<P, R> extends CommonExprVisitor<P, R>{
 
-	public default Return visitGetNodeState(GetNodeStateExpr state, Param param){
+	public default R visitGetNodeState(GetNodeStateExpr state, P param){
 		throw new RuntimeException("This is an IL expression: "+state);
 	}
-	public default Return visitAlias(AliasExpr alias, Param param) {
+	public default R visitAlias(AliasExpr alias, P param) {
 		throw new RuntimeException("This is an IL expression: "+alias);
 	}
-    public default Return visitRootParentState(RootParentStateExpr state, Param param) {
+    public default R visitRootParentState(RootParentStateExpr state, P param) {
 		throw new RuntimeException("This is an IL expression: "+state);
     }
-    public default Return visitRootParentExit(RootAncestorExitExpr ancExit, Param param) {
+    public default R visitRootParentExit(RootAncestorExitExpr ancExit, P param) {
 		throw new RuntimeException("This is an IL expression: "+ancExit);
     }
-    public default Return visitRootParentEnd(RootAncestorEndExpr ancEnd, Param param) {
+    public default R visitRootParentEnd(RootAncestorEndExpr ancEnd, P param) {
 		throw new RuntimeException("This is an IL expression: "+ancEnd);
     }
-    public default Return visitRootParentInvariant(RootAncestorInvariantExpr ancInv, Param param) {
+    public default R visitRootParentInvariant(RootAncestorInvariantExpr ancInv, P param) {
 		throw new RuntimeException("This is an IL expression: "+ancInv);
     }
-	public default Return visitSimple(SimpleVar var, Param param) {
+	public default R visitSimple(SimpleVar var, P param) {
 		throw new RuntimeException("This is an IL expression: "+var);
 	}
-	public default Return visitArray(ArrayVar array, Param param) {
+	public default R visitArray(ArrayVar array, P param) {
 		throw new RuntimeException("This is an IL expression: "+array);
 	}
-	public default Return visitLibrary(LibraryVar lib, Param param) {
+	public default R visitLibrary(LibraryVar lib, P param) {
 		throw new RuntimeException("This is an IL expression: "+lib);
 	}
 

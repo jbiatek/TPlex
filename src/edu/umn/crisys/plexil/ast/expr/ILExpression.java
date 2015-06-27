@@ -14,16 +14,4 @@ import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
  */
 public interface ILExpression extends Expression {
 
-    public <P,R> R accept(ILExprVisitor<P,R> visitor, P param);
-
-    @Override
-    default public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
-        if (visitor instanceof ILExprVisitor<?,?>) {
-            return this.accept((ILExprVisitor<P,R>) visitor, param);
-        }
-        
-        throw new RuntimeException("I am an IL expression, but "+visitor+
-                " can't visit ILExpressions.");
-    }
-
 }

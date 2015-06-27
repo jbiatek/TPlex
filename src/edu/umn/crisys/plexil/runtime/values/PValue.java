@@ -3,8 +3,6 @@ package edu.umn.crisys.plexil.runtime.values;
 import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 
 /**
  * The interface defining what all PlexilValues can do.
@@ -73,14 +71,4 @@ public interface PValue extends ASTExpression, ILExpression {
 		return false;
 	}
 	
-	public abstract <P, R> R accept(CommonExprVisitor<P, R> visitor, P param);
-	
-	default public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-    	return this.accept((CommonExprVisitor<P,R>) visitor, param);
-    }
-
-	default public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-    	return this.accept((CommonExprVisitor<P,R>) visitor, param);
-    }
-
 }

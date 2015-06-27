@@ -26,47 +26,47 @@ import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 
-public interface CommonExprVisitor<Param, Return> {
+public interface CommonExprVisitor<P, R> {
 	
-	public default Return visitUnsupported(Expression e, Param param) {
+	public default R visitUnsupported(Expression e, P param) {
 		throw new RuntimeException("This visitor does not support "
 				+e.getClass().getSimpleName());
 	}
     
-	public Return visitBooleanValue(BooleanValue bool, Param param);
-	public Return visitIntegerValue(IntegerValue integer, Param param);
-	public Return visitRealValue(RealValue real, Param param);
-	public Return visitStringValue(StringValue string, Param param);
-	public Return visitUnknownValue(UnknownValue unk, Param param);
-	public Return visitPValueList(PValueList<?> list, Param param);
-	public Return visitCommandHandleState(CommandHandleState state, Param param);
-	public Return visitNodeFailure(NodeFailureType type, Param param);
-	public Return visitNodeOutcome(NodeOutcome outcome, Param param);
-	public Return visitNodeState(NodeState state, Param param);
+	public R visitBooleanValue(BooleanValue bool, P param);
+	public R visitIntegerValue(IntegerValue integer, P param);
+	public R visitRealValue(RealValue real, P param);
+	public R visitStringValue(StringValue string, P param);
+	public R visitUnknownValue(UnknownValue unk, P param);
+	public R visitPValueList(PValueList<?> list, P param);
+	public R visitCommandHandleState(CommandHandleState state, P param);
+	public R visitNodeFailure(NodeFailureType type, P param);
+	public R visitNodeOutcome(NodeOutcome outcome, P param);
+	public R visitNodeState(NodeState state, P param);
 
-    public Return visitArrayIndex(ArrayIndexExpr array, Param param);
-    public Return visitLookupNow(LookupNowExpr lookup, Param param);
-    public Return visitLookupOnChange(LookupOnChangeExpr lookup, Param param);
-    public Return visitOperation(Operation op, Param param);
+    public R visitArrayIndex(ArrayIndexExpr array, P param);
+    public R visitLookupNow(LookupNowExpr lookup, P param);
+    public R visitLookupOnChange(LookupOnChangeExpr lookup, P param);
+    public R visitOperation(Operation op, P param);
 
     // AST expressions
-    public Return visitVariable(UnresolvedVariableExpr expr, Param param);
-    public Return visitNodeReference(NodeRefExpr ref, Param param);
-    public Return visitDefaultEnd(DefaultEndExpr end, Param param);
-    public Return visitNodeTimepoint(NodeTimepointExpr timept, Param param);
+    public R visitVariable(UnresolvedVariableExpr expr, P param);
+    public R visitNodeReference(NodeRefExpr ref, P param);
+    public R visitDefaultEnd(DefaultEndExpr end, P param);
+    public R visitNodeTimepoint(NodeTimepointExpr timept, P param);
 
     
     // IL expressions
-	public Return visitGetNodeState(GetNodeStateExpr state, Param param);
-	public Return visitAlias(AliasExpr alias, Param param);
-    public Return visitRootParentState(RootParentStateExpr state, Param param);
-    public Return visitRootParentExit(RootAncestorExitExpr ancExit, Param param);
-    public Return visitRootParentEnd(RootAncestorEndExpr ancEnd, Param param);
-    public Return visitRootParentInvariant(RootAncestorInvariantExpr ancInv, Param param);
+	public R visitGetNodeState(GetNodeStateExpr state, P param);
+	public R visitAlias(AliasExpr alias, P param);
+    public R visitRootParentState(RootParentStateExpr state, P param);
+    public R visitRootParentExit(RootAncestorExitExpr ancExit, P param);
+    public R visitRootParentEnd(RootAncestorEndExpr ancEnd, P param);
+    public R visitRootParentInvariant(RootAncestorInvariantExpr ancInv, P param);
 
-	public Return visitSimple(SimpleVar var, Param param);
-	public Return visitArray(ArrayVar array, Param param);
-	public Return visitLibrary(LibraryVar lib, Param param);
+	public R visitSimple(SimpleVar var, P param);
+	public R visitArray(ArrayVar array, P param);
+	public R visitLibrary(LibraryVar lib, P param);
 
     
 }

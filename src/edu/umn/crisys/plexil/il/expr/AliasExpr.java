@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il.expr;
 
 import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class AliasExpr implements ILExpression {
@@ -35,7 +36,7 @@ public class AliasExpr implements ILExpression {
     }
 
 	@Override
-	public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
 		return visitor.visitAlias(this, param);
 	}
 
