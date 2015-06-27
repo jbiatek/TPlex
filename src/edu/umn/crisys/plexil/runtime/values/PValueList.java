@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
+
 /**
  * <p>A List that is also a PValue. It implements the PLEXIL array semantics -- 
  * it has a fixed size, accepts PIntegers as indexes, and when you initialize 
@@ -121,7 +123,7 @@ public class PValueList<T extends PValue> implements PValue, List<T>{
 	}
 
 	@Override
-	public <P, R> R accept(PValueVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
 		return visitor.visitPValueList(this, param);
 	}
 

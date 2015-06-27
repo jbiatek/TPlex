@@ -19,8 +19,6 @@ public interface PValue extends ASTExpression, ILExpression {
 
 	public abstract PlexilType getType();
 
-	public abstract <P, R> R accept(PValueVisitor<P, R> visitor, P param);
-
 	/**
 	 * Performs, essentially, Java's == operator but with PLEXIL logic. That is,
 	 * if either one is unknown, return UNKNOWN, but otherwise they
@@ -75,16 +73,14 @@ public interface PValue extends ASTExpression, ILExpression {
 		return false;
 	}
 	
-	default public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
-    	return this.accept((PValueVisitor<P,R>) visitor, param);
-    }
-
+	public abstract <P, R> R accept(CommonExprVisitor<P, R> visitor, P param);
+	
 	default public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
-    	return this.accept((PValueVisitor<P,R>) visitor, param);
+    	return this.accept((CommonExprVisitor<P,R>) visitor, param);
     }
 
 	default public <P, R> R accept(ILExprVisitor<P, R> visitor, P param) {
-    	return this.accept((PValueVisitor<P,R>) visitor, param);
+    	return this.accept((CommonExprVisitor<P,R>) visitor, param);
     }
 
 }
