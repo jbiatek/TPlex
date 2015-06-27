@@ -15,7 +15,7 @@ import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -57,7 +57,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	 * @param rhs
 	 * @param cm
 	 */
-	public static Optional<ILVariable> addAssignment(JBlock block, ILExpression lhs, JExpression rhs, JCodeModel cm) {
+	public static Optional<ILVariable> addAssignment(JBlock block, Expression lhs, JExpression rhs, JCodeModel cm) {
 		if (lhs.isAssignable()) {
 			if (lhs instanceof SimpleVar) {
 				block.invoke(JExpr.ref(ILExprToJava.getFieldName((SimpleVar)lhs)), "setNext")
@@ -72,7 +72,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 				// Just an index. 
 				ArrayIndexExpr arrayIndex = (ArrayIndexExpr) lhs;
 				ArrayVar array = (ArrayVar) arrayIndex.getArray();
-				ILExpression index = (ILExpression) arrayIndex.getIndex();
+				Expression index = (Expression) arrayIndex.getIndex();
 				
 				block.invoke(JExpr.ref(ILExprToJava.getFieldName(array)), "indexAssign")
 					.arg(ILExprToJava.toJava(index, cm)).arg(rhs);
@@ -164,7 +164,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 			// Ah, there is an assignment. We actually need an anonymous class,
 			// so that we can override the assignment method. 
 			JDefinedClass wrapperClass = cm.anonymousClass(CommandHandle.class);
-			ILExpression assignTo = cmd.getPossibleLeftHandSide().get();
+			Expression assignTo = cmd.getPossibleLeftHandSide().get();
 			JMethod cmdReturnMethod = wrapperClass.method(JMod.PUBLIC, cm.VOID, "commandReturns");
 			JVar value = cmdReturnMethod.param(cm.ref(PValue.class), "value");
 			
@@ -181,7 +181,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
         block.invoke(JExpr.invoke("getWorld"), "command")
             .arg(JExpr._new(wrapper).arg(JExpr.ref(ILExprToJava.getFieldName(cmd.getHandle()))))
             .arg(ILExprToJava.toJava(cmd.getName(), cm));
-        for (ILExpression arg : cmd.getArgs()) {
+        for (Expression arg : cmd.getArgs()) {
             cmdCall.arg(ILExprToJava.toJava(arg, cm));
         }
 		return null;
@@ -206,7 +206,7 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 					.arg(JExpr.ref(ILExprToJava.getFieldName(update.getHandle())))
 					.arg(JExpr.lit(update.getShortName())));
         
-        for (Pair<String, ILExpression> p : update.getUpdates()) {
+        for (Pair<String, Expression> p : update.getUpdates()) {
             block.invoke(JExpr.invoke("getWorld"), "update")
                 .arg(wrapper)
                 .arg(JExpr.lit(p.first))

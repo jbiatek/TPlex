@@ -1,15 +1,15 @@
 package edu.umn.crisys.plexil.il.action;
 
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 
 public class AssignAction implements PlexilAction {
 
-    private ILExpression lhs;
-    private ILExpression rhs;
+    private Expression lhs;
+    private Expression rhs;
     private int priority;
     
     
-    public AssignAction(ILExpression lhs, ILExpression rhs, int priority) {
+    public AssignAction(Expression lhs, Expression rhs, int priority) {
     	if ( ! lhs.isAssignable()) {
     		throw new RuntimeException(lhs+" is not assignable!");
     	}
@@ -18,7 +18,7 @@ public class AssignAction implements PlexilAction {
         this.priority = priority;
     }
     
-    public ILExpression getRHS() {
+    public Expression getRHS() {
         return rhs;
     }
 
@@ -27,7 +27,7 @@ public class AssignAction implements PlexilAction {
         return "Assignment: "+lhs+" = "+rhs;
     }
 
-	public ILExpression getLHS() {
+	public Expression getLHS() {
 		return lhs;
 	}
 

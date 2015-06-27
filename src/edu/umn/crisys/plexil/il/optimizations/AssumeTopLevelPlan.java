@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.il.optimizations;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
@@ -36,28 +36,28 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 	}
 
 	@Override
-	public ILExpression visitRootParentState(RootParentStateExpr state,
+	public Expression visitRootParentState(RootParentStateExpr state,
 			Void param) {
 		// Plexil root states are always EXECUTING.
 		return NodeState.EXECUTING;
 	}
 
 	@Override
-	public ILExpression visitRootParentExit(RootAncestorExitExpr ancExit,
+	public Expression visitRootParentExit(RootAncestorExitExpr ancExit,
 			Void param) {
 		// Their parent isn't exiting.
 		return BooleanValue.get(false);
 	}
 
 	@Override
-	public ILExpression visitRootParentEnd(RootAncestorEndExpr ancEnd,
+	public Expression visitRootParentEnd(RootAncestorEndExpr ancEnd,
 			Void param) {
 		// Their parent isn't ending.
 		return BooleanValue.get(false);
 	}
 
 	@Override
-	public ILExpression visitRootParentInvariant(
+	public Expression visitRootParentInvariant(
 			RootAncestorInvariantExpr ancInv, Void param) {
 		// Parent's invariant hasn't failed.
 		return BooleanValue.get(true);

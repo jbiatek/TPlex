@@ -23,7 +23,7 @@ import org.junit.*;
 
 import simulation.LustreSimulator;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
@@ -374,7 +374,7 @@ public class RegressionTest {
 				name -> stringTrace.put(name, traceWrap.getVariable(name)));
 		
 		// Swap out these Strings for IL expressions where possible.
-		final Map<ILExpression, LustreVariable> ilTrace = new HashMap<>();
+		final Map<Expression, LustreVariable> ilTrace = new HashMap<>();
 		// States aren't stored as variables, so those first
 		ilPlan.getMachines().forEach(nsm -> 
 				nsm.getNodeIds().forEach(uid -> 
@@ -429,7 +429,7 @@ public class RegressionTest {
 				}
 
 				
-				for (ILExpression expr : ilTrace.keySet()) {
+				for (Expression expr : ilTrace.keySet()) {
 					checkValue(expr, sim);
 				}
 				if (errors.size() != 0) {
@@ -461,7 +461,7 @@ public class RegressionTest {
 				}
 			}
 			
-			private void checkValue(ILExpression e, ILSimulator sim) {
+			private void checkValue(Expression e, ILSimulator sim) {
 				PValue expected = sim.eval(e);
 				Value actual = ilTrace.get(e).getValue(step);
 				String expectedStr = hackyILExprToLustre(expected, e.getType());
@@ -503,16 +503,16 @@ public class RegressionTest {
 		sim.runPlanToCompletion();
 	}
 	
-	private static String hackyILExprToLustre(ILExpression e, PlexilType type) {
+	private static String hackyILExprToLustre(Expression e, PlexilType type) {
 		ILExprToLustre il2lustre = new ILExprToLustre();
 		String lustreString = ILExprToLustre.exprToString(e.accept(il2lustre, type));
 		//TODO: This is a massive hack, there should be a better way to do this
 		return lustreString.replaceFirst("^\\(pre ", "").replaceFirst("\\)$", "");
 	}
 	
-	private static void attachILExprToLustreVar(ILExpression e, 
+	private static void attachILExprToLustreVar(Expression e, 
 			Map<String, LustreVariable> stringTrace,
-			Map<ILExpression, LustreVariable> ilTrace) {
+			Map<Expression, LustreVariable> ilTrace) {
 		String lustreString = hackyILExprToLustre(e, e.getType());
 		
 		if (stringTrace.containsKey(lustreString)) {

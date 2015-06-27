@@ -1,10 +1,10 @@
 package edu.umn.crisys.plexil.il.expr;
 
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class RootAncestorInvariantExpr implements ILExpression {
+public class RootAncestorInvariantExpr implements Expression {
 
     @Override
     public PlexilType getType() {

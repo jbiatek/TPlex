@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.ast.globaldecl;
 
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class VariableDecl {
@@ -10,13 +10,13 @@ public class VariableDecl {
 	private String name;
 	private PlexilType type;
 	private Optional<Integer> arraySize;
-	private Optional<? extends ASTExpression> init;
+	private Optional<? extends Expression> init;
 	
 	public VariableDecl(String name, PlexilType type) {
 		this(name, type, Optional.empty(), Optional.empty());
 	}
 	
-	public VariableDecl(String name, PlexilType type, ASTExpression init) {
+	public VariableDecl(String name, PlexilType type, Expression init) {
 		this(name, type, Optional.empty(), Optional.of(init));
 	}
 	
@@ -24,12 +24,12 @@ public class VariableDecl {
 		this(arrayName, type, Optional.of(arraySize), Optional.empty());
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, PlexilType type, ASTExpression init) {
+	public VariableDecl(String arrayName, int arraySize, PlexilType type, Expression init) {
 		this(arrayName, type, Optional.of(arraySize), Optional.of(init));
 	}
 	
 	public VariableDecl(String arrayName, final PlexilType type, 
-			Optional<Integer> arraySize, Optional<? extends ASTExpression> init) {
+			Optional<Integer> arraySize, Optional<? extends Expression> init) {
 		arraySize.ifPresent((size) -> {
 			if (size < 0) { 
 				throw new RuntimeException("Array cannot have negative size: "+arraySize);
@@ -63,7 +63,7 @@ public class VariableDecl {
 		return arraySize;
 	}
 	
-	public Optional<? extends ASTExpression> getInitialValue() {
+	public Optional<? extends Expression> getInitialValue() {
 		return init;
 	}
 	

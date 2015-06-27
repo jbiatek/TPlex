@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.il.expr.nativebool;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
@@ -9,27 +8,27 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
 public class PlexilExprToNative implements NativeExpr {
 
 	public static PlexilExprToNative isTrue(Expression e) {
-		return new PlexilExprToNative((ILExpression) e, Condition.TRUE);
+		return new PlexilExprToNative(e, Condition.TRUE);
 	}
 	
 	public static PlexilExprToNative isFalse(Expression e) {
-		return new PlexilExprToNative((ILExpression) e, Condition.FALSE);
+		return new PlexilExprToNative(e, Condition.FALSE);
 	}
 	
 	public static PlexilExprToNative isUnknown(Expression e) {
-		return new PlexilExprToNative((ILExpression) e, Condition.UNKNOWN);
+		return new PlexilExprToNative(e, Condition.UNKNOWN);
 	}
 	
 	public static PlexilExprToNative isNotTrue(Expression e) {
-		return new PlexilExprToNative((ILExpression) e, Condition.NOTTRUE);
+		return new PlexilExprToNative(e, Condition.NOTTRUE);
 	}
 	
 	public static PlexilExprToNative isNotFalse(Expression e) {
-		return new PlexilExprToNative((ILExpression) e, Condition.NOTFALSE);
+		return new PlexilExprToNative(e, Condition.NOTFALSE);
 	}
 	
 	public static PlexilExprToNative isKnown(Expression e) {
-		return new PlexilExprToNative((ILExpression) e, Condition.KNOWN);
+		return new PlexilExprToNative(e, Condition.KNOWN);
 	}
 	
 	public static enum Condition {
@@ -102,20 +101,20 @@ public class PlexilExprToNative implements NativeExpr {
     }
 	
 	
-	private ILExpression plexilExpr;
+	private Expression plexilExpr;
 	private Condition condition;
 	
-	public PlexilExprToNative(ILExpression plexilExpr, Condition condition) {
+	public PlexilExprToNative(Expression plexilExpr, Condition condition) {
 		PlexilType.BOOLEAN.typeCheck(plexilExpr.getType());
 		this.plexilExpr = plexilExpr;
 		this.condition = condition;
 	}
 
-	public ILExpression getPlexilExpr() {
+	public Expression getPlexilExpr() {
 		return plexilExpr;
 	}
 	
-	public void setPlexilExpr(ILExpression expr) {
+	public void setPlexilExpr(Expression expr) {
 		this.plexilExpr = expr;
 	}
 

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
@@ -38,7 +37,7 @@ public class ILEval implements ILExprVisitor<Void, Optional<PValue>> {
 	 * @param expr
 	 * @return
 	 */
-    public static boolean clauseIsSkippable(Operator op, ILExpression expr) {
+    public static boolean clauseIsSkippable(Operator op, Expression expr) {
     	if ((op == Operator.AND || op == Operator.OR)) {
     		Optional<PValue> result = expr.accept(new ILEval(), null);
     		if (result.isPresent()) {

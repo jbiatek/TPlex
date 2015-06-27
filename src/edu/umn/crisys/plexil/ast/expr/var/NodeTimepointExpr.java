@@ -1,13 +1,12 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class NodeTimepointExpr implements ASTExpression {
+public class NodeTimepointExpr implements Expression {
 
     private NodeState state;
     public NodeState getState() { return state; }

@@ -9,7 +9,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
@@ -43,7 +42,7 @@ public class ExprParser {
      * @param expectedType
      * @return
      */
-    public static ASTExpression ensureType(ASTExpression expr, PlexilType expectedType) {
+    public static Expression ensureType(Expression expr, PlexilType expectedType) {
         if (expr.getType() == expectedType) {
             return expr;
         }
@@ -65,12 +64,12 @@ public class ExprParser {
         return expr;
     }
     
-    public static ASTExpression parse(StartElement start, XMLEventReader xml, PlexilType expectedType) {
-        ASTExpression expr = methodDispatcher(start, xml);
+    public static Expression parse(StartElement start, XMLEventReader xml, PlexilType expectedType) {
+        Expression expr = methodDispatcher(start, xml);
         return ensureType(expr, expectedType);
     }
     
-    private static ASTExpression methodDispatcher(StartElement start, XMLEventReader xml) {
+    private static Expression methodDispatcher(StartElement start, XMLEventReader xml) {
         String tag = localNameOf(start);
         if (isOperation(tag)) {
             return parseOperation(start, xml);
@@ -103,7 +102,7 @@ public class ExprParser {
         throw new RuntimeException("I have no handlers for "+tag+" tags.");
     }
 
-    public static ASTExpression parse(XMLEvent start, XMLEventReader xml, PlexilType expectedType) {
+    public static Expression parse(XMLEvent start, XMLEventReader xml, PlexilType expectedType) {
         return parse(start.asStartElement(), xml, expectedType);
     }
 
@@ -133,14 +132,14 @@ public class ExprParser {
         return tag.endsWith("RHS");
     }
 
-    public static ASTExpression parseRHS(StartElement start, XMLEventReader xml) {
+    public static Expression parseRHS(StartElement start, XMLEventReader xml) {
         // These are all just wrappers around expressions. 
         // Go in, get the expression, check the end tag, and move on.
         PlexilType type = PlexilType.UNKNOWN;
         if ( ! isTagStartingWith(start, "Lookup")) {
             type = PlexilType.fuzzyValueOf(localNameOf(start).replaceFirst("RHS$", ""));
         }
-        ASTExpression ret = parse(nextTag(xml), xml, type);
+        Expression ret = parse(nextTag(xml), xml, type);
         assertClosedTag(start, xml);
         return ret;
     }
@@ -179,8 +178,8 @@ public class ExprParser {
         return tag.equals("NodeId") || tag.equals("NodeRef");
     }
 
-    public static ASTExpression parseNodeReference(StartElement start, XMLEventReader xml) {
-    	ASTExpression toReturn;
+    public static Expression parseNodeReference(StartElement start, XMLEventReader xml) {
+    	Expression toReturn;
         if (localNameOf(start).equals("NodeId")) {
             toReturn = new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
@@ -301,7 +300,7 @@ public class ExprParser {
     }
 
 
-    public static ASTExpression parseLookup(StartElement start, XMLEventReader xml) {
+    public static Expression parseLookup(StartElement start, XMLEventReader xml) {
         Expression name = null;
         Expression tolerance = RealValue.get(0.0);
         List<Expression> args = new ArrayList<Expression>();

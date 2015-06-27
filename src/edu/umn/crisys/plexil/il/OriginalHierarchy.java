@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.vars.LibraryVar;
@@ -25,7 +25,7 @@ import edu.umn.crisys.plexil.il.vars.LibraryVar;
 public class OriginalHierarchy {
 
 	private NodeUID uid;
-	private Map<String, ILExpression> variables = new HashMap<>();
+	private Map<String, Expression> variables = new HashMap<>();
 	private List<OriginalHierarchy> children = new ArrayList<>();
 	private Optional<LibraryVar> libraryChild = Optional.empty();
 	
@@ -54,7 +54,7 @@ public class OriginalHierarchy {
 	public void removeDeletedVariables(Plan p) {
 		Set<String> deleteThese = new HashSet<>();
 		for (String varName : variables.keySet()) {
-			ILExpression storedExpr = variables.get(varName);
+			Expression storedExpr = variables.get(varName);
 			if (storedExpr instanceof ILVariable) {
 				// Is it still there? 
 				if ( ! p.getVariables().contains(storedExpr)) {
@@ -75,7 +75,7 @@ public class OriginalHierarchy {
 	 * 
 	 * @return
 	 */
-	public Map<String, ILExpression> getVariables() {
+	public Map<String, Expression> getVariables() {
 		return variables;
 	}
 

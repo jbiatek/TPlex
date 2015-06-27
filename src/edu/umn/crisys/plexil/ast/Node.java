@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
@@ -25,14 +25,14 @@ public class Node {
     private PlexilPlan thePlan;
     private NodeBody body = new NodeBody();
     // Node conditions:
-    private ASTExpression startCondition = BooleanValue.get(true);
-    private ASTExpression skipCondition = BooleanValue.get(false);
-    private ASTExpression preCondition = BooleanValue.get(true);
-    private ASTExpression invariantCondition = BooleanValue.get(true);
-    private ASTExpression repeatCondition = BooleanValue.get(false);
-    private ASTExpression postCondition = BooleanValue.get(true);
-    private ASTExpression endCondition = DefaultEndExpr.get();
-    private ASTExpression exitCondition = BooleanValue.get(false);
+    private Expression startCondition = BooleanValue.get(true);
+    private Expression skipCondition = BooleanValue.get(false);
+    private Expression preCondition = BooleanValue.get(true);
+    private Expression invariantCondition = BooleanValue.get(true);
+    private Expression repeatCondition = BooleanValue.get(false);
+    private Expression postCondition = BooleanValue.get(true);
+    private Expression endCondition = DefaultEndExpr.get();
+    private Expression exitCondition = BooleanValue.get(false);
     
     private int priority = Integer.MAX_VALUE;
     // Variables declared in this node
@@ -147,23 +147,23 @@ public class Node {
 
     
     // Condition getters and setters.
-    public void setStartCondition(ASTExpression e) { startCondition = e; }
-    public void setSkipCondition(ASTExpression e) { skipCondition = e; }
-    public void setPreCondition(ASTExpression e) { preCondition = e; }
-    public void setInvariantCondition(ASTExpression e) { invariantCondition = e; }
-    public void setRepeatCondition(ASTExpression e) { repeatCondition = e; }
-    public void setPostCondition(ASTExpression e) { postCondition = e; }
-    public void setEndCondition(ASTExpression e) { endCondition = e; }
-    public void setExitCondition(ASTExpression e) { exitCondition = e; }
+    public void setStartCondition(Expression e) { startCondition = e; }
+    public void setSkipCondition(Expression e) { skipCondition = e; }
+    public void setPreCondition(Expression e) { preCondition = e; }
+    public void setInvariantCondition(Expression e) { invariantCondition = e; }
+    public void setRepeatCondition(Expression e) { repeatCondition = e; }
+    public void setPostCondition(Expression e) { postCondition = e; }
+    public void setEndCondition(Expression e) { endCondition = e; }
+    public void setExitCondition(Expression e) { exitCondition = e; }
     
-    public ASTExpression getRepeatCondition() { return repeatCondition; }
-    public ASTExpression getStartCondition() { return startCondition; }
-    public ASTExpression getSkipCondition() { return skipCondition; }
-    public ASTExpression getPreCondition() { return preCondition; }
-    public ASTExpression getInvariantCondition() { return invariantCondition; }
-    public ASTExpression getPostCondition() { return postCondition; }
-    public ASTExpression getEndCondition() { return endCondition; }
-    public ASTExpression getExitCondition() { return exitCondition; }
+    public Expression getRepeatCondition() { return repeatCondition; }
+    public Expression getStartCondition() { return startCondition; }
+    public Expression getSkipCondition() { return skipCondition; }
+    public Expression getPreCondition() { return preCondition; }
+    public Expression getInvariantCondition() { return invariantCondition; }
+    public Expression getPostCondition() { return postCondition; }
+    public Expression getEndCondition() { return endCondition; }
+    public Expression getExitCondition() { return exitCondition; }
 
 
 }

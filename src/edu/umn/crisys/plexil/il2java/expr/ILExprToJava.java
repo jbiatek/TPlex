@@ -10,7 +10,6 @@ import com.sun.codemodel.JInvocation;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -27,7 +26,7 @@ public class ILExprToJava {
 	public static boolean SHORT_CIRCUITING = true;
 	static final String TEMP_VAR_NAME = "temp";
     
-    public static JExpression toJava(ILExpression expr, JCodeModel cm) {
+    public static JExpression toJava(Expression expr, JCodeModel cm) {
         return expr.accept(new IL2Java(), cm);
     }
     
@@ -43,7 +42,7 @@ public class ILExprToJava {
         block.decl(cm.ref(PBoolean.class), TEMP_VAR_NAME);
     }
     
-    public static boolean requiresShortCircuitHack(ILExpression expr) {
+    public static boolean requiresShortCircuitHack(Expression expr) {
     	if (expr instanceof Operation) {
     		Operation op = (Operation) expr;
     		if (op.getOperator() == Operator.AND || op.getOperator() == Operator.OR) {
@@ -54,7 +53,7 @@ public class ILExprToJava {
     	if (expr instanceof CompositeExpr) {
     		// Could be one hiding in here somewhere
     		for (Expression child : ((CompositeExpr) expr).getArguments()) {
-    			if (requiresShortCircuitHack((ILExpression) child)) {
+    			if (requiresShortCircuitHack((Expression) child)) {
     				return true;
     			}
     		}

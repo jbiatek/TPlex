@@ -22,7 +22,7 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -160,7 +160,7 @@ public class PlanToLustre {
 				)));
 	}
 	
-	public Expr toLustre(ILExpression e, PlexilType expectedType) {
+	public Expr toLustre(Expression e, PlexilType expectedType) {
 		return e.accept(ilToLustre, expectedType);
 	}
 	

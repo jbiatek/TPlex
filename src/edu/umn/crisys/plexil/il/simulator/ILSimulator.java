@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
@@ -225,7 +224,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 	}
 	
 	public PValue eval(Expression e) {
-		return ((ILExpression)e).accept(myEvaluator, null)
+		return ((Expression)e).accept(myEvaluator, null)
 				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
 	}
 	
@@ -270,7 +269,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 			@Override
 			public Void visitCommand(CommandAction cmd, Void param) {
 				SimpleCurrentNext<PValue> cmdHandleVar =  simpleVars.get(cmd.getHandle());
-				Optional<ILExpression> maybeLhs = cmd.getPossibleLeftHandSide();
+				Optional<Expression> maybeLhs = cmd.getPossibleLeftHandSide();
 				// Wrap this command up in something that the external world 
 				// can use to interact with it. 
 

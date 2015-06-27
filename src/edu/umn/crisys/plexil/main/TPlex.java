@@ -38,7 +38,7 @@ import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
@@ -418,7 +418,7 @@ public class TPlex {
 			}
 			
 			for (Entry<String, PlexilScript> scriptEntry: scripts.entrySet()) {
-				LinkedHashMap<ILExpression,List<PValue>> data = 
+				LinkedHashMap<Expression,List<PValue>> data = 
 						simulateToCSV(planToUse, scriptEntry.getValue());
 				try {
 					PrintStream out = new PrintStream(new File(
@@ -439,7 +439,7 @@ public class TPlex {
 		return true;
 	}
 	
-	private void printToLustreCSVFile(LinkedHashMap<ILExpression,List<PValue>> data,
+	private void printToLustreCSVFile(LinkedHashMap<Expression,List<PValue>> data,
 			Map<String, PString> stringMap, PrintStream out) throws IOException {
 		// Check that each list of values is the same length
 		int size = data.entrySet().stream()
@@ -453,7 +453,7 @@ public class TPlex {
 		
 		// Print the headers first
 		List<String> line = new ArrayList<String>();
-		for (ILExpression expr : data.keySet()) {
+		for (Expression expr : data.keySet()) {
 			// Need to make sure we're getting raw input names
 			if (expr instanceof LookupExpr) {
 				// Get the raw input name
@@ -483,13 +483,13 @@ public class TPlex {
 		}
 	}
 	
-	private LinkedHashMap<ILExpression,List<PValue>> 
+	private LinkedHashMap<Expression,List<PValue>> 
 	simulateToCSV(Plan ilPlan, PlexilScript astScript) {
 		JavaPlexilScript script = new JavaPlexilScript(astScript);
 		ILSimulator sim = new ILSimulator(ilPlan, script);
 		
 		// LinkedHashMap guarantees iteration order, so we want that specifically
-		LinkedHashMap<ILExpression, List<PValue>> csv = new LinkedHashMap<>();
+		LinkedHashMap<Expression, List<PValue>> csv = new LinkedHashMap<>();
 		
 		// Initialize all the keys we expect to see
 		for (LookupDecl lookup : ilPlan.getStateDecls()) {
@@ -529,7 +529,7 @@ public class TPlex {
 			}
 			
 			private void captureState(JavaPlan plan) {
-				for ( Entry<ILExpression, List<PValue>> e : csv.entrySet()) {
+				for ( Entry<Expression, List<PValue>> e : csv.entrySet()) {
 					e.getValue().add(sim.eval(e.getKey()));
 				}
 			}

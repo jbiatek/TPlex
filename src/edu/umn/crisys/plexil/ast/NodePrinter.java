@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.ast;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
@@ -207,7 +206,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
     public String visitUpdate(UpdateBody update, Void p) {
         StringBuilder str = new StringBuilder("\n"+tab(indent+TAB));
         str.append("Update ");
-        for (Pair<String, ASTExpression> up : update.getUpdates()) {
+        for (Pair<String, Expression> up : update.getUpdates()) {
             str.append(up.first +" = "+up.second +", ");
         }
         if (update.getUpdates().size() != 0) {

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
@@ -79,8 +79,7 @@ public class StateMachineBuilder {
 
 	private NodeToIL translator;
 	private Node astNode;
-    private Map<Description, ILExpression> ilExprCache = 
-            new HashMap<Description, ILExpression>();
+    private Map<Description, Expression> ilExprCache = new HashMap<>();
 	private Map<Description, NativeExpr> nativeExprCache = new HashMap<>();
 	    
 	
@@ -463,7 +462,7 @@ public class StateMachineBuilder {
         	// actually just "true". The semantics wiki page apparently lies 
         	// about that. 
         	
-        	ILExpression endCondition;
+        	Expression endCondition;
         	
         	if (astNode.isUpdateNode()) {
         		endCondition = translator.toIL(
@@ -534,7 +533,7 @@ public class StateMachineBuilder {
     private NativeExpr getParentIsInState(NodeState state, Description d) {
         if ( ! nativeExprCache.containsKey(d) ) {
         	nativeExprCache.put(d, new NativeEqual(state, 
-        			translator.getParent().map((parent) -> (ILExpression)parent.getState())
+        			translator.getParent().map((parent) -> (Expression)parent.getState())
         			.orElse(new RootParentStateExpr())
         			));
         }

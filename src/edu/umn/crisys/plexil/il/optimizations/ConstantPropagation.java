@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILEval;
@@ -68,7 +67,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 	
 	
 	@Override
-	public ILExpression visitOperation(Operation op, Void param) {
+	public Expression visitOperation(Operation op, Void param) {
 		Optional<PValue> eval = op.accept(new ILEval(), null);
 		if (eval.isPresent()) {
 			// This whole thing is constant! 

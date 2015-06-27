@@ -12,7 +12,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
@@ -131,7 +131,7 @@ public class NodeParser {
             throw new RuntimeException("Resources not implemented");
         }
         // Optional variable expression
-        ASTExpression var = null;
+        Expression var = null;
         if (isTagEndingWith(child, "Variable") || 
                 localNameOf(child).equals("ArrayElement")) {
             PlexilType type;
@@ -145,11 +145,11 @@ public class NodeParser {
         }
         // Must be a name at this point.
         assertStart("Name", child);
-        ASTExpression name = ExprParser.parse(nextTag(xml), xml, PlexilType.STRING); 
+        Expression name = ExprParser.parse(nextTag(xml), xml, PlexilType.STRING); 
         assertClosedTag(child.asStartElement(), xml);
         
         // Finally, an optional list of variables.
-        List<ASTExpression> args = new ArrayList<ASTExpression>();
+        List<Expression> args = new ArrayList<Expression>();
         child = nextTag(xml);
         if (isTag(child, "Arguments")) {
             for (StartElement arg : allChildTagsOf(child.asStartElement(), xml)) {
@@ -176,8 +176,8 @@ public class NodeParser {
     private static NodeBody parseAssignment(StartElement start,
             XMLEventReader xml) {
         // It should be a Variable and then a TypeRHS.
-        ASTExpression var;
-        ASTExpression rhs;
+        Expression var;
+        Expression rhs;
         
         var = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
         rhs = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
@@ -201,7 +201,7 @@ public class NodeParser {
         for (StartElement pair : allChildTagsOf(start, xml)) {
             if (isTag(pair, "Pair")) {
                 String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
-                ASTExpression value = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+                Expression value = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
 
                 assertEnd("Pair", nextTag(xml));
                 update.addUpdate(name, value);
@@ -230,7 +230,7 @@ public class NodeParser {
             if (isTag(alias, "Alias")) {
                 //These contain a <NodeParameter> string, then an expression.
                 String param = getStringContent(assertStart("NodeParameter", nextTag(xml)), xml);
-                ASTExpression expr = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+                Expression expr = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
                 assertClosedTag(alias, xml);
                 
                 lib.addAlias(param, expr);

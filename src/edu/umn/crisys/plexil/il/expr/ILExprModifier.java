@@ -5,7 +5,6 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
@@ -42,7 +41,7 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  *
  * @param <Param>
  */
-public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, ILExpression>, NativeExprVisitor<Param, NativeExpr> {
+public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, Expression>, NativeExprVisitor<Param, NativeExpr> {
 
 	@Override
 	public NativeExpr visitNativeConstant(NativeConstant c, Param param) {
@@ -72,7 +71,7 @@ public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, ILEx
 				e.getRight().accept(this, param));
 	}
 
-	public ILExpression visitComposite(CompositeExpr composite, Param param) {
+	public Expression visitComposite(CompositeExpr composite, Param param) {
 		List<Expression> modified = new ArrayList<Expression>();
 		for (Expression child : composite.getArguments()) {
 			modified.add(child.accept(this, param));
@@ -81,122 +80,122 @@ public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, ILEx
 	}
 	
 	@Override
-	public ILExpression visitArrayIndex(ArrayIndexExpr array, Param param) {
+	public Expression visitArrayIndex(ArrayIndexExpr array, Param param) {
 		return visitComposite(array, param);
 	}
 
 	@Override
-	public ILExpression visitLookupNow(LookupNowExpr lookup, Param param) {
+	public Expression visitLookupNow(LookupNowExpr lookup, Param param) {
 		return visitComposite(lookup, param);
 	}
 
 	@Override
-	public ILExpression visitLookupOnChange(LookupOnChangeExpr lookup,
+	public Expression visitLookupOnChange(LookupOnChangeExpr lookup,
 			Param param) {
 		return visitComposite(lookup, param);
 	}
 
 	@Override
-	public ILExpression visitOperation(Operation op, Param param) {
+	public Expression visitOperation(Operation op, Param param) {
 		return visitComposite(op, param);
 	}
 
 	@Override
-	public ILExpression visitBooleanValue(BooleanValue bool, Param param) {
+	public Expression visitBooleanValue(BooleanValue bool, Param param) {
 		return bool;
 	}
 
 	@Override
-	public ILExpression visitIntegerValue(IntegerValue integer, Param param) {
+	public Expression visitIntegerValue(IntegerValue integer, Param param) {
 		return integer;
 	}
 
 	@Override
-	public ILExpression visitRealValue(RealValue real, Param param) {
+	public Expression visitRealValue(RealValue real, Param param) {
 		return real;
 	}
 
 	@Override
-	public ILExpression visitStringValue(StringValue string, Param param) {
+	public Expression visitStringValue(StringValue string, Param param) {
 		return string;
 	}
 
 	@Override
-	public ILExpression visitUnknownValue(UnknownValue unk, Param param) {
+	public Expression visitUnknownValue(UnknownValue unk, Param param) {
 		return unk;
 	}
 
 	@Override
-	public ILExpression visitPValueList(PValueList<?> list, Param param) {
+	public Expression visitPValueList(PValueList<?> list, Param param) {
 		return list;
 	}
 
 	@Override
-	public ILExpression visitCommandHandleState(CommandHandleState state,
+	public Expression visitCommandHandleState(CommandHandleState state,
 			Param param) {
 		return state;
 	}
 
 	@Override
-	public ILExpression visitNodeFailure(NodeFailureType type, Param param) {
+	public Expression visitNodeFailure(NodeFailureType type, Param param) {
 		return type;
 	}
 
 	@Override
-	public ILExpression visitNodeOutcome(NodeOutcome outcome, Param param) {
+	public Expression visitNodeOutcome(NodeOutcome outcome, Param param) {
 		return outcome;
 	}
 
 	@Override
-	public ILExpression visitNodeState(NodeState state, Param param) {
+	public Expression visitNodeState(NodeState state, Param param) {
 		return state;
 	}
 
 	@Override
-	public ILExpression visitSimple(SimpleVar var, Param param) {
+	public Expression visitSimple(SimpleVar var, Param param) {
 		return var;
 	}
 
 	@Override
-	public ILExpression visitArray(ArrayVar array, Param param) {
+	public Expression visitArray(ArrayVar array, Param param) {
 		return array;
 	}
 
 	@Override
-	public ILExpression visitLibrary(LibraryVar lib, Param param) {
+	public Expression visitLibrary(LibraryVar lib, Param param) {
 		return lib;
 	}
 
 	@Override
-	public ILExpression visitGetNodeState(GetNodeStateExpr state, Param param) {
+	public Expression visitGetNodeState(GetNodeStateExpr state, Param param) {
 		return state;
 	}
 
 	@Override
-	public ILExpression visitAlias(AliasExpr alias, Param param) {
+	public Expression visitAlias(AliasExpr alias, Param param) {
 		return alias;
 	}
 
 	@Override
-	public ILExpression visitRootParentState(RootParentStateExpr state,
+	public Expression visitRootParentState(RootParentStateExpr state,
 			Param param) {
 		return state;
 	}
 
 	@Override
-	public ILExpression visitRootParentExit(RootAncestorExitExpr ancExit,
+	public Expression visitRootParentExit(RootAncestorExitExpr ancExit,
 			Param param) {
 		return ancExit;
 	}
 
 	@Override
-	public ILExpression visitRootParentEnd(RootAncestorEndExpr ancEnd,
+	public Expression visitRootParentEnd(RootAncestorEndExpr ancEnd,
 			Param param) {
 		return ancEnd;
 	}
 
 	@Override
-	public ILExpression visitRootParentInvariant(
+	public Expression visitRootParentInvariant(
 			RootAncestorInvariantExpr ancInv, Param param) {
 		return ancInv;
 	}

@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
@@ -9,7 +9,7 @@ import edu.umn.crisys.plexil.runtime.values.PlexilType;
  * name of a variable, it isn't linked to a specific node yet. You'll have to
  * resolve the variable from the node that is referring to it. 
  */
-public class UnresolvedVariableExpr implements ASTExpression {
+public class UnresolvedVariableExpr implements Expression {
 
     private String varName;
     private PlexilType type = PlexilType.UNKNOWN;

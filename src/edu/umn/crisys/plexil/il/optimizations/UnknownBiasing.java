@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
@@ -38,7 +37,7 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 	
 	private static NativeExpr collect(NativeOp op, Condition c, List<Expression> args) {
 		return new NativeOperation(op, args.stream()
-				.map((arg) -> new PlexilExprToNative((ILExpression)arg, c))
+				.map((arg) -> new PlexilExprToNative(arg, c))
 				.collect(Collectors.toList()));
 	}
 

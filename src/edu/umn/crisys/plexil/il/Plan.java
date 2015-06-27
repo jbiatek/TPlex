@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
@@ -128,11 +128,11 @@ public class Plan {
 		return planName;
 	}
 
-	public ILExpression getRootNodeOutcome() {
+	public Expression getRootNodeOutcome() {
 		return rootOutcome;
 	}
 
-	public ILExpression getRootNodeState() {
+	public Expression getRootNodeState() {
 		return rootState;
 	}
 

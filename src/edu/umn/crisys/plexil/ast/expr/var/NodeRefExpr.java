@@ -1,10 +1,10 @@
 package edu.umn.crisys.plexil.ast.expr.var;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public enum NodeRefExpr implements ASTExpression {
+public enum NodeRefExpr implements Expression {
 
 	PARENT,
 	SIBLING,

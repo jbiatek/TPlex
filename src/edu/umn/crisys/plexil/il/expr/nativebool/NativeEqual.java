@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.il.expr.nativebool;
 
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 
 /**
  * Expression representing a native "equal" method. For Java, this means 
@@ -8,10 +8,10 @@ import edu.umn.crisys.plexil.ast.expr.ILExpression;
  */
 public class NativeEqual implements NativeExpr {
 	
-	private ILExpression left;
-	private ILExpression right;
+	private Expression left;
+	private Expression right;
 
-	public NativeEqual(ILExpression left, ILExpression right) {
+	public NativeEqual(Expression left, Expression right) {
 		if (left.getType() != right.getType()) {
 			throw new RuntimeException("These should be the same type, but they are "
 					+left.getType()+" and "+right.getType());
@@ -20,11 +20,11 @@ public class NativeEqual implements NativeExpr {
 		this.right = right;
 	}
 
-	public ILExpression getLeft() {
+	public Expression getLeft() {
 		return left;
 	}
 
-	public ILExpression getRight() {
+	public Expression getRight() {
 		return right;
 	}
 

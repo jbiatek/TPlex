@@ -9,7 +9,6 @@ import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
 import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
@@ -73,7 +72,7 @@ public class NodeToIL {
     private List<NodeToIL> children = new ArrayList<NodeToIL>();
     
     private Map<String, ILVariable> ilVars = new HashMap<String, ILVariable>();
-    private Map<String, ILExpression> aliases = new HashMap<String, ILExpression>();
+    private Map<String, Expression> aliases = new HashMap<String, Expression>();
     
     public NodeToIL(Node node) {
         this(node, null);
@@ -142,7 +141,7 @@ public class NodeToIL {
             ilVars.put(UPDATE_HANDLE, new SimpleVar(UPDATE_HANDLE, myUid, PlexilType.BOOLEAN, BooleanValue.get(false)));
         } else if (myNode.isLibraryNode()) {
             LibraryBody lib = myNode.getLibraryBody();
-            Map<String,ILExpression> aliases = new HashMap<String, ILExpression>();
+            Map<String,Expression> aliases = new HashMap<String, Expression>();
             
             for (String alias : lib.getAliases()) {
                 aliases.put(alias, toIL(lib.getAlias(alias)));
@@ -215,12 +214,12 @@ public class NodeToIL {
      * @param e
      * @return the expression, translated in this context
      */
-    ILExpression toIL(Expression e) {
+    Expression toIL(Expression e) {
         return e.accept(exprToIL, null);
     }
     
-    List<ILExpression> toIL(List<? extends Expression> list) {
-        List<ILExpression> ret = new ArrayList<ILExpression>();
+    List<Expression> toIL(List<? extends Expression> list) {
+        List<Expression> ret = new ArrayList<Expression>();
         for (Expression e : list) {
             ret.add(toIL(e));
         }
@@ -296,20 +295,20 @@ public class NodeToIL {
         return tpt;
     }
     
-    ILExpression getThisOrAncestorsExits() {
-        ILExpression myExit = toIL(myNode.getExitCondition());
+    Expression getThisOrAncestorsExits() {
+        Expression myExit = toIL(myNode.getExitCondition());
         return parent.map((parent) -> Operation.or(myExit, parent.getThisOrAncestorsExits()))
         		.orElse(Operation.or(myExit, new RootAncestorExitExpr()));
     }
 
-    ILExpression getThisOrAncestorsEnds() {
-        ILExpression myEnd = toIL(myNode.getEndCondition());
+    Expression getThisOrAncestorsEnds() {
+        Expression myEnd = toIL(myNode.getEndCondition());
         return parent.map((parent) -> Operation.or(myEnd, parent.getThisOrAncestorsEnds()))
         		.orElse(Operation.or(myEnd, new RootAncestorEndExpr()));
     }
 
-    ILExpression getThisAndAncestorsInvariants() {
-        ILExpression myInv = toIL(myNode.getInvariantCondition());
+    Expression getThisAndAncestorsInvariants() {
+        Expression myInv = toIL(myNode.getInvariantCondition());
         return parent.map((parent) -> Operation.and(myInv, parent.getThisAndAncestorsInvariants()))
         		.orElse(Operation.and(myInv, new RootAncestorInvariantExpr()));
     }
@@ -340,7 +339,7 @@ public class NodeToIL {
      * @param writing
      * @return
      */
-    private Optional<ILExpression> resolveVariableInternal(String name, boolean writing) {
+    private Optional<Expression> resolveVariableInternal(String name, boolean writing) {
         // Variables have lexical scope, which mean they are visible only 
         // within the action and any descendants of the action. Scope can be 
         // explicitly limited using the Interface clause. 
@@ -373,22 +372,22 @@ public class NodeToIL {
     }
 
     /**
-     * Given a variable name, resolves it into an ILExpression. Don't use this
+     * Given a variable name, resolves it into an Expression. Don't use this
      * if you're going to be assigning to it! 
      * 
      * @param name
      * @param type
      * @return
      */
-    public ILExpression resolveVariable(String name, PlexilType type) {
-        Optional<ILExpression> expr = resolveVariableInternal(name, false);
+    public Expression resolveVariable(String name, PlexilType type) {
+        Optional<Expression> expr = resolveVariableInternal(name, false);
         if ( ! expr.isPresent()) {
         	// We went all the way up to the root, and no one claimed this
         	// variable as their own. It could be that this PLEXIL plan is a 
         	// library, and this variable is a part of our Interface.
         	// It could also be the case that someone messed up. 
         	
-        	ILExpression alias = createAlias(name, false);
+        	Expression alias = createAlias(name, false);
         	
         	// Since it's an alias, we should cast it if we know the type.
             if (type == PlexilType.BOOLEAN) {
@@ -417,7 +416,7 @@ public class NodeToIL {
     	return list;
     }
     
-    private ILExpression createAlias(String name, boolean writeable) {
+    private Expression createAlias(String name, boolean writeable) {
     	// Since a variable typo is indistinguishable from an alias
     	// when there isn't an explicit Interface, we want to do some basic
     	// checking, and print a warning if they probably didn't mean it. 
@@ -439,14 +438,14 @@ public class NodeToIL {
     	return new AliasExpr(name, PlexilType.UNKNOWN, writeable);
     }
     
-    public ILExpression resolveVariableForWriting(Expression e) {
+    public Expression resolveVariableForWriting(Expression e) {
     	if ( ! e.isAssignable()) {
     		throw new RuntimeException(e+" is not a valid LHS");
     	}
     	
         if (e instanceof UnresolvedVariableExpr) {
             UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
-            Optional<ILExpression> expr = resolveVariableInternal(var.getName(), true);
+            Optional<Expression> expr = resolveVariableInternal(var.getName(), true);
             return expr.orElseGet( () -> createAlias(var.getName(), true));
         } else if (e instanceof ArrayIndexExpr) {
             ArrayIndexExpr arr = (ArrayIndexExpr) e;

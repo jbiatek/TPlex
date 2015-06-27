@@ -2,8 +2,6 @@ package edu.umn.crisys.plexil.ast.expr;
 
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-
 /**
  * A CompositeExpression is an Expression that contains other expressions. 
  * All of them happen to be both IL and AST expressions too, which is nice.
@@ -11,7 +9,7 @@ import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
  * @author jbiatek
  *
  */
-public abstract class CompositeExpr implements ASTExpression, ILExpression {
+public abstract class CompositeExpr implements Expression {
 
     
     /**

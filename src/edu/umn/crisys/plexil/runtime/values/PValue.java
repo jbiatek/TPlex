@@ -1,15 +1,13 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 
 /**
  * The interface defining what all PlexilValues can do.
  * @author jbiatek
  *
  */
-public interface PValue extends ASTExpression, ILExpression {
+public interface PValue extends Expression {
 
 	public abstract boolean isKnown();
 

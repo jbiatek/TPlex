@@ -7,7 +7,6 @@ import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.expr.CompositeExpr;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -40,7 +39,7 @@ public class PruneUnusedVariables {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-	    Set<ILExpression> safeList = new HashSet<ILExpression>();
+	    Set<Expression> safeList = new HashSet<Expression>();
 	    
 	    // Save any that are being read in a guard or action
 	    // (assignment, command, or update could reference it)
@@ -107,14 +106,14 @@ public class PruneUnusedVariables {
 		}
 	}
 	
-	private static boolean removable(ILExpression e) {
+	private static boolean removable(Expression e) {
 		if (e instanceof ILVariable) {
 			return true;
 		}
 		return false;
 	}
 
-	private static void scanAllExpressionsInAction(PlexilAction a, Set<ILExpression> safeList) {
+	private static void scanAllExpressionsInAction(PlexilAction a, Set<Expression> safeList) {
         if (a instanceof AssignAction) {
             saveAllVariablesInExpression(((AssignAction) a).getRHS(), safeList);
         } else if (a instanceof CommandAction) {
@@ -122,32 +121,32 @@ public class PruneUnusedVariables {
         	saveAllVariablesInExpression(((CommandAction)a).getName(), safeList);
             saveAllVariablesInExpressions(((CommandAction) a).getArgs(), safeList);
         } else if (a instanceof UpdateAction) {
-            for (Pair<String, ILExpression> p : ((UpdateAction) a).getUpdates()) {
+            for (Pair<String, Expression> p : ((UpdateAction) a).getUpdates()) {
                 saveAllVariablesInExpression(p.second, safeList);
             }
         }
 
 	}
 	
-	private static void saveAllVariablesInNative(NativeExpr expr, Set<ILExpression> safeList) {
-		expr.accept(new NativeExprVisitor<Set<ILExpression>, Void>() {
+	private static void saveAllVariablesInNative(NativeExpr expr, Set<Expression> safeList) {
+		expr.accept(new NativeExprVisitor<Set<Expression>, Void>() {
 
 			@Override
 			public Void visitNativeOperation(NativeOperation op,
-					Set<ILExpression> param) {
+					Set<Expression> param) {
 				op.getArgs().forEach((arg) -> arg.accept(this, param));
 				return null;
 			}
 
 			@Override
 			public Void visitPlexilExprToNative(PlexilExprToNative pen,
-					Set<ILExpression> param) {
+					Set<Expression> param) {
 				saveAllVariablesInExpression(pen.getPlexilExpr(), param);
 				return null;
 			}
 
 			@Override
-			public Void visitNativeEqual(NativeEqual e, Set<ILExpression> param) {
+			public Void visitNativeEqual(NativeEqual e, Set<Expression> param) {
 				saveAllVariablesInExpression(e.getLeft(), param);
 				saveAllVariablesInExpression(e.getRight(), param);
 				return null;
@@ -155,7 +154,7 @@ public class PruneUnusedVariables {
 			
 			@Override
 			public Void visitNativeConstant(NativeConstant c,
-					Set<ILExpression> param) {
+					Set<Expression> param) {
 				// No need to do anything
 				return null;
 			}
@@ -163,13 +162,13 @@ public class PruneUnusedVariables {
 		}, safeList);
 	}
 
-	private static void saveAllVariablesInExpressions(List<ILExpression> es, Set<ILExpression> s) {
-	    for (ILExpression e : es) {
+	private static void saveAllVariablesInExpressions(List<Expression> es, Set<Expression> s) {
+	    for (Expression e : es) {
 	        saveAllVariablesInExpression(e, s);
 	    }
 	}
 	
-	private static void saveAllVariablesInExpression(ILExpression e, Set<ILExpression> s) {
+	private static void saveAllVariablesInExpression(Expression e, Set<Expression> s) {
 		if (e == null) {
 			return;
 		}
@@ -191,7 +190,7 @@ public class PruneUnusedVariables {
 	    if (e instanceof CompositeExpr) {
 	        CompositeExpr comp = (CompositeExpr) e;
 	        for (Expression arg : comp.getArguments()) {
-	            saveAllVariablesInExpression((ILExpression) arg, s);
+	            saveAllVariablesInExpression((Expression) arg, s);
 	        }    
 	    }
 	}

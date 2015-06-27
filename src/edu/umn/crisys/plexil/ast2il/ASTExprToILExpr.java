@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
@@ -25,7 +24,7 @@ import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisitor<Void, ILExpression> {
+public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisitor<Void, Expression> {
     
     private NodeToIL context;
     
@@ -34,7 +33,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     }
     
     @Override
-	public ILExpression visitLookupNow(LookupNowExpr lookup, Void param) {
+	public Expression visitLookupNow(LookupNowExpr lookup, Void param) {
     	// Try to add some type information
     	if (lookup.hasConstantLookupName()) {
     		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
@@ -44,7 +43,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
 	}
 
 	@Override
-	public ILExpression visitLookupOnChange(LookupOnChangeExpr lookup,
+	public Expression visitLookupOnChange(LookupOnChangeExpr lookup,
 			Void param) {
 		// Try to add type information
     	if (lookup.hasConstantLookupName()) {
@@ -56,7 +55,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
 	}
 
 	@Override
-    public ILExpression visitVariable(UnresolvedVariableExpr expr, Void param) {
+    public Expression visitVariable(UnresolvedVariableExpr expr, Void param) {
         if (expr.getType() == PlexilType.NODEREF) {
             throw new RuntimeException("Node references should be resolved by "
                     + "the operation that needs them, they can't be used directly");
@@ -65,23 +64,23 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     }
 
     @Override
-	public ILExpression visitNodeReference(NodeRefExpr ref, Void param) {
+	public Expression visitNodeReference(NodeRefExpr ref, Void param) {
 		throw new RuntimeException("This reference should have been resolved by the operation that used it");
 	}
 
 	@Override
-    public ILExpression visitDefaultEnd(DefaultEndExpr end, Void param) {
+    public Expression visitDefaultEnd(DefaultEndExpr end, Void param) {
 		// The default end condition depends on the body type:
-        return context.getASTNodeBody().accept(new NodeBodyVisitor<NodeToIL, ILExpression>() {
+        return context.getASTNodeBody().accept(new NodeBodyVisitor<NodeToIL, Expression>() {
 
             @Override
-            public ILExpression visitEmpty(NodeBody empty, NodeToIL node) {
+            public Expression visitEmpty(NodeBody empty, NodeToIL node) {
                 // This one is simple: True.
                 return BooleanValue.get(true);
             }
 
             @Override
-            public ILExpression visitAssignment(AssignmentBody assign, NodeToIL node) {
+            public Expression visitAssignment(AssignmentBody assign, NodeToIL node) {
                 // TODO Make sure this is right by doing some experiments.
                 // The detailed semantics say "assignment completed". And then 
                 // there's a footnote saying that assignments always complete unless
@@ -92,7 +91,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
             }
 
             @Override
-            public ILExpression visitCommand(CommandBody cmd, NodeToIL node) {
+            public Expression visitCommand(CommandBody cmd, NodeToIL node) {
                 // The wiki says "Command handle received". But what does that mean?
             	
             	// The PLEXIL source code seems to imply that the default
@@ -106,7 +105,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
             }
 
             @Override
-            public ILExpression visitLibrary(LibraryBody lib, NodeToIL node) {
+            public Expression visitLibrary(LibraryBody lib, NodeToIL node) {
             	// If the library got included statically, this NodeToIL might 
             	// actually have a real child instead of a handle.
             	if (node.hasLibraryHandle()) {
@@ -122,7 +121,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
             }
 
             @Override
-            public ILExpression visitNodeList(NodeListBody list, NodeToIL node) {
+            public Expression visitNodeList(NodeListBody list, NodeToIL node) {
                 // All children FINISHED.
                 List<Expression> childStates = new ArrayList<Expression>();
                 for (NodeToIL child : node.getChildren()) {
@@ -134,7 +133,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
             }
 
             @Override
-            public ILExpression visitUpdate(UpdateBody update, NodeToIL node) {
+            public Expression visitUpdate(UpdateBody update, NodeToIL node) {
                 // Invocation success. Pretty sure this just means ACK. 
                 return node.getUpdateHandle();
             }
@@ -183,14 +182,14 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     }
     
     @Override
-    public ILExpression visitNodeTimepoint(NodeTimepointExpr timept, Void param) {
+    public Expression visitNodeTimepoint(NodeTimepointExpr timept, Void param) {
         // This one we actually have to take apart, since it ends up as a 
         // variable in the IL.
         return resolveNode(timept.getNodeId()).getNodeTimepoint(timept.getState(), timept.getTimepoint());
     }
 
     @Override
-    public ILExpression visitOperation(Operation op, Void param) {
+    public Expression visitOperation(Operation op, Void param) {
         // Some of these we need to handle specially. Specifically, the node
         // operations like .state and .command_handle.
         switch (op.getOperator()) {

@@ -3,28 +3,28 @@ package edu.umn.crisys.plexil.ast.nodebody;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class CommandBody extends NodeBody {
 
     // TODO: Someday... resources.
-    private Optional<ASTExpression> varToAssign;
-    private ASTExpression cmdName;
-    private List<ASTExpression> args;
+    private Optional<Expression> varToAssign;
+    private Expression cmdName;
+    private List<Expression> args;
 
-    public CommandBody(ASTExpression cmdName, List<ASTExpression> args) {
+    public CommandBody(Expression cmdName, List<Expression> args) {
         this(Optional.empty(), cmdName, args);
     }
     
-    public CommandBody(ASTExpression varToAssign, ASTExpression cmdName, List<ASTExpression> args) {
+    public CommandBody(Expression varToAssign, Expression cmdName, List<Expression> args) {
     	this(Optional.of(varToAssign), cmdName, args);
     }
 
     
-    public CommandBody(Optional<ASTExpression> varToAssign, 
-    		ASTExpression cmdName, List<ASTExpression> args) {
-    	varToAssign.ifPresent((ASTExpression var) -> {
+    public CommandBody(Optional<Expression> varToAssign, 
+    		Expression cmdName, List<Expression> args) {
+    	varToAssign.ifPresent((Expression var) -> {
     		if ( ! var.isAssignable()) throw new RuntimeException(varToAssign + " is not assignable.");
     	});
         PlexilType.STRING.typeCheck(cmdName.getType());
@@ -37,15 +37,15 @@ public class CommandBody extends NodeBody {
     /**
      * @return the variable to store the command's result to (optional)
      */
-    public Optional<ASTExpression> getVarToAssign() {
+    public Optional<Expression> getVarToAssign() {
         return varToAssign;
     }
     
-    public ASTExpression getCommandName() {
+    public Expression getCommandName() {
         return cmdName;
     }
     
-    public List<ASTExpression> getCommandArguments() {
+    public List<Expression> getCommandArguments() {
         return args;
     }
     

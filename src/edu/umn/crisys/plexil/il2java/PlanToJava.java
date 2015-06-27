@@ -17,7 +17,7 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
+import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
@@ -43,7 +43,7 @@ public class PlanToJava {
 
 	private PlanToJava() {}
 	
-	private static void addLibEvalMethod(Class<?> returnType, String name, ILExpression ret, JDefinedClass libClass) {
+	private static void addLibEvalMethod(Class<?> returnType, String name, Expression ret, JDefinedClass libClass) {
 		JMethod evalSomething = libClass.method(JMod.PUBLIC, libClass.owner().ref(returnType), name);
 		// The eval methods can contain complex expressions, but since we're not
 		// in a biased environment, we need to add a temp for short circuiting.
@@ -77,7 +77,7 @@ public class PlanToJava {
 
             // First up, performAssignment. 
 
-            ILExpression target = ilLib.getAliases().get(alias);
+            Expression target = ilLib.getAliases().get(alias);
             if (target.isAssignable()) {
                 // Add this one to the assignable list. 
                 if (condAssign == null) {
@@ -356,7 +356,7 @@ public class PlanToJava {
         JVar ps = b.decl(cm.ref(PlanState.class), node.getUID().toCleanString(), planStateInit);
         
         for (String varName : node.getVariables().keySet()) {
-            ILExpression v = node.getVariables().get(varName);
+            Expression v = node.getVariables().get(varName);
             b.invoke(ps, "addVariable").arg(varName).arg(ILExprToJava.toJava(v, cm));
         }
         

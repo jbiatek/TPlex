@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.ast.expr.ASTExpression;
 import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.ILExpression;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
@@ -57,8 +55,8 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		@Override
 		public Void visitAssignment(AssignmentBody assignment, Void p) {
 		    Expression lhsUntranslated = assignment.getLeftHandSide();
-		    ILExpression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated);
-		    ILExpression rhs = nodeToIL.toIL(assignment.getRightHandSide());
+		    Expression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated);
+		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide());
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
 		    PlexilType type = lhsUntranslated.getType();
@@ -99,10 +97,10 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitCommand(CommandBody cmd, Void p) {
-		    ILExpression name = nodeToIL.toIL(cmd.getCommandName());
-		    Optional<ILExpression> returnTo = cmd.getVarToAssign().map(
+		    Expression name = nodeToIL.toIL(cmd.getCommandName());
+		    Optional<Expression> returnTo = cmd.getVarToAssign().map(
 		    		nodeToIL::resolveVariableForWriting);
-		    List<ILExpression> args = nodeToIL.toIL(cmd.getCommandArguments());
+		    List<Expression> args = nodeToIL.toIL(cmd.getCommandArguments());
 		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);
 		    
@@ -153,7 +151,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		public Void visitUpdate(UpdateBody update, Void p) {
 		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), 
 		    		nodeToIL.getUID().getShortName());
-		    for ( Pair<String, ASTExpression> pair : update.getUpdates()) {
+		    for ( Pair<String, Expression> pair : update.getUpdates()) {
 		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second));
 		    }
 		    map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
