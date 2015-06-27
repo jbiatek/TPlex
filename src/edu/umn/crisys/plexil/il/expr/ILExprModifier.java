@@ -40,7 +40,8 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  *
  * @param <Param>
  */
-public abstract class ILExprModifier<Param> implements ILExprVisitor<Param, Expression>, NativeExprVisitor<Param, NativeExpr> {
+public abstract class ILExprModifier<Param> extends ILExprVisitor<Param, Expression> 
+implements NativeExprVisitor<Param, NativeExpr> {
 
 	@Override
 	public NativeExpr visitNativeConstant(NativeConstant c, Param param) {

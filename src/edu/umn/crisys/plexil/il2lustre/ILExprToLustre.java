@@ -46,7 +46,7 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ILExprToLustre implements ILExprVisitor<PlexilType, jkind.lustre.Expr>{
+public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>{
 	
 	public static String exprToString(Expr lustre) {
 		PrettyPrintVisitor pp = new PrettyPrintVisitor();

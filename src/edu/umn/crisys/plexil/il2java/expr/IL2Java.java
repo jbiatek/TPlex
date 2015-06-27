@@ -42,7 +42,7 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-class IL2Java implements ILExprVisitor<JCodeModel, JExpression> {
+class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 	
     @Override
     public JExpression visitArrayIndex(ArrayIndexExpr array,

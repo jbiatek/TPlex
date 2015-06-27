@@ -38,7 +38,7 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class TypeAnalyzer implements ASTExprVisitor<PlexilType, Void>, NodeBodyVisitor<Node, Void>{
+public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements NodeBodyVisitor<Node, Void>{
 	
     private Map<String, PlexilType> lookups = new HashMap<String, PlexilType>();
     private Map<String, List<PValue>> lookupValuesOfInterest = new HashMap<String, List<PValue>>();

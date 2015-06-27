@@ -26,7 +26,7 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ILEval implements ILExprVisitor<Void, Optional<PValue>> {
+public class ILEval extends ILExprVisitor<Void, Optional<PValue>> {
 	
 	/**
 	 * If this expression is a clause in a larger `op` operation, this method

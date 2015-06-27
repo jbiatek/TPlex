@@ -11,6 +11,10 @@ public interface Expression {
     
     public <P,R> R accept(CommonExprVisitor<P,R> visitor, P param);
     
+    public default <R> R accept(CommonExprVisitor<Void,R> visitor) {
+    	return this.accept(visitor, null);
+    }
+    
     public PlexilType getType();
     
     /**

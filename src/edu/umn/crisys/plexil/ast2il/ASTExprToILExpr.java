@@ -2,12 +2,13 @@ package edu.umn.crisys.plexil.ast2il;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.ast.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.expr.var.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
 import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr;
 import edu.umn.crisys.plexil.ast.expr.var.NodeTimepointExpr;
@@ -19,17 +20,27 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisitor<Void, Expression> {
+public class ASTExprToILExpr implements CommonExprVisitor<Void, Expression> {
     
     private NodeToIL context;
     
     public ASTExprToILExpr(NodeToIL context) {
         this.context = context;
+    }
+    
+    @Override
+    public Expression visitUnsupported(Expression e, Void param) {
+    	return e.getCloneWithArgs(e.getArguments().stream()
+    			.map(arg -> arg.accept(this))
+    			.collect(Collectors.toList()));
     }
     
     @Override
@@ -39,7 +50,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
     		return new LookupNowExpr(type, lookup.getLookupName(), lookup.getLookupArgs());
     	}
-		return super.visitLookupNow(lookup, param);
+		return visitUnsupported(lookup, null);
 	}
 
 	@Override
@@ -51,7 +62,7 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
     		return new LookupOnChangeExpr(type, lookup.getLookupName(), 
     				lookup.getTolerance(), lookup.getLookupArgs());
     	}
-		return super.visitLookupOnChange(lookup, param);
+		return visitUnsupported(lookup, null);
 	}
 
 	@Override
@@ -204,8 +215,33 @@ public class ASTExprToILExpr extends ILExprModifier<Void> implements ASTExprVisi
         default:
             // Everything else is just a composite node that we can deal with
             // the same way. 
-            return visitComposite(op, param);
+            return visitUnsupported(op, null);
         }
     }
+
+    private Expression visitILNode(Expression e) {
+    	throw new RuntimeException(e+" is already an IL node, something is "
+    			+ "probably very wrong here");
+    }
+    
+	@Override
+	public Expression visitGetNodeState(GetNodeStateExpr state, Void param) {
+		return visitILNode(state);
+	}
+
+	@Override
+	public Expression visitSimple(SimpleVar var, Void param) {
+		return visitILNode(var);
+	}
+
+	@Override
+	public Expression visitArray(ArrayVar array, Void param) {
+		return visitILNode(array);
+	}
+
+	@Override
+	public Expression visitLibrary(LibraryVar lib, Void param) {
+		return visitILNode(lib);
+	}
 
 }
