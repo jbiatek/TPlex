@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 
 /**
@@ -9,36 +9,25 @@ import edu.umn.crisys.plexil.expr.PlexilType;
  * name of a variable, it isn't linked to a specific node yet. You'll have to
  * resolve the variable from the node that is referring to it. 
  */
-public class UnresolvedVariableExpr implements Expression {
+public class UnresolvedVariableExpr extends ExpressionBase {
 
     private String varName;
-    private PlexilType type = PlexilType.UNKNOWN;
-    
-    private UnresolvedVariableExpr(String varName) {
-        this.varName = varName;
-    }
     
     public UnresolvedVariableExpr(String varName, PlexilType type) {
-        this(varName);
-        this.type = type;
-    }
-    
-    public String toString() {
-        return varName;
+    	super(type);
+        this.varName= varName;
     }
     
     @Override
-    public String asString() { return this.toString(); }
+    public String asString() {
+        return varName;
+    }
+    
     
     public String getName() {
         return varName;
     }
     
-    @Override
-    public PlexilType getType() {
-        return type;
-    }
-
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
         return visitor.visit(this, param);

@@ -51,7 +51,9 @@ public interface Expression {
      * @return whether this expression is a valid left-hand side of 
      * an assignment.
      */
-    public boolean isAssignable();
+    public default boolean isAssignable() {
+    	return false;
+    }
     
     public default Expression ensureType(PlexilType type) {
     	if (type == this.getType()) return this;

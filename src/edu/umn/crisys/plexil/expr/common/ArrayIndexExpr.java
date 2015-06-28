@@ -5,14 +5,17 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 
-public class ArrayIndexExpr implements Expression {
+public class ArrayIndexExpr extends ExpressionBase {
 
     private Expression array;
     private Expression index;
     
     public ArrayIndexExpr(Expression array, Expression index) {
+        super(array.getType().isArrayType() ? array.getType().elementType()
+        		: PlexilType.UNKNOWN);
         PlexilType.INTEGER.typeCheck(index.getType());
         this.array = array;
         this.index = index;
@@ -27,21 +30,10 @@ public class ArrayIndexExpr implements Expression {
     }
 
     @Override
-    public String toString() {
+    public String asString() {
         return array+"["+index+"]";
     }
     
-    @Override
-    public String asString() { return this.toString(); }
-    
-    @Override
-    public PlexilType getType() {
-        if (array.getType().isArrayType()) {
-            return array.getType().elementType();
-        }
-        return PlexilType.UNKNOWN;
-    }
-
     @Override
     public List<Expression> getArguments() {
         return Arrays.asList(array, index);

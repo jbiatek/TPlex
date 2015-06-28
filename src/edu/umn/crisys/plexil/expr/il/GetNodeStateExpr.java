@@ -2,15 +2,16 @@ package edu.umn.crisys.plexil.expr.il;
 
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.il.NodeUID;
 
-public class GetNodeStateExpr implements Expression {
+public class GetNodeStateExpr extends ExpressionBase {
 
     private NodeUID nodeUniquePath;
     
     public GetNodeStateExpr(NodeUID nodeId) {
+    	super(PlexilType.STATE);
         this.nodeUniquePath = nodeId;
     }
     
@@ -19,33 +20,13 @@ public class GetNodeStateExpr implements Expression {
     }
 
     @Override
-    public String toString() {
-        return nodeUniquePath+".state";
-    }
-
-    @Override
-    public PlexilType getType() {
-        return PlexilType.STATE;
-    }
-
-    /*
-    public JExpression rhs(JCodeModel cm) {
-        return JExpr.invoke(StateMachineToJava.getMappingMethodName(nodeUniquePath));
-    }*/
-
-    @Override
     public String asString() {
-        return toString();
+        return nodeUniquePath+".state";
     }
 
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
         return visitor.visit(this, param);
     }
-
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 }

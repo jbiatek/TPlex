@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 
 /**
@@ -12,7 +12,7 @@ import edu.umn.crisys.plexil.expr.PlexilType;
  * @author jbiatek
  *
  */
-public class DefaultEndExpr implements Expression {
+public class DefaultEndExpr extends ExpressionBase {
 
     private static DefaultEndExpr singleton;
     
@@ -23,11 +23,8 @@ public class DefaultEndExpr implements Expression {
         return singleton;
     }
 
-    private DefaultEndExpr() {}
-    
-    @Override
-    public PlexilType getType() {
-        return PlexilType.BOOLEAN;
+    private DefaultEndExpr() {
+    	super(PlexilType.BOOLEAN);
     }
 
     @Override
@@ -38,10 +35,5 @@ public class DefaultEndExpr implements Expression {
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
         return visitor.visit(this, param);
     }
-
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 }

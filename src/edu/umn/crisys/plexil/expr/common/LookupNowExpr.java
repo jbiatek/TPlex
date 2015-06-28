@@ -23,16 +23,13 @@ public class LookupNowExpr extends LookupExpr {
 	}
 	
 	@Override
-	public String toString() {
+	public String asString() {
 	    String ret = "LookupNow("+getLookupName();
 	    for (int i=0; i<getLookupArgs().size(); i++) {
 	        ret += ", "+getLookupArgs().get(i);
 	    }
 	    return ret+")";
 	}
-	
-	@Override
-	public String asString() { return this.toString(); }
 
     @Override
     public LookupNowExpr getCloneWithArgs(List<Expression> args) {

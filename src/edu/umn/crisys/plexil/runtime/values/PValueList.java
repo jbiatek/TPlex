@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 
 /**
@@ -26,9 +27,8 @@ import edu.umn.crisys.plexil.expr.PlexilType;
  * @author jbiatek
  *
  */
-public class PValueList<T extends PValue> implements PValue, List<T>{
+public class PValueList<T extends PValue> extends ExpressionBase implements PValue, List<T>{
 
-	private final PlexilType myType;
 	private final T[] myValues;
 	private final T unknown;
 	
@@ -47,12 +47,12 @@ public class PValueList<T extends PValue> implements PValue, List<T>{
 	}
 	
 	public PValueList(PlexilType type, int maxSize, List<T> values) {
+		super(type);
 		if ( ! type.isArrayType()) {
 			throw new RuntimeException("Array needs to be an array type, not "+type);
 		}
-		this.myType = type;
 		
-		this.unknown = uncheckedGetUnknown(myType);
+		this.unknown = uncheckedGetUnknown(type);
 		this.myValues = uncheckedGetGenericArray(maxSize);
 		// Initialize with the given values, if any
 		if (values.size() > maxSize) {
@@ -113,13 +113,8 @@ public class PValueList<T extends PValue> implements PValue, List<T>{
 	}
 
 	@Override
-	public PlexilType getType() {
-		return myType;
-	}
-
-	@Override
 	public PValue castTo(PlexilType type) {
-		this.myType.typeCheck(type);
+		this.getType().typeCheck(type);
 		return this;
 	}
 
@@ -129,18 +124,13 @@ public class PValueList<T extends PValue> implements PValue, List<T>{
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		// Arrays in PLEXIL look like this for some reason
 		String ret = "#(";
 		for (T element : myValues) {
 			ret += element.toString() + ", ";
 		}
 		return ret.replaceFirst(", $", "")+")";
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	/*

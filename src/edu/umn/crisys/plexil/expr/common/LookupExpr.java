@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
-public abstract class LookupExpr implements Expression {
+public abstract class LookupExpr extends ExpressionBase {
 
 	private Expression name;
-	private PlexilType type = PlexilType.UNKNOWN;
 	private List<Expression> args;
 	
 	public LookupExpr(PlexilType type, String state) {
@@ -18,6 +18,7 @@ public abstract class LookupExpr implements Expression {
 	}
 	
 	public LookupExpr(PlexilType type, Expression state, List<Expression> args) {
+		super(type);
 	    PlexilType.STRING.typeCheck(state.getType());
 	    name = state;
 	    this.args = args;
@@ -27,12 +28,6 @@ public abstract class LookupExpr implements Expression {
 	    return name;
 	}
 
-	@Override
-    public PlexilType getType() {
-        return type;
-    }
-
-	
 	public boolean hasConstantLookupName() {
 		return name instanceof StringValue;
 	}
@@ -58,10 +53,5 @@ public abstract class LookupExpr implements Expression {
         argList.add(0, name);
         return argList;
     }
-
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 }

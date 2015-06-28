@@ -41,7 +41,7 @@ public class LookupOnChangeExpr extends LookupExpr {
 	}
 	
     @Override
-    public String toString() {
+    public String asString() {
         String ret = "LookupOnChange("+getLookupName()+", "+getTolerance();
         if (getLookupArgs().size() > 0) {
             ret += ", ";
@@ -54,9 +54,6 @@ public class LookupOnChangeExpr extends LookupExpr {
         }
         return ret+")";
     }
-    
-    @Override
-    public String asString() { return this.toString(); }
     
     public Expression getTolerance() {
         return tolerance;

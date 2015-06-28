@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -22,7 +23,7 @@ import edu.umn.crisys.util.Pair;
  * @author jbiatek
  *
  */
-public class Operation implements Expression {
+public class Operation extends ExpressionBase {
     
     public static PlexilType getArgType(String opName) {
         return Operator.valueOf(opName.toUpperCase()).argType;
@@ -376,6 +377,7 @@ public class Operation implements Expression {
     private PlexilType argType;
     
     private Operation(Operator op, PlexilType argType, List<Expression> args) {
+    	super(op.returnType);
         this.op = op;
         this.args = args;
         this.argType = argType;
@@ -414,11 +416,6 @@ public class Operation implements Expression {
     
     public Operator getOperator() {
         return op;
-    }
-    
-    @Override
-    public PlexilType getType() {
-        return op.returnType;
     }
     
     public PlexilType getExpectedArgumentType() {
@@ -462,15 +459,10 @@ public class Operation implements Expression {
     }
 
     @Override
-    public String toString() {
+    public String asString() {
         return op.toString(args);
     }
     
-    @Override
-    public String asString() {
-        return toString();
-    }
-
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
         return visitor.visit(this, param);

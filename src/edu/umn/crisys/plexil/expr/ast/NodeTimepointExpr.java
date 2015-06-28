@@ -2,11 +2,12 @@ package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 
-public class NodeTimepointExpr implements Expression {
+public class NodeTimepointExpr extends ExpressionBase {
 
     private NodeState state;
     public NodeState getState() { return state; }
@@ -18,6 +19,7 @@ public class NodeTimepointExpr implements Expression {
     public Expression getNodeId() { return nodeId; }
     
     public NodeTimepointExpr(NodeState state, NodeTimepoint timepoint, Expression nodeId) {
+    	super(PlexilType.NUMERIC);
         this.state = state;
         this.point = timepoint;
         PlexilType.NODEREF.typeCheck(nodeId.getType());
@@ -31,22 +33,9 @@ public class NodeTimepointExpr implements Expression {
     }
     
     @Override
-    public String toString() {
+    public String asString() {
         return nodeId+"."+state+"."+point;
     }
-
-    @Override
-    public String asString() { return this.toString(); }
-
-    @Override
-    public PlexilType getType() {
-        return PlexilType.REAL;
-    }
-
-    @Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
