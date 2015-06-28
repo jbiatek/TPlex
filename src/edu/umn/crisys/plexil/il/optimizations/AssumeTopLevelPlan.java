@@ -36,28 +36,28 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 	}
 
 	@Override
-	public Expression visitRootParentState(RootParentStateExpr state,
+	public Expression visit(RootParentStateExpr state,
 			Void param) {
 		// Plexil root states are always EXECUTING.
 		return NodeState.EXECUTING;
 	}
 
 	@Override
-	public Expression visitRootParentExit(RootAncestorExitExpr ancExit,
+	public Expression visit(RootAncestorExitExpr ancExit,
 			Void param) {
 		// Their parent isn't exiting.
 		return BooleanValue.get(false);
 	}
 
 	@Override
-	public Expression visitRootParentEnd(RootAncestorEndExpr ancEnd,
+	public Expression visit(RootAncestorEndExpr ancEnd,
 			Void param) {
 		// Their parent isn't ending.
 		return BooleanValue.get(false);
 	}
 
 	@Override
-	public Expression visitRootParentInvariant(
+	public Expression visit(
 			RootAncestorInvariantExpr ancInv, Void param) {
 		// Parent's invariant hasn't failed.
 		return BooleanValue.get(true);

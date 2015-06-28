@@ -78,7 +78,7 @@ public class LookupOnChangeExpr extends LookupExpr {
 
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-        return visitor.visitLookupOnChange(this, param);
+        return visitor.visit(this, param);
     }
 
 }

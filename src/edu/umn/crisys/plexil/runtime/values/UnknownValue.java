@@ -189,7 +189,7 @@ public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitUnknownValue(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

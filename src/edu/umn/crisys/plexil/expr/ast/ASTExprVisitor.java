@@ -18,31 +18,31 @@ public abstract class ASTExprVisitor<P, R> implements ExprVisitor<P, R>{
 		throw new RuntimeException("This is an IL expression: "+e);
 	}
 	
-	public final R visitGetNodeState(GetNodeStateExpr state, P param){
+	public final R visit(GetNodeStateExpr state, P param){
 		return visitILExpression(state);
 	}
-	public final R visitAlias(AliasExpr alias, P param) {
+	public final R visit(AliasExpr alias, P param) {
 		return visitILExpression(alias);
 	}
-    public final R visitRootParentState(RootParentStateExpr state, P param) {
+    public final R visit(RootParentStateExpr state, P param) {
 		return visitILExpression(state);
     }
-    public final R visitRootParentExit(RootAncestorExitExpr ancExit, P param) {
+    public final R visit(RootAncestorExitExpr ancExit, P param) {
 		return visitILExpression(ancExit);
     }
-    public final R visitRootParentEnd(RootAncestorEndExpr ancEnd, P param) {
+    public final R visit(RootAncestorEndExpr ancEnd, P param) {
 		return visitILExpression(ancEnd);
     }
-    public final R visitRootParentInvariant(RootAncestorInvariantExpr ancInv, P param) {
+    public final R visit(RootAncestorInvariantExpr ancInv, P param) {
 		return visitILExpression(ancInv);
     }
-	public final R visitSimple(SimpleVar var, P param) {
+	public final R visit(SimpleVar var, P param) {
 		return visitILExpression(var);
 	}
-	public final R visitArray(ArrayVar array, P param) {
+	public final R visit(ArrayVar array, P param) {
 		return visitILExpression(array);
 	}
-	public final R visitLibrary(LibraryVar lib, P param) {
+	public final R visit(LibraryVar lib, P param) {
 		return visitILExpression(lib);
 	}
 

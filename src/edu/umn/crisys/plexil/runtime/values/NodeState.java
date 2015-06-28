@@ -30,7 +30,7 @@ public enum NodeState implements PValue {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitNodeState(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

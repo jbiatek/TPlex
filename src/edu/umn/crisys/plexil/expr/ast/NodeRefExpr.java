@@ -13,7 +13,7 @@ public enum NodeRefExpr implements Expression {
 	
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitNodeReference(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

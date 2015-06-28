@@ -54,22 +54,22 @@ public class ILEval extends ILExprVisitor<Void, Optional<PValue>> {
 
 	
 	@Override
-	public Optional<PValue> visitArrayIndex(ArrayIndexExpr array, Void param) {
+	public Optional<PValue> visit(ArrayIndexExpr array, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitLookupNow(LookupNowExpr lookup, Void param) {
+	public Optional<PValue> visit(LookupNowExpr lookup, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
+	public Optional<PValue> visit(LookupOnChangeExpr lookup, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitOperation(Operation op, Void param) {
+	public Optional<PValue> visit(Operation op, Void param) {
 		// OR and AND have short circuiting, which is slightly different
 		// from everything else. 
 		PValue shortCircuiter = null;
@@ -100,100 +100,100 @@ public class ILEval extends ILExprVisitor<Void, Optional<PValue>> {
 	}
 	
 	@Override
-	public Optional<PValue> visitRootParentState(RootParentStateExpr state, Void param) {
+	public Optional<PValue> visit(RootParentStateExpr state, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitRootParentExit(RootAncestorExitExpr ancExit,
+	public Optional<PValue> visit(RootAncestorExitExpr ancExit,
 			Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
+	public Optional<PValue> visit(RootAncestorEndExpr ancEnd, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitRootParentInvariant(
+	public Optional<PValue> visit(
 			RootAncestorInvariantExpr ancInv, Void param) {
 		return Optional.empty();
 	}
 
 
 	@Override
-	public Optional<PValue> visitSimple(SimpleVar var, Void param) {
+	public Optional<PValue> visit(SimpleVar var, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitArray(ArrayVar array, Void param) {
+	public Optional<PValue> visit(ArrayVar array, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitLibrary(LibraryVar lib, Void param) {
+	public Optional<PValue> visit(LibraryVar lib, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitAlias(AliasExpr alias, Void param) {
+	public Optional<PValue> visit(AliasExpr alias, Void param) {
 		return Optional.empty();
 	}
 
 	@Override
-	public Optional<PValue> visitGetNodeState(GetNodeStateExpr state, Void param) {
+	public Optional<PValue> visit(GetNodeStateExpr state, Void param) {
 		return Optional.empty();
 	}
 	
 	@Override
-	public Optional<PValue> visitBooleanValue(BooleanValue bool, Void param) {
+	public Optional<PValue> visit(BooleanValue bool, Void param) {
 		return Optional.of(bool);
 	}
 
 	@Override
-	public Optional<PValue> visitIntegerValue(IntegerValue integer, Void param) {
+	public Optional<PValue> visit(IntegerValue integer, Void param) {
 		return Optional.of(integer);
 	}
 
 	@Override
-	public Optional<PValue> visitRealValue(RealValue real, Void param) {
+	public Optional<PValue> visit(RealValue real, Void param) {
 		return Optional.of(real);
 	}
 
 	@Override
-	public Optional<PValue> visitStringValue(StringValue string, Void param) {
+	public Optional<PValue> visit(StringValue string, Void param) {
 		return Optional.of(string);
 	}
 
 	@Override
-	public Optional<PValue> visitUnknownValue(UnknownValue unk, Void param) {
+	public Optional<PValue> visit(UnknownValue unk, Void param) {
 		return Optional.of(unk);
 	}
 
 	@Override
-	public Optional<PValue> visitPValueList(PValueList<?> list, Void param) {
+	public Optional<PValue> visit(PValueList<?> list, Void param) {
 		return Optional.of(list);
 	}
 
 	@Override
-	public Optional<PValue> visitCommandHandleState(CommandHandleState state, Void param) {
+	public Optional<PValue> visit(CommandHandleState state, Void param) {
 		return Optional.of(state);
 	}
 
 	@Override
-	public Optional<PValue> visitNodeFailure(NodeFailureType type, Void param) {
+	public Optional<PValue> visit(NodeFailureType type, Void param) {
 		return Optional.of(type);
 	}
 
 	@Override
-	public Optional<PValue> visitNodeOutcome(NodeOutcome outcome, Void param) {
+	public Optional<PValue> visit(NodeOutcome outcome, Void param) {
 		return Optional.of(outcome);
 	}
 
 	@Override
-	public Optional<PValue> visitNodeState(NodeState state, Void param) {
+	public Optional<PValue> visit(NodeState state, Void param) {
 		return Optional.of(state);
 	}
 

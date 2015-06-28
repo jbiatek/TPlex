@@ -96,18 +96,18 @@ public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>
 	}
 	
 	@Override
-	public ArrayAccessExpr visitArrayIndex(ArrayIndexExpr array, PlexilType expectedType) {
+	public ArrayAccessExpr visit(ArrayIndexExpr array, PlexilType expectedType) {
 		return new ArrayAccessExpr(array.getArray().accept(this, null), 
 				array.getIndex().accept(this, null));
 	}
 
 	@Override
-	public Expr visitLookupNow(LookupNowExpr lookup, PlexilType expectedType) {
+	public Expr visit(LookupNowExpr lookup, PlexilType expectedType) {
 		return id(LustreNamingConventions.getInputName(lookup));
 	}
 
 	@Override
-	public Expr visitLookupOnChange(LookupOnChangeExpr lookup, PlexilType expectedType) {
+	public Expr visit(LookupOnChangeExpr lookup, PlexilType expectedType) {
 		return id(LustreNamingConventions.getInputName(lookup));
 	}
 
@@ -117,7 +117,7 @@ public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>
 	}
 	
 	@Override
-	public Expr visitOperation(Operation op, PlexilType expectedType) {
+	public Expr visit(Operation op, PlexilType expectedType) {
 		switch (op.getOperator()) {
 		// ---------------- Boolean operators
 		case AND:
@@ -292,7 +292,7 @@ public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>
 	}
 
 	@Override
-	public Expr visitBooleanValue(BooleanValue bool, PlexilType expectedType) {
+	public Expr visit(BooleanValue bool, PlexilType expectedType) {
 		if (bool.isTrue()) {
 			return LustreNamingConventions.P_TRUE;
 		}
@@ -303,22 +303,22 @@ public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>
 	}
 
 	@Override
-	public Expr visitIntegerValue(IntegerValue integer, PlexilType expectedType) {
+	public Expr visit(IntegerValue integer, PlexilType expectedType) {
 		return id(integer.getIntValue()+"");
 	}
 
 	@Override
-	public Expr visitRealValue(RealValue real, PlexilType expectedType) {
+	public Expr visit(RealValue real, PlexilType expectedType) {
 		return id(real.getRealValue()+"");
 	}
 
 	@Override
-	public Expr visitStringValue(StringValue string, PlexilType expectedType) {
+	public Expr visit(StringValue string, PlexilType expectedType) {
 		return id(stringToEnum(string));
 	}
 
 	@Override
-	public Expr visitUnknownValue(UnknownValue unk, PlexilType expectedType) {
+	public Expr visit(UnknownValue unk, PlexilType expectedType) {
 		switch(expectedType) {
 		case BOOLEAN:
 			return LustreNamingConventions.P_UNKNOWN;
@@ -334,7 +334,7 @@ public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>
 	}
 
 	@Override
-	public Expr visitPValueList(PValueList<?> list, PlexilType expectedType) {
+	public Expr visit(PValueList<?> list, PlexilType expectedType) {
 		List<Expr> values = new ArrayList<Expr>();
 		for (PValue v : list) {
 			values.add(v.accept(this, list.getType().elementType()));
@@ -343,67 +343,67 @@ public class ILExprToLustre extends ILExprVisitor<PlexilType, jkind.lustre.Expr>
 	}
 
 	@Override
-	public Expr visitCommandHandleState(CommandHandleState state, PlexilType expectedType) {
+	public Expr visit(CommandHandleState state, PlexilType expectedType) {
 		return id(LustreNamingConventions.getEnumId(state));
 	}
 
 	@Override
-	public Expr visitNodeFailure(NodeFailureType type, PlexilType expectedType) {
+	public Expr visit(NodeFailureType type, PlexilType expectedType) {
 		return id(LustreNamingConventions.getEnumId(type));
 	}
 
 	@Override
-	public Expr visitNodeOutcome(NodeOutcome outcome, PlexilType expectedType) {
+	public Expr visit(NodeOutcome outcome, PlexilType expectedType) {
 		return id(LustreNamingConventions.getEnumId(outcome));
 	}
 
 	@Override
-	public Expr visitNodeState(NodeState state, PlexilType expectedType) {
+	public Expr visit(NodeState state, PlexilType expectedType) {
 		return id(LustreNamingConventions.getEnumId(state));
 	}
 
 	@Override
-	public Expr visitSimple(SimpleVar var, PlexilType expectedType) {
+	public Expr visit(SimpleVar var, PlexilType expectedType) {
 		return pre(id(LustreNamingConventions.getVariableId(var)));
 	}
 
 	@Override
-	public Expr visitArray(ArrayVar array, PlexilType expectedType) {
+	public Expr visit(ArrayVar array, PlexilType expectedType) {
 		return pre(id(LustreNamingConventions.getVariableId(array)));
 	}
 
 	@Override
-	public Expr visitLibrary(LibraryVar lib, PlexilType expectedType) {
+	public Expr visit(LibraryVar lib, PlexilType expectedType) {
 		throw new RuntimeException("Libraries not supported yet");
 	}
 
 	@Override
-	public Expr visitGetNodeState(GetNodeStateExpr state, PlexilType expectedType) {
+	public Expr visit(GetNodeStateExpr state, PlexilType expectedType) {
 		return PlanToLustre.getPlexilStateExprForNode(state.getNodeUid());
 	}
 
 	@Override
-	public Expr visitAlias(AliasExpr alias, PlexilType expectedType) {
+	public Expr visit(AliasExpr alias, PlexilType expectedType) {
 		throw new RuntimeException("Aliases not supported yet");
 	}
 
 	@Override
-	public Expr visitRootParentState(RootParentStateExpr state, PlexilType expectedType) {
+	public Expr visit(RootParentStateExpr state, PlexilType expectedType) {
 		throw new RuntimeException("Libraries aren't supported");
 	}
 
 	@Override
-	public Expr visitRootParentExit(RootAncestorExitExpr ancExit, PlexilType expectedType) {
+	public Expr visit(RootAncestorExitExpr ancExit, PlexilType expectedType) {
 		throw new RuntimeException("Libraries aren't supported");
 	}
 
 	@Override
-	public Expr visitRootParentEnd(RootAncestorEndExpr ancEnd, PlexilType expectedType) {
+	public Expr visit(RootAncestorEndExpr ancEnd, PlexilType expectedType) {
 		throw new RuntimeException("Libraries aren't supported");
 	}
 
 	@Override
-	public Expr visitRootParentInvariant(RootAncestorInvariantExpr ancInv,
+	public Expr visit(RootAncestorInvariantExpr ancInv,
 			PlexilType expectedType) {
 		throw new RuntimeException("Libraries aren't supported");
 	}

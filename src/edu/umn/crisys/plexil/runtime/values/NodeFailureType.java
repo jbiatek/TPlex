@@ -29,7 +29,7 @@ public enum NodeFailureType implements PValue {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitNodeFailure(this, param);
+		return visitor.visit(this, param);
 	}
 	@Override
 	public String asString() {

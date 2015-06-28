@@ -307,7 +307,7 @@ public class PlanToLustre {
 		for (NodeUID uid : nsm.getNodeIds()) {
 			VarDecl mapper = new VarDecl(LustreNamingConventions.getStateMapperId(uid), 
 					LustreNamingConventions.PSTATE);
-			Expr map = ilToLustre.visitNodeState(NodeState.INACTIVE, PlexilType.STATE);
+			Expr map = ilToLustre.visit(NodeState.INACTIVE, PlexilType.STATE);
 			for (State s : nsm.getStates()) {
 				map = new IfThenElseExpr(
 						// if the real state variable is this one

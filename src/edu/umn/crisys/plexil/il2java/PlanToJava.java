@@ -184,7 +184,7 @@ public class PlanToJava {
 		ExprVisitor<JDefinedClass, Void> adder = new ExprVisitor<JDefinedClass, Void>() {
 
 			@Override
-			public Void visitSimple(SimpleVar var, JDefinedClass clazz) {
+			public Void visit(SimpleVar var, JDefinedClass clazz) {
 				JCodeModel cm = clazz.owner();
 				// Get SimplePValue<Whatever>
 				JClass varContainerClass = cm.ref(SimplePValue.class).narrow(var.getType().getTypeClass());
@@ -205,7 +205,7 @@ public class PlanToJava {
 			}
 
 			@Override
-			public Void visitArray(ArrayVar array, JDefinedClass clazz) {
+			public Void visit(ArrayVar array, JDefinedClass clazz) {
 				JCodeModel cm = clazz.owner();
 
 				// Create JClass for SimplePArray<PBooleanOrPIntOrPWhatever>:
@@ -229,7 +229,7 @@ public class PlanToJava {
 			}
 
 			@Override
-			public Void visitLibrary(LibraryVar lib, JDefinedClass clazz) {
+			public Void visit(LibraryVar lib, JDefinedClass clazz) {
 				addLibraryVarToClass(clazz, lib, idToClassName);
 				return null;
 			}

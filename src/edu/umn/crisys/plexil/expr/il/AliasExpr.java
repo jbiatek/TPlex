@@ -37,7 +37,7 @@ public class AliasExpr implements Expression {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitAlias(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

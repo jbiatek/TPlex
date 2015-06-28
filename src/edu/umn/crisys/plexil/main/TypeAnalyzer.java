@@ -140,7 +140,7 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 
 
 	@Override
-	public Void visitLookupNow(LookupNowExpr lookup, PlexilType currentType) {
+	public Void visit(LookupNowExpr lookup, PlexilType currentType) {
 		Expression name = lookup.getLookupName();
 		if ( ! (name instanceof StringValue)) {
 			customAdd(lookups, name, currentType);
@@ -152,7 +152,7 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 
 
 	@Override
-	public Void visitLookupOnChange(LookupOnChangeExpr lookup, PlexilType currentType) {
+	public Void visit(LookupOnChangeExpr lookup, PlexilType currentType) {
 		Expression name = lookup.getLookupName();
 		if ( ! (name instanceof StringValue)) {
 			customAdd(lookups, name, currentType);
@@ -212,7 +212,7 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 	}
 
 	@Override
-	public Void visitOperation(Operation op, PlexilType currentType) {
+	public Void visit(Operation op, PlexilType currentType) {
 		// Operators contain information about their argument types.
 		PlexilType argType = op.getExpectedArgumentType();
 		
@@ -259,7 +259,7 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 
 	
 	@Override
-	public Void visitArrayIndex(ArrayIndexExpr array, PlexilType currentType) {
+	public Void visit(ArrayIndexExpr array, PlexilType currentType) {
 		// Maybe they're indexing an array with a lookup? That would be stupid,
 		// but we do know this type I guess.
 		array.getIndex().accept(this, PlexilType.INTEGER);
@@ -298,86 +298,86 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 	 */
 	
 	@Override
-	public Void visitNodeTimepoint(NodeTimepointExpr timept, PlexilType currentType) {
+	public Void visit(NodeTimepointExpr timept, PlexilType currentType) {
 		return null;
 	}
 
 	@Override
-	public Void visitBooleanValue(BooleanValue bool, PlexilType currentType) {
-		return null;
-	}
-
-
-	@Override
-	public Void visitIntegerValue(IntegerValue integer, PlexilType currentType) {
+	public Void visit(BooleanValue bool, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitRealValue(RealValue real, PlexilType currentType) {
+	public Void visit(IntegerValue integer, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitStringValue(StringValue string, PlexilType currentType) {
+	public Void visit(RealValue real, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitUnknownValue(UnknownValue unk, PlexilType currentType) {
+	public Void visit(StringValue string, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitPValueList(PValueList<?> list, PlexilType currentType) {
+	public Void visit(UnknownValue unk, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitCommandHandleState(CommandHandleState state,
+	public Void visit(PValueList<?> list, PlexilType currentType) {
+		return null;
+	}
+
+
+	@Override
+	public Void visit(CommandHandleState state,
 			PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitNodeFailure(NodeFailureType type, PlexilType currentType) {
+	public Void visit(NodeFailureType type, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitNodeOutcome(NodeOutcome outcome, PlexilType currentType) {
+	public Void visit(NodeOutcome outcome, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visitNodeState(NodeState state, PlexilType currentType) {
+	public Void visit(NodeState state, PlexilType currentType) {
 		return null;
 	}
 
 	@Override
-	public Void visitVariable(UnresolvedVariableExpr expr, PlexilType currentType) {
+	public Void visit(UnresolvedVariableExpr expr, PlexilType currentType) {
 		// Nothing to do here
 		return null;
 	}
 
 
 	@Override
-	public Void visitNodeReference(NodeRefExpr ref, PlexilType currentType) {
+	public Void visit(NodeRefExpr ref, PlexilType currentType) {
 		// Nothing to do here
 		return null;
 	}
 
 
 	@Override
-	public Void visitDefaultEnd(DefaultEndExpr end, PlexilType currentType) {
+	public Void visit(DefaultEndExpr end, PlexilType currentType) {
 		// Also nothing
 		return null;
 	}

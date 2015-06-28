@@ -125,7 +125,7 @@ public class PValueList<T extends PValue> implements PValue, List<T>{
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitPValueList(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

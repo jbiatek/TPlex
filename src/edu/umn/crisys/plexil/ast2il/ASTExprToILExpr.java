@@ -37,24 +37,25 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
     }
     
     @Override
-    public Expression visitUnsupported(Expression e, Void param) {
+    public Expression visit(Expression e, Void param) {
+    	// Just apply ourselves to arguments by default
     	return e.getCloneWithArgs(e.getArguments().stream()
     			.map(arg -> arg.accept(this))
     			.collect(Collectors.toList()));
     }
     
     @Override
-	public Expression visitLookupNow(LookupNowExpr lookup, Void param) {
+	public Expression visit(LookupNowExpr lookup, Void param) {
     	// Try to add some type information
     	if (lookup.hasConstantLookupName()) {
     		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
     		return new LookupNowExpr(type, lookup.getLookupName(), lookup.getLookupArgs());
     	}
-		return visitUnsupported(lookup, null);
+		return visit((Expression)lookup, null);
 	}
 
 	@Override
-	public Expression visitLookupOnChange(LookupOnChangeExpr lookup,
+	public Expression visit(LookupOnChangeExpr lookup,
 			Void param) {
 		// Try to add type information
     	if (lookup.hasConstantLookupName()) {
@@ -62,11 +63,11 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
     		return new LookupOnChangeExpr(type, lookup.getLookupName(), 
     				lookup.getTolerance(), lookup.getLookupArgs());
     	}
-		return visitUnsupported(lookup, null);
+		return visit((Expression)lookup, null);
 	}
 
 	@Override
-    public Expression visitVariable(UnresolvedVariableExpr expr, Void param) {
+    public Expression visit(UnresolvedVariableExpr expr, Void param) {
         if (expr.getType() == PlexilType.NODEREF) {
             throw new RuntimeException("Node references should be resolved by "
                     + "the operation that needs them, they can't be used directly");
@@ -75,12 +76,12 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
     }
 
     @Override
-	public Expression visitNodeReference(NodeRefExpr ref, Void param) {
+	public Expression visit(NodeRefExpr ref, Void param) {
 		throw new RuntimeException("This reference should have been resolved by the operation that used it");
 	}
 
 	@Override
-    public Expression visitDefaultEnd(DefaultEndExpr end, Void param) {
+    public Expression visit(DefaultEndExpr end, Void param) {
 		// The default end condition depends on the body type:
         return context.getASTNodeBody().accept(new NodeBodyVisitor<NodeToIL, Expression>() {
 
@@ -193,14 +194,14 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
     }
     
     @Override
-    public Expression visitNodeTimepoint(NodeTimepointExpr timept, Void param) {
+    public Expression visit(NodeTimepointExpr timept, Void param) {
         // This one we actually have to take apart, since it ends up as a 
         // variable in the IL.
         return resolveNode(timept.getNodeId()).getNodeTimepoint(timept.getState(), timept.getTimepoint());
     }
 
     @Override
-    public Expression visitOperation(Operation op, Void param) {
+    public Expression visit(Operation op, Void param) {
         // Some of these we need to handle specially. Specifically, the node
         // operations like .state and .command_handle.
         switch (op.getOperator()) {
@@ -215,33 +216,33 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
         default:
             // Everything else is just a composite node that we can deal with
             // the same way. 
-            return visitUnsupported(op, null);
+            return visit((Expression)op, null);
         }
     }
 
-    private Expression visitILNode(Expression e) {
-    	throw new RuntimeException(e+" is already an IL node, something is "
+    private Expression visitILExpr(Expression e) {
+    	throw new RuntimeException(e+" is already an IL-only expr, something is "
     			+ "probably very wrong here");
     }
     
 	@Override
-	public Expression visitGetNodeState(GetNodeStateExpr state, Void param) {
-		return visitILNode(state);
+	public Expression visit(GetNodeStateExpr state, Void param) {
+		return visitILExpr(state);
 	}
 
 	@Override
-	public Expression visitSimple(SimpleVar var, Void param) {
-		return visitILNode(var);
+	public Expression visit(SimpleVar var, Void param) {
+		return visitILExpr(var);
 	}
 
 	@Override
-	public Expression visitArray(ArrayVar array, Void param) {
-		return visitILNode(array);
+	public Expression visit(ArrayVar array, Void param) {
+		return visitILExpr(array);
 	}
 
 	@Override
-	public Expression visitLibrary(LibraryVar lib, Void param) {
-		return visitILNode(lib);
+	public Expression visit(LibraryVar lib, Void param) {
+		return visitILExpr(lib);
 	}
 
 }

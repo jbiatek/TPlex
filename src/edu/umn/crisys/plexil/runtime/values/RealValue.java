@@ -195,7 +195,7 @@ public class RealValue implements PReal {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitRealValue(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class ArrayVar extends ILVariable {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitArray(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

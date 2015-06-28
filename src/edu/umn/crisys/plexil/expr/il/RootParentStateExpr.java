@@ -23,7 +23,7 @@ public class RootParentStateExpr implements Expression {
 
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-        return visitor.visitRootParentState(this, param);
+        return visitor.visit(this, param);
     }
 
 	@Override

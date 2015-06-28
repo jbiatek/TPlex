@@ -67,7 +67,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 	
 	
 	@Override
-	public Expression visitOperation(Operation op, Void param) {
+	public Expression visit(Operation op, Void param) {
 		Optional<PValue> eval = op.accept(new ILEval(), null);
 		if (eval.isPresent()) {
 			// This whole thing is constant! 
@@ -89,7 +89,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 		if (identity == null) {
 			// Okay, nothing special to do, other than propagate the listener,
 			// which is done by default. 
-			return super.visitOperation(op, param);
+			return super.visit(op, param);
 		}
 		
 		// Remove identity expressions if found. 

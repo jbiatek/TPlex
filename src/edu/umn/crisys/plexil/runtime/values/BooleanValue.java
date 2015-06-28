@@ -147,7 +147,7 @@ public class BooleanValue implements PBoolean {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitBooleanValue(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

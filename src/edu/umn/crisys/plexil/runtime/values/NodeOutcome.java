@@ -27,7 +27,7 @@ public enum NodeOutcome implements PValue {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitNodeOutcome(this, param);
+		return visitor.visit(this, param);
 	}
 
 	@Override

@@ -50,6 +50,6 @@ public class NodeTimepointExpr implements Expression {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visitNodeTimepoint(this, param);
+		return visitor.visit(this, param);
 	}
 }

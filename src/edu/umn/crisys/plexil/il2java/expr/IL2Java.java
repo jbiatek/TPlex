@@ -45,7 +45,7 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 	
     @Override
-    public JExpression visitArrayIndex(ArrayIndexExpr array,
+    public JExpression visit(ArrayIndexExpr array,
             JCodeModel cm) {
     	return array.getArray().accept(this, cm)
     			.invoke("get")
@@ -53,7 +53,7 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
     }
     
     @Override
-    public JExpression visitLookupNow(LookupNowExpr lookup, JCodeModel cm) {
+    public JExpression visit(LookupNowExpr lookup, JCodeModel cm) {
         JInvocation jlookup = 
             JExpr.invoke("getWorld").invoke("lookupNow")
                 .arg(lookup.getLookupName().accept(this, cm));
@@ -65,7 +65,7 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
     }
 
     @Override
-    public JExpression visitLookupOnChange(LookupOnChangeExpr lookup,
+    public JExpression visit(LookupOnChangeExpr lookup,
             JCodeModel cm) {
         JInvocation jlookup = 
             JExpr.invoke("getWorld").invoke("lookupOnChange")
@@ -79,7 +79,7 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
     }
     
     @Override
-    public JExpression visitOperation(Operation op, JCodeModel cm) {
+    public JExpression visit(Operation op, JCodeModel cm) {
         List<JExpression> children = op.getArguments().stream()
         		// Translate args to Java
         		.map(arg -> arg.accept(this, cm))
@@ -247,107 +247,107 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 
 
     @Override
-    public JExpression visitRootParentState(RootParentStateExpr state,
+    public JExpression visit(RootParentStateExpr state,
             JCodeModel cm) {
         return JExpr.invoke("getInterface").invoke("evalParentState");
     }
 
     @Override
-    public JExpression visitRootParentExit(RootAncestorExitExpr ancExit,
+    public JExpression visit(RootAncestorExitExpr ancExit,
             JCodeModel cm) {
         return JExpr.invoke("getInterface").invoke("evalAncestorExit");
 
     }
 
     @Override
-    public JExpression visitRootParentEnd(RootAncestorEndExpr ancEnd,
+    public JExpression visit(RootAncestorEndExpr ancEnd,
             JCodeModel cm) {
         return JExpr.invoke("getInterface").invoke("evalAncestorEnd");
     }
 
     @Override
-    public JExpression visitRootParentInvariant(
+    public JExpression visit(
             RootAncestorInvariantExpr ancInv, JCodeModel cm) {
         return JExpr.invoke("getInterface").invoke("evalAncestorInvariant");
     }
 
 	@Override
-	public JExpression visitAlias(AliasExpr alias, JCodeModel param) {
+	public JExpression visit(AliasExpr alias, JCodeModel param) {
         return JExpr.invoke("getInterface").invoke("getValue").arg(alias.getName());
 	}
 
 	@Override
-	public JExpression visitSimple(SimpleVar var, JCodeModel param) {
+	public JExpression visit(SimpleVar var, JCodeModel param) {
 		return JExpr.ref(ILExprToJava.getFieldName(var.getNodeUID(), var.getName())).invoke("getCurrent");
 	}
 
 	@Override
-	public JExpression visitArray(ArrayVar array, JCodeModel param) {
+	public JExpression visit(ArrayVar array, JCodeModel param) {
 		return JExpr.ref(ILExprToJava.getFieldName(array.getNodeUID(), array.getName())).invoke("getCurrent");
 	}
 
 	@Override
-	public JExpression visitLibrary(LibraryVar lib, JCodeModel param) {
+	public JExpression visit(LibraryVar lib, JCodeModel param) {
 		return JExpr.ref(ILExprToJava.getLibraryFieldName(lib.getNodeUID())).invoke("getRootNodeState");
 	}
 
 	@Override
-	public JExpression visitGetNodeState(GetNodeStateExpr state,
+	public JExpression visit(GetNodeStateExpr state,
 			JCodeModel param) {
 		return JExpr.invoke(StateMachineToJava.getMappingMethodName(state.getNodeUid()));
 	}
 
 	@Override
-	public JExpression visitBooleanValue(BooleanValue bool, JCodeModel cm) {
+	public JExpression visit(BooleanValue bool, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(bool, cm);
 	}
 
 	@Override
-	public JExpression visitIntegerValue(IntegerValue integer,
+	public JExpression visit(IntegerValue integer,
 			JCodeModel cm) {
 		return ILExprToJava.PValueToJava(integer, cm);
 	}
 
 	@Override
-	public JExpression visitRealValue(RealValue real, JCodeModel cm) {
+	public JExpression visit(RealValue real, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(real, cm);
 	}
 
 	@Override
-	public JExpression visitStringValue(StringValue string, JCodeModel cm) {
+	public JExpression visit(StringValue string, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(string, cm);
 	}
 
 	@Override
-	public JExpression visitUnknownValue(UnknownValue unk, JCodeModel cm) {
+	public JExpression visit(UnknownValue unk, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(unk, cm);
 	}
 
 	@Override
-	public JExpression visitPValueList(PValueList<?> list, JCodeModel cm) {
+	public JExpression visit(PValueList<?> list, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(list, cm);
 	}
 
 	@Override
-	public JExpression visitCommandHandleState(CommandHandleState state,
+	public JExpression visit(CommandHandleState state,
 			JCodeModel cm) {
 		return ILExprToJava.PValueToJava(state, cm);
 	}
 
 	@Override
-	public JExpression visitNodeFailure(NodeFailureType type,
+	public JExpression visit(NodeFailureType type,
 			JCodeModel cm) {
 		return ILExprToJava.PValueToJava(type, cm);
 	}
 
 	@Override
-	public JExpression visitNodeOutcome(NodeOutcome outcome,
+	public JExpression visit(NodeOutcome outcome,
 			JCodeModel cm) {
 		return ILExprToJava.PValueToJava(outcome, cm);
 	}
 
 	@Override
-	public JExpression visitNodeState(NodeState state, JCodeModel cm) {
+	public JExpression visit(NodeState state, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(state, cm);
 	}
     

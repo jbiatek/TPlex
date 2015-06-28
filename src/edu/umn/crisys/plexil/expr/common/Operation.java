@@ -473,7 +473,7 @@ public class Operation implements Expression {
 
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-        return visitor.visitOperation(this, param);
+        return visitor.visit(this, param);
     }
 
 	@Override

@@ -15,18 +15,18 @@ implements ExprVisitor<P, R>
 		throw new RuntimeException("This is an AST expression: "+e);
 	}
 
-    public final R visitVariable(UnresolvedVariableExpr expr, P param) {
+    public final R visit(UnresolvedVariableExpr expr, P param) {
     	return visitASTExpr(expr);
     }
-    public final R visitNodeReference(NodeRefExpr ref, P param) {
+    public final R visit(NodeRefExpr ref, P param) {
     	return visitASTExpr(ref);
 
     }
-    public final R visitDefaultEnd(DefaultEndExpr end, P param) {
+    public final R visit(DefaultEndExpr end, P param) {
     	return visitASTExpr(end);
 
     }
-    public final R visitNodeTimepoint(NodeTimepointExpr timept, P param) {
+    public final R visit(NodeTimepointExpr timept, P param) {
     	return visitASTExpr(timept);
     }
 

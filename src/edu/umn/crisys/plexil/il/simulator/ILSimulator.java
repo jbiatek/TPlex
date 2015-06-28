@@ -91,7 +91,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 	private ILEval myEvaluator = new ILEval() {
 
 		@Override
-		public Optional<PValue> visitArrayIndex(ArrayIndexExpr array, Void param) {
+		public Optional<PValue> visit(ArrayIndexExpr array, Void param) {
 			Optional<PValue> theArrayResult = array.getArray().accept(this, param);
 			Optional<PValue> theIndexResult = array.getIndex().accept(this, param);
 			
@@ -107,14 +107,14 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 		}
 
 		@Override
-		public Optional<PValue> visitLookupNow(LookupNowExpr lookup, Void param) {
+		public Optional<PValue> visit(LookupNowExpr lookup, Void param) {
 			return Optional.of(getWorld().lookupNow(asString(eval(lookup.getLookupName())), 
 					lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
 					.collect(Collectors.toList()).toArray(new PValue[]{})));
 		}
 
 		@Override
-		public Optional<PValue> visitLookupOnChange(LookupOnChangeExpr lookup, Void param) {
+		public Optional<PValue> visit(LookupOnChangeExpr lookup, Void param) {
 			return Optional.of(getWorld().lookupOnChange(asString(eval(lookup.getLookupName())), 
 					asReal(eval(lookup.getTolerance())),
 					lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
@@ -122,50 +122,50 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 		}
 
 		@Override
-		public Optional<PValue> visitRootParentState(RootParentStateExpr state, Void param) {
+		public Optional<PValue> visit(RootParentStateExpr state, Void param) {
 			return Optional.of(getInterface().evalParentState());
 		}
 
 		@Override
-		public Optional<PValue> visitRootParentExit(RootAncestorExitExpr ancExit,
+		public Optional<PValue> visit(RootAncestorExitExpr ancExit,
 				Void param) {
 			return Optional.of(getInterface().evalAncestorExit());
 		}
 
 		@Override
-		public Optional<PValue> visitRootParentEnd(RootAncestorEndExpr ancEnd, Void param) {
+		public Optional<PValue> visit(RootAncestorEndExpr ancEnd, Void param) {
 			return Optional.of(getInterface().evalAncestorEnd());
 		}
 
 		@Override
-		public Optional<PValue> visitRootParentInvariant(
+		public Optional<PValue> visit(
 				RootAncestorInvariantExpr ancInv, Void param) {
 			return Optional.of(getInterface().evalAncestorInvariant());
 		}
 
 
 		@Override
-		public Optional<PValue> visitSimple(SimpleVar var, Void param) {
+		public Optional<PValue> visit(SimpleVar var, Void param) {
 			return Optional.of(simpleVars.get(var).getCurrent());
 		}
 
 		@Override
-		public Optional<PValue> visitArray(ArrayVar array, Void param) {
+		public Optional<PValue> visit(ArrayVar array, Void param) {
 			return Optional.of(arrayVars.get(array).getCurrent());
 		}
 
 		@Override
-		public Optional<PValue> visitLibrary(LibraryVar lib, Void param) {
+		public Optional<PValue> visit(LibraryVar lib, Void param) {
 			return Optional.empty();
 		}
 
 		@Override
-		public Optional<PValue> visitAlias(AliasExpr alias, Void param) {
+		public Optional<PValue> visit(AliasExpr alias, Void param) {
 			return Optional.empty();
 		}
 
 		@Override
-		public Optional<PValue> visitGetNodeState(GetNodeStateExpr state, Void param) {
+		public Optional<PValue> visit(GetNodeStateExpr state, Void param) {
 			return Optional.of(getCurrentStateOf(state.getNodeUid()));
 		}
 		
@@ -193,7 +193,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 			var.accept(new ExprVisitor<Void,Void>() {
 
 				@Override
-				public Void visitSimple(SimpleVar varInfo, Void param) {
+				public Void visit(SimpleVar varInfo, Void param) {
 					SimpleCurrentNext<PValue> var = 
 							new SimpleCurrentNext<PValue>(eval(varInfo.getInitialValue()));
 					simpleVars.put(varInfo, var);
@@ -201,7 +201,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 				}
 
 				@Override
-				public Void visitArray(ArrayVar arrayInfo, Void param) {
+				public Void visit(ArrayVar arrayInfo, Void param) {
 					SimplePArray<PValue> array = new SimplePArray<PValue>(arrayInfo.getType(),
 							arrayInfo.getMaxSize(), arrayInfo.getInitialValue());
 					arrayVars.put(arrayInfo, array);
@@ -209,7 +209,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 				}
 
 				@Override
-				public Void visitLibrary(LibraryVar lib, Void param) {
+				public Void visit(LibraryVar lib, Void param) {
 					throw new RuntimeException("Libraries not supported");
 				}
 			

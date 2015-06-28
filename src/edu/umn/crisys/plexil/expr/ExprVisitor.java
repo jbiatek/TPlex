@@ -47,114 +47,114 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  */
 public interface ExprVisitor<P, R> {
 	
-	public default R visitUnsupported(Expression e, P param) {
+	public default R visit(Expression e, P param) {
 		throw new RuntimeException("This visitor does not support "
 				+e.getClass().getSimpleName());
 	}
     
 	
 	//PValues
-	public default R visitPValue(PValue v, P param) {
-		return visitUnsupported((PValue) v, param);
+	public default R visit(PValue v, P param) {
+		return visit((Expression) v, param);
 	}
-	public default R visitBooleanValue(BooleanValue bool, P param) {
-		return visitPValue((PValue)bool, param);
+	public default R visit(BooleanValue bool, P param) {
+		return visit((PValue)bool, param);
 	}
-	public default R visitIntegerValue(IntegerValue integer, P param) {
-		return visitPValue((PValue)integer, param);
+	public default R visit(IntegerValue integer, P param) {
+		return visit((PValue)integer, param);
 	}
-	public default R visitRealValue(RealValue real, P param) {
-		return visitPValue((PValue)real, param);
+	public default R visit(RealValue real, P param) {
+		return visit((PValue)real, param);
 	}
-	public default R visitStringValue(StringValue string, P param) {
-		return visitPValue((PValue)string, param);
+	public default R visit(StringValue string, P param) {
+		return visit((PValue)string, param);
 	}
-	public default R visitUnknownValue(UnknownValue unk, P param) {
-		return visitPValue((PValue)unk, param);
+	public default R visit(UnknownValue unk, P param) {
+		return visit((PValue)unk, param);
 	}
-	public default R visitPValueList(PValueList<?> list, P param) {
-		return visitPValue((PValue)list, param);
+	public default R visit(PValueList<?> list, P param) {
+		return visit((PValue)list, param);
 	}
-	public default R visitCommandHandleState(CommandHandleState state, P param) {
-		return visitPValue((PValue)state, param);
+	public default R visit(CommandHandleState state, P param) {
+		return visit((PValue)state, param);
 	}
-	public default R visitNodeFailure(NodeFailureType type, P param) {
-		return visitPValue((PValue)type, param);
+	public default R visit(NodeFailureType type, P param) {
+		return visit((PValue)type, param);
 	}
-	public default R visitNodeOutcome(NodeOutcome outcome, P param) {
-		return visitPValue((PValue)outcome, param);
+	public default R visit(NodeOutcome outcome, P param) {
+		return visit((PValue)outcome, param);
 	}
-	public default R visitNodeState(NodeState state, P param) {
-		return visitPValue((PValue)state, param);
+	public default R visit(NodeState state, P param) {
+		return visit((PValue)state, param);
 	}
 
 	// Lookups
-	public default R visitLookup(LookupExpr lookup, P param) {
-		return visitUnsupported((Expression)lookup, param);
+	public default R visit(LookupExpr lookup, P param) {
+		return visit((Expression)lookup, param);
 	}
-    public default R visitLookupNow(LookupNowExpr lookup, P param) {
-		return visitLookup((LookupExpr)lookup, param);
+    public default R visit(LookupNowExpr lookup, P param) {
+		return visit((LookupExpr)lookup, param);
 	}
-    public default R visitLookupOnChange(LookupOnChangeExpr lookup, P param) {
-		return visitLookup((LookupExpr)lookup, param);
+    public default R visit(LookupOnChangeExpr lookup, P param) {
+		return visit((LookupExpr)lookup, param);
 	}
 	
 	
-    public default R visitArrayIndex(ArrayIndexExpr array, P param) {
-		return visitUnsupported((Expression)array, param);
+    public default R visit(ArrayIndexExpr array, P param) {
+		return visit((Expression)array, param);
 	}
-    public default R visitOperation(Operation op, P param) {
-		return visitUnsupported((Expression)op, param);
+    public default R visit(Operation op, P param) {
+		return visit((Expression)op, param);
 	}
 
     // AST expressions
-    public default R visitVariable(UnresolvedVariableExpr expr, P param) {
-		return visitUnsupported((Expression)expr, param);
+    public default R visit(UnresolvedVariableExpr expr, P param) {
+		return visit((Expression)expr, param);
 	}
-    public default R visitNodeReference(NodeRefExpr ref, P param) {
-		return visitUnsupported((Expression)ref, param);
+    public default R visit(NodeRefExpr ref, P param) {
+		return visit((Expression)ref, param);
 	}
-    public default R visitDefaultEnd(DefaultEndExpr end, P param) {
-		return visitUnsupported((Expression)end, param);
+    public default R visit(DefaultEndExpr end, P param) {
+		return visit((Expression)end, param);
 	}
-    public default R visitNodeTimepoint(NodeTimepointExpr timept, P param) {
-		return visitUnsupported((Expression)timept, param);
+    public default R visit(NodeTimepointExpr timept, P param) {
+		return visit((Expression)timept, param);
 	}
 
     
     // IL expressions
-	public default R visitGetNodeState(GetNodeStateExpr state, P param) {
-		return visitUnsupported((Expression)state, param);
+	public default R visit(GetNodeStateExpr state, P param) {
+		return visit((Expression)state, param);
 	}
-	public default R visitAlias(AliasExpr alias, P param) {
-		return visitUnsupported((Expression)alias, param);
+	public default R visit(AliasExpr alias, P param) {
+		return visit((Expression)alias, param);
 	}
-    public default R visitRootParentState(RootParentStateExpr state, P param) {
-		return visitUnsupported((Expression)state, param);
+    public default R visit(RootParentStateExpr state, P param) {
+		return visit((Expression)state, param);
 	}
-    public default R visitRootParentExit(RootAncestorExitExpr ancExit, P param) {
-		return visitUnsupported((Expression)ancExit, param);
+    public default R visit(RootAncestorExitExpr ancExit, P param) {
+		return visit((Expression)ancExit, param);
 	}
-    public default R visitRootParentEnd(RootAncestorEndExpr ancEnd, P param) {
-		return visitUnsupported((Expression)ancEnd, param);
+    public default R visit(RootAncestorEndExpr ancEnd, P param) {
+		return visit((Expression)ancEnd, param);
 	}
-    public default R visitRootParentInvariant(RootAncestorInvariantExpr ancInv, P param) {
-		return visitUnsupported((Expression)ancInv, param);
+    public default R visit(RootAncestorInvariantExpr ancInv, P param) {
+		return visit((Expression)ancInv, param);
 	}
 
     
     //ILVariables
-    public default R visitILVar(ILVariable v, P param) {
-    	return visitUnsupported((Expression)v, param);
+    public default R visit(ILVariable v, P param) {
+    	return visit((Expression)v, param);
     }
-	public default R visitSimple(SimpleVar var, P param) {
-		return visitILVar((ILVariable)var, param);
+	public default R visit(SimpleVar var, P param) {
+		return visit((ILVariable)var, param);
 	}
-	public default R visitArray(ArrayVar array, P param) {
-		return visitILVar((ILVariable)array, param);
+	public default R visit(ArrayVar array, P param) {
+		return visit((ILVariable)array, param);
 	}
-	public default R visitLibrary(LibraryVar lib, P param) {
-		return visitILVar((ILVariable)lib, param);
+	public default R visit(LibraryVar lib, P param) {
+		return visit((ILVariable)lib, param);
 	}
 
     

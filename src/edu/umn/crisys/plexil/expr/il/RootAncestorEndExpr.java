@@ -23,7 +23,7 @@ public class RootAncestorEndExpr implements Expression {
 
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-        return visitor.visitRootParentEnd(this, param);
+        return visitor.visit(this, param);
     }
 
 	@Override

@@ -80,122 +80,122 @@ implements NativeExprVisitor<Param, NativeExpr> {
 	}
 	
 	@Override
-	public Expression visitArrayIndex(ArrayIndexExpr array, Param param) {
+	public Expression visit(ArrayIndexExpr array, Param param) {
 		return visitComposite(array, param);
 	}
 
 	@Override
-	public Expression visitLookupNow(LookupNowExpr lookup, Param param) {
+	public Expression visit(LookupNowExpr lookup, Param param) {
 		return visitComposite(lookup, param);
 	}
 
 	@Override
-	public Expression visitLookupOnChange(LookupOnChangeExpr lookup,
+	public Expression visit(LookupOnChangeExpr lookup,
 			Param param) {
 		return visitComposite(lookup, param);
 	}
 
 	@Override
-	public Expression visitOperation(Operation op, Param param) {
+	public Expression visit(Operation op, Param param) {
 		return visitComposite(op, param);
 	}
 
 	@Override
-	public Expression visitBooleanValue(BooleanValue bool, Param param) {
+	public Expression visit(BooleanValue bool, Param param) {
 		return bool;
 	}
 
 	@Override
-	public Expression visitIntegerValue(IntegerValue integer, Param param) {
+	public Expression visit(IntegerValue integer, Param param) {
 		return integer;
 	}
 
 	@Override
-	public Expression visitRealValue(RealValue real, Param param) {
+	public Expression visit(RealValue real, Param param) {
 		return real;
 	}
 
 	@Override
-	public Expression visitStringValue(StringValue string, Param param) {
+	public Expression visit(StringValue string, Param param) {
 		return string;
 	}
 
 	@Override
-	public Expression visitUnknownValue(UnknownValue unk, Param param) {
+	public Expression visit(UnknownValue unk, Param param) {
 		return unk;
 	}
 
 	@Override
-	public Expression visitPValueList(PValueList<?> list, Param param) {
+	public Expression visit(PValueList<?> list, Param param) {
 		return list;
 	}
 
 	@Override
-	public Expression visitCommandHandleState(CommandHandleState state,
+	public Expression visit(CommandHandleState state,
 			Param param) {
 		return state;
 	}
 
 	@Override
-	public Expression visitNodeFailure(NodeFailureType type, Param param) {
+	public Expression visit(NodeFailureType type, Param param) {
 		return type;
 	}
 
 	@Override
-	public Expression visitNodeOutcome(NodeOutcome outcome, Param param) {
+	public Expression visit(NodeOutcome outcome, Param param) {
 		return outcome;
 	}
 
 	@Override
-	public Expression visitNodeState(NodeState state, Param param) {
+	public Expression visit(NodeState state, Param param) {
 		return state;
 	}
 
 	@Override
-	public Expression visitSimple(SimpleVar var, Param param) {
+	public Expression visit(SimpleVar var, Param param) {
 		return var;
 	}
 
 	@Override
-	public Expression visitArray(ArrayVar array, Param param) {
+	public Expression visit(ArrayVar array, Param param) {
 		return array;
 	}
 
 	@Override
-	public Expression visitLibrary(LibraryVar lib, Param param) {
+	public Expression visit(LibraryVar lib, Param param) {
 		return lib;
 	}
 
 	@Override
-	public Expression visitGetNodeState(GetNodeStateExpr state, Param param) {
+	public Expression visit(GetNodeStateExpr state, Param param) {
 		return state;
 	}
 
 	@Override
-	public Expression visitAlias(AliasExpr alias, Param param) {
+	public Expression visit(AliasExpr alias, Param param) {
 		return alias;
 	}
 
 	@Override
-	public Expression visitRootParentState(RootParentStateExpr state,
+	public Expression visit(RootParentStateExpr state,
 			Param param) {
 		return state;
 	}
 
 	@Override
-	public Expression visitRootParentExit(RootAncestorExitExpr ancExit,
+	public Expression visit(RootAncestorExitExpr ancExit,
 			Param param) {
 		return ancExit;
 	}
 
 	@Override
-	public Expression visitRootParentEnd(RootAncestorEndExpr ancEnd,
+	public Expression visit(RootAncestorEndExpr ancEnd,
 			Param param) {
 		return ancEnd;
 	}
 
 	@Override
-	public Expression visitRootParentInvariant(
+	public Expression visit(
 			RootAncestorInvariantExpr ancInv, Param param) {
 		return ancInv;
 	}

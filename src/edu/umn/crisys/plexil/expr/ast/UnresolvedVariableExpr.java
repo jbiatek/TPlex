@@ -41,7 +41,7 @@ public class UnresolvedVariableExpr implements Expression {
 
     @Override
     public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-        return visitor.visitVariable(this, param);
+        return visitor.visit(this, param);
     }
 
 	@Override
