@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
@@ -21,7 +22,6 @@ import edu.umn.crisys.plexil.expr.il.nativebool.NativeEval;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.expr.il.vars.ILVarVisitor;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -190,7 +190,7 @@ public class ILSimulator extends JavaPlan implements PlexilTestable {
 		ilPlan.getOriginalHierarchy().removeDeletedVariables(ilPlan);
 		
 		for (ILVariable var : ilPlan.getVariables()) {
-			var.accept(new ILVarVisitor<Void,Void>() {
+			var.accept(new ExprVisitor<Void,Void>() {
 
 				@Override
 				public Void visitSimple(SimpleVar varInfo, Void param) {

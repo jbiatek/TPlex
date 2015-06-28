@@ -17,9 +17,9 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.expr.il.vars.ILVarVisitor;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -181,7 +181,7 @@ public class PlanToJava {
     }
 	
 	private static void addVariable(ILVariable v, JDefinedClass clazz, Map<String,String> idToClassName) {
-		ILVarVisitor<JDefinedClass, Void> adder = new ILVarVisitor<JDefinedClass, Void>() {
+		ExprVisitor<JDefinedClass, Void> adder = new ExprVisitor<JDefinedClass, Void>() {
 
 			@Override
 			public Void visitSimple(SimpleVar var, JDefinedClass clazz) {

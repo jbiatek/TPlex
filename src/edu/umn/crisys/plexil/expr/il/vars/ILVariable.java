@@ -1,6 +1,5 @@
 package edu.umn.crisys.plexil.expr.il.vars;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -43,11 +42,5 @@ public abstract class ILVariable implements Expression {
 	public String asString() {
 		return name;
 	}
-	
-	public final <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return this.accept((ILVarVisitor<P,R>)visitor, param);
-	}
-
-	public abstract <P, R> R accept(ILVarVisitor<P,R> visitor, P param);
 	
 }

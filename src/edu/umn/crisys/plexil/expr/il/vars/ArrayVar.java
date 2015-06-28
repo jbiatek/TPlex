@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.expr.il.vars;
 
+import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -38,7 +39,7 @@ public class ArrayVar extends ILVariable {
 	}
 
 	@Override
-	public <P, R> R accept(ILVarVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visitArray(this, param);
 	}
 
