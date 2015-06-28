@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.expr.ExprVisitor;
+import edu.umn.crisys.plexil.expr.PlexilType;
 
 public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 
@@ -187,7 +188,7 @@ public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 	}
 
 	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visitUnknownValue(this, param);
 	}
 

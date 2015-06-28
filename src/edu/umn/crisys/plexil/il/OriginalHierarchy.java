@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
-import edu.umn.crisys.plexil.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
+import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 
 /**
  * Stores information from the original PLEXIL hierarchy. This can be used to

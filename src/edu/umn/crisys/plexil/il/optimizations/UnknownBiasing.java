@@ -3,16 +3,16 @@ package edu.umn.crisys.plexil.il.optimizations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
+import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative.Condition;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
-import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative.Condition;
 
 public class UnknownBiasing extends ILExprModifier<Void> {
 	

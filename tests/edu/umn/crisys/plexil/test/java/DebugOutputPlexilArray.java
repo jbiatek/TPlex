@@ -3,12 +3,12 @@ package edu.umn.crisys.plexil.test.java;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
+import edu.umn.crisys.plexil.expr.ExprVisitor;
+import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
@@ -104,7 +104,7 @@ public class DebugOutputPlexilArray implements PValue {
 	}
 
 	@Override
-	public <P, R> R accept(CommonExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		throw new RuntimeException("Why are you visiting this? It's an internal testing class.");
 	}
     

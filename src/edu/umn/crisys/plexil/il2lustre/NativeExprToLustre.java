@@ -8,12 +8,12 @@ import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.LustreUtil;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExprVisitor;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
 
 public class NativeExprToLustre implements NativeExprVisitor<Void, Expr> {
 	

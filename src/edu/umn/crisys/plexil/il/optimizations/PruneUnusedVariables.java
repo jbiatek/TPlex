@@ -5,24 +5,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExprVisitor;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
+import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
 import edu.umn.crisys.plexil.il.action.CompositeAction;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
-import edu.umn.crisys.plexil.il.vars.LibraryVar;
 import edu.umn.crisys.util.Pair;
 
 public class PruneUnusedVariables {

@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+import edu.umn.crisys.plexil.expr.PlexilType;
+
 public interface PInteger extends PNumeric {
 	
 	@Override

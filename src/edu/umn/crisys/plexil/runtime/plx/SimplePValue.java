@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.plx;
 
+import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.PValue;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class SimplePValue<T> extends SimpleCurrentNext<T> {
 

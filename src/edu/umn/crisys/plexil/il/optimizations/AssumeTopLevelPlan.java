@@ -1,13 +1,13 @@
 package edu.umn.crisys.plexil.il.optimizations;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
+import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
-import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.il.expr.RootParentStateExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 

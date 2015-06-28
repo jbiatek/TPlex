@@ -1,0 +1,9 @@
+package edu.umn.crisys.plexil.expr.il.nativebool;
+
+public interface NativeExprVisitor<Param, Return> {
+	
+	public Return visitNativeOperation(NativeOperation op, Param param);
+	public Return visitPlexilExprToNative(PlexilExprToNative pen, Param param);
+	public Return visitNativeConstant(NativeConstant c, Param param);
+	public Return visitNativeEqual(NativeEqual e, Param param);
+}

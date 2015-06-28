@@ -3,10 +3,10 @@ package edu.umn.crisys.plexil.runtime.plx;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class SimplePArray<T extends PValue> {
 

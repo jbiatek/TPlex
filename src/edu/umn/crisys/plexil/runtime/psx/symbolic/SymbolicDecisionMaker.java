@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.runtime.psx.symbolic;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umn.crisys.plexil.expr.PlexilType;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
@@ -11,7 +12,6 @@ import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PValue;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.script.ast.FunctionCall;
 

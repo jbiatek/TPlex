@@ -22,19 +22,19 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PString;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 public class PlanToLustre {
 

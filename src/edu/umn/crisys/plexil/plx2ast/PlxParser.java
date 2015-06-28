@@ -21,7 +21,7 @@ import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
+import edu.umn.crisys.plexil.expr.PlexilType;
 
 public class PlxParser {
     

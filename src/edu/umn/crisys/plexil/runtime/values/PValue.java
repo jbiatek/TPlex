@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
 
 /**
  * The interface defining what all PlexilValues can do.

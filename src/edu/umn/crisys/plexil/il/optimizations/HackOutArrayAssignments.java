@@ -1,9 +1,9 @@
 package edu.umn.crisys.plexil.il.optimizations;
 
+import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.ILActionFilter;
-import edu.umn.crisys.plexil.il.vars.ArrayVar;
 
 public class HackOutArrayAssignments {
 

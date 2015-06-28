@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.ast.nodebody;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.util.Pair;
 
 public class UpdateBody extends NodeBody {

@@ -4,12 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeEval;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeEval;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
 
 public class Transition implements Comparable<Transition> {
 	

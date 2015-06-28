@@ -11,18 +11,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
 
 public class Plan {
     

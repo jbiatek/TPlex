@@ -4,12 +4,12 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeExprVisitor;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
-import edu.umn.crisys.plexil.il.expr.nativebool.NativeOperation.NativeOp;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExprVisitor;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
+import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
 
 public class NativeExprToJava implements
 		NativeExprVisitor<JCodeModel, JExpression> {

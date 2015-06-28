@@ -8,33 +8,33 @@ import java.util.Optional;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.ast.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
+import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.il.AliasExpr;
+import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
+import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
+import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.AliasExpr;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.il.expr.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
-import edu.umn.crisys.plexil.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
-import edu.umn.crisys.plexil.il.vars.LibraryVar;
-import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
 /**
  * An object that takes an AST Node, and transforms it into IL. It knows a lot

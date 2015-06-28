@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
@@ -13,6 +12,9 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
@@ -22,11 +24,9 @@ import edu.umn.crisys.plexil.il.action.EndMacroStep;
 import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.statemachine.State;
-import edu.umn.crisys.plexil.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.util.Pair;
 
 /**

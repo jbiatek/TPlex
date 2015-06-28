@@ -23,9 +23,10 @@ import org.junit.*;
 
 import simulation.LustreSimulator;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.Expression;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
@@ -35,7 +36,6 @@ import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
 

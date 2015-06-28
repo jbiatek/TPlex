@@ -4,15 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.common.CommonExprVisitor;
-import edu.umn.crisys.plexil.ast.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.ast.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.ast.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.expr.var.DefaultEndExpr;
-import edu.umn.crisys.plexil.ast.expr.var.NodeRefExpr;
-import edu.umn.crisys.plexil.ast.expr.var.NodeTimepointExpr;
-import edu.umn.crisys.plexil.ast.expr.var.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
@@ -20,15 +11,24 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
-import edu.umn.crisys.plexil.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.il.vars.LibraryVar;
-import edu.umn.crisys.plexil.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.expr.ExprVisitor;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
+import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
+import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
+import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
+import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
+import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 
-public class ASTExprToILExpr implements CommonExprVisitor<Void, Expression> {
+public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
     
     private NodeToIL context;
     

@@ -8,16 +8,16 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.ast.expr.Expression;
-import edu.umn.crisys.plexil.ast.expr.common.Operation;
-import edu.umn.crisys.plexil.ast.expr.common.Operation.Operator;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.Operation.Operator;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.il.vars.ILVariable;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class ILExprToJava {
