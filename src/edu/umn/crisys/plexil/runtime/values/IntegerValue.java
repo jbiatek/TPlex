@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class IntegerValue implements PInteger {
 	
@@ -217,8 +217,8 @@ public class IntegerValue implements PInteger {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.INTEGER;
+	public ExprType getType() {
+		return ExprType.INTEGER;
 	}
 	
 	@Override

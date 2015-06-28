@@ -21,7 +21,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -46,35 +46,35 @@ public class NodeParser {
                 nodeToFill.setPlexilID(getStringContent(e, xml));
             }
             else if (isTag(e, "StartCondition")) {
-                nodeToFill.setStartCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setStartCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "RepeatCondition")) {
-                nodeToFill.setRepeatCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setRepeatCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "PreCondition")) {
-                nodeToFill.setPreCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setPreCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "PostCondition")) {
-                nodeToFill.setPostCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setPostCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "InvariantCondition")) {
-                nodeToFill.setInvariantCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setInvariantCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "EndCondition")) {
-                nodeToFill.setEndCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setEndCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "ExitCondition")) {
-                nodeToFill.setExitCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setExitCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "SkipCondition")) {
-                nodeToFill.setSkipCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
+                nodeToFill.setSkipCondition(ExprParser.parse(nextTag(xml), xml, ExprType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "Priority" )) {
@@ -134,18 +134,18 @@ public class NodeParser {
         Expression var = null;
         if (isTagEndingWith(child, "Variable") || 
                 localNameOf(child).equals("ArrayElement")) {
-            PlexilType type;
+            ExprType type;
             if (localNameOf(child).equals("ArrayElement")) {
-                type = PlexilType.UNKNOWN;
+                type = ExprType.UNKNOWN;
             } else {
-                type = PlexilType.fuzzyValueOf(localNameOf(child).replaceAll("Variable$", ""));
+                type = ExprType.fuzzyValueOf(localNameOf(child).replaceAll("Variable$", ""));
             }
             var = ExprParser.parse(child, xml, type);
             child = nextTag(xml);
         }
         // Must be a name at this point.
         assertStart("Name", child);
-        Expression name = ExprParser.parse(nextTag(xml), xml, PlexilType.STRING); 
+        Expression name = ExprParser.parse(nextTag(xml), xml, ExprType.STRING); 
         assertClosedTag(child.asStartElement(), xml);
         
         // Finally, an optional list of variables.
@@ -153,7 +153,7 @@ public class NodeParser {
         child = nextTag(xml);
         if (isTag(child, "Arguments")) {
             for (StartElement arg : allChildTagsOf(child.asStartElement(), xml)) {
-                args.add(ExprParser.parse(arg, xml, PlexilType.UNKNOWN));
+                args.add(ExprParser.parse(arg, xml, ExprType.UNKNOWN));
             }
             // Now we should be done.
             assertClosedTag(start, xml);
@@ -179,8 +179,8 @@ public class NodeParser {
         Expression var;
         Expression rhs;
         
-        var = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
-        rhs = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+        var = ExprParser.parse(nextTag(xml), xml, ExprType.UNKNOWN);
+        rhs = ExprParser.parse(nextTag(xml), xml, ExprType.UNKNOWN);
         // That should be it.
         assertClosedTag(start, xml);
         
@@ -201,7 +201,7 @@ public class NodeParser {
         for (StartElement pair : allChildTagsOf(start, xml)) {
             if (isTag(pair, "Pair")) {
                 String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
-                Expression value = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+                Expression value = ExprParser.parse(nextTag(xml), xml, ExprType.UNKNOWN);
 
                 assertEnd("Pair", nextTag(xml));
                 update.addUpdate(name, value);
@@ -230,7 +230,7 @@ public class NodeParser {
             if (isTag(alias, "Alias")) {
                 //These contain a <NodeParameter> string, then an expression.
                 String param = getStringContent(assertStart("NodeParameter", nextTag(xml)), xml);
-                Expression expr = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+                Expression expr = ExprParser.parse(nextTag(xml), xml, ExprType.UNKNOWN);
                 assertClosedTag(alias, xml);
                 
                 lib.addAlias(param, expr);
@@ -289,7 +289,7 @@ public class NodeParser {
                     +", max size is "+maxSizeStr);
         }
 
-        PlexilType arrayType = PlexilType.valueOf(type.toUpperCase()).toArrayType();
+        ExprType arrayType = ExprType.valueOf(type.toUpperCase()).toArrayType();
         int maxSize = Integer.parseInt(maxSizeStr);
         Optional<PValueList<PValue>> initialValue = Optional.empty();
         if (parsedInitValues != null) {
@@ -323,7 +323,7 @@ public class NodeParser {
             throw new RuntimeException("Variable has name "+name+" and type "+typeStr);
         }
         // Now we have all the info
-        PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
+        ExprType type = ExprType.valueOf(typeStr.toUpperCase());
         return new VariableDecl(name, type, Optional.empty(), init);
     }
 

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class PlexilInterface {
 
@@ -13,8 +13,8 @@ public class PlexilInterface {
 	 * having no restrictions. 
 	 */
     private boolean isDefined = false;
-    private Map<String, PlexilType> varsIn = new HashMap<String, PlexilType>();
-    private Map<String, PlexilType> varsInOut = new HashMap<String, PlexilType>();
+    private Map<String, ExprType> varsIn = new HashMap<String, ExprType>();
+    private Map<String, ExprType> varsInOut = new HashMap<String, ExprType>();
 
     public boolean isDefined() {
     	return isDefined;
@@ -29,12 +29,12 @@ public class PlexilInterface {
         isDefined = true;
     }
 
-    public void addInVariable(String varName, PlexilType t) {
+    public void addInVariable(String varName, ExprType t) {
 	    isDefined = true;
 	    varsIn.put(varName, t);
 	}
 
-	public void addInOutVariable(String varName, PlexilType t) {
+	public void addInOutVariable(String varName, ExprType t) {
 	    isDefined = true;
 	    varsInOut.put(varName, t);
 	}

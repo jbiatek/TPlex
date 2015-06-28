@@ -13,7 +13,7 @@ public interface Expression {
     	return this.accept(visitor, null);
     }
     
-    public PlexilType getType();
+    public ExprType getType();
     
     /**
      * Get all arguments to this expression. 
@@ -55,18 +55,18 @@ public interface Expression {
     	return false;
     }
     
-    public default Expression ensureType(PlexilType type) {
+    public default Expression ensureType(ExprType type) {
     	if (type == this.getType()) return this;
     	
-    	if (type == PlexilType.BOOLEAN) {
+    	if (type == ExprType.BOOLEAN) {
     		return Operation.castToBoolean(this);
-    	} else if (type == PlexilType.INTEGER) {
+    	} else if (type == ExprType.INTEGER) {
     		return Operation.castToInteger(this);
-    	} else if (type == PlexilType.REAL) {
+    	} else if (type == ExprType.REAL) {
     		return Operation.castToReal(this);
-    	} else if (type == PlexilType.NUMERIC) {
+    	} else if (type == ExprType.NUMERIC) {
     		return Operation.castToNumeric(this);
-    	} else if (type == PlexilType.STRING) {
+    	} else if (type == ExprType.STRING) {
     		return Operation.castToString(this);
     	} else {
     		throw new RuntimeException("No casting operator for "+type);

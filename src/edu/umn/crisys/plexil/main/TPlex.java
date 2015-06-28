@@ -43,7 +43,7 @@ import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -230,7 +230,7 @@ public class TPlex {
 			})));
 		}
 		if (forceIntTimepoints) {
-			NodeToIL.TIMEPOINT_TYPE = PlexilType.INTEGER;
+			NodeToIL.TIMEPOINT_TYPE = ExprType.INTEGER;
 		}
 		
 		if (javaNoTernaryOperator) {
@@ -502,7 +502,7 @@ public class TPlex {
 		for (ILVariable var : ilPlan.getVariables()) {
 			if (var instanceof SimpleVar) {
 				SimpleVar simple = (SimpleVar) var;
-				if (simple.getType().equals(PlexilType.COMMAND_HANDLE)) {
+				if (simple.getType().equals(ExprType.COMMAND_HANDLE)) {
 					csv.put(simple,	new ArrayList<>());
 				}
 			}

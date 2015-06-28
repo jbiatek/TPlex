@@ -6,7 +6,7 @@ import java.util.List;
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -25,7 +25,7 @@ import edu.umn.crisys.util.Pair;
  */
 public class Operation extends ExpressionBase {
     
-    public static PlexilType getArgType(String opName) {
+    public static ExprType getArgType(String opName) {
         return Operator.valueOf(opName.toUpperCase()).argType;
     }
     
@@ -73,11 +73,11 @@ public class Operation extends ExpressionBase {
         return new Operation(Operator.NE, one, two);
     }
     
-    public static Operation eq(Expression one, Expression two, PlexilType extraInfo) {
+    public static Operation eq(Expression one, Expression two, ExprType extraInfo) {
         return new Operation(Operator.EQ, extraInfo, one, two);
     }
     
-    public static Operation ne(Expression one, Expression two, PlexilType extraInfo) {
+    public static Operation ne(Expression one, Expression two, ExprType extraInfo) {
         return new Operation(Operator.NE, extraInfo, one, two);
     }
 
@@ -188,52 +188,52 @@ public class Operation extends ExpressionBase {
     }
 
     public static enum Operator {
-        AND(-1, "&&", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
-        OR(-1, "||", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
-        XOR(-1, "XOR", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
-        NOT(1, "!(", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
+        AND(-1, "&&", ExprType.BOOLEAN, ExprType.BOOLEAN),
+        OR(-1, "||", ExprType.BOOLEAN, ExprType.BOOLEAN),
+        XOR(-1, "XOR", ExprType.BOOLEAN, ExprType.BOOLEAN),
+        NOT(1, "!(", ExprType.BOOLEAN, ExprType.BOOLEAN),
         
-        EQ(2, "==", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
-        NE(2, "!=", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
+        EQ(2, "==", ExprType.UNKNOWN, ExprType.BOOLEAN),
+        NE(2, "!=", ExprType.UNKNOWN, ExprType.BOOLEAN),
 
-        GE(2, ">=", PlexilType.NUMERIC, PlexilType.BOOLEAN),
-        GT(2, ">", PlexilType.NUMERIC, PlexilType.BOOLEAN),
-        LE(2, "<=", PlexilType.NUMERIC, PlexilType.BOOLEAN),
-        LT(2, "<", PlexilType.NUMERIC, PlexilType.BOOLEAN),
+        GE(2, ">=", ExprType.NUMERIC, ExprType.BOOLEAN),
+        GT(2, ">", ExprType.NUMERIC, ExprType.BOOLEAN),
+        LE(2, "<=", ExprType.NUMERIC, ExprType.BOOLEAN),
+        LT(2, "<", ExprType.NUMERIC, ExprType.BOOLEAN),
         
-        ISKNOWN(1, "isKnown(", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
+        ISKNOWN(1, "isKnown(", ExprType.UNKNOWN, ExprType.BOOLEAN),
                 
         // TODO: Do we need casting?
-        CAST_BOOL(1, "(PBoolean) (", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
-        CAST_NUMERIC(1, "(PNumeric) (", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        CAST_INT(1, "(PInteger) (", PlexilType.NUMERIC, PlexilType.INTEGER),
-        CAST_REAL(1, "(PReal) (", PlexilType.NUMERIC, PlexilType.REAL),
-        CAST_STRING(1, "(PString) (", PlexilType.STRING, PlexilType.STRING),
+        CAST_BOOL(1, "(PBoolean) (", ExprType.BOOLEAN, ExprType.BOOLEAN),
+        CAST_NUMERIC(1, "(PNumeric) (", ExprType.NUMERIC, ExprType.NUMERIC),
+        CAST_INT(1, "(PInteger) (", ExprType.NUMERIC, ExprType.INTEGER),
+        CAST_REAL(1, "(PReal) (", ExprType.NUMERIC, ExprType.REAL),
+        CAST_STRING(1, "(PString) (", ExprType.STRING, ExprType.STRING),
         
-        ABS(1, "abs(", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        ADD(-1, "+", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        DIV(2, "/", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        MAX(2, "max(", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        MIN(2, "min(", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        MOD(2, "%", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        MUL(-1, "*", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        SQRT(1, "sqrt(", PlexilType.NUMERIC, PlexilType.NUMERIC),
-        SUB(2, "-", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        ABS(1, "abs(", ExprType.NUMERIC, ExprType.NUMERIC),
+        ADD(-1, "+", ExprType.NUMERIC, ExprType.NUMERIC),
+        DIV(2, "/", ExprType.NUMERIC, ExprType.NUMERIC),
+        MAX(2, "max(", ExprType.NUMERIC, ExprType.NUMERIC),
+        MIN(2, "min(", ExprType.NUMERIC, ExprType.NUMERIC),
+        MOD(2, "%", ExprType.NUMERIC, ExprType.NUMERIC),
+        MUL(-1, "*", ExprType.NUMERIC, ExprType.NUMERIC),
+        SQRT(1, "sqrt(", ExprType.NUMERIC, ExprType.NUMERIC),
+        SUB(2, "-", ExprType.NUMERIC, ExprType.NUMERIC),
         
-        CONCAT(-1, "+", PlexilType.STRING, PlexilType.STRING),
+        CONCAT(-1, "+", ExprType.STRING, ExprType.STRING),
         
-        GET_COMMAND_HANDLE(1, ".command_handle", PlexilType.NODEREF, PlexilType.COMMAND_HANDLE),
-        GET_STATE(1, ".state", PlexilType.NODEREF, PlexilType.STATE),
-        GET_OUTCOME(1, ".outcome", PlexilType.NODEREF, PlexilType.OUTCOME),
-        GET_FAILURE(1, ".failure", PlexilType.NODEREF, PlexilType.FAILURE),
+        GET_COMMAND_HANDLE(1, ".command_handle", ExprType.NODEREF, ExprType.COMMAND_HANDLE),
+        GET_STATE(1, ".state", ExprType.NODEREF, ExprType.STATE),
+        GET_OUTCOME(1, ".outcome", ExprType.NODEREF, ExprType.OUTCOME),
+        GET_FAILURE(1, ".failure", ExprType.NODEREF, ExprType.FAILURE),
         
         ;
         private int expectedArgs;
         private String symbol;
-        private PlexilType argType;
-        private PlexilType returnType;
+        private ExprType argType;
+        private ExprType returnType;
         
-        private Operator(int expectedArgs, String symbol, PlexilType argType, PlexilType returnType) {
+        private Operator(int expectedArgs, String symbol, ExprType argType, ExprType returnType) {
             this.expectedArgs = expectedArgs;
             this.symbol = symbol;
             this.argType = argType;
@@ -374,9 +374,9 @@ public class Operation extends ExpressionBase {
     
     private Operator op;
     private List<Expression> args;
-    private PlexilType argType;
+    private ExprType argType;
     
-    private Operation(Operator op, PlexilType argType, List<Expression> args) {
+    private Operation(Operator op, ExprType argType, List<Expression> args) {
     	super(op.returnType);
         this.op = op;
         this.args = args;
@@ -392,7 +392,7 @@ public class Operation extends ExpressionBase {
         this(op, op.argType, Arrays.asList(args));
     }
     
-    private Operation(Operator op, PlexilType argType, Expression... args) {
+    private Operation(Operator op, ExprType argType, Expression... args) {
         this(op, argType, Arrays.asList(args));
     }
     
@@ -418,16 +418,16 @@ public class Operation extends ExpressionBase {
         return op;
     }
     
-    public PlexilType getExpectedArgumentType() {
+    public ExprType getExpectedArgumentType() {
         return argType;
     }
 
-    public PlexilType getActualArgumentType() {
-    	if (argType != PlexilType.UNKNOWN &&
-    			argType != PlexilType.NUMERIC) {
+    public ExprType getActualArgumentType() {
+    	if (argType != ExprType.UNKNOWN &&
+    			argType != ExprType.NUMERIC) {
     		return argType;
     	}
-    	PlexilType mostSpecific = argType;
+    	ExprType mostSpecific = argType;
     	for (Expression e : args) {
     		mostSpecific = argType.getMoreSpecific(e.getType());
     	}

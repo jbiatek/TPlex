@@ -13,7 +13,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.StartElement;
 
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
@@ -181,7 +181,7 @@ public class JKindXmlParser extends XMLUtils {
 			} else if (value.equals(LustreNamingConventions.P_UNKNOWN_ID)) {
 				return UnknownValue.get();
 			}
-			return PlexilType.BOOLEAN.parseValue(value);
+			return ExprType.BOOLEAN.parseValue(value);
 		case LustreNamingConventions.STRING_ENUM_NAME: 
 			if (value.equals(LustreNamingConventions.UNKNOWN_STRING)) {
 				return UnknownValue.get();
@@ -197,16 +197,16 @@ public class JKindXmlParser extends XMLUtils {
 					.orElseThrow(() -> new RuntimeException(
 							"Lustre string "+value+" not found in string map."));
 		case "pstate":
-			return PlexilType.STATE.parseValue(value);
+			return ExprType.STATE.parseValue(value);
 		case "node_outcome":
 			if (value.contains("unknown")) return NodeOutcome.UNKNOWN;
-			return PlexilType.OUTCOME.parseValue(value);
+			return ExprType.OUTCOME.parseValue(value);
 		case "node_failure":
 			if (value.contains("unknown")) return NodeFailureType.UNKNOWN;
-			return PlexilType.FAILURE.parseValue(value);
+			return ExprType.FAILURE.parseValue(value);
 		case "command_handle":
 			if (value.contains("unknown")) return CommandHandleState.UNKNOWN;
-			return PlexilType.COMMAND_HANDLE.parseValue(value);
+			return ExprType.COMMAND_HANDLE.parseValue(value);
 		default:
 			throw new RuntimeException("Parsing for type "+type+" not implemented");
 		}

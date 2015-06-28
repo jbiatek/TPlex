@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class CommandBody extends NodeBody {
 
@@ -27,7 +27,7 @@ public class CommandBody extends NodeBody {
     	varToAssign.ifPresent((Expression var) -> {
     		if ( ! var.isAssignable()) throw new RuntimeException(varToAssign + " is not assignable.");
     	});
-        PlexilType.STRING.typeCheck(cmdName.getType());
+        ExprType.STRING.typeCheck(cmdName.getType());
     	
         this.varToAssign = varToAssign;
         this.cmdName = cmdName;

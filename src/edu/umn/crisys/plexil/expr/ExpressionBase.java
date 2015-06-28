@@ -9,14 +9,14 @@ package edu.umn.crisys.plexil.expr;
  */
 public abstract class ExpressionBase implements Expression {
 
-	private PlexilType type;
+	private ExprType type;
 	
-	public ExpressionBase(PlexilType type) {
+	public ExpressionBase(ExprType type) {
 		this.type = type;
 	}
 	
 	@Override
-	public final PlexilType getType() {
+	public final ExprType getType() {
 		return type;
 	}
 

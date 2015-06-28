@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 /**
  * The interface defining what all PlexilValues can do.
@@ -14,7 +14,7 @@ public interface PValue extends Expression {
 
 	public abstract boolean isUnknown();
 
-	public abstract PlexilType getType();
+	public abstract ExprType getType();
 
 	/**
 	 * Performs, essentially, Java's == operator but with PLEXIL logic. That is,
@@ -51,10 +51,10 @@ public interface PValue extends Expression {
 	 * @return an object that can be safely cast, or an exception if it can't
 	 * be done.
 	 */
-	default public PValue castTo(PlexilType type)  {
+	default public PValue castTo(ExprType type)  {
 		if (this.getType() == type) {
 			return this;
-		} else if (type == PlexilType.NUMERIC 
+		} else if (type == ExprType.NUMERIC 
 				&& this instanceof PNumeric) { 
 			return this;
 		}

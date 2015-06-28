@@ -5,20 +5,20 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public class LookupNowExpr extends LookupExpr {
 
 	public LookupNowExpr(String state) {
-	    this(PlexilType.UNKNOWN, StringValue.get(state), new ArrayList<Expression>());
+	    this(ExprType.UNKNOWN, StringValue.get(state), new ArrayList<Expression>());
 	}
 	
 	public LookupNowExpr(Expression state, List<Expression> args) {
-		this(PlexilType.UNKNOWN, state,args);
+		this(ExprType.UNKNOWN, state,args);
 	}
 	
-	public LookupNowExpr(PlexilType type, Expression state, List<Expression> args) {
+	public LookupNowExpr(ExprType type, Expression state, List<Expression> args) {
 		super(type, state, args);
 	}
 	

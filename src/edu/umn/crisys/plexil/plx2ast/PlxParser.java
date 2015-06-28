@@ -21,7 +21,7 @@ import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class PlxParser {
     
@@ -177,7 +177,7 @@ public class PlxParser {
     	// Next, there has to be a type.
     	StartElement typeTag = assertStart("Type", nextTag(xml));
     	String typeStr = getStringContent(typeTag, xml);
-    	PlexilType type = PlexilType.fuzzyValueOf(typeStr);
+    	ExprType type = ExprType.fuzzyValueOf(typeStr);
     	
     	// Finally, an optional size (which indicates that this shoulud actually
     	// be an array.

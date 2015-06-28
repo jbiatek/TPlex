@@ -13,7 +13,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -59,15 +59,15 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide());
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
-		    PlexilType type = lhsUntranslated.getType();
-		    if (type == PlexilType.UNKNOWN) {
+		    ExprType type = lhsUntranslated.getType();
+		    if (type == ExprType.UNKNOWN) {
 		    	// If it's an array element, the type info isn't stored in the
 		    	// original XML (at least, not here.) Let's try the translated
 		    	// version:
-		    	if (lhsExpr.getType() != PlexilType.UNKNOWN) {
+		    	if (lhsExpr.getType() != ExprType.UNKNOWN) {
 		    		// Here we go. 
 		    		type = lhsExpr.getType();
-		    	} else if (rhs.getType() != PlexilType.UNKNOWN) {
+		    	} else if (rhs.getType() != ExprType.UNKNOWN) {
 		    		type = rhs.getType();
 		    	} else {
 		    		throw new RuntimeException("Find the type of this assignment."); 

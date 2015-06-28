@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.runtime.psx.symbolic;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
@@ -22,9 +22,9 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	}
 	
 	private class AnythingOfType<T extends PValue> implements ValueGenerator<T> {
-		private PlexilType type;
+		private ExprType type;
 		
-		public AnythingOfType(PlexilType type) {
+		public AnythingOfType(ExprType type) {
 			this.type = type;
 		}
 
@@ -162,7 +162,7 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 		} 
 	}
 	
-	private PValue getSymbolicPValueOfType(PlexilType t) {
+	private PValue getSymbolicPValueOfType(ExprType t) {
 		switch (t) {
 		case BOOLEAN:
 			return new BooleanValue(source.symbolicBoolean(true));
@@ -191,7 +191,7 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	 * @param lookup
 	 * @param type
 	 */
-	public void addLookup(String lookup, PlexilType type) {
+	public void addLookup(String lookup, ExprType type) {
 		lookupGenerators.put(lookup, new AnythingOfType<PValue>(type));
 	}
 	
@@ -208,8 +208,8 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 		lookupGenerators.put(lookup, new BiasedBoolean(probabilityOfTrue));
 	}
 	
-	public void addIncreasingLookup(String lookup, PlexilType type) {
-		if (type == PlexilType.INTEGER) {
+	public void addIncreasingLookup(String lookup, ExprType type) {
+		if (type == ExprType.INTEGER) {
 			lookupGenerators.put(lookup, new IncreasingInt());
 		} else {
 			lookupGenerators.put(lookup, new IncreasingReal());
@@ -239,7 +239,7 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 	 * @param name
 	 * @param type
 	 */
-	public void addCommandReturn(String name, PlexilType type) {
+	public void addCommandReturn(String name, ExprType type) {
 		cmdReturnValueGenerators.put(name, new AnythingOfType<PValue>(type));
 	}
 	

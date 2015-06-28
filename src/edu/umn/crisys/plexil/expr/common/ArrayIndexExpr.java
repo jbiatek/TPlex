@@ -6,7 +6,7 @@ import java.util.List;
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class ArrayIndexExpr extends ExpressionBase {
 
@@ -15,8 +15,8 @@ public class ArrayIndexExpr extends ExpressionBase {
     
     public ArrayIndexExpr(Expression array, Expression index) {
         super(array.getType().isArrayType() ? array.getType().elementType()
-        		: PlexilType.UNKNOWN);
-        PlexilType.INTEGER.typeCheck(index.getType());
+        		: ExprType.UNKNOWN);
+        ExprType.INTEGER.typeCheck(index.getType());
         this.array = array;
         this.index = index;
     }

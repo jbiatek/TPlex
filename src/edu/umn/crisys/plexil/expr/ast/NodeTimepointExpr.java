@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.expr.ast;
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 
@@ -19,10 +19,10 @@ public class NodeTimepointExpr extends ExpressionBase {
     public Expression getNodeId() { return nodeId; }
     
     public NodeTimepointExpr(NodeState state, NodeTimepoint timepoint, Expression nodeId) {
-    	super(PlexilType.NUMERIC);
+    	super(ExprType.NUMERIC);
         this.state = state;
         this.point = timepoint;
-        PlexilType.NODEREF.typeCheck(nodeId.getType());
+        ExprType.NODEREF.typeCheck(nodeId.getType());
         this.nodeId = nodeId;
     }
     

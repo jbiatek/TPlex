@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public enum NodeFailureType implements PValue {
 	PRE_CONDITION_FAILED,
@@ -23,8 +23,8 @@ public enum NodeFailureType implements PValue {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.FAILURE;
+	public ExprType getType() {
+		return ExprType.FAILURE;
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import jkind.lustre.builders.ProgramBuilder;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -102,7 +102,7 @@ public class PlanToLustre {
 						new BinaryExpr(
 								new IdExpr(LustreNamingConventions.getStateMapperId(uid)), 
 								BinaryOp.NOTEQUAL, 
-								toLustre(NodeState.EXECUTING, PlexilType.STATE))
+								toLustre(NodeState.EXECUTING, ExprType.STATE))
 						));
 				nb.addProperty(id);
 
@@ -160,7 +160,7 @@ public class PlanToLustre {
 				)));
 	}
 	
-	public Expr toLustre(Expression e, PlexilType expectedType) {
+	public Expr toLustre(Expression e, ExprType expectedType) {
 		return e.accept(ilToLustre, expectedType);
 	}
 	
@@ -237,7 +237,7 @@ public class PlanToLustre {
 		pb.addType(new TypeDef(et.id, et));
 	}
 	
-	private static Type getLustreType(PlexilType t) {
+	private static Type getLustreType(ExprType t) {
 		switch (t) {
 		case BOOLEAN:
 			return LustreNamingConventions.PBOOLEAN;
@@ -267,7 +267,7 @@ public class PlanToLustre {
 		}
 	}
 	
-	private static Type getLustreType(PlexilType arrayType, int size) {
+	private static Type getLustreType(ExprType arrayType, int size) {
 		return new ArrayType(getLustreType(arrayType.elementType()), size);
 	}
 	
@@ -307,14 +307,14 @@ public class PlanToLustre {
 		for (NodeUID uid : nsm.getNodeIds()) {
 			VarDecl mapper = new VarDecl(LustreNamingConventions.getStateMapperId(uid), 
 					LustreNamingConventions.PSTATE);
-			Expr map = ilToLustre.visit(NodeState.INACTIVE, PlexilType.STATE);
+			Expr map = ilToLustre.visit(NodeState.INACTIVE, ExprType.STATE);
 			for (State s : nsm.getStates()) {
 				map = new IfThenElseExpr(
 						// if the real state variable is this one
 						new BinaryExpr(getStateExpr(nsm), BinaryOp.EQUAL, 
 								new IdExpr(s.getIndex()+"")),
 						// then return the tag
-						toLustre(s.tags.get(uid), PlexilType.STATE),
+						toLustre(s.tags.get(uid), ExprType.STATE),
 						// else, the rest
 						map);
 			}

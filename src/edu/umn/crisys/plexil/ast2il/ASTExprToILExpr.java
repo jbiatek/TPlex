@@ -13,7 +13,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
@@ -48,7 +48,7 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
 	public Expression visit(LookupNowExpr lookup, Void param) {
     	// Try to add some type information
     	if (lookup.hasConstantLookupName()) {
-    		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
+    		ExprType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
     		return new LookupNowExpr(type, lookup.getLookupName(), lookup.getLookupArgs());
     	}
 		return visit((Expression)lookup, null);
@@ -59,7 +59,7 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
 			Void param) {
 		// Try to add type information
     	if (lookup.hasConstantLookupName()) {
-    		PlexilType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
+    		ExprType type = context.getTypeOfLookup(lookup.getLookupNameAsString());
     		return new LookupOnChangeExpr(type, lookup.getLookupName(), 
     				lookup.getTolerance(), lookup.getLookupArgs());
     	}
@@ -68,7 +68,7 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
 
 	@Override
     public Expression visit(UnresolvedVariableExpr expr, Void param) {
-        if (expr.getType() == PlexilType.NODEREF) {
+        if (expr.getType() == ExprType.NODEREF) {
             throw new RuntimeException("Node references should be resolved by "
                     + "the operation that needs them, they can't be used directly");
         }

@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public enum NodeRefExpr implements Expression {
 
@@ -17,8 +17,8 @@ public enum NodeRefExpr implements Expression {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.NODEREF;
+	public ExprType getType() {
+		return ExprType.NODEREF;
 	}
 
 	@Override

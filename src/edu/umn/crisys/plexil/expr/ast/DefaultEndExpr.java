@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 /**
  * Represents a Condition that wasn't specified in the XML file. This matters
@@ -24,7 +24,7 @@ public class DefaultEndExpr extends ExpressionBase {
     }
 
     private DefaultEndExpr() {
-    	super(PlexilType.BOOLEAN);
+    	super(ExprType.BOOLEAN);
     }
 
     @Override

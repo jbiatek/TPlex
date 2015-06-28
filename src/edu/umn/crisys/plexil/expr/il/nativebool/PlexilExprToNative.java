@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.expr.il.nativebool;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
@@ -105,7 +105,7 @@ public class PlexilExprToNative implements NativeExpr {
 	private Condition condition;
 	
 	public PlexilExprToNative(Expression plexilExpr, Condition condition) {
-		PlexilType.BOOLEAN.typeCheck(plexilExpr.getType());
+		ExprType.BOOLEAN.typeCheck(plexilExpr.getType());
 		this.plexilExpr = plexilExpr;
 		this.condition = condition;
 	}

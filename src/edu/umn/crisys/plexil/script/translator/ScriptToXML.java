@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
@@ -165,7 +165,7 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 	}
 
 
-	private static String toPsxTypeString(PlexilType t) {
+	private static String toPsxTypeString(ExprType t) {
 		switch (t) {
 		case BOOLEAN: return "bool";
 		case INTEGER: return "int";

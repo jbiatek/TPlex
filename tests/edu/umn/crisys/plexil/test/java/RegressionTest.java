@@ -24,7 +24,7 @@ import org.junit.*;
 import simulation.LustreSimulator;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
@@ -503,7 +503,7 @@ public class RegressionTest {
 		sim.runPlanToCompletion();
 	}
 	
-	private static String hackyILExprToLustre(Expression e, PlexilType type) {
+	private static String hackyILExprToLustre(Expression e, ExprType type) {
 		ILExprToLustre il2lustre = new ILExprToLustre();
 		String lustreString = ILExprToLustre.exprToString(e.accept(il2lustre, type));
 		//TODO: This is a massive hack, there should be a better way to do this

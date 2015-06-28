@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class StringValue implements PString {
 
@@ -44,8 +44,8 @@ public class StringValue implements PString {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.STRING;
+	public ExprType getType() {
+		return ExprType.STRING;
 	}
 	
 	@Override

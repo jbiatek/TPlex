@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public enum NodeOutcome implements PValue {
 	SUCCESS,
@@ -21,8 +21,8 @@ public enum NodeOutcome implements PValue {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.OUTCOME;
+	public ExprType getType() {
+		return ExprType.OUTCOME;
 	}
 
 	@Override

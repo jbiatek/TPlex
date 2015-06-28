@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -84,8 +84,8 @@ public class DebugOutputPlexilArray implements PValue {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.UNKNOWN;
+	public ExprType getType() {
+		return ExprType.UNKNOWN;
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.expr.il;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il.NodeUID;
 
 public class GetNodeStateExpr extends ExpressionBase {
@@ -11,7 +11,7 @@ public class GetNodeStateExpr extends ExpressionBase {
     private NodeUID nodeUniquePath;
     
     public GetNodeStateExpr(NodeUID nodeId) {
-    	super(PlexilType.STATE);
+    	super(ExprType.STATE);
         this.nodeUniquePath = nodeId;
     }
     

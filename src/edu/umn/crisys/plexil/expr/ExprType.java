@@ -19,7 +19,7 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public enum PlexilType {
+public enum ExprType {
 
     BOOLEAN			(Optional.of(UnknownValue.get())),
     INTEGER			(Optional.of(UnknownValue.get())),
@@ -41,7 +41,7 @@ public enum PlexilType {
 
     private final Optional<PValue> unknown;
 
-    private PlexilType(Optional<PValue>unknown) {
+    private ExprType(Optional<PValue>unknown) {
     	
         this.unknown = unknown;
     }
@@ -88,7 +88,7 @@ public enum PlexilType {
      * has to be an exact match. 
      * @param other
      */
-    public void typeCheck(PlexilType other) {
+    public void typeCheck(ExprType other) {
         // Plexil has a lot of unknown types, like lookups, so we'll be 
         // permissive. Ideally, we might require lookups to have declared
         // types (this is now built in to the spec). 
@@ -114,7 +114,7 @@ public enum PlexilType {
     	return this != NUMERIC && this != UNKNOWN &&  this != ARRAY;
     }
     
-    public PlexilType getMoreSpecific(PlexilType other) {
+    public ExprType getMoreSpecific(ExprType other) {
     	if (this.isSpecificType() && !other.isSpecificType()) {
     		this.typeCheck(other);
     		return this;
@@ -141,7 +141,7 @@ public enum PlexilType {
      * @param originalName
      * @return
      */
-    public static PlexilType fuzzyValueOf(String originalName) {
+    public static ExprType fuzzyValueOf(String originalName) {
         
     	// Strip all symbols, make it all upper case
         String name = originalName.replaceAll("[^A-Za-z]", "").toUpperCase();
@@ -170,7 +170,7 @@ public enum PlexilType {
         }
         
         // Just look for an easy match
-        for (PlexilType type : values()) {
+        for (ExprType type : values()) {
         	// Strip symbols here too
         	String thisOnesName = type.toString().replaceAll("_", "");
             if (thisOnesName.equalsIgnoreCase(name)) {
@@ -256,7 +256,7 @@ public enum PlexilType {
      * Get the array type that contains this type as elements.
      * @return
      */
-    public PlexilType toArrayType() {
+    public ExprType toArrayType() {
         switch (this) {
         case BOOLEAN:
             return BOOLEAN_ARRAY;
@@ -275,7 +275,7 @@ public enum PlexilType {
      * For array types, get the element type.
      * @return
      */
-    public PlexilType elementType() {
+    public ExprType elementType() {
         switch (this) {
         case BOOLEAN_ARRAY:
             return BOOLEAN;

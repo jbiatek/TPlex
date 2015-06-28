@@ -3,32 +3,32 @@ package edu.umn.crisys.plexil.ast.globaldecl;
 import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class VariableDecl {
 
 	private String name;
-	private PlexilType type;
+	private ExprType type;
 	private Optional<Integer> arraySize;
 	private Optional<? extends Expression> init;
 	
-	public VariableDecl(String name, PlexilType type) {
+	public VariableDecl(String name, ExprType type) {
 		this(name, type, Optional.empty(), Optional.empty());
 	}
 	
-	public VariableDecl(String name, PlexilType type, Expression init) {
+	public VariableDecl(String name, ExprType type, Expression init) {
 		this(name, type, Optional.empty(), Optional.of(init));
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, PlexilType type) {
+	public VariableDecl(String arrayName, int arraySize, ExprType type) {
 		this(arrayName, type, Optional.of(arraySize), Optional.empty());
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, PlexilType type, Expression init) {
+	public VariableDecl(String arrayName, int arraySize, ExprType type, Expression init) {
 		this(arrayName, type, Optional.of(arraySize), Optional.of(init));
 	}
 	
-	public VariableDecl(String arrayName, final PlexilType type, 
+	public VariableDecl(String arrayName, final ExprType type, 
 			Optional<Integer> arraySize, Optional<? extends Expression> init) {
 		arraySize.ifPresent((size) -> {
 			if (size < 0) { 
@@ -51,7 +51,7 @@ public class VariableDecl {
 		return name;
 	}
 	
-	public PlexilType getType() {
+	public ExprType getType() {
 		return type;
 	}
 	
@@ -68,7 +68,7 @@ public class VariableDecl {
 	}
 	
 	public String toString() {
-		PlexilType typeToUse = type;
+		ExprType typeToUse = type;
 		String arrayStuff = "";
 		StringBuilder initString = new StringBuilder();
 		

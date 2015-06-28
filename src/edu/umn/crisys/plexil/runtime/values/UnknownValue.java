@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 
@@ -53,12 +53,12 @@ public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 	}
 
 	@Override
-	public PlexilType getType() {
-		return PlexilType.UNKNOWN;
+	public ExprType getType() {
+		return ExprType.UNKNOWN;
 	}
 
 	@Override
-	public PValue castTo(PlexilType type) {
+	public PValue castTo(ExprType type) {
 		return type.getUnknown();
 	}
 

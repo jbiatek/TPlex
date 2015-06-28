@@ -9,7 +9,7 @@ import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.common.Operation.Operator;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -60,8 +60,8 @@ public class ILExprToJava {
     	return false;
     }
     
-    public static JExpression plexilTypeAsJava(PlexilType type, JCodeModel cm) {
-    	return cm.ref(PlexilType.class).staticRef(type.toString());
+    public static JExpression plexilTypeAsJava(ExprType type, JCodeModel cm) {
+    	return cm.ref(ExprType.class).staticRef(type.toString());
     }
     
 	public static String getFieldName(NodeUID nodePath, String varName) {
@@ -79,7 +79,7 @@ public class ILExprToJava {
 
     
     public static JExpression PValueToJava(PValue v, JCodeModel cm) {
-        PlexilType type = v.getType();
+        ExprType type = v.getType();
         
         // Handle an UNKNOWN expression
         if (v.isUnknown()) {
@@ -102,10 +102,10 @@ public class ILExprToJava {
         // Is it an array?
         if (type.isArrayType()) {
         	PValueList<?> array = (PValueList<?>) v;
-        	PlexilType elements = array.getType().elementType();
+        	ExprType elements = array.getType().elementType();
         	// We need a PValueList<ElementType>.
         	Class<?> elementClass = PValue.class;
-        	if (elements != PlexilType.UNKNOWN) {
+        	if (elements != ExprType.UNKNOWN) {
         		elementClass = elements.getTypeClass();
         	}
         	JClass narrowed = cm.ref(PValueList.class).narrow(elementClass);
@@ -123,7 +123,7 @@ public class ILExprToJava {
         
         // Not unknown, an enum, or an array. Must just be a standard type.
         String nativeJava = v.toString();
-        if (v.getType() == PlexilType.STRING) {
+        if (v.getType() == ExprType.STRING) {
         	// We're dumping this directly, so it needs quotes.
             nativeJava = "\"" + ((PString)v).getString() + "\"";
         }

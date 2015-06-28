@@ -9,7 +9,7 @@ import java.util.ListIterator;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 /**
  * <p>A List that is also a PValue. It implements the PLEXIL array semantics -- 
@@ -33,20 +33,20 @@ public class PValueList<T extends PValue> extends ExpressionBase implements PVal
 	private final T unknown;
 	
 	@SafeVarargs
-	public PValueList(PlexilType type, int maxSize, T...values) {
+	public PValueList(ExprType type, int maxSize, T...values) {
 		this(type, maxSize, Arrays.asList(values));
 	}
 	
 	@SafeVarargs
-	public PValueList(PlexilType type, T...values) {
+	public PValueList(ExprType type, T...values) {
 		this(type, values.length, Arrays.asList(values));
 	}
 	
-	public PValueList(PlexilType type, List<T> values) {
+	public PValueList(ExprType type, List<T> values) {
 		this(type, values.size(), values);
 	}
 	
-	public PValueList(PlexilType type, int maxSize, List<T> values) {
+	public PValueList(ExprType type, int maxSize, List<T> values) {
 		super(type);
 		if ( ! type.isArrayType()) {
 			throw new RuntimeException("Array needs to be an array type, not "+type);
@@ -71,7 +71,7 @@ public class PValueList<T extends PValue> extends ExpressionBase implements PVal
 	}
 	
 	@SuppressWarnings("unchecked")
-	private T uncheckedGetUnknown(PlexilType arrayType) {
+	private T uncheckedGetUnknown(ExprType arrayType) {
 		return (T) arrayType.elementType().getUnknown();
 	}
 	
@@ -113,7 +113,7 @@ public class PValueList<T extends PValue> extends ExpressionBase implements PVal
 	}
 
 	@Override
-	public PValue castTo(PlexilType type) {
+	public PValue castTo(ExprType type) {
 		this.getType().typeCheck(type);
 		return this;
 	}

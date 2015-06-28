@@ -2,12 +2,12 @@ package edu.umn.crisys.plexil.expr.il;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 public class RootParentStateExpr extends ExpressionBase {
 
 	public RootParentStateExpr() {
-		super(PlexilType.STATE);
+		super(ExprType.STATE);
 	}
 	
     @Override

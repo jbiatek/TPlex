@@ -10,7 +10,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.ast.NodeIDExpression;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
@@ -42,7 +42,7 @@ public class ExprParser {
      * @param expectedType
      * @return
      */
-    public static Expression ensureType(Expression expr, PlexilType expectedType) {
+    public static Expression ensureType(Expression expr, ExprType expectedType) {
         if (expr.getType() == expectedType) {
             return expr;
         }
@@ -52,11 +52,11 @@ public class ExprParser {
         // Hmm, not looking the same. 
         expectedType.typeCheck(expr.getType());
         // Okay, we can cast. 
-        if (expectedType == PlexilType.BOOLEAN) {
+        if (expectedType == ExprType.BOOLEAN) {
             return Operation.castToBoolean(expr);
         } else if (expectedType.isNumeric()) {
             return Operation.castToNumeric(expr);
-        } else if (expectedType == PlexilType.STRING) {
+        } else if (expectedType == ExprType.STRING) {
             return Operation.castToString(expr);
         }
         
@@ -64,7 +64,7 @@ public class ExprParser {
         return expr;
     }
     
-    public static Expression parse(StartElement start, XMLEventReader xml, PlexilType expectedType) {
+    public static Expression parse(StartElement start, XMLEventReader xml, ExprType expectedType) {
         Expression expr = methodDispatcher(start, xml);
         return ensureType(expr, expectedType);
     }
@@ -102,11 +102,11 @@ public class ExprParser {
         throw new RuntimeException("I have no handlers for "+tag+" tags.");
     }
 
-    public static Expression parse(XMLEvent start, XMLEventReader xml, PlexilType expectedType) {
+    public static Expression parse(XMLEvent start, XMLEventReader xml, ExprType expectedType) {
         return parse(start.asStartElement(), xml, expectedType);
     }
 
-    private static List<Expression> parseMultiple(StartElement start, XMLEventReader xml, PlexilType expectedType) {
+    private static List<Expression> parseMultiple(StartElement start, XMLEventReader xml, ExprType expectedType) {
         List<Expression> list = new ArrayList<Expression>();
         for (StartElement tag : allChildTagsOf(start, xml)) {
             list.add(parse(tag, xml, expectedType));
@@ -135,9 +135,9 @@ public class ExprParser {
     public static Expression parseRHS(StartElement start, XMLEventReader xml) {
         // These are all just wrappers around expressions. 
         // Go in, get the expression, check the end tag, and move on.
-        PlexilType type = PlexilType.UNKNOWN;
+        ExprType type = ExprType.UNKNOWN;
         if ( ! isTagStartingWith(start, "Lookup")) {
-            type = PlexilType.fuzzyValueOf(localNameOf(start).replaceFirst("RHS$", ""));
+            type = ExprType.fuzzyValueOf(localNameOf(start).replaceFirst("RHS$", ""));
         }
         Expression ret = parse(nextTag(xml), xml, type);
         assertClosedTag(start, xml);
@@ -151,7 +151,7 @@ public class ExprParser {
 
     public static UnresolvedVariableExpr parseRegularVariable(StartElement start, XMLEventReader xml) {
         String typeStr = localNameOf(start).replaceFirst("Variable$", "");
-        PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
+        ExprType type = ExprType.valueOf(typeStr.toUpperCase());
         return new UnresolvedVariableExpr(getStringContent(start, xml), type);
     }
 
@@ -169,7 +169,7 @@ public class ExprParser {
 
     public static PValue parsePValue(StartElement start, XMLEventReader xml) {
         String type = localNameOf(start).replaceAll("(Node|Value)", "");
-        PlexilType pType = PlexilType.fuzzyValueOf(type);
+        ExprType pType = ExprType.fuzzyValueOf(type);
         return pType.parseValue(getStringContent(start, xml));
     }
 
@@ -198,7 +198,7 @@ public class ExprParser {
 
     public static Operation parseNodeStateVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
+        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
         return Operation.getState(nodeRef);
     }
@@ -210,7 +210,7 @@ public class ExprParser {
 
     public static Operation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
+        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
         return Operation.getOutcome(nodeRef);
     }
@@ -222,7 +222,7 @@ public class ExprParser {
 
     public static Operation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
+        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
         return Operation.getFailure(nodeRef);
     }
@@ -234,7 +234,7 @@ public class ExprParser {
 
     public static Operation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
+        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
         return Operation.getCommandHandle(nodeRef);
     }
@@ -280,7 +280,7 @@ public class ExprParser {
     public static Operation parseEqOrNe(StartElement start, XMLEventReader xml) {
         boolean negate = isTagStartingWith(start, "NE");
         // Slice off the "NE" or "EQ" to get the expected type.
-        PlexilType type = PlexilType.fuzzyValueOf(localNameOf(start).substring(2));
+        ExprType type = ExprType.fuzzyValueOf(localNameOf(start).substring(2));
 
         Expression one = parse(nextTag(xml), xml, type);
         Expression two = parse(nextTag(xml), xml, type);
@@ -307,13 +307,13 @@ public class ExprParser {
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
-                name = parse(nextTag(xml), xml, PlexilType.STRING);
+                name = parse(nextTag(xml), xml, ExprType.STRING);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Tolerance")) {
-                tolerance = parse(nextTag(xml), xml, PlexilType.NUMERIC);
+                tolerance = parse(nextTag(xml), xml, ExprType.NUMERIC);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Arguments")) {
-                args = parseMultiple(e, xml, PlexilType.UNKNOWN);
+                args = parseMultiple(e, xml, ExprType.UNKNOWN);
             } else {
                 throw new UnexpectedTagException(e);
             }
@@ -343,9 +343,9 @@ public class ExprParser {
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
-                array = new UnresolvedVariableExpr(getStringContent(e, xml), PlexilType.ARRAY);
+                array = new UnresolvedVariableExpr(getStringContent(e, xml), ExprType.ARRAY);
             } else if (isTag(e, "Index")) {
-                index = parse(nextTag(xml), xml, PlexilType.INTEGER);
+                index = parse(nextTag(xml), xml, ExprType.INTEGER);
                 assertClosedTag(e, xml);
             } else {
                 throw new UnexpectedTagException(e);

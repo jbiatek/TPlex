@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 
 public class CommandAction implements PlexilAction {
@@ -16,8 +16,8 @@ public class CommandAction implements PlexilAction {
     
     public CommandAction(SimpleVar handle, Expression name, 
             List<Expression> args, Optional<Expression> assignResultTo) {
-        PlexilType.COMMAND_HANDLE.typeCheck(handle.getType());
-        PlexilType.STRING.typeCheck(name.getType());
+        ExprType.COMMAND_HANDLE.typeCheck(handle.getType());
+        ExprType.STRING.typeCheck(name.getType());
     	this.handle = handle;
         this.name = name;
         this.args = args;

@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 
 /**
  * An expression representing a variable reference. This is basically just the
@@ -13,7 +13,7 @@ public class UnresolvedVariableExpr extends ExpressionBase {
 
     private String varName;
     
-    public UnresolvedVariableExpr(String varName, PlexilType type) {
+    public UnresolvedVariableExpr(String varName, ExprType type) {
     	super(type);
         this.varName= varName;
     }

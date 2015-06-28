@@ -5,7 +5,7 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
@@ -13,15 +13,15 @@ public class LookupOnChangeExpr extends LookupExpr {
 
 	private Expression tolerance;
 
-	public LookupOnChangeExpr(PlexilType type, Expression name, Expression tolerance, List<Expression> args) {
+	public LookupOnChangeExpr(ExprType type, Expression name, Expression tolerance, List<Expression> args) {
 		super(type, name, args);
 		
-	    PlexilType.NUMERIC.typeCheck(tolerance.getType());
+	    ExprType.NUMERIC.typeCheck(tolerance.getType());
 	    this.tolerance = tolerance;
 	}
 	
 	public LookupOnChangeExpr(Expression name, Expression tolerance, List<Expression> args) {
-		this(PlexilType.UNKNOWN, name, tolerance, args);
+		this(ExprType.UNKNOWN, name, tolerance, args);
 	}
 	
 	public LookupOnChangeExpr(Expression name, Expression tolerance, Expression... args) {

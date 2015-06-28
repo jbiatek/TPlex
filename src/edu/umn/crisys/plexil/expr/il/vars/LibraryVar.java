@@ -4,7 +4,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il.NodeUID;
 
 public class LibraryVar extends ILVariable {
@@ -17,7 +17,7 @@ public class LibraryVar extends ILVariable {
 
 	public LibraryVar(String libID, NodeUID uid, Expression libNodeState,
             Map<String,Expression> aliases) {
-		super(libID, uid, PlexilType.STATE);
+		super(libID, uid, ExprType.STATE);
 		this.libNodeState = libNodeState;
 		this.aliases = aliases;
 	}

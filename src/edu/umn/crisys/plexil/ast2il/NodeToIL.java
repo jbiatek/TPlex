@@ -13,7 +13,7 @@ import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
@@ -55,7 +55,7 @@ import edu.umn.crisys.plexil.runtime.values.PValueList;
  */
 public class NodeToIL {
     
-	public static PlexilType TIMEPOINT_TYPE = PlexilType.REAL;
+	public static ExprType TIMEPOINT_TYPE = ExprType.REAL;
 	
     //private static final String STATE = ".state";
     private static final String OUTCOME = ".outcome";
@@ -99,8 +99,8 @@ public class NodeToIL {
     
     private void createILVars() {
         // Internal vars for all nodes
-        ilVars.put(OUTCOME, new SimpleVar(OUTCOME, myUid, PlexilType.OUTCOME));
-        ilVars.put(FAILURE, new SimpleVar(FAILURE, myUid, PlexilType.FAILURE));
+        ilVars.put(OUTCOME, new SimpleVar(OUTCOME, myUid, ExprType.OUTCOME));
+        ilVars.put(FAILURE, new SimpleVar(FAILURE, myUid, ExprType.FAILURE));
         // Node timepoints
         for (NodeState state : NodeState.values()) {
             for (NodeTimepoint tpt : NodeTimepoint.values()) {
@@ -113,7 +113,7 @@ public class NodeToIL {
         // Variables defined by the programmer in the node
         for (VariableDecl v : myNode.getAllVariables()) {
         	String varName = v.getName();
-            PlexilType type = v.getType();
+            ExprType type = v.getType();
             if (type.isArrayType()) {
                 // Array variables.
                 PValueList<?> init = null;
@@ -136,9 +136,9 @@ public class NodeToIL {
         
         // Special variables based on the type of node this is.
         if (myNode.isCommandNode()) {
-            ilVars.put(COMMAND_HANDLE, new SimpleVar(COMMAND_HANDLE, myUid, PlexilType.COMMAND_HANDLE));
+            ilVars.put(COMMAND_HANDLE, new SimpleVar(COMMAND_HANDLE, myUid, ExprType.COMMAND_HANDLE));
         } else if (myNode.isUpdateNode()) {
-            ilVars.put(UPDATE_HANDLE, new SimpleVar(UPDATE_HANDLE, myUid, PlexilType.BOOLEAN, BooleanValue.get(false)));
+            ilVars.put(UPDATE_HANDLE, new SimpleVar(UPDATE_HANDLE, myUid, ExprType.BOOLEAN, BooleanValue.get(false)));
         } else if (myNode.isLibraryNode()) {
             LibraryBody lib = myNode.getLibraryBody();
             Map<String,Expression> aliases = new HashMap<String, Expression>();
@@ -379,7 +379,7 @@ public class NodeToIL {
      * @param type
      * @return
      */
-    public Expression resolveVariable(String name, PlexilType type) {
+    public Expression resolveVariable(String name, ExprType type) {
         Optional<Expression> expr = resolveVariableInternal(name, false);
         if ( ! expr.isPresent()) {
         	// We went all the way up to the root, and no one claimed this
@@ -390,11 +390,11 @@ public class NodeToIL {
         	Expression alias = createAlias(name, false);
         	
         	// Since it's an alias, we should cast it if we know the type.
-            if (type == PlexilType.BOOLEAN) {
+            if (type == ExprType.BOOLEAN) {
                 return Operation.castToBoolean(alias);
             } else if (type.isNumeric()) {
                 return Operation.castToNumeric(alias);
-            } else if (type == PlexilType.STRING) {
+            } else if (type == ExprType.STRING) {
                 return Operation.castToString(alias);
             } else {
             	return alias;
@@ -435,7 +435,7 @@ public class NodeToIL {
     		System.err.println("If this plan isn't used as a library inside of a plan that defines "+name+", it will crash.");
     	}
     	
-    	return new AliasExpr(name, PlexilType.UNKNOWN, writeable);
+    	return new AliasExpr(name, ExprType.UNKNOWN, writeable);
     }
     
     public Expression resolveVariableForWriting(Expression e) {
@@ -498,12 +498,12 @@ public class NodeToIL {
         throw new RuntimeException("Plexil node ID not found: "+plexilId);
     }
     
-    public PlexilType getTypeOfLookup(String lookupName) {
+    public ExprType getTypeOfLookup(String lookupName) {
     	return myNode.getPlan().getStateDeclarations().stream()
     	.filter(ld -> ld.getName().equals(lookupName))
     	.findFirst().map(ld -> ld.getReturnValue().map(vd -> vd.getType())
-    			.orElse(PlexilType.UNKNOWN))
-    			.orElse(PlexilType.UNKNOWN);
+    			.orElse(ExprType.UNKNOWN))
+    			.orElse(ExprType.UNKNOWN);
     }
     
     

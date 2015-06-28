@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.PlexilType;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.util.Pair;
 
@@ -15,7 +15,7 @@ public class UpdateAction implements PlexilAction {
     private List<Pair<String, Expression>> updates = new LinkedList<Pair<String, Expression>>();
     
     public UpdateAction(SimpleVar handle, String shortName) {
-    	PlexilType.BOOLEAN.typeCheck(handle.getType());
+    	ExprType.BOOLEAN.typeCheck(handle.getType());
         this.handle = handle;
         this.shortName = shortName;
     }
