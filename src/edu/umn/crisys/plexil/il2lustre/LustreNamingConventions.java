@@ -50,7 +50,15 @@ public class LustreNamingConventions {
 	public static final EnumType PFAILURE = new EnumType("node_failure", 
 			enumerator(NodeFailureType.values()));
 	
+	/**
+	 * Indicates whether this micro step is the last one of the macro step. 
+	 * After this variable becomes true, ALL state machines and actions should
+	 * maintain their current values until it becomes false again (it should 
+	 * only be one step). The only exception is events which occur between
+	 * macro steps, such as command handle or variable returns. 
+	 */
 	public static String MACRO_STEP_ENDED_ID = "macrostep_end";
+	public static IdExpr MACRO_STEP_ENDED = new IdExpr(MACRO_STEP_ENDED_ID);
 	
 	public static final String AND_OPERATOR = "p_and";
 	public static final String OR_OPERATOR = "p_or";

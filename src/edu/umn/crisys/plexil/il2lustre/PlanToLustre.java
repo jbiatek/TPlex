@@ -27,6 +27,7 @@ import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.il.expr.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
@@ -301,7 +302,7 @@ public class PlanToLustre {
 		VarDecl stateVar = new VarDecl(id, NamedType.INT);
 		
 		nb.addLocal(stateVar);
-		nb.addEquation(new Equation(getStateExpr(nsm), stateMachineExpr(nsm)));
+		nb.addEquation(stateMachineEquation(nsm));
 		
 		// We also need to map back to Plexil state.
 		for (NodeUID uid : nsm.getNodeIds()) {
@@ -325,27 +326,22 @@ public class PlanToLustre {
 		}
 	}
 	
-	public Expr stateMachineExpr(NodeStateMachine nsm) {
+	public Equation stateMachineEquation(NodeStateMachine nsm) {
+		// By IL semantics, we always start in state 0. 
+		PlexilEquationBuilder state = new PlexilEquationBuilder(
+				getStateExpr(nsm), new IdExpr("0"));
+		
 		// Make sure we're doing this in order.
 		nsm.orderTransitionsByPriority();
 		
-		// If no transitions are active, don't change states.
-		Expr bigIf = new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm));
-		
-		// Move backward and build up the big if statement
-		for (int i = nsm.getTransitions().size()-1; i >= 0; i--) {
-			Transition t = nsm.getTransitions().get(i);
-			
-			// If guard is satisfied, then pick this end state, else
-			// (the rest of the transitions)
-			bigIf = new IfThenElseExpr(createGuardWithStateCheck(getStateExpr(nsm), t), 
-					new IdExpr(t.end.getIndex()+""), 
-					bigIf);
+		// Add guards for each transition with results
+		for (Transition t : nsm.getTransitions()) {
+			state.addAssignment(createGuardWithStateCheck(getStateExpr(nsm), t),
+					new IdExpr(t.end.getIndex()+""));
 		}
 		
-		// We have the big if, but we need to initialize. By IL semantics, 
-		// we always start in state 0. 
-		return new BinaryExpr(new IdExpr("0"), BinaryOp.ARROW, bigIf);
+		// We have the big if, but we need to initialize. 
+		return state.buildEquation();
 	}
 	
 	/**
@@ -403,6 +399,10 @@ public class PlanToLustre {
 		return new BinaryExpr(getStateExpr(nsm), 
 				BinaryOp.EQUAL, 
 				new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm)));
+	}
+	
+	public static Expr isInMacrostepWaitingPeriod() {
+		return new UnaryExpr(UnaryOp.PRE, LustreNamingConventions.MACRO_STEP_ENDED);
 	}
 	
 	/**
