@@ -2,16 +2,14 @@ package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
@@ -39,9 +37,9 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 
 public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
-	private Map<ILVariable, Expr> varNextValue = 
-			new HashMap<ILVariable, Expr>();
-	private Expr macroStepIsEnded;
+	private Map<ILVariable, PlexilEquationBuilder> varNextValue = new HashMap<>();
+	private PlexilEquationBuilder macroStepIsEnded
+		= new PlexilEquationBuilder(LustreNamingConventions.MACRO_STEP_ENDED, LustreUtil.FALSE);
 	
 	private PlanToLustre translator;
 	
@@ -50,23 +48,22 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	}
 	
 	public void navigate(Plan p) {
-		// For all variables, by default they don't change.
+		// Initialize variables
 		for (ILVariable v : p.getVariables()) {
-			varNextValue.put(v, translator.toLustre(v, v.getType()));
+			varNextValue.put(v, new PlexilEquationBuilder(
+					new IdExpr(LustreNamingConventions.getVariableId(v)), 
+					translateInitial(v)));
 		}
-		// macroStepStatus = <every state machine is unmoved>
-		for (NodeStateMachine nsm : p.getMachines()) {
-			Expr thisMachineDoesntMove = PlanToLustre.getStateIsUnchanged(nsm);
-			if (macroStepIsEnded == null) {
-				macroStepIsEnded = thisMachineDoesntMove;
-			} else {
-				macroStepIsEnded = new BinaryExpr(
-						thisMachineDoesntMove, 
-						BinaryOp.AND, 
-						macroStepIsEnded);
-			}
-		}
-		
+		// Set up the macro step ended variable:
+		// Get the default macro step assignment (quiescence reached) 
+		Expr quiescenceReached = p.getMachines().stream()
+				.map(PlanToLustre::getStateIsUnchanged)
+				.reduce((l,r) -> new BinaryExpr(l, BinaryOp.AND, r))
+				.orElseThrow(() -> new RuntimeException("No state machines?!"));
+		// During a step, that's what should end a macro step if nothing else does
+		macroStepIsEnded.setDefaultAssignment(quiescenceReached);
+		// Between steps, the macro step variable should turn itself off
+		macroStepIsEnded.setDefaultAssignmentBetweenMacro(LustreUtil.FALSE);
 		
 		// Now we find each action, and pass along the condition in which it
 		// should fire. 
@@ -90,38 +87,29 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		}
 	}
 	
+	private Expr translateInitial(ILVariable v) {
+		if (v instanceof SimpleVar) {
+			return translator.toLustre(						
+					((SimpleVar) v).getInitialValue(), v.getType());
+		} else if (v instanceof ArrayVar) { 
+			// Preliminary support for constant arrays
+			System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
+			
+			return translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
+		} else {
+			throw new RuntimeException("Not supported yet: "+v.getClass());
+		}
+	}
+	
 	public void toLustre(NodeBuilder nb) {
-		// Variable assignments:
-		for (ILVariable v : varNextValue.keySet()) {
-			// Create the equation for this variable.
-			// Start it out with its initial value
-			Expr init;
-			if (v instanceof SimpleVar) {
-				init = translator.toLustre(						
-						((SimpleVar) v).getInitialValue(), v.getType());
-			} else if (v instanceof ArrayVar) { 
-				// Preliminary support for constant arrays
-				System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
-				
-				IdExpr id = new IdExpr(LustreNamingConventions.getVariableId(v));
-				init = translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
-				// init -> pre(array);
-				Expr arrayEq = new BinaryExpr(init, BinaryOp.ARROW, 
-						new UnaryExpr(UnaryOp.PRE, id));
-				nb.addEquation(new Equation(id, arrayEq));
-				continue;
-			} else {
-				throw new RuntimeException("Not supported yet: "+v.getClass());
-			}
-			// After that, do the big if then else that we made.
-			Expr fullThing = new BinaryExpr(init, BinaryOp.ARROW, varNextValue.get(v));
-			nb.addEquation(new Equation(new IdExpr(LustreNamingConventions.getVariableId(v)),
-					fullThing));
+		// Build out all these variables
+		for (Entry<ILVariable, PlexilEquationBuilder> entry : varNextValue.entrySet()) {
+			nb.addEquation(entry.getValue().buildEquation());
 		}
 		
-		nb.addLocal(new VarDecl(LustreNamingConventions.MACRO_STEP_ENDED_ID, NamedType.BOOL));
-		nb.addEquation(new Equation(new IdExpr(LustreNamingConventions.MACRO_STEP_ENDED_ID), 
-				new BinaryExpr(new IdExpr("false"),  BinaryOp.ARROW, macroStepIsEnded)));
+		nb.addLocal(new VarDecl(LustreNamingConventions.MACRO_STEP_ENDED_ID, 
+				NamedType.BOOL));
+		nb.addEquation(macroStepIsEnded.buildEquation());
 		
 	}
 
@@ -136,10 +124,9 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		if (assign.getLHS() instanceof SimpleVar) {
 			SimpleVar v = (SimpleVar) assign.getLHS();
 			
-			// Do the assignment, or else whatever we had before
-			varNextValue.put(v, new IfThenElseExpr(actionCondition, 
-					translator.toLustre(assign.getRHS(), v.getType()), 
-					varNextValue.get(v)));
+			// Add this assignment under this condition
+			varNextValue.get(v).addAssignment(actionCondition, 
+					translator.toLustre(assign.getRHS(), v.getType()));
 		} else {
 			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported in "+assign.toString());
 		}
@@ -173,19 +160,12 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		NativeEqual failing = new NativeEqual(NodeState.FAILING, new GetNodeStateExpr(node));
 		NativeOperation inChangeableState = new NativeOperation(NativeOp.OR, executing, finishing, failing);
 		// Need to be starting a new macro step, and in one of those states.
-		Expr guard = new BinaryExpr(
-				new UnaryExpr(UnaryOp.PRE, new IdExpr(
-						LustreNamingConventions.MACRO_STEP_ENDED_ID)),
-				BinaryOp.AND,
-				translator.toLustre(inChangeableState));
+		Expr guard = translator.toLustre(inChangeableState);
 		
-		
-		// If we're in any of those states, take from the raw input, else
-		// return whatever we've already seen
-		varNextValue.put(cmd.getHandle(), new IfThenElseExpr(
-				guard,
-				new IdExpr(rawId), 
-				varNextValue.get(cmd.getHandle())));
+		// If we're in any of those states between macro steps, take from the
+		// raw input. 
+		varNextValue.get(cmd.getHandle()).addAssignmentBetweenMacro(guard, 
+				new IdExpr(rawId));
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
 			System.err.println("WARNING: Variable assignments from commands not supported yet!");
@@ -196,7 +176,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
 	@Override
 	public Void visitEndMacroStep(EndMacroStep end, Expr actionCondition) {
-		macroStepIsEnded = new BinaryExpr(actionCondition, BinaryOp.OR, macroStepIsEnded);
+		macroStepIsEnded.addAssignment(actionCondition, LustreUtil.TRUE);
 		return null;
 	}
 

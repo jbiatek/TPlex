@@ -414,7 +414,7 @@ public class RegressionTest {
 			}
 
 			private void checkThisStep(ILSimulator sim) {
-				System.out.println("Checking microstep "+step);
+				System.out.println("Checking Lustre step "+step);
 				if (lustreSaysMacroStepEnded) {
 					// Oops, this didn't get cleared. We didn't see a macro step
 					// ending, Lustre was wrong.
@@ -433,16 +433,6 @@ public class RegressionTest {
 					checkValue(expr, sim);
 				}
 				if (errors.size() != 0) {
-					// Print a trace to disk for inspection
-//					try {
-//						FileWriter fw = new FileWriter(new File("trace.csv"));
-//						fw.write(traceWrap.toString());
-//						fw.close();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-					
 					throw new RuntimeException("Error(s) at microstep "+step+": "
 							+errors.stream().collect(Collectors.joining(", ")));
 				} else {
@@ -458,6 +448,10 @@ public class RegressionTest {
 							+ " wasn't over, but it was because "+reason);
 				} else {
 					lustreSaysMacroStepEnded = false;
+					// For this entire step in Lustre nothing is supposed
+					// to change except for inputs. We don't really care
+					// what the values are until the next step. 
+					step++;
 				}
 			}
 			

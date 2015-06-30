@@ -510,15 +510,20 @@ public class TPlex {
 		
 		sim.addObserver(new JavaPlanObserver() {
 			
-			private boolean gotFirstStep = false;
+			/**
+			 * We want to capture the initial state before the first micro
+			 * step is committed. After that, we want a capture between macro
+			 * steps because Lustre takes a step to let that happen. 
+			 */
+			private boolean captureBeforeCommit = true;
 			
 			@Override
 			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
 				// This is our only shot at the initial state of the plan. 
 				// After that, we want the post-commit values of everything.
-				if ( ! gotFirstStep) {
+				if (captureBeforeCommit) {
 					captureState(plan);
-					gotFirstStep = true;
+					captureBeforeCommit = false;
 				}
 			}
 			
@@ -526,6 +531,13 @@ public class TPlex {
 			public void endOfMicroStepAfterCommit(JavaPlan plan) {
 				// Capture every state after it gets committed
 				captureState(plan);
+			}
+			
+			@Override
+			public void endOfMacroStep(JavaPlan plan) {
+				// We just ended a macro step. Before we commit the next one,
+				// capture the inbetween state.
+				captureBeforeCommit = true;
 			}
 			
 			private void captureState(JavaPlan plan) {

@@ -8,7 +8,7 @@ public interface JavaPlanObserver {
 	 * return so that PLEXIL can run again, this time with the new event. 
 	 */
 	public default void quiescenceReached(JavaPlan plan) {
-		
+		this.endOfMacroStep(plan);
 	}
 	
 	/**
@@ -18,6 +18,15 @@ public interface JavaPlanObserver {
 	 * to the environment that could also be responded to. 
 	 */
 	public default void prematureEndOfMacroStep(JavaPlan plan) {
+		this.endOfMacroStep(plan);
+	}
+	
+	/**
+	 * The two different end of macro step plans just call this by default.
+	 * Override this and not the other two if you just want to know when macro
+	 * steps end, and don't care how. 
+	 */
+	public default void endOfMacroStep(JavaPlan plan) {
 		
 	}
 	
