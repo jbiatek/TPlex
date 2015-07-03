@@ -128,17 +128,15 @@ public class TPlex {
 			"Generate test generation properties to cover Plexil states.")
 	public PlanToLustre.Obligation lustreObligation = Obligation.NONE;
 	
-	@Parameter(names = "--lustre-to-scripts", description = 
-			"Translate a JKind .xml file with counterexamples to the output directory as PlexilScript.")
-	public String lustreToScripts = "";
-	
-	@Parameter(names = "--lustre-compliance", description = 
-			"Used in conjunction with --lustre-plan-to-simulate and --lustre-to-scripts."
-			+ " After translating the plan to simulate to Lustre, and after "
-			+ "translating the JKind XML file to PlexilScript, run a compliance"
-			+ "test to ensure that the Lustre plan behaves as expected under"
-			+ "those inputs.")
-	public boolean lustreCompliance = false;
+	@Parameter(names ="--compliance-lus", description = 
+			"Must be used with --compliance-plx. See that option for more details.")
+	public File complianceLustreProgram = null;
+	@Parameter(names = "--compliance-plx", description =
+			"Must be used with --compliance-lus. When translating a .lus.xml file"
+			+ " to PlexilScript, use this PLEXIL plan and the given Lustre file to"
+			+ " ensure that the translated script exhibits the same behavior that"
+			+ " it did in JKind/Lustre. If they differ, the errors will be printed. ")
+	public File compliancePlexilProgram = null;
 	
 	@Parameter(names = "--lustre-plan-to-simulate", description = 
 			"PLEXILScripts need to be translated via simulation, since Lustre input is at a "
@@ -153,6 +151,7 @@ public class TPlex {
 	public Map<String, PlexilScript> scripts = new HashMap<>();
 	public Map<String, Plan> ilPlans = new HashMap<>();
 	public Map<String, ReverseTranslationMap> lustreTranslationMap = new HashMap<>();
+	public Map<JKindResult, List<PlexilScript>> lustreResultsTranslated = new HashMap<>();
 //	public Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
 //	public Map<Plan, PlexilPlan> originalAst = new HashMap<>();
 	public Map<String, String> idToFile = new HashMap<>();
@@ -247,13 +246,14 @@ public class TPlex {
 				System.err.println("Error: "+file.getName()+" is not a compiled PLEXIL file.");
 				System.err.println("Use plexilc to compile it to XML first.");
 				return false;
-			} else if ( ! file.getName().endsWith(".plx") && ! file.getName().endsWith(".psx")) {
+			} else if ( ! file.getName().endsWith(".plx") && ! file.getName().endsWith(".psx")
+					&& ! file.getName().endsWith(".lus.xml")) {
 				System.err.println("Error: File extension of "+file+" is not recognized.");
 				return false;
 			}
 		}
 		
-		if (files.size() == 0 && lustreToScripts.equals("")) {
+		if (files.size() == 0) {
 			System.err.println("Warning: No files specified for translation.");
 		}
 		
@@ -293,6 +293,19 @@ public class TPlex {
 					System.err.println("XML Parsing error: "+e.getMessage());
 					return false;
 				} 
+			} else if (f.getName().endsWith(".lus.xml")) {
+				List<PlexilScript> parsedScripts;
+				JKindResult results;
+				try {
+					results = JKindResultUtils.parseJKindFile(f);
+					parsedScripts = JKindResultUtils.translateToScripts(results, 
+							getStringMapFor(f));
+				} catch (Exception e) {
+					System.err.println("Error parsing JKind XML: ");
+					e.printStackTrace();
+					return false;
+				}
+				lustreResultsTranslated.put(results, parsedScripts);
 			}
 		}
 		// Now we can map file names to root node IDs. Since file names become 
@@ -355,7 +368,9 @@ public class TPlex {
 			outputDir.mkdirs();
 		}
 		switch(outputLanguage) {
-		case NONE: return true;
+		case NONE: 
+			System.out.println("Files are not being produced, use --lang to change this.");
+			return true;
 		case JAVA: return generateJava();
 		case LUSTRE: return generateLustre();
 		case PLEXIL: return generatePlexil();
@@ -378,6 +393,21 @@ public class TPlex {
 	}
 
 	private boolean generatePlexil() {
+		for (Entry<JKindResult, List<PlexilScript>> e : lustreResultsTranslated.entrySet()) {
+			// Print these PlexilScripts to output directory
+			for (PlexilScript script : e.getValue()) {
+				try {
+					String filename = script.getScriptName()+".psx";
+					System.out.println(filename);
+					ScriptToXML.writeToFile(new File(outputDir, 
+							filename), script);
+				} catch (FileNotFoundException fnf) {
+					System.err.println("Error writing PlexilScript to file: ");
+					fnf.printStackTrace();
+					return false;
+				}
+			}
+		}
 		return asts.entrySet().stream()
 			.peek(entry -> System.out.println(entry.getKey()))
 			.map(e -> printString(e.getKey()+".ple",e.getValue().getFullPrintout()))
@@ -432,9 +462,7 @@ public class TPlex {
 					return false;
 				}
 			}
-			
 		}
-		
 		return true;
 	}
 	
@@ -497,72 +525,51 @@ public class TPlex {
 				System.out.println(ilPlan.getPlanName()+": states == "+numStates);
 			}
 		}
-		
-		if ( ! lustreToScripts.equals("")) {
-			doLustreToScripts();
+		if (complianceLustreProgram != null || compliancePlexilProgram != null) {
+			try {
+				doComplianceTesting();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+		
+		
 		return true;
 
 	}
 	
-	private void doLustreToScripts() {
-		File lustreXml = new File(lustreToScripts);
-		if (lustreXml.isFile()) {
-			List<PlexilScript> parsedScripts;
-			JKindResult results;
-			try {
-				results = JKindResultUtils.parseJKindFile(lustreXml);
-				parsedScripts = JKindResultUtils.translateToScripts(results, 
-						getStringMapFor(lustreXml));
-			} catch (Exception e) {
-				System.err.println("Error parsing JKind XML: ");
-				e.printStackTrace();
-				return;
-			}
-
-
-			outputDir.mkdirs();
-			for (PlexilScript script : parsedScripts) {
-				try {
-					String filename = script.getScriptName()+".psx";
-					System.out.println(filename);
-					ScriptToXML.writeToFile(new File(outputDir, 
-							filename), script);
-				} catch (FileNotFoundException e) {
-					System.err.println("Error writing PlexilScript to file: ");
-					e.printStackTrace();
-					return;
-				}
-			}
-			
-			if (lustreCompliance) {
-				try {
-					doLustreCompliance(parsedScripts, results);
-				} catch (Exception e) {
-					System.err.println("Exception while starting Lustre compliance testing:");
-					e.printStackTrace();
-				}
-			}
-			
-		} else {
-			System.err.println("File not found: "+lustreToScripts);
+	private void doComplianceTesting() throws Exception {
+		// Both better be there
+		if (complianceLustreProgram == null) {
+			System.err.println("Error: --compliance-lus not given");
+			return;
+		}
+		if (compliancePlexilProgram == null) {
+			System.err.println("Error: --compliance-plx not given");
+			return;
+		}
+		
+		String mainNode = complianceLustreProgram.getName().replaceFirst("\\.lus$", "");
+		
+		LustreMain.initialize();
+		LustreProgram lustreProg = new LustreProgram(
+				complianceLustreProgram.getPath(), mainNode);
+		LustreMain.terminate();
+		
+		Plan ilPlan = optimizeIL(translateToIL(
+				PlxParser.parseFile(compliancePlexilProgram)));
+		
+		for (Entry<JKindResult, List<PlexilScript>> e : lustreResultsTranslated.entrySet()) {
+			doLustreCompliance(lustreProg, ilPlan, e.getValue(), e.getKey());
 		}
 		
 	}
 
-	private void doLustreCompliance(List<PlexilScript> scriptsAlreadyTranslated,
+	private void doLustreCompliance(LustreProgram lustreProg, Plan ilPlan, 
+			List<PlexilScript> scriptsAlreadyTranslated,
 			JKindResult results) throws Exception {
-		String mainNode = lustreSimulateScriptsAgainst;
-		Plan ilPlan = ilPlans.get(lustreSimulateScriptsAgainst);
-		File lustreFile = new File(outputDir, lustreSimulateScriptsAgainst+".lus");
 		
-		// Activate Dongjiang's tools to get counterexamples in trace form
-		LustreMain.initialize();
-		LustreProgram lustreProg = new LustreProgram(lustreFile.getPath(), mainNode);
 		List<LustreTrace> traces = JKindResultUtils.translateToTraces(results, lustreProg);
-		// All done, we have what we need
-		LustreMain.terminate();
-		
 		
 		if (scriptsAlreadyTranslated.size() != traces.size()) {
 			System.err.println("Error doing compliance tests: Translated "
@@ -583,31 +590,6 @@ public class TPlex {
 				e.printStackTrace();
 			}
 		}
-		
-		
-//		File lustreXml = new File(lustreCompliance);
-//		List<PlexilScript> parsedScripts;
-//		if (lustreXml.isFile()) {
-//			try {
-//				parsedScripts = parseJKindXML(lustreXml,
-//						getStringMapFor(lustreXml));
-//			} catch (Exception e) {
-//				System.err.println("Error parsing JKind XML: ");
-//				e.printStackTrace();
-//				return;
-//			}
-//		} else {
-//			System.err.println(lustreCompliance+" is not a file.");
-//			return;
-//		}
-//		Plan plan = ilPlans.get(lustreSimulateScriptsAgainst);
-//		if (plan == null) {
-//			System.err.println("Plan \""+lustreSimulateScriptsAgainst+"\""
-//					+ " wasn't specified for translation.");
-//		}
-//		
-//		// Now have the plan and some scripts. 
-//		
 	}
 	
 	
