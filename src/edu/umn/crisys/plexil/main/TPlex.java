@@ -19,7 +19,10 @@ import java.util.Map.Entry;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
+import jkind.api.results.JKindResult;
+import lustre.LustreProgram;
 import lustre.LustreTrace;
+import main.LustreMain;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -506,17 +509,18 @@ public class TPlex {
 		File lustreXml = new File(lustreToScripts);
 		if (lustreXml.isFile()) {
 			List<PlexilScript> parsedScripts;
+			JKindResult results;
 			try {
-				parsedScripts = JKindResultUtils.translateToScripts(
-						JKindResultUtils.parseJKindFile(lustreXml), 
+				results = JKindResultUtils.parseJKindFile(lustreXml);
+				parsedScripts = JKindResultUtils.translateToScripts(results, 
 						getStringMapFor(lustreXml));
 			} catch (Exception e) {
 				System.err.println("Error parsing JKind XML: ");
 				e.printStackTrace();
 				return;
 			}
-			
-			
+
+
 			outputDir.mkdirs();
 			for (PlexilScript script : parsedScripts) {
 				try {
@@ -533,7 +537,7 @@ public class TPlex {
 			
 			if (lustreCompliance) {
 				try {
-					doLustreCompliance(parsedScripts, lustreXml);
+					doLustreCompliance(parsedScripts, results);
 				} catch (Exception e) {
 					System.err.println("Exception while starting Lustre compliance testing:");
 					e.printStackTrace();
@@ -547,13 +551,18 @@ public class TPlex {
 	}
 
 	private void doLustreCompliance(List<PlexilScript> scriptsAlreadyTranslated,
-			File jkindXmlFile) throws Exception {
+			JKindResult results) throws Exception {
 		String mainNode = lustreSimulateScriptsAgainst;
 		Plan ilPlan = ilPlans.get(lustreSimulateScriptsAgainst);
 		File lustreFile = new File(outputDir, lustreSimulateScriptsAgainst+".lus");
-		ReverseTranslationMap stringMap = getStringMapFor(jkindXmlFile);
 		
-		List<LustreTrace> traces = null; //TODO: parse these
+		// Activate Dongjiang's tools to get counterexamples in trace form
+		LustreMain.initialize();
+		LustreProgram lustreProg = new LustreProgram(lustreFile.getPath(), mainNode);
+		List<LustreTrace> traces = JKindResultUtils.translateToTraces(results, lustreProg);
+		// All done, we have what we need
+		LustreMain.terminate();
+		
 		
 		if (scriptsAlreadyTranslated.size() != traces.size()) {
 			System.err.println("Error doing compliance tests: Translated "
@@ -564,6 +573,7 @@ public class TPlex {
 		
 		// Run all these traces
 		for (int i = 0; i < traces.size(); i++) {
+			System.out.println("Testing translated script versus trace ("+i+")");
 			try {
 				RegressionTest.complianceTest(ilPlan, 
 						new JavaPlexilScript(scriptsAlreadyTranslated.get(i)), 

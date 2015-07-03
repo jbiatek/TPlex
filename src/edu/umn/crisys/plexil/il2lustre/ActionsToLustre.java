@@ -136,7 +136,8 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	@Override
 	public Void visitCommand(CommandAction cmd, Expr actionCondition) {
 		// We need a command handle input
-		String rawId = translator.addRawCommandHandleInputFor(cmd.getHandle());
+		String rawId = translator.addRawCommandHandleInputFor(cmd.getHandle(),
+				cmd.getNameAsConstantString());
 		
 		/*
 		 * It kind of looks like handles should only change in EXECUTING, 
@@ -169,6 +170,9 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
 			System.err.println("WARNING: Variable assignments from commands not supported yet!");
+		}
+		if ( ! cmd.getArgs().isEmpty()) {
+			System.err.println("WARNING: All args to command "+cmd+" are being ignored!");
 		}
 		
 		return null;

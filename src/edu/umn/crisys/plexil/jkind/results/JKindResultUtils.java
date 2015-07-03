@@ -4,19 +4,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import utils.LustreException;
 import jkind.api.Backend;
 import jkind.api.results.JKindResult;
 import jkind.api.xml.XmlParseThread;
+import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.Signal;
+import lustre.LustreProgram;
+import lustre.LustreTrace;
+import lustre.LustreVariable;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
@@ -32,7 +38,7 @@ import edu.umn.crisys.plexil.script.ast.StateChange;
 
 public class JKindResultUtils {
 
-	private static final String COMMAND_HANDLE_SUFFIX = "__command_handle__raw";
+	private static final String COMMAND_HANDLE_SUFFIX = "__command_handle";
 	
 	public static JKindResult parseJKindFile(File xml) throws IOException {
 		String baseName = xml.getName().replaceFirst("\\.xml$", "");
@@ -55,6 +61,50 @@ public class JKindResultUtils {
 				.collect(Collectors.toList());
 	}
 	
+	public static List<LustreTrace> translateToTraces(JKindResult results,
+			LustreProgram prog) {
+		return extractCounterexamples(results).entrySet().stream()
+				.map(entry -> toTrace(entry.getValue(), prog))
+				.collect(Collectors.toList());
+	}
+	
+	//TODO: Replace this with Dongjiang's code when it's public
+	private static LustreTrace toTrace(Counterexample ce, LustreProgram lustreProgram) {
+		LustreTrace output = new LustreTrace(ce.getLength());
+		List<String> allVars = new ArrayList<String>();
+		allVars.addAll(lustreProgram.getMainNode().getInputVars());
+		allVars.addAll(lustreProgram.getMainNode().getOutputVars());
+		allVars.addAll(lustreProgram.getMainNode().getLocalVars());
+		
+		for (String var : allVars) {
+			try {
+				Type type = lustreProgram.getMainNode().getVarType(var);
+
+				LustreVariable lv = new LustreVariable(var, type);
+
+				int length = ce.getLength();
+
+				Signal<Value> signal = ce.getSignal(var);
+
+				for (int step = 0; step < length; step++) {
+					// If JKind does not produce values for this variable
+					// or does not produce value at a step
+					// Add a null value
+					if (signal == null || signal.getValue(step) == null) {
+						lv.putValue(step, null);
+					} else {
+						lv.putValue(step, signal.getValue(step));
+					}
+				}
+				output.addVariable(lv);
+			} catch (LustreException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return output;
+	}
+
 	public static Map<String, Counterexample> extractCounterexamples(JKindResult results) {
 		return results.getPropertyResults().stream()
 			.map(propResult -> propResult.getProperty())
@@ -73,7 +123,7 @@ public class JKindResultUtils {
 					// We want raw lookup inputs
 					(sig.getName().startsWith("Lookup") && sig.getName().endsWith("__raw"))
 					// We also want command handle inputs
-					|| (sig.getName().endsWith("__command_handle__raw"))
+					|| (sig.getName().endsWith(COMMAND_HANDLE_SUFFIX))
 					)
 				.collect(Collectors.toList());
 		int[] macroStepBoundaries = 
@@ -94,6 +144,11 @@ public class JKindResultUtils {
 		
 		
 		for (int step : macroStepBoundaries) {
+			if (step == cex.getLength()) {
+				// Oop, this end of macrostep doesn't have an interim because
+				// it's the end. 
+				continue;
+			}
 			Simultaneous thisMacroStep = new Simultaneous();
 			
 			for (Signal<Value> signal : relevant) {

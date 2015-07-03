@@ -375,14 +375,14 @@ public class RegressionTest {
 	}
 	
 	public static void complianceTest(Plan ilPlan, ExternalWorld environment,
-			LustreTrace traceWrap) throws Exception{
+			LustreTrace rawTrace) throws Exception{
 
-		// Simulate the Lustre code and get trace data out
+		// Put the trace in terms of variable names
 		Map<String, LustreVariable> stringTrace = new HashMap<>();
-		traceWrap.getVariableNames().forEach(
-				name -> stringTrace.put(name, traceWrap.getVariable(name)));
+		rawTrace.getVariableNames().forEach(
+				name -> stringTrace.put(name, rawTrace.getVariable(name)));
 		
-		// Swap out these Strings for IL expressions where possible.
+		// Now, for each IL expression we're interested in, find it in Lustre. 
 		final Map<Expression, LustreVariable> ilTrace = new HashMap<>();
 		// States aren't stored as variables, so those first
 		ilPlan.getMachines().forEach(nsm -> 
@@ -392,9 +392,9 @@ public class RegressionTest {
 		// Then all variables from the plan
 		ilPlan.getVariables().forEach(var -> 
 				attachILExprToLustreVar(var, stringTrace, ilTrace));
-		// This isn't an IL variable, but part of the PLEXIL semantics being
-		// implemented in Lustre. If this is wrong, we'll want to know because
-		// it'll screw up a lot of other stuff too. 
+		// This isn't an IL variable, it's PLEXIL semantics encoded in Lustre. 
+		// If it's wrong, we want to know so that we can debug it, because it'll
+		// mess up other stuff too. 
 		final LustreVariable macrostepEnded = 
 				stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID);
 		
@@ -524,7 +524,8 @@ public class RegressionTest {
 			ilTrace.put(e, stringTrace.get(lustreString));
 		} else {
 			throw new RuntimeException("Didn't find IL expression in Lustre trace: "
-					+e+", was looking for it in Lustre as "+lustreString);
+					+e+", was looking for it in Lustre as "+lustreString+
+					"(the Lustre trace had "+stringTrace.size()+" entries)");
 		}
 	}
 	

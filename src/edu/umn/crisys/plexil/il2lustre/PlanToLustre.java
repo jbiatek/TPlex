@@ -154,11 +154,12 @@ public class PlanToLustre {
 	 * @return the Lustre ID for the new input, which is also available from 
 	 * LustreNamingConventions.getRawCommandHandleId(). 
 	 */
-	public String addRawCommandHandleInputFor(ILVariable handle) {
+	public String addRawCommandHandleInputFor(ILVariable handle, String cmdName) {
 		// We'll need a raw input of type command handle
 		String rawInputId = LustreNamingConventions.getRawCommandHandleId(handle);
 		Type cmdType = LustreNamingConventions.PCOMMAND;
 		nb.addInput(new VarDecl(rawInputId, cmdType));
+		reverseMap.addCommandHandleMapping(rawInputId, cmdName);
 		return rawInputId;
 	}
 
@@ -184,6 +185,8 @@ public class PlanToLustre {
 								new IdExpr(rawInputId), 
 								new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
 				)));
+		// Write this down for reverse mapping later
+		reverseMap.addLookupMapping(rawInputId, lookup.getName());
 	}
 	
 	public Expr toLustre(Expression e, ExprType expectedType) {
