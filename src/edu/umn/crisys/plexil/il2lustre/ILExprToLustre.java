@@ -3,9 +3,7 @@ package edu.umn.crisys.plexil.il2lustre;
 import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -16,9 +14,8 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.PrettyPrintVisitor;
-import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
@@ -39,7 +36,6 @@ import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
@@ -58,41 +54,11 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		return new UnaryExpr(UnaryOp.PRE, arg);
 	}
 
-	private Map<String, PString> allExpectedStrings = new HashMap<>();
+	private ReverseTranslationMap mapper;
 
 	public ILExprToLustre() { }
-	public ILExprToLustre(Map<String, PString> existingMap) {
-		allExpectedStrings = existingMap;
-	}
-	
-	public Map<String, PString> getAllExpectedStrings() {
-		return allExpectedStrings;
-	}
-	
-	public String stringToEnum(StringValue v) {
-		if (v.getString().equals("")) {
-			allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, v);
-			return LustreNamingConventions.EMPTY_STRING;
-		}
-		
-		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
-		if (toReturn.equals("")) {
-			throw new RuntimeException("Enumerated string was empty: "+v);
-		}
-		if (allExpectedStrings.containsKey(toReturn)) {
-			PString prev = allExpectedStrings.get(toReturn);
-			if (prev.equalTo(v).isNotTrue()) {
-				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
-			}
-		}
-		// Okay, it's all good. Save this mapping.
-		allExpectedStrings.put(toReturn, v);
-		return toReturn;
-	}
-	
-	public String stringToEnum(UnknownValue unk) {
-		allExpectedStrings.put(LustreNamingConventions.UNKNOWN_STRING, unk);
-		return LustreNamingConventions.UNKNOWN_STRING;
+	public ILExprToLustre(ReverseTranslationMap mapper) {
+		this.mapper = mapper;
 	}
 	
 	@Override
@@ -314,7 +280,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(StringValue string, ExprType expectedType) {
-		return id(stringToEnum(string));
+		return id(mapper.stringToEnum(string));
 	}
 
 	@Override
@@ -327,7 +293,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case REAL:
 			return id("0.0");
 		case STRING:
-			return id(stringToEnum(unk));
+			return id(mapper.stringToEnum(unk));
 		default: 
 			throw new RuntimeException("Unknowns not supported yet except booleans -- "+expectedType);	
 		}

@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 
 import jkind.lustre.ArrayType;
@@ -21,6 +20,7 @@ import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
+import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.expr.Expression;
@@ -33,8 +33,8 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.runtime.values.PString;
 
 public class PlanToLustre {
 
@@ -47,6 +47,7 @@ public class PlanToLustre {
 	private ProgramBuilder pb = getProgramWithPlexilTypes();
 	private NodeBuilder nb;
 	
+	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
 	private ILExprToLustre ilToLustre = new ILExprToLustre();
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 
@@ -56,6 +57,17 @@ public class PlanToLustre {
 		this.nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
 	}
 	
+	public String toLustreAsString() {
+		return toLustreAsString(Obligation.NONE);
+	}
+	
+	public String toLustreAsString(Obligation obligation) {
+		Program program = toLustre(obligation);
+		PrettyPrintVisitor pp = new PrettyPrintVisitor();
+		program.accept(pp);
+		return pp.toString();
+	}
+
 	public Program toLustre() {
 		return toLustre(Obligation.NONE);
 	}
@@ -82,10 +94,10 @@ public class PlanToLustre {
 		a2l.toLustre(nb);
 		
 		// Add string enum, if any
-		Map<String, PString> allExpectedStrings = getStringMap();
-		if (! allExpectedStrings.keySet().isEmpty()) {
+		Set<String> allExpectedStrings = getTranslationMap().getAllExpectedStringIds();
+		if (! allExpectedStrings.isEmpty()) {
 			EnumType planStrings = new EnumType(LustreNamingConventions.STRING_ENUM_NAME, 
-				new ArrayList<String>(allExpectedStrings.keySet()));
+				new ArrayList<String>(allExpectedStrings));
 			addEnumType(pb, planStrings);
 		}
 		
@@ -111,6 +123,20 @@ public class PlanToLustre {
 			
 		}
 		
+		// Set node outputs to the things that IL plans expose
+		nb.addOutput(new VarDecl("outcome", LustreNamingConventions.POUTCOME));
+		nb.addEquation(new Equation(new IdExpr("outcome"), 
+				new BinaryExpr(
+						toLustre(NodeOutcome.UNKNOWN, ExprType.OUTCOME),
+						BinaryOp.ARROW,
+						toLustre(p.getRootNodeOutcome(), ExprType.OUTCOME))));
+		
+		nb.addOutput(new VarDecl("state", LustreNamingConventions.PSTATE));
+		nb.addEquation(new Equation(new IdExpr("state"),
+				new BinaryExpr(
+						toLustre(NodeState.INACTIVE, ExprType.STATE),
+						BinaryOp.ARROW,
+						toLustre(p.getRootNodeState(), ExprType.STATE))));
 		
 		pb.addNode(nb.build());
 		return pb.build();
@@ -168,8 +194,8 @@ public class PlanToLustre {
 		return e.accept(nativeToLustre, null);
 	}
 	
-	public Map<String,PString> getStringMap() {
-		return ilToLustre.getAllExpectedStrings();
+	public ReverseTranslationMap getTranslationMap() {
+		return reverseMap;
 	}
 	
 	private static ProgramBuilder getProgramWithPlexilTypes() {

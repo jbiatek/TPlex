@@ -15,39 +15,28 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import jkind.lustre.Program;
-import jkind.lustre.visitors.PrettyPrintVisitor;
+import lustre.LustreTrace;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.common.LookupExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
@@ -55,27 +44,23 @@ import edu.umn.crisys.plexil.il.optimizations.HackOutArrayAssignments;
 import edu.umn.crisys.plexil.il.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.il.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.optimizations.UnknownBiasing;
-import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
-import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre.Obligation;
-import edu.umn.crisys.plexil.jkind.results.JKindXmlParser;
+import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
+import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
+import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
-import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
-import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
-import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
-import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 import edu.umn.crisys.plexil.script.translator.ScriptToXML;
+import edu.umn.crisys.plexil.test.java.RegressionTest;
 
 public class TPlex {
 	
@@ -144,6 +129,14 @@ public class TPlex {
 			"Translate a JKind .xml file with counterexamples to the output directory as PlexilScript.")
 	public String lustreToScripts = "";
 	
+	@Parameter(names = "--lustre-compliance", description = 
+			"Used in conjunction with --lustre-plan-to-simulate and --lustre-to-scripts."
+			+ " After translating the plan to simulate to Lustre, and after "
+			+ "translating the JKind XML file to PlexilScript, run a compliance"
+			+ "test to ensure that the Lustre plan behaves as expected under"
+			+ "those inputs.")
+	public boolean lustreCompliance = false;
+	
 	@Parameter(names = "--lustre-plan-to-simulate", description = 
 			"PLEXILScripts need to be translated via simulation, since Lustre input is at a "
 			+ "microstep level. The plan should be passed in as a file to be translated, "
@@ -156,9 +149,9 @@ public class TPlex {
 	public Map<String, PlexilPlan> asts = new HashMap<>();
 	public Map<String, PlexilScript> scripts = new HashMap<>();
 	public Map<String, Plan> ilPlans = new HashMap<>();
-	public Map<String, Map<String,PString>> lustreStringMap = new HashMap<>();
-	public Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
-	public Map<Plan, PlexilPlan> originalAst = new HashMap<>();
+	public Map<String, ReverseTranslationMap> lustreTranslationMap = new HashMap<>();
+//	public Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
+//	public Map<Plan, PlexilPlan> originalAst = new HashMap<>();
 	public Map<String, String> idToFile = new HashMap<>();
 	
 	/**
@@ -260,14 +253,23 @@ public class TPlex {
 		if (files.size() == 0 && lustreToScripts.equals("")) {
 			System.err.println("Warning: No files specified for translation.");
 		}
+		
 		return true;
+	}
+	
+	private String getKeyForPlx(File f) {
+		return f.getName().replaceAll("\\.plx$", "");
+	}
+	
+	private String getKeyForPsx(File f) {
+		return f.getName().replaceAll("\\.psx$", "");
 	}
 
 	public boolean parsePlexilFiles() {
 		for (File f : files) {
 			if (f.getName().endsWith(".plx")) {
 				try {
-					asts.put(f.getName().replaceAll("\\.plx$", ""), PlxParser.parseFile(f));
+					asts.put(getKeyForPlx(f), PlxParser.parseFile(f));
 				} catch (IOException e) {
 					System.err.println(f+": "+e.getMessage());
 					return false;
@@ -280,7 +282,7 @@ public class TPlex {
 				}
 			} else if (f.getName().endsWith(".psx")) {
 				try {
-					scripts.put(f.getName().replaceAll("\\.psx$", ""), ScriptParser.parse(f));
+					scripts.put(getKeyForPsx(f), ScriptParser.parse(f));
 				} catch (FileNotFoundException e) {
 					System.err.println(f+": "+e.getMessage());
 					return false;
@@ -303,43 +305,46 @@ public class TPlex {
 
 	public boolean translateToIL() {
 		for (String filename : asts.keySet()) {
-			PlexilPlan plan = asts.get(filename);
-			NodeToIL toIl = new NodeToIL(plan.getRootNode());
-
-			if (!skipAllOptimizations && staticLibraries) {
-				StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
-			}
-			
-			Plan ilPlan = PlexilPlanToILPlan.translate(plan);
-			ilPlans.put(filename, ilPlan);
-			originalTranslator.put(ilPlan, toIl);
-			originalAst.put(ilPlan, plan);
-			
+			ilPlans.put(filename, translateToIL(asts.get(filename)));
 		}
 		return true;
+	}
+	
+	public Plan translateToIL(PlexilPlan plan) {
+		NodeToIL toIl = new NodeToIL(plan.getRootNode());
+
+		if (!skipAllOptimizations && staticLibraries) {
+			StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
+		}
+		
+		return PlexilPlanToILPlan.translate(plan);
 	}
 
 	public boolean optimizeIL() {
 		if (skipAllOptimizations) return true;
 		
-		for (Entry<String, Plan> entry : ilPlans.entrySet()) {
-			Plan ilPlan = entry.getValue();
-			if (!noGuessTopLevelPlans 
-					&& AssumeTopLevelPlan.looksLikeTopLevelPlan(originalAst.get(ilPlan))) {
-				System.out.println("I think "+ilPlan+" isn't a library, so I'm removing some code.");
-				System.out.println("If I'm wrong, either add an interface to the orignal PLEXIL code or use \nthe \"--no-root-plans\" option.");
-				AssumeTopLevelPlan.optimize(ilPlan);
-			}
-
-
-			if (!noBiasing) {
-				UnknownBiasing.optimize(ilPlan);
-			}
-			PruneUnusedVariables.optimize(ilPlan);
-			RemoveDeadTransitions.optimize(ilPlan);
-			ConstantPropagation.optimize(ilPlan);
-		}
+		ilPlans.forEach((name, plan) -> optimizeIL(plan));
+		
 		return true;
+	}
+	
+	public Plan optimizeIL(Plan ilPlan) {
+		if (!noGuessTopLevelPlans 
+				&& AssumeTopLevelPlan.looksLikeTopLevelPlan(ilPlan)) {
+			System.out.println("I think "+ilPlan+" isn't a library, so I'm removing some code.");
+			System.out.println("If I'm wrong, either add an interface to the orignal PLEXIL code or use \nthe \"--no-root-plans\" option.");
+			AssumeTopLevelPlan.optimize(ilPlan);
+		}
+
+
+		if (!noBiasing) {
+			UnknownBiasing.optimize(ilPlan);
+		}
+		PruneUnusedVariables.optimize(ilPlan);
+		RemoveDeadTransitions.optimize(ilPlan);
+		ConstantPropagation.optimize(ilPlan);
+		
+		return ilPlan;
 	}
 
 	public boolean generateOutput() {
@@ -355,23 +360,25 @@ public class TPlex {
 		
 		return true;
 	}
+	
+	private boolean printString(String filename, String outString) {
+		File output = new File(outputDir, filename);
+		try {
+			FileWriter fw = new FileWriter(output);
+			fw.write(outString);
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} 
+		return true;
+	}
 
 	private boolean generatePlexil() {
-		for (String filename : asts.keySet()) {
-			File outFile = new File(outputDir, filename+".ple");
-			String text = asts.get(filename).getFullPrintout();
-			try {
-				FileWriter fw = new FileWriter(outFile);
-				fw.write(text);
-				fw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
-			System.out.println(outFile.getName());
-		}
-		
-		return true;
+		return asts.entrySet().stream()
+			.peek(entry -> System.out.println(entry.getKey()))
+			.map(e -> printString(e.getKey()+".ple",e.getValue().getFullPrintout()))
+			.allMatch(success -> success);
 	}
 
 	private boolean generateLustre() {
@@ -380,30 +387,17 @@ public class TPlex {
 			HackOutArrayAssignments.hack(p);
 			
 			PlanToLustre p2l = new PlanToLustre(p);
-			Program lustre = p2l.toLustre(lustreObligation);
-			PrettyPrintVisitor pp = new PrettyPrintVisitor();
-			lustre.accept(pp);
 			
-			File output = new File(outputDir, p.getPlanName()+".lus");
-			try {
-				FileWriter fw = new FileWriter(output);
-				fw.write(pp.toString());
-				fw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (! printString(p.getPlanName()+".lus", 
+					p2l.toLustreAsString(lustreObligation))) {
 				return false;
-			} 
+			}
 			
-			Map<String, PString> map = p2l.getStringMap();
-			lustreStringMap.put(entry.getKey(), map);
-			File stringOut = new File(outputDir, p.getPlanName()+".strings.txt");
-			String json = new Gson().toJson(map);
-			try {
-				FileWriter fw = new FileWriter(stringOut);
-				fw.write(json);
-				fw.close();
-			} catch (Exception e) {
-				e.printStackTrace();
+			ReverseTranslationMap map = p2l.getTranslationMap();
+			lustreTranslationMap.put(entry.getKey(), map);
+			if (! printString(p.getPlanName()+".strings.txt",
+					new Gson().toJson(map))) {
+				return false;
 			}
 		}
 		if ( ! scripts.isEmpty()) {
@@ -411,27 +405,29 @@ public class TPlex {
 				System.err.println("No plan was specified to simulate scripts against!");
 				return false;
 			}
-			Plan planToUse = ilPlans.get(lustreSimulateScriptsAgainst);
-			if (planToUse == null) {
-				System.err.println("Couldn't find IL plan "+lustreSimulateScriptsAgainst);
+			Plan planToUse;
+			try {
+				planToUse = ilPlans.get(lustreSimulateScriptsAgainst);
+			} catch (Exception e1) {
+				System.err.println("Error getting plan for simulation "+lustreSimulateScriptsAgainst);
+				System.err.println("Was it specified for translation? ");
+				e1.printStackTrace();
 				return false;
 			}
 			
 			for (Entry<String, PlexilScript> scriptEntry: scripts.entrySet()) {
 				LinkedHashMap<Expression,List<PValue>> data = 
-						simulateToCSV(planToUse, scriptEntry.getValue());
-				try {
-					PrintStream out = new PrintStream(new File(
-							outputDir, lustreSimulateScriptsAgainst+"__"+scriptEntry.getKey())+".csv");
-					printToLustreCSVFile(data, 
-							lustreStringMap.get(lustreSimulateScriptsAgainst),
-							out);
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+						ScriptSimulation.simulateToCSV(
+								planToUse, scriptEntry.getValue());
+				
+				String csv = ScriptSimulation.toLustreCSV(data, 
+						lustreTranslationMap.get(lustreSimulateScriptsAgainst));
+
+				if ( ! printString(
+						lustreSimulateScriptsAgainst+"__"+scriptEntry.getKey()+".csv",
+						csv)) {
 					return false;
 				}
-				
 			}
 			
 		}
@@ -439,121 +435,6 @@ public class TPlex {
 		return true;
 	}
 	
-	private void printToLustreCSVFile(LinkedHashMap<Expression,List<PValue>> data,
-			Map<String, PString> stringMap, PrintStream out) throws IOException {
-		// Check that each list of values is the same length
-		int size = data.entrySet().stream()
-			.mapToInt(entry -> entry.getValue().size())
-			.reduce((a,b) -> a == b ? a : -1)
-			.orElse(0);
-
-		if (size == -1) {
-			throw new RuntimeException("CSV data was not all the same length!");
-		}
-		
-		// Print the headers first
-		List<String> line = new ArrayList<String>();
-		for (Expression expr : data.keySet()) {
-			// Need to make sure we're getting raw input names
-			if (expr instanceof LookupExpr) {
-				// Get the raw input name
-				line.add(LustreNamingConventions.getRawLookupId(
-						((LookupExpr) expr).getLookupNameAsString()));
-			} else if (expr instanceof ILVariable) {
-				// These should be command handles
-				line.add(LustreNamingConventions
-						.getRawCommandHandleId((ILVariable) expr));
-			}
-		}
-		// Print that first line
-		out.println(line.stream().collect(Collectors.joining(",")));
-		
-		// For the rest of the data, we go step by step through the lists
-		ILExprToLustre exprToLustre = new ILExprToLustre(stringMap);
-		for (int i = 0; i < size; i++) {
-			line.clear();
-			for (List<PValue> list : data.values()) {
-				PrettyPrintVisitor pp = new PrettyPrintVisitor();
-				// Translate to Lustre, then 
-				list.get(i).accept(exprToLustre, null)
-						.accept(pp);
-				line.add(pp.toString());
-			}
-			out.println(line.stream().collect(Collectors.joining(",")));
-		}
-	}
-	
-	private LinkedHashMap<Expression,List<PValue>> 
-	simulateToCSV(Plan ilPlan, PlexilScript astScript) {
-		JavaPlexilScript script = new JavaPlexilScript(astScript);
-		ILSimulator sim = new ILSimulator(ilPlan, script);
-		
-		// LinkedHashMap guarantees iteration order, so we want that specifically
-		LinkedHashMap<Expression, List<PValue>> csv = new LinkedHashMap<>();
-		
-		// Initialize all the keys we expect to see
-		for (LookupDecl lookup : ilPlan.getStateDecls()) {
-			if (lookup.getParameters().size() != 0) {
-				System.err.println("Warning: lookups with parameters aren't supported!");
-			}
-			csv.put(new LookupNowExpr(lookup.getName()), new ArrayList<>());
-		}
-		// Need to find all the command handles too
-		for (ILVariable var : ilPlan.getVariables()) {
-			if (var instanceof SimpleVar) {
-				SimpleVar simple = (SimpleVar) var;
-				if (simple.getType().equals(ExprType.COMMAND_HANDLE)) {
-					csv.put(simple,	new ArrayList<>());
-				}
-			}
-		}
-		
-		sim.addObserver(new JavaPlanObserver() {
-			
-			/**
-			 * We want to capture the initial state before the first micro
-			 * step is committed. After that, we want a capture between macro
-			 * steps because Lustre takes a step to let that happen. 
-			 */
-			private boolean captureBeforeCommit = true;
-			
-			@Override
-			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
-				// This is our only shot at the initial state of the plan. 
-				// After that, we want the post-commit values of everything.
-				if (captureBeforeCommit) {
-					captureState(plan);
-					captureBeforeCommit = false;
-				}
-			}
-			
-			@Override
-			public void endOfMicroStepAfterCommit(JavaPlan plan) {
-				// Capture every state after it gets committed
-				captureState(plan);
-			}
-			
-			@Override
-			public void endOfMacroStep(JavaPlan plan) {
-				// We just ended a macro step. Before we commit the next one,
-				// capture the inbetween state.
-				captureBeforeCommit = true;
-			}
-			
-			private void captureState(JavaPlan plan) {
-				for ( Entry<Expression, List<PValue>> e : csv.entrySet()) {
-					e.getValue().add(sim.eval(e.getKey()));
-				}
-			}
-		});
-		
-		// Now run the simulation
-		sim.runPlanToCompletion();
-		
-		// All done!
-		return csv;
-	}
-
 	private boolean generateJava() {
 		JCodeModel cm = new JCodeModel();
 		for (Entry<String, Plan> entry: ilPlans.entrySet()) {
@@ -615,26 +496,22 @@ public class TPlex {
 		}
 		
 		if ( ! lustreToScripts.equals("")) {
-			translateLustreResults();
+			doLustreToScripts();
 		}
-
 		return true;
 
 	}
 	
-	private void translateLustreResults() {
+	private void doLustreToScripts() {
 		File lustreXml = new File(lustreToScripts);
 		if (lustreXml.isFile()) {
-			Optional<Map<String,StringValue>> stringMap = getStringMapFor(lustreXml);
-			List<PlexilScript> parsedScripts = new ArrayList<PlexilScript>();
-			
-			
+			List<PlexilScript> parsedScripts;
 			try {
-				XMLEventReader xml = XMLInputFactory.newInstance().createXMLEventReader(
-						new FileReader(lustreXml));
-				parsedScripts = JKindXmlParser.translateToScripts(xml, stringMap);
+				parsedScripts = JKindResultUtils.translateToScripts(
+						JKindResultUtils.parseJKindFile(lustreXml), 
+						getStringMapFor(lustreXml));
 			} catch (Exception e) {
-				System.err.println("Error parsing JKind XML file: ");
+				System.err.println("Error parsing JKind XML: ");
 				e.printStackTrace();
 				return;
 			}
@@ -653,31 +530,93 @@ public class TPlex {
 					return;
 				}
 			}
+			
+			if (lustreCompliance) {
+				try {
+					doLustreCompliance(parsedScripts, lustreXml);
+				} catch (Exception e) {
+					System.err.println("Exception while starting Lustre compliance testing:");
+					e.printStackTrace();
+				}
+			}
+			
 		} else {
-			throw new RuntimeException(
-					new FileNotFoundException(lustreToScripts));
+			System.err.println("File not found: "+lustreToScripts);
 		}
+		
+	}
 
+	private void doLustreCompliance(List<PlexilScript> scriptsAlreadyTranslated,
+			File jkindXmlFile) throws Exception {
+		String mainNode = lustreSimulateScriptsAgainst;
+		Plan ilPlan = ilPlans.get(lustreSimulateScriptsAgainst);
+		File lustreFile = new File(outputDir, lustreSimulateScriptsAgainst+".lus");
+		ReverseTranslationMap stringMap = getStringMapFor(jkindXmlFile);
+		
+		List<LustreTrace> traces = null; //TODO: parse these
+		
+		if (scriptsAlreadyTranslated.size() != traces.size()) {
+			System.err.println("Error doing compliance tests: Translated "
+					+ scriptsAlreadyTranslated.size() + " tests to PLEXIL, but "
+					+ "then read "+traces.size()+" tests to Lustre.");
+			return;
+		}
+		
+		// Run all these traces
+		for (int i = 0; i < traces.size(); i++) {
+			try {
+				RegressionTest.complianceTest(ilPlan, 
+						new JavaPlexilScript(scriptsAlreadyTranslated.get(i)), 
+						traces.get(i));
+			} catch (Exception e) {
+				System.err.println("Exception while running test "+i+": ");
+				e.printStackTrace();
+			}
+		}
+		
+		
+//		File lustreXml = new File(lustreCompliance);
+//		List<PlexilScript> parsedScripts;
+//		if (lustreXml.isFile()) {
+//			try {
+//				parsedScripts = parseJKindXML(lustreXml,
+//						getStringMapFor(lustreXml));
+//			} catch (Exception e) {
+//				System.err.println("Error parsing JKind XML: ");
+//				e.printStackTrace();
+//				return;
+//			}
+//		} else {
+//			System.err.println(lustreCompliance+" is not a file.");
+//			return;
+//		}
+//		Plan plan = ilPlans.get(lustreSimulateScriptsAgainst);
+//		if (plan == null) {
+//			System.err.println("Plan \""+lustreSimulateScriptsAgainst+"\""
+//					+ " wasn't specified for translation.");
+//		}
+//		
+//		// Now have the plan and some scripts. 
+//		
 	}
 	
-	private Optional<Map<String,StringValue>> getStringMapFor(File lustreXml) {
-		String baseName = lustreXml.getName().replaceAll("\\.lus\\.xml$", "");
-		File stringsFile = new File(lustreXml.getParentFile(), 
+	
+	private ReverseTranslationMap getStringMapFor(File lusXmlFile) throws FileNotFoundException {
+		String baseName = lusXmlFile.getName().replaceAll("\\.lus\\.xml$", "");
+		File stringsFile = new File(lusXmlFile.getParentFile(), 
 				baseName+".strings.txt");
 		if (stringsFile.isFile()) {
 			try { 
-				Map<String,StringValue> map = new Gson()
+				return new Gson()
 					.fromJson(new FileReader(stringsFile), 
-						new TypeToken<Map<String,StringValue>>(){}.getType());
-				return Optional.of(map);
+						ReverseTranslationMap.class);
 			} catch (Exception e ) {
 				System.err.println("Error parsing strings file "+stringsFile+":");
 				e.printStackTrace();
 			}
 		}
 
-		System.out.println("Warning: Strings file "+stringsFile+" not found.");
-		return Optional.empty();
+		throw new FileNotFoundException("Error: Strings file "+stringsFile+" not found.");
 	}
 	
 }

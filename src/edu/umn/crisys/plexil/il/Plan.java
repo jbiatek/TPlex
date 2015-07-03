@@ -14,6 +14,7 @@ import java.util.Set;
 import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
@@ -44,6 +45,11 @@ public class Plan {
      */
 	private List<LibraryDecl> libraryDecls = new ArrayList<LibraryDecl>();
 
+	/**
+	 * Top level interface from the original Plexil plan. 
+	 */
+	private PlexilInterface pInterface = new PlexilInterface();
+	
 	private OriginalHierarchy snapshot;
 	
 	private NodeStateMachine root;
@@ -193,5 +199,13 @@ public class Plan {
 
 	public void setOriginalHierarchy(OriginalHierarchy snapshot) {
 		this.snapshot = snapshot;
+	}
+
+	public PlexilInterface getRootPlexilInterface() {
+		return pInterface;
+	}
+
+	public void setRootPlexilInterface(PlexilInterface pInterface) {
+		this.pInterface = pInterface;
 	}
 }

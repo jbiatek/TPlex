@@ -19,6 +19,10 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 		return ! plan.getRootNode().getInterface().isDefined();
 	}
 	
+	public static boolean looksLikeTopLevelPlan(Plan plan) {
+		return ! plan.getRootPlexilInterface().isDefined();
+	}
+	
 	private AssumeTopLevelPlan() {}
 
 	/**

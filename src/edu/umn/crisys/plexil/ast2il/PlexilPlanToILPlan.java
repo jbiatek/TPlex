@@ -16,6 +16,7 @@ public class PlexilPlanToILPlan {
         NodeToIL rootTranslator = new NodeToIL(p.getRootNode());
         rootTranslator.translate(ilPlan);
         ilPlan.setOriginalHierarchy(new OriginalHierarchy(rootTranslator));
+        ilPlan.setRootPlexilInterface(p.getRootNode().getInterface());
         return ilPlan;
     }
 }

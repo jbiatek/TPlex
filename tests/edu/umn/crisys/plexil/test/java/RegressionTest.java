@@ -365,11 +365,20 @@ public class RegressionTest {
 		// Now we compare the IL plan to the Lustre plan. 
 		// Reset everything so we can start again
 		script.reset();
-		sim.reset();
 		
+		File lustreFile = new File(LUSTRE_FILES, planName+".lus");
+		File csvFile = new File(LUSTRE_FILES, planName+"__"+scriptName+".csv");
+		
+		LustreTrace trace = getLustreTraceData(lustreFile, planName, csvFile);
+		
+		complianceTest(ilPlan, script, trace);
+	}
+	
+	public static void complianceTest(Plan ilPlan, ExternalWorld environment,
+			LustreTrace traceWrap) throws Exception{
+
 		// Simulate the Lustre code and get trace data out
 		Map<String, LustreVariable> stringTrace = new HashMap<>();
-		LustreTrace traceWrap = getLustreTraceData(planName, scriptName);
 		traceWrap.getVariableNames().forEach(
 				name -> stringTrace.put(name, traceWrap.getVariable(name)));
 		
@@ -390,6 +399,7 @@ public class RegressionTest {
 				stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID);
 		
 		// Attach an observer to check these values against the IL sim
+		ILSimulator sim = new ILSimulator(ilPlan, environment);
 		sim.addObserver(new JavaPlanObserver() {
 
 			private int step = 0;
@@ -495,6 +505,7 @@ public class RegressionTest {
 		
 		// Here we go!
 		sim.runPlanToCompletion();
+		
 	}
 	
 	private static String hackyILExprToLustre(Expression e, ExprType type) {
@@ -512,19 +523,16 @@ public class RegressionTest {
 		if (stringTrace.containsKey(lustreString)) {
 			ilTrace.put(e, stringTrace.get(lustreString));
 		} else {
-			fail("Didn't find IL expression in Lustre trace: "
+			throw new RuntimeException("Didn't find IL expression in Lustre trace: "
 					+e+", was looking for it in Lustre as "+lustreString);
 		}
 	}
 	
 	
-	public static LustreTrace getLustreTraceData(String planName, String scriptName) throws Exception{
+	public static LustreTrace getLustreTraceData(File lustreFile, String mainNode, 
+			File inputCsv) throws Exception{
 		LustreMain.initialize();
-		
-		File lustreFile = new File(LUSTRE_FILES, planName+".lus");
-		File inputCsv = new File(LUSTRE_FILES, planName+"__"+scriptName+".csv");
-
-		LustreProgram program = new LustreProgram(lustreFile.getPath(), planName);
+		LustreProgram program = new LustreProgram(lustreFile.getPath(), mainNode);
 		
 		List<LustreTrace> inputs = testsuite.TestSuite
 				.readTestsFromFile(program, inputCsv.getPath());

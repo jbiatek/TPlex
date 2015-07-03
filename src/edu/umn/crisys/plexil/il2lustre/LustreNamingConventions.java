@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il2lustre;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
@@ -13,11 +14,15 @@ import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PString;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class LustreNamingConventions {
 	public static final String P_TRUE_ID = "p_true";
@@ -83,6 +88,34 @@ public class LustreNamingConventions {
 		return value.name().toLowerCase();
 	}
 
+	public static PValue reverseTranslate(String enumValue, 
+			Optional<ReverseTranslationMap> stringMap) {
+		if (enumValue.equals(P_TRUE_ID)) return BooleanValue.get(true);
+		if (enumValue.equals(P_FALSE_ID)) return BooleanValue.get(false);
+		if (enumValue.equals(P_UNKNOWN_ID)) return UnknownValue.get();
+		if (enumValue.equals(UNKNOWN_STRING)) return UnknownValue.get();
+		if (enumValue.equals(EMPTY_STRING)) return StringValue.get("");
+		
+		for (NodeState state : NodeState.values()) {
+			if (getEnumId(state).equals(enumValue)) return state;
+		}
+		for (NodeOutcome outcome : NodeOutcome.values()){ 
+			if (getEnumId(outcome).equals(enumValue)) return outcome;
+		}
+		for (NodeFailureType failure : NodeFailureType.values()){ 
+			if (getEnumId(failure).equals(enumValue)) return failure;
+		}
+		for (CommandHandleState cmdHandle : CommandHandleState.values()){ 
+			if (getEnumId(cmdHandle).equals(enumValue)) return cmdHandle;
+		}
+		if (stringMap.isPresent()) {
+			Optional<PString> ret = stringMap.get().getPStringFromEnumId(enumValue);
+			return ret.orElseThrow(() -> new RuntimeException
+					("String "+enumValue+" not found in map"));
+		}
+		throw new RuntimeException("Couldn't reverse translate "+enumValue+", "
+				+ "there was no string map so it might be a string.");
+	}
 	
 	private static String getLookupId(Expression rawName) {
 		//TODO: Lookup parameters, right now only one value per lookup name
