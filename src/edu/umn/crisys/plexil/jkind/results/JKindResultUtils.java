@@ -57,6 +57,11 @@ public class JKindResultUtils {
 		XmlParseThread parser = new XmlParseThread(in, result, Backend.JKIND);
 		// We can just run this on this thread.
 		parser.run();
+		if (parser.getThrowable() != null) {
+			throw new RuntimeException(parser.getThrowable());
+		}
+		
+		
 		return result;
 	}
 	
@@ -226,7 +231,6 @@ public class JKindResultUtils {
 			// If this is unknown, no point in creating an event. But if it 
 			// is, we'll need the command's name from the map.
 			if (v.isKnown()) {
-				System.out.println(signal);
 				FunctionCall call = new FunctionCall(
 						map.getCommandNameFromHandleId(signal).get());
 				return Optional.of(new CommandAck(call, (CommandHandleState)v));

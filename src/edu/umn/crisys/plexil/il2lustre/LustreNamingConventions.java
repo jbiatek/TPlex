@@ -37,8 +37,8 @@ public class LustreNamingConventions {
 	public static final boolean UNKNOWN_FLAG = !KNOWN_FLAG;
 	
 	public static final String STRING_ENUM_NAME = "PlexilString";
-	public static final String UNKNOWN_STRING = "_unknown_str_";
-	public static final String EMPTY_STRING = "_empty_str_";
+	public static final String UNKNOWN_STRING = "unknown_str__";
+	public static final String EMPTY_STRING = "empty_str__";
 	
 	public static final EnumType PBOOLEAN = new EnumType("pboolean", 
 			Arrays.asList(P_UNKNOWN_ID, P_TRUE_ID, P_FALSE_ID)); 
