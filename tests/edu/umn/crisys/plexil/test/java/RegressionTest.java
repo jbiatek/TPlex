@@ -471,7 +471,8 @@ public class RegressionTest {
 				String expectedStr = hackyILExprToLustre(expected, e.getType());
 				
 				//TODO: is this really the best way to compare them?
-				if ( ! expectedStr.equals(actual.toString())) {
+				if ( expectedStr == null || actual == null || 
+						! expectedStr.equals(actual.toString())) {
 					//This is an error, give some info back
 					String history = " (history: ";
 					for (int i = Math.max(0, step-2); i < Math.min(ilTrace.get(e).getLength(), step+3); i++) {

@@ -300,6 +300,7 @@ public class TPlex {
 					results = JKindResultUtils.parseJKindFile(f);
 					parsedScripts = JKindResultUtils.translateToScripts(results, 
 							getStringMapFor(f));
+					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
 				} catch (Exception e) {
 					System.err.println("Error parsing JKind XML: ");
 					e.printStackTrace();
@@ -546,6 +547,10 @@ public class TPlex {
 		}
 		if (compliancePlexilProgram == null) {
 			System.err.println("Error: --compliance-plx not given");
+			return;
+		}
+		if (lustreResultsTranslated.size() == 0 ) {
+			System.out.println("No scripts to do compliance testing on!");
 			return;
 		}
 		

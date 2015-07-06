@@ -48,7 +48,7 @@ public class PlanToLustre {
 	private NodeBuilder nb;
 	
 	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
-	private ILExprToLustre ilToLustre = new ILExprToLustre();
+	private ILExprToLustre ilToLustre = new ILExprToLustre(reverseMap);
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 
 	public PlanToLustre(Plan p) {
@@ -159,7 +159,8 @@ public class PlanToLustre {
 		String rawInputId = LustreNamingConventions.getRawCommandHandleId(handle);
 		Type cmdType = LustreNamingConventions.PCOMMAND;
 		nb.addInput(new VarDecl(rawInputId, cmdType));
-		reverseMap.addCommandHandleMapping(rawInputId, cmdName);
+		String actualVarId = LustreNamingConventions.getVariableId(handle);
+		reverseMap.addCommandHandleMapping(actualVarId, cmdName);
 		return rawInputId;
 	}
 

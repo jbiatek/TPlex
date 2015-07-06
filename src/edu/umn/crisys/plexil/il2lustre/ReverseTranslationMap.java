@@ -1,46 +1,56 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.runtime.values.PString;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class ReverseTranslationMap {
 
-	private Map<String,PString> allExpectedStrings = new HashMap<>();
+	private Map<String,StringValue> allExpectedStrings = new HashMap<>();
+	private boolean expectUnknownString = false;
 	private Map<String,String> lookups = new HashMap<>();
 	private Map<String,String> commandHandleInputs = new HashMap<>();
 	
 	public String stringToEnum(PString v) {
-		if (v.getString().equals("")) {
-			allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, v);
-			return LustreNamingConventions.EMPTY_STRING;
-		}
 		if (v.isUnknown()) {
-			allExpectedStrings.put(LustreNamingConventions.UNKNOWN_STRING, v);
+			expectUnknownString = true;
 			return LustreNamingConventions.UNKNOWN_STRING;
 		}
+		StringValue knownString = (StringValue) v;
+		if (knownString.getString().equals("")) {
+			allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, knownString);
+			return LustreNamingConventions.EMPTY_STRING;
+		}
+
 		
-		String toReturn = NameUtils.clean(v.getString().replaceAll(" ", "_"));
+		String toReturn = NameUtils.clean(knownString.getString().replaceAll(" ", "_"));
 		if (toReturn.equals("")) {
-			throw new RuntimeException("Enumerated string was empty: "+v);
+			throw new RuntimeException("Enumerated string was empty: "+knownString);
 		}
 		if (allExpectedStrings.containsKey(toReturn)) {
 			PString prev = allExpectedStrings.get(toReturn);
-			if (prev.equalTo(v).isNotTrue()) {
-				throw new RuntimeException("Name clash: \""+v+"\" and \""+prev+"\"");
+			if (prev.equalTo(knownString).isNotTrue()) {
+				throw new RuntimeException("Name clash: \""+knownString+"\" and \""+prev+"\"");
 			}
 		}
 		// Okay, it's all good. Save this mapping.
-		allExpectedStrings.put(toReturn, v);
+		allExpectedStrings.put(toReturn, knownString);
 		return toReturn;
 	}
 	
 	public Set<String> getAllExpectedStringIds() {
-		return allExpectedStrings.keySet();
+		Set<String> toReturn = new HashSet<String>(allExpectedStrings.keySet());
+		if (expectUnknownString) {
+			toReturn.add(LustreNamingConventions.UNKNOWN_STRING);
+		}
+		return toReturn;
 	}
 	
 	public void addLookupMapping(String inputId, String lookupName) {
@@ -52,6 +62,9 @@ public class ReverseTranslationMap {
 	}
 	
 	public Optional<PString> getPStringFromEnumId(String enumId) {
+		if (enumId.equals(LustreNamingConventions.UNKNOWN_STRING)) {
+			return Optional.of(UnknownValue.get());
+		}
 		return Optional.ofNullable(allExpectedStrings.get(enumId));
 	}
 	

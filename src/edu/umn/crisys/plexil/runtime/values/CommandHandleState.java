@@ -4,6 +4,7 @@ import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 
 public enum CommandHandleState implements PValue {
+	UNKNOWN,
 	COMMAND_ACCEPTED,
 	COMMAND_SUCCESS,
 	COMMAND_RCVD_BY_SYSTEM,
@@ -11,8 +12,7 @@ public enum CommandHandleState implements PValue {
 	COMMAND_FAILED,
 	COMMAND_DENIED,
 	COMMAND_ABORTED,
-	COMMAND_ABORT_FAILED,
-	UNKNOWN;
+	COMMAND_ABORT_FAILED;
 	
 	public boolean isKnown() {
 		return this != UNKNOWN;

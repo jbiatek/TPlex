@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +16,17 @@ import utils.LustreException;
 import jkind.api.Backend;
 import jkind.api.results.JKindResult;
 import jkind.api.xml.XmlParseThread;
+import jkind.lustre.NamedType;
+import jkind.lustre.SubrangeIntType;
+import jkind.lustre.TupleType;
 import jkind.lustre.Type;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.Signal;
+import jkind.util.BigFraction;
 import lustre.LustreProgram;
 import lustre.LustreTrace;
 import lustre.LustreVariable;
@@ -88,10 +95,9 @@ public class JKindResultUtils {
 
 				for (int step = 0; step < length; step++) {
 					// If JKind does not produce values for this variable
-					// or does not produce value at a step
-					// Add a null value
+					// or does not produce value at a step, add the default
 					if (signal == null || signal.getValue(step) == null) {
-						lv.putValue(step, null);
+						lv.putValue(step, getDefaultValue(type, lustreProgram));
 					} else {
 						lv.putValue(step, signal.getValue(step));
 					}
@@ -101,8 +107,40 @@ public class JKindResultUtils {
 				throw new RuntimeException(e);
 			}
 		}
-
 		return output;
+	}
+	
+	private static Value getDefaultValue(Type type, LustreProgram program) {
+		if (type.equals(NamedType.BOOL)) {
+			return jkind.lustre.values.BooleanValue.FALSE;
+		}
+
+		if (type.equals(NamedType.INT)) {
+			return new jkind.lustre.values.IntegerValue(new BigInteger("0"));
+		}
+
+		if (type.equals(NamedType.REAL)) {
+			return new jkind.lustre.values.RealValue(
+					new BigFraction(new BigDecimal("0.0")));
+		}
+		
+		if (type instanceof TupleType) {
+			List<Value> values = new ArrayList<Value>();
+			TupleType tupleType = (TupleType) type;
+			for (Type t : tupleType.types) {
+				values.add(getDefaultValue(t, program));
+			}
+			return new jkind.lustre.values.TupleValue(values);
+		}
+		
+		if (type instanceof SubrangeIntType) {
+			return new jkind.lustre.values.IntegerValue(((SubrangeIntType) type).low);
+		}
+
+		// Then it should be a EnumType variable
+		List<String> values = program.getEnumValues(type);
+		return new EnumValue(values.get(0));
+
 	}
 
 	public static Map<String, Counterexample> extractCounterexamples(JKindResult results) {
@@ -188,6 +226,7 @@ public class JKindResultUtils {
 			// If this is unknown, no point in creating an event. But if it 
 			// is, we'll need the command's name from the map.
 			if (v.isKnown()) {
+				System.out.println(signal);
 				FunctionCall call = new FunctionCall(
 						map.getCommandNameFromHandleId(signal).get());
 				return Optional.of(new CommandAck(call, (CommandHandleState)v));

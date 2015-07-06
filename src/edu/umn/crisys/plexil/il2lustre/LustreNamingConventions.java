@@ -41,7 +41,7 @@ public class LustreNamingConventions {
 	public static final String EMPTY_STRING = "_empty_str_";
 	
 	public static final EnumType PBOOLEAN = new EnumType("pboolean", 
-			Arrays.asList(P_TRUE_ID, P_FALSE_ID, P_UNKNOWN_ID)); 
+			Arrays.asList(P_UNKNOWN_ID, P_TRUE_ID, P_FALSE_ID)); 
 	
 	public static final EnumType PSTATE = new EnumType("pstate", 
 			enumerator(NodeState.values()));

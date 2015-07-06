@@ -4,11 +4,11 @@ import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 
 public enum NodeOutcome implements PValue {
+	UNKNOWN,
 	SUCCESS,
 	FAILURE,
 	SKIPPED,
-	INTERRUPTED,
-	UNKNOWN;
+	INTERRUPTED;
 
 	@Override
 	public boolean isKnown() {
