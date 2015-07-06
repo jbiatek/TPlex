@@ -195,7 +195,7 @@ public class TPlex {
 	
 	public boolean execute() {
 		return  readOptions()
-				&& parsePlexilFiles()
+				&& parseInputFiles()
 				&& translateToIL()
 				&& optimizeIL()
 				&& generateOutput()
@@ -268,7 +268,7 @@ public class TPlex {
 		return f.getName().replaceAll("\\.psx$", "");
 	}
 
-	public boolean parsePlexilFiles() {
+	public boolean parseInputFiles() {
 		for (File f : files) {
 			if (f.getName().endsWith(".plx")) {
 				try {
