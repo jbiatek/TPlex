@@ -11,14 +11,12 @@ import java.util.Set;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.test.java.PlanState;
-import edu.umn.crisys.plexil.test.java.PlexilTestable;
 
 public class StateCoverageMeasurer implements JavaPlanObserver {
 	
 	private Map<NodeUID, Set<NodeState>> statesCovered = new HashMap<NodeUID, Set<NodeState>>();
 	
-	public void collectCoverage(PlexilTestable plan) {
+	public void collectCoverage(JavaPlan plan) {
 		recursiveCollection(plan.getSnapshot());
 	}
 	
@@ -80,22 +78,22 @@ public class StateCoverageMeasurer implements JavaPlanObserver {
 	
 	@Override
 	public void quiescenceReached(JavaPlan plan) {
-		collectCoverage((PlexilTestable) plan);
+		collectCoverage(plan);
 	}
 
 	@Override
 	public void prematureEndOfMacroStep(JavaPlan plan) {
-		collectCoverage((PlexilTestable) plan);
+		collectCoverage(plan);
 	}
 
 	@Override
 	public void endOfMicroStepBeforeCommit(JavaPlan plan) {
-		collectCoverage((PlexilTestable) plan);
+		collectCoverage(plan);
 	}
 
 	@Override
 	public void endOfExecution(JavaPlan plan) {
-		collectCoverage((PlexilTestable) plan);
+		collectCoverage(plan);
 	}
 
 }

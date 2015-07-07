@@ -71,6 +71,12 @@ public abstract class JavaPlan {
     	}
     }
     
+    private void notifyBeforeExecution() {
+    	for (JavaPlanObserver obs : observers) {
+    		obs.beforePlanExecution(this);
+    	}
+    }
+    
     /**
      * Notify listeners that a micro step has ended. Only call this inside
      * of an implementation of doMicroStep() please.
@@ -112,6 +118,7 @@ public abstract class JavaPlan {
     		addObserver(world);
     	}
     	int steps = 0;
+    	notifyBeforeExecution();
         while ( ! world.stop() && getRootNodeState() != NodeState.FINISHED) {
             doMacroStep();
             steps++;
@@ -129,6 +136,8 @@ public abstract class JavaPlan {
     public abstract NodeOutcome getRootNodeOutcome();
     
     public abstract NodeState getRootNodeState();
+    
+    public abstract PlanState getSnapshot();
     
     private void askForCommitAfterMicro() {
         if (askedForCommitAfterMicro) return;

@@ -41,6 +41,7 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.runtime.plx.SimplePArray;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -55,10 +56,8 @@ import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.plexil.runtime.world.UpdateHandler;
-import edu.umn.crisys.plexil.test.java.PlanState;
-import edu.umn.crisys.plexil.test.java.PlexilTestable;
 
-public class ILSimulator extends JavaPlan implements PlexilTestable {
+public class ILSimulator extends JavaPlan {
 
 	private Plan ilPlan;
 	private Map<Expression, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();

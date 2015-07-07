@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import jkind.lustre.values.Value;
 import lustre.LustreProgram;
 import lustre.LustreTrace;
 import lustre.LustreVariable;
@@ -32,10 +30,9 @@ import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
-import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
+import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
-import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
 
@@ -332,6 +329,11 @@ public class RegressionTest {
 		}
 	}
 	
+	public static JavaPlan getPlan(String planName, ExternalWorld world) throws ReflectiveOperationException {
+		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
+		return (JavaPlan) main.getConstructor(ExternalWorld.class).newInstance(world);
+	}
+	
 	public static void runSingleTestJava(String planName, String scriptName) throws Exception {
 		List<PlanState> expected = parseLogFile(planName, scriptName);
 		
@@ -344,8 +346,7 @@ public class RegressionTest {
 		// Get the script
 		JavaPlexilScript world = getScript(scriptName);
 		// Need to find the root node
-		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
-		PlexilTestable root = (PlexilTestable) main.getConstructor(ExternalWorld.class).newInstance(world);
+		JavaPlan root = getPlan(planName, world);
 		
 		runTest(root, world, expected);
 	}
@@ -357,9 +358,7 @@ public class RegressionTest {
 		Plan ilPlan = getPlanAsIL(planName);
 		List<PlanState> expected = parseLogFile(planName, scriptName);
 		ILSimulator sim = new ILSimulator(ilPlan, script);
-		//debugOff();
 		runTest(sim, script, expected);
-		debugOn();
 
 		// Okey dokey, if we got to here, our IL plan conforms to the oracle.
 		// Now we compare the IL plan to the Lustre plan. 
@@ -400,116 +399,14 @@ public class RegressionTest {
 		
 		// Attach an observer to check these values against the IL sim
 		ILSimulator sim = new ILSimulator(ilPlan, environment);
-		sim.addObserver(new JavaPlanObserver() {
-
-			private int step = 0;
-			private List<String> errors = new ArrayList<String>();
-			private boolean lustreSaysMacroStepEnded = false;
-			
-			@Override
-			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
-				// Normally, we want to see the results of the step, not the
-				// state beforehand. However, if this is the very first step,
-				// this is our only chance to see the initial state of the
-				// plan before the results of step 1 are committed. 
-				if (step == 0) {
-					checkThisStep(((ILSimulator) plan));
-				}
-			}
-
-			@Override
-			public void endOfMicroStepAfterCommit(JavaPlan plan) {
-				// Check everything now that it has been committed. 
-				checkThisStep(((ILSimulator) plan));
-			}
-
-			private void checkThisStep(ILSimulator sim) {
-				System.out.println("Checking Lustre step "+step);
-				if (lustreSaysMacroStepEnded) {
-					// Oops, this didn't get cleared. We didn't see a macro step
-					// ending, Lustre was wrong.
-					errors.add("At step "+(step)+", Lustre said the macro step"
-							+ " would end, but it didn't.");
-				} else if (macrostepEnded.getValue(step)
-						.toString().equalsIgnoreCase("true")) {
-					// This step should be the last one in the macro step. The
-					// macro step method should get called and it'll turn this 
-					// back off. 
-					lustreSaysMacroStepEnded = true;
-				}
-
-				
-				for (Expression expr : ilTrace.keySet()) {
-					checkValue(expr, sim);
-				}
-				if (errors.size() != 0) {
-					throw new RuntimeException("Error(s) at microstep "+step+": "
-							+errors.stream().collect(Collectors.joining(", ")));
-				} else {
-					step++;
-				}
-				
-			}
-
-			private void endOfMacroStep(String reason) {
-				if ( ! lustreSaysMacroStepEnded) {
-					// Ooh, Lustre didn't see this coming. That's not right.
-					errors.add("At step "+step+", Lustre said the macro step"
-							+ " wasn't over, but it was because "+reason);
-				} else {
-					lustreSaysMacroStepEnded = false;
-					// For this entire step in Lustre nothing is supposed
-					// to change except for inputs. We don't really care
-					// what the values are until the next step. 
-					step++;
-				}
-			}
-			
-			private void checkValue(Expression e, ILSimulator sim) {
-				PValue expected = sim.eval(e);
-				Value actual = ilTrace.get(e).getValue(step);
-				String expectedStr = hackyILExprToLustre(expected, e.getType());
-				
-				//TODO: is this really the best way to compare them?
-				if ( expectedStr == null || actual == null || 
-						! expectedStr.equals(actual.toString())) {
-					//This is an error, give some info back
-					String history = " (history: ";
-					for (int i = Math.max(0, step-2); i < Math.min(ilTrace.get(e).getLength(), step+3); i++) {
-						if (i == step) {
-							history += "["+ilTrace.get(e).getValue(i)+"] ";
-						} else {
-							history += ilTrace.get(e).getValue(i)+" ";
-						}
-					}
-					history += ")";
-					
-					errors.add("Values for "+e+" don't match: expected "+expected+", "
-							+"which should be "+expectedStr
-							+" in Lustre, but instead saw "+actual
-							+ history);
-				}
-			}
-			
-
-			@Override
-			public void quiescenceReached(JavaPlan plan) {
-				endOfMacroStep("quiescence was reached");
-			}
-
-			@Override
-			public void prematureEndOfMacroStep(JavaPlan plan) {
-				endOfMacroStep("something ended it prematurely");
-			}
-
-		});
+		sim.addObserver(new LustreComplianceChecker(ilTrace, macrostepEnded));
 		
 		// Here we go!
 		sim.runPlanToCompletion();
 		
 	}
 	
-	private static String hackyILExprToLustre(Expression e, ExprType type) {
+	static String hackyILExprToLustre(Expression e, ExprType type) {
 		ILExprToLustre il2lustre = new ILExprToLustre();
 		String lustreString = ILExprToLustre.exprToString(e.accept(il2lustre, type));
 		//TODO: This is a massive hack, there should be a better way to do this
@@ -552,29 +449,15 @@ public class RegressionTest {
 	}
 	
 	
-	public static void runTest(PlexilTestable root, ExternalWorld world, 
+	public static void runTest(JavaPlan root, ExternalWorld world,
+			TestOracle oracle) {
+		root.addObserver(oracle);
+		root.runPlanToCompletion();
+	}
+	
+	public static void runTest(JavaPlan root, ExternalWorld world, 
 			List<PlanState> expected) {
-        System.out.println("World set, ready to go");
-        for (int i = 0; i < expected.size(); i++) {
-            System.out.println("==> Starting step "+(i+1));
-            root.doMacroStep();
-            
-            // Do the test for equality:
-            PlanState actual = root.getSnapshot();
-            List<String> failures = actual.testAgainst(expected.get(i));
-
-            if (failures.size() > 0) {
-                String errorMsg = "Failures: ";
-                for (String failure : failures) {
-                    errorMsg += "\n"+failure;
-                }
-                throw new RuntimeException(errorMsg);
-            }
-            System.out.println("==> Ending step "+(i+1));
-            
-            world.quiescenceReached((JavaPlan)root);
-        }
-        System.out.println("Finished.");
+        runTest(root, world, new PlanStateChecker(expected));
 
 	}
 	

@@ -2,6 +2,14 @@ package edu.umn.crisys.plexil.runtime.plx;
 
 public interface JavaPlanObserver {
 
+	/**
+	 * Called before PLEXIL begins execution. 
+	 * 
+	 * @param plan
+	 */
+	public default void beforePlanExecution(JavaPlan plan) {
+		
+	}
 	
 	/**
 	 * Called after PLEXIL has reached quiescence. When something changes,

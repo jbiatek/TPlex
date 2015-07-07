@@ -474,6 +474,8 @@ public class TPlex {
 			JDefinedClass clazz = PlanToJava.toJava(p, cm, javaPackage, idToFile);
 			if ( ! javaNoSnapshotMethod) {
 				PlanToJava.addGetSnapshotMethod(p, clazz);
+			} else {
+				PlanToJava.addBlankSnapshotMethod(clazz);
 			}
 		}
 		for (String filename : scripts.keySet()) {

@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.test.java;
+package edu.umn.crisys.plexil.runtime.plx;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.test.java.DebugOutputPlexilArray;
 
 public class PlanState {
 	

@@ -29,6 +29,7 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.LibraryInterface;
+import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.plx.SimplePArray;
 import edu.umn.crisys.plexil.runtime.plx.SimplePValue;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
@@ -36,8 +37,6 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
-import edu.umn.crisys.plexil.test.java.PlanState;
-import edu.umn.crisys.plexil.test.java.PlexilTestable;
 
 public class PlanToJava {
 
@@ -318,11 +317,13 @@ public class PlanToJava {
 	    return clazz;
 	}
 	
-	
+	public static void addBlankSnapshotMethod(JDefinedClass javaCode) {
+        JCodeModel cm = javaCode.owner();
+        JMethod m = javaCode.method(JMod.PUBLIC, cm.ref(PlanState.class), "getSnapshot");
+        m.body()._return(JExpr._null());
+	}
 
 	public static void addGetSnapshotMethod(Plan ilPlan, JDefinedClass javaCode) {
-        
-        javaCode._implements(PlexilTestable.class);
         
         JCodeModel cm = javaCode.owner();
         JMethod m = javaCode.method(JMod.PUBLIC, cm.ref(PlanState.class), "getSnapshot");
@@ -368,8 +369,10 @@ public class PlanToJava {
         if (node.getLibraryChild().isPresent()) {
         	// We need direct access to the field here.
             b.invoke(ps, "addChild").arg(
-                    JExpr.invoke(JExpr.cast(cm.ref(PlexilTestable.class), 
-                    JExpr.ref(ILExprToJava.getLibraryFieldName(node.getUID()))), "getSnapshot"));
+                    JExpr.invoke(
+                    		JExpr.ref(ILExprToJava.getLibraryFieldName(
+                    				node.getUID())), 
+            				"getSnapshot"));
 
         }
         
