@@ -12,14 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import lustre.LustreProgram;
 import lustre.LustreTrace;
 import lustre.LustreVariable;
-import main.LustreMain;
 
 import org.junit.*;
 
-import simulation.LustreSimulator;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
@@ -28,6 +25,7 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
+import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
@@ -426,28 +424,17 @@ public class RegressionTest {
 					"(the Lustre trace had "+stringTrace.size()+" entries)");
 		}
 	}
-	
-	
 	public static LustreTrace getLustreTraceData(File lustreFile, String mainNode, 
 			File inputCsv) throws Exception{
-		LustreMain.initialize();
-		LustreProgram program = new LustreProgram(lustreFile.getPath(), mainNode);
-		
-		List<LustreTrace> inputs = testsuite.TestSuite
-				.readTestsFromFile(program, inputCsv.getPath());
-		LustreSimulator lustreSim = new LustreSimulator(program);
-		
-		
-		
-		List<LustreTrace> ret = lustreSim.simulate(inputs, null);
-		
-		LustreMain.terminate();
+		List<LustreTrace> ret = 
+				JKindResultUtils.simulateCSV(lustreFile, mainNode, inputCsv);
 		
 		assertEquals("Only should have gotten 1 trace back", 1, ret.size());
-		
+
 		return ret.get(0);
+
 	}
-	
+
 	
 	public static void runTest(JavaPlan root, ExternalWorld world,
 			TestOracle oracle) {

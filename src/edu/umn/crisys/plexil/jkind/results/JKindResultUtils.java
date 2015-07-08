@@ -9,9 +9,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import simulation.LustreSimulator;
 import utils.LustreException;
 import jkind.api.Backend;
 import jkind.api.results.JKindResult;
@@ -30,6 +32,7 @@ import jkind.util.BigFraction;
 import lustre.LustreProgram;
 import lustre.LustreTrace;
 import lustre.LustreVariable;
+import main.LustreMain;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
@@ -47,6 +50,21 @@ public class JKindResultUtils {
 
 	private static final String COMMAND_HANDLE_SUFFIX = "__command_handle";
 	
+	public static List<LustreTrace> simulateCSV(File lustreFile, String mainNode, 
+			File inputCsv) throws Exception{
+		LustreMain.initialize();
+
+		LustreProgram program = new LustreProgram(lustreFile.getPath(), mainNode);
+		List<LustreTrace> inputs = testsuite.TestSuite
+				.readTestsFromFile(program, inputCsv.getPath());
+		LustreSimulator lustreSim = new LustreSimulator(program);
+		List<LustreTrace> ret = lustreSim.simulate(inputs, null);
+		
+		LustreMain.terminate();
+		
+		return ret;
+	}
+		
 	public static JKindResult parseJKindFile(File xml) throws IOException {
 		String baseName = xml.getName().replaceFirst("\\.xml$", "");
 		return parseJKindFile(new FileInputStream(xml), baseName);
@@ -65,12 +83,29 @@ public class JKindResultUtils {
 		return result;
 	}
 	
-	public static List<PlexilScript> translateToScripts(JKindResult results,
+	public static Map<Counterexample,PlexilScript> translateToScripts(JKindResult results,
 			ReverseTranslationMap reverseMap) {
-		return extractCounterexamples(results).entrySet().stream()
-				.map(entry -> translateToScript(
-						entry.getKey(), entry.getValue(), reverseMap))
-				.collect(Collectors.toList());
+		return namedCounterexamplesToScripts(extractCounterexamples(results), reverseMap);
+	}
+	
+	public static Map<Counterexample,PlexilScript> translateToScripts(
+			Map<String,LustreTrace> namedTraces, ReverseTranslationMap reverseMap) {
+		Map<String, Counterexample> namedCexes = namedTraces.entrySet().stream()
+					.collect(Collectors.toMap(
+							Entry::getKey, 
+							e -> toCounterexample(e.getValue())));
+		
+		return namedCounterexamplesToScripts(namedCexes, reverseMap);
+	}
+	
+	private static Map<Counterexample, PlexilScript> namedCounterexamplesToScripts(
+			Map<String, Counterexample> cexes, ReverseTranslationMap reverseMap) {
+		return cexes.entrySet().stream()
+				.collect(Collectors.toMap(
+						Entry::getValue, 
+						entry -> translateToScript(
+								entry.getKey(), entry.getValue(), reverseMap)
+						));
 	}
 	
 	public static List<LustreTrace> translateToTraces(JKindResult results,
@@ -80,8 +115,7 @@ public class JKindResultUtils {
 				.collect(Collectors.toList());
 	}
 	
-	//TODO: Replace this with Dongjiang's code when it's public
-	private static LustreTrace toTrace(Counterexample ce, LustreProgram lustreProgram) {
+	public static LustreTrace toTrace(Counterexample ce, LustreProgram lustreProgram) {
 		LustreTrace output = new LustreTrace(ce.getLength());
 		List<String> allVars = new ArrayList<String>();
 		allVars.addAll(lustreProgram.getMainNode().getInputVars());
@@ -155,6 +189,19 @@ public class JKindResultUtils {
 			.map(prop -> (InvalidProperty) prop)
 			.collect(Collectors.toMap(Property::getName, 
 					InvalidProperty::getCounterexample));
+	}
+	
+	public static Counterexample toCounterexample(LustreTrace trace) {
+		Counterexample cex = new Counterexample(trace.getLength());
+		for (String varName : trace.getVariableNames()) {
+			LustreVariable var = trace.getVariable(varName);
+			Signal<Value> signal = new Signal<Value>(varName);
+			for (int i = 0; i < var.getLength(); i++) {
+				signal.putValue(i, var.getValue(i));
+			}
+			cex.addSignal(signal);
+		}
+		return cex;
 	}
 
 	public static PlexilScript translateToScript(String name, Counterexample cex,
