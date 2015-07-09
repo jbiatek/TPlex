@@ -1,6 +1,9 @@
 package edu.umn.crisys.plexil.expr.il.nativebool;
 
+import java.util.Optional;
+
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 
 /**
  * Expression representing a native "equal" method. For Java, this means 
@@ -36,6 +39,17 @@ public class NativeEqual implements NativeExpr {
 	@Override
 	public <P, R> R accept(NativeExprVisitor<P, R> visitor, P param) {
 		return visitor.visitNativeEqual(this, param);
+	}
+
+	@Override
+	public Optional<Boolean> eval() {
+		Optional<PValue> leftEval = left.eval();
+		Optional<PValue> rightEval = right.eval();
+		
+		if (leftEval.isPresent() && rightEval.isPresent()) {
+			return Optional.of(leftEval.get().equals(rightEval.get()));
+		}
+		return Optional.empty();
 	}
 
 }

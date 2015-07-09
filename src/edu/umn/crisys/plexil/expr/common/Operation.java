@@ -1,12 +1,14 @@
 package edu.umn.crisys.plexil.expr.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -438,6 +440,38 @@ public class Operation extends ExpressionBase {
     public List<Expression> getArguments() {
         return args;
     }
+    
+	@Override
+	public Optional<PValue> eval() {
+		// OR and AND have short circuiting, which is slightly different
+		// from everything else. 
+		PValue shortCircuiter = null;
+		if (this.getOperator() == Operator.AND) {
+			shortCircuiter = BooleanValue.get(false);
+		} else if (this.getOperator() == Operator.OR) {
+			shortCircuiter = BooleanValue.get(true);
+		}
+		
+		List<PValue> values = new ArrayList<PValue>();
+		for (Expression arg : this.getArguments()) {
+			Optional<PValue> argResult = arg.eval();
+			if (argResult.isPresent()) {
+				if (shortCircuiter != null && argResult.get().equals(shortCircuiter)) {
+					// We have short circuited! This is always going to be it.
+					return argResult;
+				} else {
+					// Just a regular constant. 
+					values.add(argResult.get());
+				}
+			} else {
+				// Not constant. Could be anything.
+				return Optional.empty();
+			}
+		}
+		// All the arguments were constant, so this should be constant too. 
+		return Optional.of(this.getOperator().eval(values));
+	}
+
     
     public Expression getSingleExpectedArgument() {
     	if (op.expectedArgs == 1 || args.size() == 1) {

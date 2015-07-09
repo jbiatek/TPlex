@@ -28,7 +28,7 @@ public class ArrayIndexExpr extends ExpressionBase {
     public Expression getIndex() {
         return index;
     }
-
+    
     @Override
     public String asString() {
         return array+"["+index+"]";

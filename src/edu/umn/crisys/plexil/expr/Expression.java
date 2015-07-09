@@ -2,8 +2,10 @@ package edu.umn.crisys.plexil.expr;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public interface Expression {
     
@@ -38,7 +40,9 @@ public interface Expression {
     	return this;
     }
 
-
+    public default Optional<PValue> eval() {
+    	return Optional.empty();
+    }
     
     /**
      * @return a human readable string. It's not toString() so that no one 

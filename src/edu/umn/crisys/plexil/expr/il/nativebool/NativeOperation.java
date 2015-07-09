@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.expr.il.nativebool;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NativeOperation implements NativeExpr {
@@ -74,6 +75,29 @@ public class NativeOperation implements NativeExpr {
 		return args.stream()
 				.map((arg) -> "("+arg+")")
 				.collect(Collectors.joining(operator));
+	}
+
+	@Override
+	public Optional<Boolean> eval() {
+		if (this.getOperation() == NativeOp.NOT) {
+			return this.getArgs().get(0).eval()
+					.map((v) -> (!v));
+		}
+
+		boolean shortCircuiter = this.getOperation() == NativeOp.AND ? false : true;
+		List<Optional<Boolean>> argResults = this.getArgs().stream()
+				.map(NativeExpr::eval)
+				.collect(Collectors.toList());
+		if (argResults.stream().anyMatch((res) -> res.isPresent() && res.get() == shortCircuiter)) {
+			// Something is definitely the short circuit
+			return Optional.of(shortCircuiter);
+		} else if (argResults.stream().anyMatch((res) -> ! res.isPresent())) {
+			// Something isn't constant
+			return Optional.empty();
+		} else {
+			// Must all be constantly the other thing
+			return Optional.of(! shortCircuiter);
+		}
 	}
 	
 }

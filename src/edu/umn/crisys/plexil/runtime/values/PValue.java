@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+import java.util.Optional;
+
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
 
@@ -16,6 +18,10 @@ public interface PValue extends Expression {
 
 	public abstract ExprType getType();
 
+	public default Optional<PValue> eval() {
+		return Optional.of(this);
+	}
+	
 	/**
 	 * Performs, essentially, Java's == operator but with PLEXIL logic. That is,
 	 * if either one is unknown, return UNKNOWN, but otherwise they

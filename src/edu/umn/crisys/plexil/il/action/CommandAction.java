@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.il.ILEval;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
@@ -46,7 +45,7 @@ public class CommandAction implements PlexilAction {
     }
     
     public String getNameAsConstantString() {
-    	Optional<PValue> eval = name.accept(new ILEval());
+    	Optional<PValue> eval = name.eval();
     	if (! eval.isPresent()) {
     		throw new RuntimeException("Expression "+name+" is not constant.");
     	}

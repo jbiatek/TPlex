@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il.simulator;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,16 +11,17 @@ import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.ILEval;
+import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
 import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
 import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeEval;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeExprVisitor;
+import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -63,109 +65,124 @@ public class ILSimulator extends JavaPlan {
 	private Map<Expression, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
 	private Map<Expression, SimplePArray<PValue>> arrayVars = new HashMap<>();
 	private Map<NodeStateMachine, SimpleCurrentNext<Integer>> states = new HashMap<>();
-	private NativeEval myNativeEval = new NativeEval() {
+	private NativeExprVisitor<Void,Boolean> myNativeEval = 
+			new NativeExprVisitor<Void,Boolean>() {
 
 		@Override
-		public Optional<Boolean> visitPlexilExprToNative(
+		public Boolean visitPlexilExprToNative(
 				PlexilExprToNative pen, Void param) {
-			return pen.getPlexilExpr().accept(myEvaluator, null)
-					.map((v) -> pen.getCondition().checkValue(v));
+			return pen.getCondition().checkValue(
+					ILSimulator.this.eval(pen.getPlexilExpr()));
 		}
 		
 		@Override
-		public Optional<Boolean> visitNativeEqual(NativeEqual e, Void param) {
-			Optional<PValue> left = e.getLeft().accept(myEvaluator, null);
-			Optional<PValue> right = e.getRight().accept(myEvaluator, null);
+		public Boolean visitNativeEqual(NativeEqual e, Void param) {
+			PValue left = ILSimulator.this.eval(e.getLeft());
+			PValue right = ILSimulator.this.eval(e.getRight());
 			
-			if (left.isPresent() && right.isPresent()) {
-				return Optional.of(left.get().equals(right.get()));
-			} else {
-				return Optional.empty();
+			return left.equals(right);
+		}
+
+		@Override
+		public Boolean visitNativeOperation(NativeOperation op,
+				Void param) {
+			List<Boolean> args = op.getArgs().stream()
+					.map(arg -> arg.accept(this, null))
+					.collect(Collectors.toList());
+			switch(op.getOperation()) {
+			case AND: 
+				return args.stream().reduce(Boolean::logicalAnd)
+						.orElseThrow(() -> new RuntimeException("No args?!"));
+			case OR:
+				return args.stream().reduce(Boolean::logicalOr)
+						.orElseThrow(() -> new RuntimeException("No args?!"));
+			case NOT:
+				return ! args.get(0);
 			}
+			throw new RuntimeException("Missing case");
+		}
+
+		@Override
+		public Boolean visitNativeConstant(NativeConstant c,
+				Void param) {
+			return c.getValue();
 		}
 
 		
 	};
 	
-	private ILEval myEvaluator = new ILEval() {
+	private ILExprModifier<Void> myResolver = new ILExprModifier<Void>() {
 
 		@Override
-		public Optional<PValue> visit(ArrayIndexExpr array, Void param) {
-			Optional<PValue> theArrayResult = array.getArray().accept(this, param);
-			Optional<PValue> theIndexResult = array.getIndex().accept(this, param);
-			
-			if (theArrayResult.isPresent() && theIndexResult.isPresent()) {
-				PValue theArray = theArrayResult.get();
-				PValue theIndex = theIndexResult.get();
-				if (theArray instanceof PValueList && theIndex instanceof PInteger) {
-					return Optional.of(
-							((PValueList<?>)theArray).get(((PInteger)theIndex)));
-				}
+		public Expression visit(Expression e, Void param) {
+			return e.getCloneWithArgs(e.getArguments().stream()
+					.map(arg -> arg.accept(this))
+					.collect(Collectors.toList()));
+		}
+		
+		@Override
+		public Expression visit(ArrayIndexExpr array, Void param) {
+			PValue theArray = ILSimulator.this.eval(array.getArray());
+			PValue theIndex = ILSimulator.this.eval(array.getIndex());
+
+			if (theArray instanceof PValueList && theIndex instanceof PInteger) {
+				return ((PValueList<?>)theArray).get(((PInteger)theIndex));
+			} else {
+				throw new RuntimeException("Tried to get index "+theIndex+" of "+theArray);
 			}
-			return Optional.empty();
 		}
 
 		@Override
-		public Optional<PValue> visit(LookupNowExpr lookup, Void param) {
-			return Optional.of(getWorld().lookupNow(asString(eval(lookup.getLookupName())), 
+		public Expression visit(LookupNowExpr lookup, Void param) {
+			return getWorld().lookupNow(asString(eval(lookup.getLookupName())), 
 					lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
-					.collect(Collectors.toList()).toArray(new PValue[]{})));
+					.collect(Collectors.toList()).toArray(new PValue[]{}));
 		}
 
 		@Override
-		public Optional<PValue> visit(LookupOnChangeExpr lookup, Void param) {
-			return Optional.of(getWorld().lookupOnChange(asString(eval(lookup.getLookupName())), 
+		public Expression visit(LookupOnChangeExpr lookup, Void param) {
+			return getWorld().lookupOnChange(asString(eval(lookup.getLookupName())), 
 					asReal(eval(lookup.getTolerance())),
 					lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
-					.collect(Collectors.toList()).toArray(new PValue[]{})));
+					.collect(Collectors.toList()).toArray(new PValue[]{}));
 		}
 
 		@Override
-		public Optional<PValue> visit(RootParentStateExpr state, Void param) {
-			return Optional.of(getInterface().evalParentState());
+		public Expression visit(RootParentStateExpr state, Void param) {
+			return getInterface().evalParentState();
 		}
 
 		@Override
-		public Optional<PValue> visit(RootAncestorExitExpr ancExit,
+		public Expression visit(RootAncestorExitExpr ancExit,
 				Void param) {
-			return Optional.of(getInterface().evalAncestorExit());
+			return getInterface().evalAncestorExit();
 		}
 
 		@Override
-		public Optional<PValue> visit(RootAncestorEndExpr ancEnd, Void param) {
-			return Optional.of(getInterface().evalAncestorEnd());
+		public Expression visit(RootAncestorEndExpr ancEnd, Void param) {
+			return getInterface().evalAncestorEnd();
 		}
 
 		@Override
-		public Optional<PValue> visit(
+		public Expression visit(
 				RootAncestorInvariantExpr ancInv, Void param) {
-			return Optional.of(getInterface().evalAncestorInvariant());
+			return getInterface().evalAncestorInvariant();
 		}
 
 
 		@Override
-		public Optional<PValue> visit(SimpleVar var, Void param) {
-			return Optional.of(simpleVars.get(var).getCurrent());
+		public Expression visit(SimpleVar var, Void param) {
+			return simpleVars.get(var).getCurrent();
 		}
 
 		@Override
-		public Optional<PValue> visit(ArrayVar array, Void param) {
-			return Optional.of(arrayVars.get(array).getCurrent());
+		public Expression visit(ArrayVar array, Void param) {
+			return arrayVars.get(array).getCurrent();
 		}
 
 		@Override
-		public Optional<PValue> visit(LibraryVar lib, Void param) {
-			return Optional.empty();
-		}
-
-		@Override
-		public Optional<PValue> visit(AliasExpr alias, Void param) {
-			return Optional.empty();
-		}
-
-		@Override
-		public Optional<PValue> visit(GetNodeStateExpr state, Void param) {
-			return Optional.of(getCurrentStateOf(state.getNodeUid()));
+		public Expression visit(GetNodeStateExpr state, Void param) {
+			return getCurrentStateOf(state.getNodeUid());
 		}
 		
 
@@ -223,13 +240,12 @@ public class ILSimulator extends JavaPlan {
 	}
 	
 	public PValue eval(Expression e) {
-		return ((Expression)e).accept(myEvaluator, null)
+		return e.accept(myResolver).eval()
 				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
 	}
 	
 	private boolean eval(NativeExpr e) {
-		return e.accept(myNativeEval, null)
-				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
+		return e.accept(myNativeEval, null);
 	}
 	
 	private void exec(PlexilAction a) {

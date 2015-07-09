@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.expr.il.nativebool;
 
+import java.util.Optional;
+
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -130,6 +132,11 @@ public class PlexilExprToNative implements NativeExpr {
 	@Override 
 	public String toString() {
 		return "("+plexilExpr+")."+condition.getJavaMethodName()+"()";
+	}
+
+	@Override
+	public Optional<Boolean> eval() {
+		return plexilExpr.eval().map(condition::checkValue);
 	}
 
 }

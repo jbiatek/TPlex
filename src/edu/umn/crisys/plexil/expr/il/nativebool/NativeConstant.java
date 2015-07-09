@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.expr.il.nativebool;
 
+import java.util.Optional;
+
 public class NativeConstant implements NativeExpr {
 
 	public static final NativeConstant TRUE = new NativeConstant(true);
@@ -22,5 +24,10 @@ public class NativeConstant implements NativeExpr {
 	@Override
 	public String toString() {
 		return value ? "True" : "False";
+	}
+
+	@Override
+	public Optional<Boolean> eval() {
+		return Optional.of(value);
 	}
 }

@@ -6,10 +6,8 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.Operation;
-import edu.umn.crisys.plexil.expr.il.ILEval;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeEval;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
@@ -33,7 +31,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 
 	@Override
 	public NativeExpr visitNativeOperation(NativeOperation op, Void param) {
-		Optional<Boolean> eval = op.accept(new NativeEval(), null);
+		Optional<Boolean> eval = op.eval();
 		if (eval.isPresent()) {
 			// This whole thing is constant. 
 			return eval.get() ? NativeConstant.TRUE : NativeConstant.FALSE;
@@ -45,10 +43,10 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 		if (op.getOperation() == NativeOp.AND) {
 			op.getArgs().removeIf(
 					// Remove if it's definitely true, leave it otherwise
-					(arg) -> arg.accept(new NativeEval(), null).orElse(false));
+					(arg) -> arg.eval().orElse(false));
 		} else if (op.getOperation() == NativeOp.OR) {
 			op.getArgs().removeIf(
-					(arg) -> arg.accept(new NativeEval(), null).map((b) -> !b)
+					(arg) -> arg.eval().map((b) -> !b)
 					.orElse(false));
 		}
 		return op;
@@ -56,7 +54,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 
 	@Override
 	public NativeExpr visitPlexilExprToNative(PlexilExprToNative pen, Void param) {
-		Optional<PValue> eval = pen.getPlexilExpr().accept(new ILEval(), null);
+		Optional<PValue> eval = pen.getPlexilExpr().eval();
 		if (eval.isPresent()) {
 			return pen.getCondition().checkValue(eval.get()) ? 
 					NativeConstant.TRUE : NativeConstant.FALSE;
@@ -68,7 +66,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 	
 	@Override
 	public Expression visit(Operation op, Void param) {
-		Optional<PValue> eval = op.accept(new ILEval(), null);
+		Optional<PValue> eval = op.eval();
 		if (eval.isPresent()) {
 			// This whole thing is constant! 
 			return eval.get();
@@ -95,7 +93,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 		// Remove identity expressions if found. 
 		List<Expression> newArgs = op.getArguments().stream()
 				.filter((arg) -> {
-					Optional<PValue> argEval = arg.accept(new ILEval(), null);
+					Optional<PValue> argEval = arg.eval();
 					if (argEval.isPresent()) {
 						// Keep it as long as we know it's not the identity.
 						return argEval.get().equalTo(identity).isNotTrue();

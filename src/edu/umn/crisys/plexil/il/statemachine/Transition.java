@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeEval;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
@@ -39,12 +38,12 @@ public class Transition implements Comparable<Transition> {
 	}
 	
 	public boolean isNeverTaken() {
-	    Optional<Boolean> result = guard.accept(new NativeEval(), null);
+	    Optional<Boolean> result = guard.eval();
 	    return result.isPresent() && result.get() == false;
 	}
 	
 	public boolean isAlwaysTaken() {
-	    Optional<Boolean> result = guard.accept(new NativeEval(), null);
+	    Optional<Boolean> result = guard.eval();
 	    return result.isPresent() && result.get();
 	}
 	
