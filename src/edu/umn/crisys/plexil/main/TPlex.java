@@ -20,10 +20,9 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import jkind.api.results.JKindResult;
+import jkind.lustre.Program;
 import jkind.results.Counterexample;
-import lustre.LustreProgram;
 import lustre.LustreTrace;
-import main.LustreMain;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -592,12 +591,7 @@ public class TPlex {
 			return;
 		}
 		
-		String mainNode = getMainNodeFromFile(simLustreFile);
-		
-		LustreMain.initialize();
-		LustreProgram lustreProg = new LustreProgram(
-				simLustreFile.getPath(), mainNode);
-		LustreMain.terminate();
+		Program lustreProg = JKindResultUtils.parseProgram(simLustreFile);
 		
 		Plan ilPlan = optimizeIL(translateToIL(
 				PlxParser.parseFile(compliancePlexilProgram)));
@@ -608,7 +602,7 @@ public class TPlex {
 		
 	}
 
-	private void doLustreCompliance(LustreProgram lustreProg, Plan ilPlan, 
+	private void doLustreCompliance(Program lustreProg, Plan ilPlan, 
 			Counterexample counterexample, PlexilScript plexilScript 
 			) throws Exception {
 

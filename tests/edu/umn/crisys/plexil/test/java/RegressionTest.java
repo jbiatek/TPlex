@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jkind.lustre.values.Value;
+import jkind.results.Signal;
 import lustre.LustreTrace;
-import lustre.LustreVariable;
 
 import org.junit.*;
 
@@ -375,12 +376,12 @@ public class RegressionTest {
 			LustreTrace rawTrace) throws Exception{
 
 		// Put the trace in terms of variable names
-		Map<String, LustreVariable> stringTrace = new HashMap<>();
+		Map<String, Signal<Value>> stringTrace = new HashMap<>();
 		rawTrace.getVariableNames().forEach(
 				name -> stringTrace.put(name, rawTrace.getVariable(name)));
 		
 		// Now, for each IL expression we're interested in, find it in Lustre. 
-		final Map<Expression, LustreVariable> ilTrace = new HashMap<>();
+		final Map<Expression, Signal<Value>> ilTrace = new HashMap<>();
 		// States aren't stored as variables, so those first
 		ilPlan.getMachines().forEach(nsm -> 
 				nsm.getNodeIds().forEach(uid -> 
@@ -392,7 +393,7 @@ public class RegressionTest {
 		// This isn't an IL variable, it's PLEXIL semantics encoded in Lustre. 
 		// If it's wrong, we want to know so that we can debug it, because it'll
 		// mess up other stuff too. 
-		final LustreVariable macrostepEnded = 
+		final Signal<Value> macrostepEnded = 
 				stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID);
 		
 		// Attach an observer to check these values against the IL sim
@@ -412,8 +413,8 @@ public class RegressionTest {
 	}
 	
 	private static void attachILExprToLustreVar(Expression e, 
-			Map<String, LustreVariable> stringTrace,
-			Map<Expression, LustreVariable> ilTrace) {
+			Map<String, Signal<Value>> stringTrace,
+			Map<Expression, Signal<Value>> ilTrace) {
 		String lustreString = hackyILExprToLustre(e, e.getType());
 		
 		if (stringTrace.containsKey(lustreString)) {

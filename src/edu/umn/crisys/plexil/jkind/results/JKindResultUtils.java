@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +11,14 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import simulation.LustreSimulator;
-import utils.LustreException;
+import org.antlr.v4.runtime.RecognitionException;
+
+import jkind.JKindExecution;
 import jkind.api.Backend;
 import jkind.api.results.JKindResult;
 import jkind.api.xml.XmlParseThread;
-import jkind.lustre.NamedType;
-import jkind.lustre.SubrangeIntType;
-import jkind.lustre.TupleType;
+import jkind.lustre.EnumType;
+import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
@@ -28,11 +26,10 @@ import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.Signal;
-import jkind.util.BigFraction;
-import lustre.LustreProgram;
 import lustre.LustreTrace;
-import lustre.LustreVariable;
-import main.LustreMain;
+import simulation.LustreSimulator;
+import types.ResolvedTypeTable;
+import values.ValueToString;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
@@ -45,24 +42,62 @@ import edu.umn.crisys.plexil.script.ast.FunctionCall;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.ast.Simultaneous;
 import edu.umn.crisys.plexil.script.ast.StateChange;
+import enums.Simulation;
 
 public class JKindResultUtils {
 
 	private static final String COMMAND_HANDLE_SUFFIX = "__command_handle";
 	
+	public static jkind.lustre.Program parseProgram(File lusFile) 
+			throws RecognitionException, IOException {
+		return jkind.Main.parseLustre(lusFile.getPath());
+	}
+	
 	public static List<LustreTrace> simulateCSV(File lustreFile, String mainNode, 
 			File inputCsv) throws Exception{
-		LustreMain.initialize();
 
-		LustreProgram program = new LustreProgram(lustreFile.getPath(), mainNode);
-		List<LustreTrace> inputs = testsuite.TestSuite
-				.readTestsFromFile(program, inputCsv.getPath());
+		Program program = parseProgram(lustreFile);
+		
+		
+		
+		List<LustreTrace> inputs = testsuite.ReadTestSuite
+				.read(inputCsv.getPath(), program);
 		LustreSimulator lustreSim = new LustreSimulator(program);
-		List<LustreTrace> ret = lustreSim.simulate(inputs, null);
+		List<String> varsToGet = new ArrayList<>();
+		// Use lustreSim to get these names, they might be inlined and 
+		// therefore different from the Program
+		varsToGet.addAll(lustreSim.getInputVars());
+		varsToGet.addAll(lustreSim.getLocalVars());
+		List<LustreTrace> rawResults = lustreSim.simulate(inputs, Simulation.COMPLETE, varsToGet);
 		
-		LustreMain.terminate();
+		// Enums and such are all integers right now. Let's fix that.
 		
-		return ret;
+		Map<String, Type> typeTable = ResolvedTypeTable.get(program);
+		List<LustreTrace> newResults = new ArrayList<>();
+		
+		for (LustreTrace oldTrace : rawResults) {
+			LustreTrace newTrace = new LustreTrace(oldTrace.getLength());
+			for (String varName : oldTrace.getVariableNames()) {
+				Signal<Value> oldVar = oldTrace.getVariable(varName);
+				Type type = typeTable.get(varName);
+				
+				if (type instanceof EnumType) {
+					EnumType enumType = (EnumType) type;
+					Signal<Value> newVar = new Signal<Value>(oldVar.getName());
+					oldVar.getValues().keySet().forEach(step -> {
+						newVar.putValue(step, new EnumValue(ValueToString.get(
+								oldVar.getValue(step), enumType)));
+					});
+					newTrace.addVariable(newVar);
+				} else {
+					// No need to change this
+					newTrace.addVariable(oldVar);
+				}
+			}
+			newResults.add(newTrace);
+		}
+		
+		return newResults;
 	}
 		
 	public static JKindResult parseJKindFile(File xml) throws IOException {
@@ -109,79 +144,16 @@ public class JKindResultUtils {
 	}
 	
 	public static List<LustreTrace> translateToTraces(JKindResult results,
-			LustreProgram prog) {
+			Program prog) {
 		return extractCounterexamples(results).entrySet().stream()
 				.map(entry -> toTrace(entry.getValue(), prog))
 				.collect(Collectors.toList());
 	}
 	
-	public static LustreTrace toTrace(Counterexample ce, LustreProgram lustreProgram) {
-		LustreTrace output = new LustreTrace(ce.getLength());
-		List<String> allVars = new ArrayList<String>();
-		allVars.addAll(lustreProgram.getMainNode().getInputVars());
-		allVars.addAll(lustreProgram.getMainNode().getOutputVars());
-		allVars.addAll(lustreProgram.getMainNode().getLocalVars());
-		
-		for (String var : allVars) {
-			try {
-				Type type = lustreProgram.getMainNode().getVarType(var);
-
-				LustreVariable lv = new LustreVariable(var, type);
-
-				int length = ce.getLength();
-
-				Signal<Value> signal = ce.getSignal(var);
-
-				for (int step = 0; step < length; step++) {
-					// If JKind does not produce values for this variable
-					// or does not produce value at a step, add the default
-					if (signal == null || signal.getValue(step) == null) {
-						lv.putValue(step, getDefaultValue(type, lustreProgram));
-					} else {
-						lv.putValue(step, signal.getValue(step));
-					}
-				}
-				output.addVariable(lv);
-			} catch (LustreException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return output;
+	public static LustreTrace toTrace(Counterexample ce, Program lustreProgram) {
+		return JKindExecution.generateInputValues(ce, lustreProgram);
 	}
 	
-	private static Value getDefaultValue(Type type, LustreProgram program) {
-		if (type.equals(NamedType.BOOL)) {
-			return jkind.lustre.values.BooleanValue.FALSE;
-		}
-
-		if (type.equals(NamedType.INT)) {
-			return new jkind.lustre.values.IntegerValue(new BigInteger("0"));
-		}
-
-		if (type.equals(NamedType.REAL)) {
-			return new jkind.lustre.values.RealValue(
-					new BigFraction(new BigDecimal("0.0")));
-		}
-		
-		if (type instanceof TupleType) {
-			List<Value> values = new ArrayList<Value>();
-			TupleType tupleType = (TupleType) type;
-			for (Type t : tupleType.types) {
-				values.add(getDefaultValue(t, program));
-			}
-			return new jkind.lustre.values.TupleValue(values);
-		}
-		
-		if (type instanceof SubrangeIntType) {
-			return new jkind.lustre.values.IntegerValue(((SubrangeIntType) type).low);
-		}
-
-		// Then it should be a EnumType variable
-		List<String> values = program.getEnumValues(type);
-		return new EnumValue(values.get(0));
-
-	}
-
 	public static Map<String, Counterexample> extractCounterexamples(JKindResult results) {
 		return results.getPropertyResults().stream()
 			.map(propResult -> propResult.getProperty())
@@ -194,12 +166,7 @@ public class JKindResultUtils {
 	public static Counterexample toCounterexample(LustreTrace trace) {
 		Counterexample cex = new Counterexample(trace.getLength());
 		for (String varName : trace.getVariableNames()) {
-			LustreVariable var = trace.getVariable(varName);
-			Signal<Value> signal = new Signal<Value>(varName);
-			for (int i = 0; i < var.getLength(); i++) {
-				signal.putValue(i, var.getValue(i));
-			}
-			cex.addSignal(signal);
+			cex.addSignal(trace.getVariable(varName));
 		}
 		return cex;
 	}

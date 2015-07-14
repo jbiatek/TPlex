@@ -12,6 +12,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/TPlex/lib/gson-2.3.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/LustreMain.jar"/>
+	<classpathentry kind="lib" path="lib/LustreUtils.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

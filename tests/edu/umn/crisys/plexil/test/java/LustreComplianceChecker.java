@@ -6,21 +6,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import jkind.lustre.values.Value;
-import lustre.LustreVariable;
+import jkind.results.Signal;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class LustreComplianceChecker extends TestOracle {
-	private final Map<Expression, LustreVariable> ilTrace;
-	private final LustreVariable macrostepEnded;
+	private final Map<Expression, Signal<Value>> ilTrace;
+	private final Signal<Value> macrostepEnded;
 	private int step = 0;
 	private List<String> errors = new ArrayList<String>();
 	private boolean lustreSaysMacroStepEnded = false;
 
-	public LustreComplianceChecker(Map<Expression, LustreVariable> ilTrace,
-			LustreVariable macrostepEnded) {
+	public LustreComplianceChecker(Map<Expression, Signal<Value>> ilTrace,
+			Signal<Value> macrostepEnded) {
 		this.ilTrace = ilTrace;
 		this.macrostepEnded = macrostepEnded;
 	}
@@ -89,7 +89,7 @@ public class LustreComplianceChecker extends TestOracle {
 				! expectedStr.equals(actual.toString())) {
 			//This is an error, give some info back
 			String history = " (history: ";
-			for (int i = Math.max(0, step-2); i < Math.min(ilTrace.get(e).getLength(), step+3); i++) {
+			for (int i = Math.max(0, step-2); i < step+3; i++) {
 				if (i == step) {
 					history += "["+ilTrace.get(e).getValue(i)+"] ";
 				} else {
