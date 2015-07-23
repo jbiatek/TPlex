@@ -309,7 +309,8 @@ public class JKindResultUtils {
 		
 		
 		
-		for (int step : macroStepBoundaries) {
+		for (int index = 0; index < macroStepBoundaries.length; index++) {
+			int step = macroStepBoundaries[index];
 			if (step == cex.getLength()) {
 				// Oop, this end of macrostep doesn't have an interim because
 				// it's the end. 
@@ -320,6 +321,14 @@ public class JKindResultUtils {
 			for (Signal<Value> signal : relevant) {
 				// Read this value as a PValue
 				PValue plexilValue = parseValue(signal.getValue(step), map);
+				if (index > 0) {
+					int prevStep = macroStepBoundaries[index-1]; 
+					PValue previous = parseValue(signal.getValue(prevStep), map);
+					if (plexilValue.equals(previous)) {
+						// This value hasn't actually changed this step. Skip it.
+						continue;
+					}
+				}
 				// Based on the signal name, create a PlexilScript event
 				toScriptEvent(signal.getName(), plexilValue, map)
 					.ifPresent(e -> thisMacroStep.addEvent(e));

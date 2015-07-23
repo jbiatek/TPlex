@@ -60,6 +60,8 @@ import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.plexil.runtime.world.UpdateHandler;
 
 public class ILSimulator extends JavaPlan {
+	
+	public static boolean LIMIT_TO_LUSTRE_FUNCTIONALITY = false;
 
 	private Plan ilPlan;
 	private Map<Expression, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
@@ -134,17 +136,31 @@ public class ILSimulator extends JavaPlan {
 
 		@Override
 		public Expression visit(LookupNowExpr lookup, Void param) {
+			PValue[] args = new PValue[]{};
+			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
+				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
+			} else {
+				args = lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
+						.collect(Collectors.toList()).toArray(new PValue[]{});
+			}
+			
 			return getWorld().lookupNow(asString(eval(lookup.getLookupName())), 
-					lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
-					.collect(Collectors.toList()).toArray(new PValue[]{}));
+					args);
 		}
 
 		@Override
 		public Expression visit(LookupOnChangeExpr lookup, Void param) {
+			PValue[] args = new PValue[]{};
+			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
+				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
+			} else {
+				args = lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
+						.collect(Collectors.toList()).toArray(new PValue[]{});
+			}
+			
 			return getWorld().lookupOnChange(asString(eval(lookup.getLookupName())), 
 					asReal(eval(lookup.getTolerance())),
-					lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
-					.collect(Collectors.toList()).toArray(new PValue[]{}));
+					args);
 		}
 
 		@Override
@@ -310,10 +326,19 @@ public class ILSimulator extends JavaPlan {
 						}
 					}
 				};
-
-				getWorld().command(handle, asString(eval(cmd.getName())), 
-						cmd.getArgs().stream().map(ILSimulator.this::eval)
-						.collect(Collectors.toList()).toArray(new PValue[]{}));
+				PString commandName = asString(eval(cmd.getName()));
+				if (JavaPlan.DEBUG) {
+					System.out.println("**** Issuing command "+commandName);
+				}
+				PValue[] args = new PValue[]{};
+				if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! cmd.getArgs().isEmpty()) {
+					System.err.println("WARNING: Arguments are being dropped for Lustre compatibility!!!!");
+				} else {
+					args = cmd.getArgs().stream().map(ILSimulator.this::eval)
+							.collect(Collectors.toList()).toArray(new PValue[]{});
+				}
+				
+				getWorld().command(handle, commandName, args);
 				return null;
 			}
 

@@ -47,6 +47,7 @@ import edu.umn.crisys.plexil.il.optimizations.HackOutArrayAssignments;
 import edu.umn.crisys.plexil.il.optimizations.PruneUnusedVariables;
 import edu.umn.crisys.plexil.il.optimizations.RemoveDeadTransitions;
 import edu.umn.crisys.plexil.il.optimizations.UnknownBiasing;
+import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
@@ -57,7 +58,9 @@ import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
@@ -106,6 +109,9 @@ public class TPlex {
 	
 	@Parameter(names = "--print-reachable-states", description="After any translating, print an analysis of reachable PLEXIL states.")
 	public boolean reachableStates = false;
+	
+	@Parameter(names = "--print-simulation", description="Print results of running all specified scripts against the first PLEXIL plan.")
+	public boolean printSimulation = false;
 
 	//Java-specific options
 	@Parameter(names = "--java-package", 
@@ -531,6 +537,27 @@ public class TPlex {
 	}
 
 	public boolean printReports() {
+		if (printSimulation) {
+			// Do we have a plan to use? 
+			if ( ilPlans.keySet().size() == 1) {
+				// Use that one
+				Plan ilPlan = ilPlans.entrySet().stream().findFirst().get().getValue();
+				JavaPlan.DEBUG = true;
+				ScriptedEnvironment.DEBUG = true;
+				ILSimulator.LIMIT_TO_LUSTRE_FUNCTIONALITY = true;
+				for (Entry<String, PlexilScript> entry : scripts.entrySet()) {
+					System.out.println("Running script "+entry.getKey()
+							+" against "+ilPlan.getPlanName());
+					ILSimulator sim = new ILSimulator(ilPlan, 
+							new JavaPlexilScript(entry.getValue()));
+					sim.runPlanToCompletion();
+				}
+			} else {
+				System.out.println("Didn't run simulations: "+ilPlans.keySet().size()
+						+" plans were found. 1 is required.");
+			}
+		}
+		
 		if (analyzeTypes) {
 			TypeAnalyzer all = new TypeAnalyzer();
 			System.out.println();
