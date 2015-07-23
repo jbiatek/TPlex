@@ -9,6 +9,7 @@ import jkind.lustre.values.Value;
 import jkind.results.Signal;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
+import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
@@ -18,11 +19,14 @@ public class LustreComplianceChecker extends TestOracle {
 	private int step = 0;
 	private List<String> errors = new ArrayList<String>();
 	private boolean lustreSaysMacroStepEnded = false;
-
+	private ReverseTranslationMap mapper;
+	
 	public LustreComplianceChecker(Map<Expression, Signal<Value>> ilTrace,
-			Signal<Value> macrostepEnded) {
+			Signal<Value> macrostepEnded,
+			ReverseTranslationMap mapper) {
 		this.ilTrace = ilTrace;
 		this.macrostepEnded = macrostepEnded;
+		this.mapper = mapper;
 	}
 
 	@Override
@@ -82,7 +86,7 @@ public class LustreComplianceChecker extends TestOracle {
 	private void checkValue(Expression e, ILSimulator sim) {
 		PValue expected = sim.eval(e);
 		Value actual = ilTrace.get(e).getValue(step);
-		String expectedStr = RegressionTest.hackyILExprToLustre(expected, e.getType());
+		String expectedStr = RegressionTest.hackyILExprToLustre(expected, e.getType(), mapper);
 		
 		//TODO: is this really the best way to compare them?
 		if ( expectedStr == null || actual == null || 

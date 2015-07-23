@@ -21,17 +21,21 @@ import org.junit.*;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
+import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
 
@@ -368,12 +372,13 @@ public class RegressionTest {
 		File csvFile = new File(LUSTRE_FILES, planName+"__"+scriptName+".csv");
 		
 		LustreTrace trace = getLustreTraceData(lustreFile, planName, csvFile);
+		ReverseTranslationMap mapper = TPlex.getStringMapForLus(lustreFile);
 		
-		complianceTest(ilPlan, script, trace);
+		complianceTest(ilPlan, script, trace, mapper);
 	}
 	
 	public static void complianceTest(Plan ilPlan, ExternalWorld environment,
-			LustreTrace rawTrace) throws Exception{
+			LustreTrace rawTrace, ReverseTranslationMap mapper) throws Exception{
 
 		// Put the trace in terms of variable names
 		Map<String, Signal<Value>> stringTrace = new HashMap<>();
@@ -386,10 +391,10 @@ public class RegressionTest {
 		ilPlan.getMachines().forEach(nsm -> 
 				nsm.getNodeIds().forEach(uid -> 
 				attachILExprToLustreVar(new GetNodeStateExpr(uid), 
-						stringTrace, ilTrace)));
+						stringTrace, ilTrace, mapper)));
 		// Then all variables from the plan
 		ilPlan.getVariables().forEach(var -> 
-				attachILExprToLustreVar(var, stringTrace, ilTrace));
+				attachILExprToLustreVar(var, stringTrace, ilTrace, mapper));
 		// This isn't an IL variable, it's PLEXIL semantics encoded in Lustre. 
 		// If it's wrong, we want to know so that we can debug it, because it'll
 		// mess up other stuff too. 
@@ -398,15 +403,15 @@ public class RegressionTest {
 		
 		// Attach an observer to check these values against the IL sim
 		ILSimulator sim = new ILSimulator(ilPlan, environment);
-		sim.addObserver(new LustreComplianceChecker(ilTrace, macrostepEnded));
+		sim.addObserver(new LustreComplianceChecker(ilTrace, macrostepEnded, mapper));
 		
 		// Here we go!
 		sim.runPlanToCompletion();
 		
 	}
 	
-	static String hackyILExprToLustre(Expression e, ExprType type) {
-		ILExprToLustre il2lustre = new ILExprToLustre();
+	static String hackyILExprToLustre(Expression e, ExprType type, ReverseTranslationMap mapper) {
+		ILExprToLustre il2lustre = new ILExprToLustre(mapper);
 		String lustreString = ILExprToLustre.exprToString(e.accept(il2lustre, type));
 		//TODO: This is a massive hack, there should be a better way to do this
 		return lustreString.replaceFirst("^\\(pre ", "").replaceFirst("\\)$", "");
@@ -414,10 +419,25 @@ public class RegressionTest {
 	
 	private static void attachILExprToLustreVar(Expression e, 
 			Map<String, Signal<Value>> stringTrace,
-			Map<Expression, Signal<Value>> ilTrace) {
-		String lustreString = hackyILExprToLustre(e, e.getType());
+			Map<Expression, Signal<Value>> ilTrace,
+			ReverseTranslationMap mapper) {
+		String lustreString = hackyILExprToLustre(e, e.getType(), mapper);
 		
-		if (stringTrace.containsKey(lustreString)) {
+		if (e instanceof ArrayVar) {
+			// Maybe it's split up by index
+			ArrayVar array = (ArrayVar) e;
+			for (int i = 0; i < array.getMaxSize(); i++) {
+				String indexed = lustreString+"["+i+"]";
+				if (stringTrace.containsKey(indexed)) {
+					ilTrace.put(new ArrayIndexExpr(array, IntegerValue.get(i)), 
+							stringTrace.get(indexed));
+				} else {
+					throw new RuntimeException("Couldn't find array index "+indexed
+							+ " in Lustre trace" +
+							"(the Lustre trace had "+stringTrace.size()+" entries)");
+				}
+			}
+		} else if (stringTrace.containsKey(lustreString)) {
 			ilTrace.put(e, stringTrace.get(lustreString));
 		} else {
 			throw new RuntimeException("Didn't find IL expression in Lustre trace: "

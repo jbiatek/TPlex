@@ -130,11 +130,6 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 	}
 	
 	private static void printParameterized(String tag, String resultTag, FunctionCall call, PValue result, PrintWriter out ) {
-		if (result.isUnknown()) {
-			System.out.println("Warning: tried to write unknown value into a script.");
-			System.out.println("PSX doesn't support this, so it's being commented out. ");
-			out.println("<!--");
-		}
 		String type = toPsxTypeString(result.getType());
 		
 		out.println("<"+tag+" name=\""+call.getName()+"\" type=\""+type+"\">");
@@ -144,26 +139,26 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 		printSimpleTag(resultTag, result, out);
 		out.println("</"+tag+">");
 		
-		if (result.isUnknown()) {
-			out.println("-->");
-		}
 	}
 	
 	private static void printParam(PValue arg, PrintWriter out) {
-		String argStr = arg.toString();
-		if (arg instanceof StringValue) {
-			// Grab the actual string value for these, the toString() method
-			// might include quotes or something
-			argStr = ((StringValue) arg).getString();
-		}
 		out.println("    <Param type=\""+toPsxTypeString(arg.getType())+"\">"
-				+argStr+"</Param>");
+				+toScriptString(arg)+"</Param>");
 	}
 	
 	private static void printSimpleTag(String tagName, PValue arg, PrintWriter out) {
-		out.println("    <"+tagName+">"+arg+"</"+tagName+">");
+		out.println("    <"+tagName+">"+toScriptString(arg)+"</"+tagName+">");
 	}
 
+	private static String toScriptString(PValue value) {
+		if (value.isUnknown()) {
+			return ScriptParser.UNKNOWN_VALUE;
+		} else if (value instanceof StringValue) {
+			return ((StringValue) value).getString();
+		} else {
+			return value.toString();
+		}
+	}
 
 	private static String toPsxTypeString(ExprType t) {
 		switch (t) {

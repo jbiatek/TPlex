@@ -32,6 +32,8 @@ import edu.umn.crisys.plexil.script.ast.StateChange;
 import edu.umn.crisys.plexil.script.ast.UpdateAck;
 
 public class ScriptParser {
+	
+	public static final String UNKNOWN_VALUE = "Plexil_Unknown";
 
     private ScriptParser() {}
 

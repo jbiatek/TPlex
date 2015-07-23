@@ -18,6 +18,7 @@ import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.script.translator.ScriptParser;
 
 public enum ExprType {
 
@@ -189,6 +190,11 @@ public enum ExprType {
      * @return
      */
     public PValue parseValue(String value) {
+    	if (value.equals(ScriptParser.UNKNOWN_VALUE)) {
+    		// This is an unknown value
+    		return unknown.get();
+    	}
+    	
         switch(this) {
         case UNKNOWN:
             return UnknownValue.get();

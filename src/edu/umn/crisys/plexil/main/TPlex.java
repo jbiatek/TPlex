@@ -128,7 +128,7 @@ public class TPlex {
 			"Generate test generation properties to cover Plexil states.")
 	public PlanToLustre.Obligation lustreObligation = Obligation.NONE;
 	
-	@Parameter(names ="--sim-lus-file", description = 
+	@Parameter(names = {"--sim-lus-file", "--sim-lustre-file"}, description = 
 			"Specify a Lustre file to be used when simulation is required. "
 			+ "This is needed for --compliance-plx and for translating .csv "
 			+ "files to PLEXILScript.")
@@ -596,13 +596,16 @@ public class TPlex {
 		Plan ilPlan = optimizeIL(translateToIL(
 				PlxParser.parseFile(compliancePlexilProgram)));
 		
+		ReverseTranslationMap mapper = getStringMapForLus(simLustreFile);
+		
 		for (Entry<Counterexample, PlexilScript> e : lustreResultsTranslated.entrySet()) {
-			doLustreCompliance(lustreProg, ilPlan, e.getKey(), e.getValue());
+			doLustreCompliance(lustreProg, ilPlan, mapper, e.getKey(), e.getValue());
 		}
 		
 	}
 
-	private void doLustreCompliance(Program lustreProg, Plan ilPlan, 
+	private void doLustreCompliance(Program lustreProg, Plan ilPlan,
+			ReverseTranslationMap mapper,
 			Counterexample counterexample, PlexilScript plexilScript 
 			) throws Exception {
 
@@ -612,14 +615,14 @@ public class TPlex {
 		try {
 			RegressionTest.complianceTest(ilPlan, 
 					new JavaPlexilScript(plexilScript), 
-					trace);
+					trace, mapper);
 		} catch (Exception e) {
 			System.err.println("Exception for script "+plexilScript.getScriptName());
 			e.printStackTrace();
 		}
 	}
 	
-	private ReverseTranslationMap getStringMapForLus(File lusFile) throws FileNotFoundException {
+	public static ReverseTranslationMap getStringMapForLus(File lusFile) throws FileNotFoundException {
 		String baseName = lusFile.getName().replaceAll("\\.lus$", "");
 		File stringsFile = new File(lusFile.getParentFile(), 
 				baseName+".strings.txt");
@@ -637,7 +640,7 @@ public class TPlex {
 		throw new FileNotFoundException("Error: Strings file "+stringsFile+" not found.");
 	}
 	
-	private ReverseTranslationMap getStringMapForXml(File lusXmlFile) throws FileNotFoundException {
+	public static ReverseTranslationMap getStringMapForXml(File lusXmlFile) throws FileNotFoundException {
 		File lusFile = new File(lusXmlFile.getParentFile(), 
 				lusXmlFile.getName().replaceAll("\\.xml$", ""));
 		return getStringMapForLus(lusFile);
