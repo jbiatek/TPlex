@@ -330,12 +330,16 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(SimpleVar var, ExprType expectedType) {
-		return pre(id(LustreNamingConventions.getVariableId(var)));
+		return new BinaryExpr(var.getInitialValue().accept(this, var.getType()), 
+				BinaryOp.ARROW, 
+				pre(id(LustreNamingConventions.getVariableId(var))));
 	}
 
 	@Override
 	public Expr visit(ArrayVar array, ExprType expectedType) {
-		return pre(id(LustreNamingConventions.getVariableId(array)));
+		return new BinaryExpr(array.getInitialValue().accept(this, array.getType()), 
+				BinaryOp.ARROW, 
+				pre(id(LustreNamingConventions.getVariableId(array))));
 	}
 
 	@Override

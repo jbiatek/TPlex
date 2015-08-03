@@ -24,6 +24,8 @@ import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
+import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
@@ -411,10 +413,16 @@ public class RegressionTest {
 	}
 	
 	static String hackyILExprToLustre(Expression e, ExprType type, ReverseTranslationMap mapper) {
-		ILExprToLustre il2lustre = new ILExprToLustre(mapper);
-		String lustreString = ILExprToLustre.exprToString(e.accept(il2lustre, type));
-		//TODO: This is a massive hack, there should be a better way to do this
-		return lustreString.replaceFirst("^\\(pre ", "").replaceFirst("\\)$", "");
+		if (e instanceof ILVariable) {
+			return LustreNamingConventions.getVariableId((ILVariable) e);
+		} else if (e instanceof GetNodeStateExpr) {
+			return LustreNamingConventions.getStateMapperId(
+					((GetNodeStateExpr) e).getNodeUid());
+		} else {
+			ILExprToLustre il2lustre = new ILExprToLustre(mapper);
+			return ILExprToLustre.exprToString(e.accept(il2lustre, type));
+		}
+		
 	}
 	
 	private static void attachILExprToLustreVar(Expression e, 

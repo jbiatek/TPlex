@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.il2lustre;
 
+import static jkind.lustre.LustreUtil.id;
+
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -321,8 +323,11 @@ public class PlanToLustre {
 	}
 	
 	public static Expr getPlexilStateExprForNode(NodeUID uid) {
-		return new UnaryExpr(UnaryOp.PRE, new IdExpr(
-				LustreNamingConventions.getStateMapperId(uid)));
+		return new BinaryExpr(
+				id(LustreNamingConventions.getEnumId(NodeState.INACTIVE)),
+				BinaryOp.ARROW,
+				new UnaryExpr(UnaryOp.PRE, new IdExpr(
+				LustreNamingConventions.getStateMapperId(uid))));
 	}
 
 	private void addStateMachineToNode(NodeStateMachine nsm) {
