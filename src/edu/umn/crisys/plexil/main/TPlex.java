@@ -486,6 +486,9 @@ public class TPlex {
 				return false;
 			}
 			
+			ScriptSimulation.DEBUG = true;
+			ScriptedEnvironment.DEBUG = true;
+			JavaPlan.DEBUG = true;
 			for (Entry<String, PlexilScript> scriptEntry: scripts.entrySet()) {
 				LinkedHashMap<Expression,List<PValue>> data = 
 						ScriptSimulation.simulateToCSV(
@@ -500,6 +503,9 @@ public class TPlex {
 					return false;
 				}
 			}
+			ScriptSimulation.DEBUG = false;
+			ScriptedEnvironment.DEBUG = false;
+			JavaPlan.DEBUG = false;
 		}
 		return true;
 	}

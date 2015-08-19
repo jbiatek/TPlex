@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import edu.umn.crisys.util.Pair;
 import jkind.lustre.BinaryExpr;
@@ -13,12 +14,35 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 
+/**
+ * Build an equation using some standard conventions. Add pairs of guards
+ * and values to have this variable take the given value if the guard is true. 
+ * The order used to pass these in is maintained, so you do not have to worry
+ * about, say, checking that a higher priority transition is active as long as
+ * you add them in order. If no guard holds, there is a default assignment
+ * which is unguarded. By default, this is simply pre(id). 
+ * 
+ * <p>You may also choose to specify a second set of guards and values to be
+ * used in the last micro step of the current macro step. This can be used to
+ * have a variable change before the next macro step begins. Since almost every
+ * reference to a variable is actually looking at the pre() value, this has the
+ * effect of changing the variable "between" macro steps. 
+ * 
+ * <p>If any of the "between macro" methods are
+ * used, an entirely separate set of guards and values will be used in that
+ * special case. Again, if no guard holds, the "between macro" unguarded value 
+ * is used, which is again simply pre(). If you never use these methods to add a  
+ * special case, the default rules will be used regardless of the macro step.  
+ * 
+ * @author jbiatek
+ *
+ */
 public class PlexilEquationBuilder {
 
 	private IdExpr id;
 	private Expr init;
 	private Expr unconditionalStandard;
-	private Expr unconditionalMacro;
+	private Optional<Expr> unconditionalMacro;
 	private List<Pair<Expr,Expr>> standardAssignments = new ArrayList<>(); 
 	private List<Pair<Expr,Expr>> betweenMacroAssignments = new ArrayList<>();
 	
@@ -30,7 +54,7 @@ public class PlexilEquationBuilder {
 		this.id = id;
 		this.init = init;
 		this.unconditionalStandard = new UnaryExpr(UnaryOp.PRE, id);
-		this.unconditionalMacro = new UnaryExpr(UnaryOp.PRE, id);
+		this.unconditionalMacro = Optional.empty();
 	}
 
 	/**
@@ -61,7 +85,7 @@ public class PlexilEquationBuilder {
 	 * @param result
 	 */
 	public void setDefaultAssignmentBetweenMacro(Expr result) {
-		unconditionalMacro = result;
+		unconditionalMacro = Optional.of(result);
 	}
 	
 	/**
@@ -76,22 +100,44 @@ public class PlexilEquationBuilder {
 		betweenMacroAssignments.add(new Pair<>(guard, result));
 	}
 	
+	private boolean hasSpecialMacroStepRules() {
+		return (! betweenMacroAssignments.isEmpty()) || unconditionalMacro.isPresent(); 
+	}
+	
 	public Equation buildEquation() {
-		// v = init -> if (macrostep waiting period) then (that chain) else
-		// (standard chain)
+		if (hasSpecialMacroStepRules()) {
+			// v = init -> if (new macrostep) then (that chain) else
+			// (standard chain)
+			
+			// Use pre(id) if they didn't specify anything.
+			Expr realUnconditionalMacro = unconditionalMacro
+					.orElse(new UnaryExpr(UnaryOp.PRE, id));
+			
+			return new Equation(id, 
+					new BinaryExpr(
+					init,
+					BinaryOp.ARROW,
+						new IfThenElseExpr(
+							// If we're beginning a new macro step next time
+							PlanToLustre.isCurrentlyEndOfMacroStep(), 
+							// then do those
+							buildIfElseChain(betweenMacroAssignments, realUnconditionalMacro),
+							// else do the standard assignments
+							buildIfElseChain(standardAssignments, unconditionalStandard)
+						)));
+		} else {
+			// v = init -> if (guard) then v else ... else unguarded
+			// No special macro step rules. Just do the standard ones.
+			return new Equation(id, 
+					new BinaryExpr(
+							init,
+							BinaryOp.ARROW,
+							buildIfElseChain(standardAssignments, 
+									unconditionalStandard)));
+		}
 		
-		return new Equation(id, 
-				new BinaryExpr(
-				init,
-				BinaryOp.ARROW,
-					new IfThenElseExpr(
-						// If we're in the macrostep waiting period
-						PlanToLustre.isInMacrostepWaitingPeriod(), 
-						// then do those
-						buildIfElseChain(betweenMacroAssignments, unconditionalMacro),
-						// else do the standard assignments
-						buildIfElseChain(standardAssignments, unconditionalStandard)
-					)));
+		
+		
 	}
 
 	private Expr buildIfElseChain(List<Pair<Expr, Expr>> guarded,

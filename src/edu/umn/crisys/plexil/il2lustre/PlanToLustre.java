@@ -174,20 +174,16 @@ public class PlanToLustre {
 		
 		
 		String rawInputId = LustreNamingConventions.getRawLookupId(lookup.getName());
+		Expr rawInput = new IdExpr(rawInputId);
 		String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
 		Type type = getLustreType(lookup.getReturnValue().get().getType());
 		nb.addInput(new VarDecl(rawInputId, type));
 		// The "real" lookup can only change between macro steps
 		nb.addLocal(new VarDecl(lookupId, type));
-		// lookup = raw -> if (last macro step ended) then raw else pre(lookup)
-		nb.addEquation(new Equation(new IdExpr(lookupId), 
-				new BinaryExpr(new IdExpr(rawInputId), 
-						BinaryOp.ARROW, 
-						new IfThenElseExpr(
-								new UnaryExpr(UnaryOp.PRE, new IdExpr(LustreNamingConventions.MACRO_STEP_ENDED_ID)), 
-								new IdExpr(rawInputId), 
-								new UnaryExpr(UnaryOp.PRE, new IdExpr(lookupId)))
-				)));
+		PlexilEquationBuilder builder = new PlexilEquationBuilder(lookupId, rawInput);
+		builder.setDefaultAssignmentBetweenMacro(rawInput);
+		
+		nb.addEquation(builder.buildEquation());
 		// Write this down for reverse mapping later
 		reverseMap.addLookupMapping(rawInputId, lookup.getName());
 	}
@@ -374,7 +370,7 @@ public class PlanToLustre {
 					new IdExpr(t.end.getIndex()+""));
 		}
 		
-		// We have the big if, but we need to initialize. 
+		// That should take care of it! Just build this equation.  
 		return state.buildEquation();
 	}
 	
@@ -435,8 +431,8 @@ public class PlanToLustre {
 				new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm)));
 	}
 	
-	public static Expr isInMacrostepWaitingPeriod() {
-		return new UnaryExpr(UnaryOp.PRE, LustreNamingConventions.MACRO_STEP_ENDED);
+	public static Expr isCurrentlyEndOfMacroStep() {
+		return LustreNamingConventions.MACRO_STEP_ENDED;
 	}
 	
 	/**

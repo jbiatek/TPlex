@@ -25,12 +25,12 @@ import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
+import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
@@ -408,7 +408,12 @@ public class RegressionTest {
 		sim.addObserver(new LustreComplianceChecker(ilTrace, macrostepEnded, mapper));
 		
 		// Here we go!
-		sim.runPlanToCompletion();
+		//try { 
+			sim.runPlanToCompletion();
+//		} catch (Exception e) {
+//			System.out.println(ScriptSimulation.toCSV(rawTrace));
+//			throw e;
+//		}
 		
 	}
 	

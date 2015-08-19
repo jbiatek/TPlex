@@ -18,7 +18,8 @@ public class LustreComplianceChecker extends TestOracle {
 	private final Signal<Value> macrostepEnded;
 	private int step = 0;
 	private List<String> errors = new ArrayList<String>();
-	private boolean lustreSaysMacroStepEnded = false;
+	private boolean macroStepShouldBeEnding = false;
+	private String lastEndingReason = "";
 	private ReverseTranslationMap mapper;
 	
 	public LustreComplianceChecker(Map<Expression, Signal<Value>> ilTrace,
@@ -30,32 +31,28 @@ public class LustreComplianceChecker extends TestOracle {
 	}
 
 	@Override
-	public void beforePlanExecution(JavaPlan plan) {
-		// Check the initial state of everything
-		checkThisStep(((ILSimulator) plan));
-	}
-
-	@Override
-	public void checkEndOfMicroStepAfterCommit(JavaPlan plan) {
-		// Check everything now that it has been committed. 
-		checkThisStep(((ILSimulator) plan));
-	}
-
-	private void checkThisStep(ILSimulator sim) {
+	public void endOfMicroStepBeforeCommit(JavaPlan plan) {
+		// Check everything when the micro step ends, but just before
+		// those changes actually become visible. This way, we will see
+		// the initial state, and since inputs change just before
+		// macro steps begin, we'll see the new input values correctly.
+		ILSimulator sim = (ILSimulator) plan;
 		System.out.println("Checking Lustre step "+step);
-		if (lustreSaysMacroStepEnded) {
-			// Oops, this didn't get cleared. We didn't see a macro step
-			// ending, Lustre was wrong.
-			errors.add("At step "+(step)+", Lustre said the macro step"
-					+ " would end, but it didn't.");
-		} else if (macrostepEnded.getValue(step)
-				.toString().equalsIgnoreCase("true")) {
-			// This step should be the last one in the macro step. The
-			// macro step method should get called and it'll turn this 
-			// back off. 
-			lustreSaysMacroStepEnded = true;
+		boolean lustreMacroStepEnd = macrostepEnded.getValue(step)
+				.toString().equalsIgnoreCase("true");
+		if (macroStepShouldBeEnding) {
+			if ( ! lustreMacroStepEnd) {
+				// Uh oh. Lustre doesn't think that this macro step is ending.
+				errors.add("Lustre didn't think the macro step was ending, "
+						+ "but the IL ended because "+lastEndingReason);
+			} else {
+				// They both agree. Clear the flag and move on.
+				macroStepShouldBeEnding = false;
+				lastEndingReason = "";
+			}
+		} else if (lustreMacroStepEnd) {
+			errors.add("Lustre thought the macro step was ending, but IL didn't.");
 		}
-
 		
 		for (Expression expr : ilTrace.keySet()) {
 			checkValue(expr, sim);
@@ -66,21 +63,11 @@ public class LustreComplianceChecker extends TestOracle {
 		} else {
 			step++;
 		}
-		
 	}
 
 	private void endOfMacroStep(String reason) {
-		if ( ! lustreSaysMacroStepEnded) {
-			// Ooh, Lustre didn't see this coming. That's not right.
-			errors.add("At step "+step+", Lustre said the macro step"
-					+ " wasn't over, but it was because "+reason);
-		} else {
-			lustreSaysMacroStepEnded = false;
-			// For this entire step in Lustre nothing is supposed
-			// to change except for inputs. We don't really care
-			// what the values are until the next step. 
-			step++;
-		}
+		macroStepShouldBeEnding = true;
+		lastEndingReason = reason;
 	}
 
 	private void checkValue(Expression e, ILSimulator sim) {
@@ -93,19 +80,24 @@ public class LustreComplianceChecker extends TestOracle {
 				! expectedStr.equals(actual.toString())) {
 			//This is an error, give some info back
 			String history = " (history: ";
+			String macroStep = " (macrostep end: ";
 			for (int i = Math.max(0, step-2); i < step+3; i++) {
 				if (i == step) {
 					history += "["+ilTrace.get(e).getValue(i)+"] ";
+					macroStep += "["+macrostepEnded.getValue(i)+"] ";
 				} else {
 					history += ilTrace.get(e).getValue(i)+" ";
+					macroStep += macrostepEnded.getValue(i)+" ";
 				}
 			}
 			history += ")";
+			macroStep += ")";
 			
 			errors.add("Values for "+e+" don't match: expected "+expected+", "
 					+"which should be "+expectedStr
 					+" in Lustre, but instead saw "+actual
-					+ history);
+					+ history
+					+ macroStep);
 		}
 	}
 

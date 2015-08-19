@@ -63,18 +63,19 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	
 	@Override
 	public ArrayAccessExpr visit(ArrayIndexExpr array, ExprType expectedType) {
+		// Arrays are static right now, otherwise this would need a pre(). 
 		return new ArrayAccessExpr(array.getArray().accept(this, null), 
 				array.getIndex().accept(this, null));
 	}
 
 	@Override
 	public Expr visit(LookupNowExpr lookup, ExprType expectedType) {
-		return id(LustreNamingConventions.getInputName(lookup));
+		return pre(id(LustreNamingConventions.getInputName(lookup)));
 	}
 
 	@Override
 	public Expr visit(LookupOnChangeExpr lookup, ExprType expectedType) {
-		return id(LustreNamingConventions.getInputName(lookup));
+		return pre(id(LustreNamingConventions.getInputName(lookup)));
 	}
 
 	private static Expr toPBoolean(Expr e) {

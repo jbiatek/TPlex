@@ -62,8 +62,6 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 				.orElseThrow(() -> new RuntimeException("No state machines?!"));
 		// During a step, that's what should end a macro step if nothing else does
 		macroStepIsEnded.setDefaultAssignment(quiescenceReached);
-		// Between steps, the macro step variable should turn itself off
-		macroStepIsEnded.setDefaultAssignmentBetweenMacro(LustreUtil.FALSE);
 		
 		// Now we find each action, and pass along the condition in which it
 		// should fire. 
@@ -156,6 +154,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		 */
 		//TODO: Check with Plexil team and see if this is acceptable.
 		NodeUID node = cmd.getHandle().getNodeUID();
+		
 		NativeEqual executing = new NativeEqual(NodeState.EXECUTING, new GetNodeStateExpr(node));
 		NativeEqual finishing = new NativeEqual(NodeState.FINISHING, new GetNodeStateExpr(node));
 		NativeEqual failing = new NativeEqual(NodeState.FAILING, new GetNodeStateExpr(node));
@@ -165,7 +164,11 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		
 		// If we're in any of those states between macro steps, take from the
 		// raw input. 
-		varNextValue.get(cmd.getHandle()).addAssignmentBetweenMacro(guard, 
+		varNextValue.get(cmd.getHandle()).addAssignmentBetweenMacro(
+				// If we *just* started executing, the "executing" condition will be false
+				// because the transition won't be visible yet. So we also have to
+				// include the action condition to cover this missing case. 
+				new BinaryExpr(actionCondition, BinaryOp.OR, guard), 
 				new IdExpr(rawId));
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
