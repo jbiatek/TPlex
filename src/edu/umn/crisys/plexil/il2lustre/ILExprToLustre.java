@@ -70,12 +70,23 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(LookupNowExpr lookup, ExprType expectedType) {
-		return pre(id(LustreNamingConventions.getInputName(lookup)));
+		// Unguarded pre protection: The initial value for lookups
+		// is the raw input.
+		String rawInputId = LustreNamingConventions.getRawLookupId(
+				lookup.getLookupNameAsString());
+		
+		return new BinaryExpr(id(rawInputId), BinaryOp.ARROW, 
+				pre(id(LustreNamingConventions.getInputName(lookup))));
 	}
 
 	@Override
 	public Expr visit(LookupOnChangeExpr lookup, ExprType expectedType) {
-		return pre(id(LustreNamingConventions.getInputName(lookup)));
+		String rawInputId = LustreNamingConventions.getRawLookupId(
+				lookup.getLookupNameAsString());
+		
+		
+		return new BinaryExpr(id(rawInputId), BinaryOp.ARROW, 
+				pre(id(LustreNamingConventions.getInputName(lookup))));
 	}
 
 	private static Expr toPBoolean(Expr e) {
