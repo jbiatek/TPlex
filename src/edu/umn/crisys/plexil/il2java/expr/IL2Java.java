@@ -10,6 +10,7 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JOp;
 
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.NamedExpression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
@@ -349,6 +350,12 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 	@Override
 	public JExpression visit(NodeState state, JCodeModel cm) {
 		return ILExprToJava.PValueToJava(state, cm);
+	}
+
+	@Override
+	public JExpression visit(NamedExpression named, JCodeModel cm) {
+		// Just inline the whole thing. 
+		return named.getExpression().accept(this, cm);
 	}
     
 }

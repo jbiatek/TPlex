@@ -123,6 +123,9 @@ public interface ExprVisitor<P, R> {
 
     
     // IL expressions
+    public default R visit(NamedExpression named, P param) {
+    	return visit((Expression) named, param);
+    }
 	public default R visit(GetNodeStateExpr state, P param) {
 		return visit((Expression)state, param);
 	}

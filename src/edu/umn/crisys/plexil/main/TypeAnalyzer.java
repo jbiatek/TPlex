@@ -17,6 +17,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.NamedExpression;
 import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
@@ -267,6 +268,12 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 	}
 
 	
+	@Override
+	public Void visit(NamedExpression named, ExprType currentType) {
+		// Just pass through
+		named.getExpression().accept(this, currentType);
+		return null;
+	}
 
 
 	@Override
@@ -289,8 +296,7 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 		}
 		return null;
 	}
-	
-	
+
 	
 	/*
 	 * All the rest of this is boring. It's either variables, or things that 
@@ -404,5 +410,6 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 		// Nothing to do
 		return null;
 	}
+
 
 }
