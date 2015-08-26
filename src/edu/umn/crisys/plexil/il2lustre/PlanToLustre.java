@@ -41,7 +41,7 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 public class PlanToLustre {
 
 	public static enum Obligation {
-		NONE, EXECUTE
+		NONE, EXECUTE, INCREMENTAL
 	}
 	
 	private Plan p;
@@ -121,7 +121,8 @@ public class PlanToLustre {
 				nb.addProperty(id);
 
 			});
-			
+		case INCREMENTAL:
+			IncrementalConstraintGenerator.go(p, nb, this);
 			
 		}
 		
