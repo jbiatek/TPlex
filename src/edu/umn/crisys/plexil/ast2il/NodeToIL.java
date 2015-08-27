@@ -28,6 +28,7 @@ import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.PlexilExprDescription;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -224,6 +225,25 @@ public class NodeToIL {
             ret.add(toIL(e));
         }
         return ret;
+    }
+    
+    public void translateConditions(Map<PlexilExprDescription, Expression> map) {
+    	map.put(PlexilExprDescription.START_CONDITION, 
+    			toIL(myNode.getStartCondition()));
+    	map.put(PlexilExprDescription.SKIP_CONDITION, 
+    			toIL(myNode.getSkipCondition()));
+    	map.put(PlexilExprDescription.PRE_CONDITION, 
+    			toIL(myNode.getPreCondition()));
+    	map.put(PlexilExprDescription.INVARIANT_CONDITION, 
+    			toIL(myNode.getInvariantCondition()));
+    	map.put(PlexilExprDescription.REPEAT_CONDITION, 
+    			toIL(myNode.getRepeatCondition()));
+    	map.put(PlexilExprDescription.POST_CONDITION, 
+    			toIL(myNode.getPostCondition()));
+    	map.put(PlexilExprDescription.END_CONDITION, 
+    			toIL(myNode.getEndCondition()));
+    	map.put(PlexilExprDescription.EXIT_CONDITION, 
+    			toIL(myNode.getExitCondition()));
     }
     
     public int getPriority() {

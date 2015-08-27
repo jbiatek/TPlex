@@ -26,6 +26,7 @@ public class OriginalHierarchy {
 
 	private NodeUID uid;
 	private Map<String, Expression> variables = new HashMap<>();
+	private Map<PlexilExprDescription, Expression> conditions = new HashMap<>();
 	private List<OriginalHierarchy> children = new ArrayList<>();
 	private Optional<LibraryVar> libraryChild = Optional.empty();
 	
@@ -41,6 +42,7 @@ public class OriginalHierarchy {
 		if (translator.hasLibraryHandle()) {
 			libraryChild = Optional.of(translator.getLibraryHandle());
 		}
+		translator.translateConditions(conditions);
 		for (NodeToIL child : translator.getChildren()) {
 			children.add(new OriginalHierarchy(child));
 		}
@@ -77,6 +79,10 @@ public class OriginalHierarchy {
 	 */
 	public Map<String, Expression> getVariables() {
 		return variables;
+	}
+	
+	public Map<PlexilExprDescription, Expression> getConditions() {
+		return conditions;
 	}
 
 	public List<OriginalHierarchy> getChildren() {
