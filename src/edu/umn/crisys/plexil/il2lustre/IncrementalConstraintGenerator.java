@@ -35,25 +35,32 @@ public class IncrementalConstraintGenerator {
 			throw new RuntimeException("Couldn't find If 55");
 		}
 		
+		// The root node is going to execute no matter what. No reason to
+		// search for that and concretize things prematurely.
+		parentChain.remove(0);
+		
 		List<Expr> failureTrackers = new ArrayList<>();
 		
 		for (OriginalHierarchy node : parentChain) {
 			NodeUID uid = node.getUID();
 			String id = LustreNamingConventions.getStateMapperId(uid)+"_executes";
+			// From now on, make sure it doesn't fail
+			addFailureTracker(node, p2l, nb);
+			failureTrackers.add(not(getFailureTrackerId(node)));
+			
 			List<Expr> allConditions = new ArrayList<>();
 			// This state could never be executing, right? Prove me wrong!
 			allConditions.add(nodeIsExecuting(uid, p2l));
-			// Also, make sure that our parents don't fail along the way.
+			// Also, make sure that nothing fails along the way.
 			allConditions.addAll(failureTrackers);
+			// And that we're on a macro step boundary.
+			allConditions.add(LustreNamingConventions.MACRO_STEP_ENDED);
 			
 			nb.addLocal(new VarDecl(id, NamedType.BOOL));
 			nb.addEquation(new Equation(new IdExpr(id), 
 					not(and(allConditions))));
 			nb.addProperty(id);
 			
-			// From now on, make sure it doesn't fail
-			addFailureTracker(node, p2l, nb);
-			failureTrackers.add(not(getFailureTrackerId(node)));
 		}
 		
 	}
@@ -81,8 +88,15 @@ public class IncrementalConstraintGenerator {
 				node.getConditions().get(
 						PlexilExprDescription.EXIT_CONDITION), 
 				Condition.TRUE);
+		PlexilExprToNative endGuard = new PlexilExprToNative(
+				node.getConditions().get(
+						PlexilExprDescription.END_CONDITION),
+				Condition.TRUE);
 		
-		Expr failure = or(p2l.toLustre(invFailGuard), p2l.toLustre(exitGuard));
+		
+		Expr failure = or(or(p2l.toLustre(invFailGuard),
+				p2l.toLustre(exitGuard)), 
+				p2l.toLustre(endGuard));
 		
 		Expr checkFailure = ite(
 				// Check for invariant or exit fail
