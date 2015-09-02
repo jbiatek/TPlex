@@ -1,7 +1,9 @@
 package edu.umn.crisys.plexil.il;
 
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -9,6 +11,7 @@ import edu.umn.crisys.plexil.NameUtils;
 
 public class NodeUID {
     
+	private Optional<NodeUID> parent;
     private String shortName;
     private String uniquePath;
     private Set<NodeUID> childNames = new HashSet<NodeUID>();
@@ -42,6 +45,7 @@ public class NodeUID {
      * @param siblings
      */
     private void construct(Optional<String> localName, NodeUID parentPath) {
+    	parent = Optional.ofNullable(parentPath);
         if (localName.isPresent()) {
         	this.shortName = localName.get();
         } else {
@@ -69,7 +73,56 @@ public class NodeUID {
         
     }
     
-    @Override
+    public void shortenUniqueNames() {
+    	if (parent.isPresent()) {
+    		throw new RuntimeException("Call this on the root UID only!");
+    	}
+    	Map<String,NodeUID> takenNames = new HashMap<>();
+    	NodeUID.shorten(this, takenNames);
+    	// Set each key as the unique path.
+    	takenNames.entrySet().forEach(e -> e.getValue().uniquePath = e.getKey());
+    }
+    
+    private static void shorten(NodeUID node, Map<String, NodeUID> taken) {
+    	String desired = getDesired(node, 0);
+    	if (taken.containsKey(desired)) {
+    		// Fight! 
+    		NodeUID other = taken.remove(desired);
+    		String myNewName = desired;
+    		String otherNewName = desired;
+    		int numParents = 1;
+    		while (myNewName.equals(otherNewName)) {
+    			myNewName = getDesired(node, numParents);
+    			otherNewName = getDesired(other, numParents);
+    			numParents++;
+    		}
+    		// Eventually they must be different. 
+    		taken.put(myNewName, node);
+    		taken.put(otherNewName, other);
+    	} else {
+    		// No fight necessary.
+    		taken.put(desired, node);
+    	}
+    	// Repeat for all children. 
+    	node.childNames.forEach((uid) -> shorten(uid, taken));
+	}
+    
+    private static String getDesired(NodeUID name, int numParents) {
+    	String unclean = name.shortName;
+    	Optional<NodeUID> parent = name.parent;
+    	
+    	for (int i = 0; i < numParents; i++) {
+    		if (parent.isPresent()) {
+    			unclean = parent.get().shortName + "/" + unclean;
+    			parent = parent.get().parent;
+    		} else {
+    			break;
+    		}
+    	}
+    	return NameUtils.clean(unclean);
+    }
+
+	@Override
     public String toString() {
         return uniquePath;
     }

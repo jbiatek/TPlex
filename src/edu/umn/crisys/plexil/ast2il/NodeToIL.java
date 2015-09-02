@@ -93,7 +93,8 @@ public class NodeToIL {
         checkForChildren();
         
         if ( ! this.parent.isPresent()) {
-            // Okay, now we can do this.
+            // Okay, now we can do this stuff.
+        	myUid.shortenUniqueNames();
             parentsAreReady();
         }
     }
