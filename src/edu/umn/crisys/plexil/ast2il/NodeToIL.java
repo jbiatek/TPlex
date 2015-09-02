@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
@@ -316,22 +317,41 @@ public class NodeToIL {
         return tpt;
     }
     
+    private Expression name(Expression e, PlexilExprDescription desc) {
+    	return new NamedCondition(e, myUid, desc);
+    }
+    
     Expression getThisOrAncestorsExits() {
-        Expression myExit = toIL(myNode.getExitCondition());
-        return parent.map((parent) -> Operation.or(myExit, parent.getThisOrAncestorsExits()))
-        		.orElse(Operation.or(myExit, new RootAncestorExitExpr()));
+        Expression myExit = name(toIL(myNode.getExitCondition()),
+        		PlexilExprDescription.EXIT_CONDITION);
+        Expression parentExit = 
+        		parent.map(p -> name(p.getThisOrAncestorsExits(),
+        				PlexilExprDescription.ANCESTOR_EXITS_DISJOINED))
+        			.orElse(new RootAncestorExitExpr());
+        
+        return Operation.or(myExit, parentExit);
     }
 
     Expression getThisOrAncestorsEnds() {
-        Expression myEnd = toIL(myNode.getEndCondition());
-        return parent.map((parent) -> Operation.or(myEnd, parent.getThisOrAncestorsEnds()))
-        		.orElse(Operation.or(myEnd, new RootAncestorEndExpr()));
+        Expression myEnd = name(toIL(myNode.getEndCondition()),
+        		PlexilExprDescription.END_CONDITION);
+        Expression parentEnd = 
+        		parent.map(p -> name(p.getThisOrAncestorsEnds(),
+        				PlexilExprDescription.ANCESTOR_ENDS_DISJOINED))
+        			.orElse(new RootAncestorEndExpr());
+        
+        return Operation.or(myEnd, parentEnd);
     }
 
     Expression getThisAndAncestorsInvariants() {
-        Expression myInv = toIL(myNode.getInvariantCondition());
-        return parent.map((parent) -> Operation.and(myInv, parent.getThisAndAncestorsInvariants()))
-        		.orElse(Operation.and(myInv, new RootAncestorInvariantExpr()));
+        Expression myInv = name(toIL(myNode.getInvariantCondition()),
+        		PlexilExprDescription.INVARIANT_CONDITION);
+        Expression parentInv = 
+        		parent.map(p -> name(p.getThisAndAncestorsInvariants(),
+        				PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED))
+        			.orElse(new RootAncestorInvariantExpr());
+        
+        return Operation.and(myInv, parentInv);
     }
 
     public NodeUID getUID() {

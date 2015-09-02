@@ -4,7 +4,6 @@ import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.ArrayType;
@@ -171,7 +170,7 @@ public class PlanToLustre {
 				// Don't repeat for this one again
 				alreadyDone.add(named);
 				// We don't actually want to change the IL expression though. 
-				return named;
+				return super.visit(named, param);
 			}
 			
 		}, null);
