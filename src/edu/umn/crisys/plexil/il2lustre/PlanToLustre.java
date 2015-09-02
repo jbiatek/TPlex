@@ -3,6 +3,8 @@ package edu.umn.crisys.plexil.il2lustre;
 import static jkind.lustre.LustreUtil.id;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.ArrayType;
@@ -27,6 +29,8 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.NamedCondition;
+import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -76,6 +80,7 @@ public class PlanToLustre {
 	
 	public Program toLustre(Obligation obilgations) {
 		
+		uninlineNamedExpressions();
 		
 		// Add in declared lookups
 		for (LookupDecl lookup : p.getStateDecls()) {
@@ -146,6 +151,34 @@ public class PlanToLustre {
 	}
 	
 	
+	private void uninlineNamedExpressions() {
+		Set<NamedCondition> alreadyDone = new HashSet<>();
+		// Read all named expressions and create variables for them. 
+		p.modifyAllExpressions(new ILExprModifier<Void>() {
+
+			@Override
+			public Expression visit(NamedCondition named, Void param) {
+				if (alreadyDone.contains(named)) {
+					return named;
+				}
+				// Get proper name
+				String id = LustreNamingConventions.getNamedConditionId(named);
+				// Add as a local variable
+				nb.addLocal(new VarDecl(id, LustreNamingConventions.PBOOLEAN));
+				// Translate the equation
+				nb.addEquation(new Equation(new IdExpr(id), 
+						toLustre(named.getExpression(), ExprType.BOOLEAN)));
+				// Don't repeat for this one again
+				alreadyDone.add(named);
+				// We don't actually want to change the IL expression though. 
+				return named;
+			}
+			
+		}, null);
+		
+		
+	}
+
 	/**
 	 * Adds an input to the NodeBuilder for this command handle. This
 	 * is *raw* input, so it is completely unconstrained. ActionsToLustre, the

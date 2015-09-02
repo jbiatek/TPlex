@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedExpression;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
@@ -102,7 +102,7 @@ implements NativeExprVisitor<Param, NativeExpr> {
 	}
 
 	@Override
-	public Expression visit(NamedExpression named, Param param) {
+	public Expression visit(NamedCondition named, Param param) {
 		return visitComposite(named, param);
 	}
 	

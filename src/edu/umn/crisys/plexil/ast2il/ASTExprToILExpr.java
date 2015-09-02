@@ -14,7 +14,7 @@ import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.NamedExpression;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
@@ -247,7 +247,7 @@ public class ASTExprToILExpr implements ExprVisitor<Void, Expression> {
 	}
 
 	@Override
-	public Expression visit(NamedExpression named, Void param) {
+	public Expression visit(NamedCondition named, Void param) {
 		return visitILExpr(named);
 	}
 

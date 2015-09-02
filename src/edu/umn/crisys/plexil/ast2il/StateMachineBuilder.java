@@ -7,7 +7,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedExpression;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
@@ -45,7 +45,7 @@ public class StateMachineBuilder {
 
 	private NodeToIL translator;
 	private Node astNode;
-    private Map<PlexilExprDescription, NamedExpression> ilExprCache = new HashMap<>();
+    private Map<PlexilExprDescription, NamedCondition> ilExprCache = new HashMap<>();
 	private Map<PlexilExprDescription, NativeExpr> nativeExprCache = new HashMap<>();
 	    
 	
@@ -360,7 +360,7 @@ public class StateMachineBuilder {
      */
     
     private void cacheNamedExpression(PlexilExprDescription desc, Expression ilExpr) {
-    	ilExprCache.put(desc, new NamedExpression(ilExpr, translator.getUID(), desc));
+    	ilExprCache.put(desc, new NamedCondition(ilExpr, translator.getUID(), desc));
     }
     
     private NativeExpr startCondition(Condition cond) {

@@ -17,7 +17,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.NamedExpression;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
@@ -269,7 +269,7 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 
 	
 	@Override
-	public Void visit(NamedExpression named, ExprType currentType) {
+	public Void visit(NamedCondition named, ExprType currentType) {
 		// Just pass through
 		named.getExpression().accept(this, currentType);
 		return null;

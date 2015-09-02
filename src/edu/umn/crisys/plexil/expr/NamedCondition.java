@@ -8,15 +8,15 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
-public class NamedExpression extends ExpressionBase {
+public class NamedCondition extends ExpressionBase {
 
 	private NodeUID uid;
 	private PlexilExprDescription description;
 	private Expression theExpr;
 	
-	public NamedExpression(Expression e, NodeUID uid, 
+	public NamedCondition(Expression e, NodeUID uid, 
 			PlexilExprDescription desc) {
-		super(e.getType());
+		super(ExprType.BOOLEAN);
 		this.theExpr = e;
 		this.uid = uid;
 		this.description = desc;
@@ -51,12 +51,41 @@ public class NamedExpression extends ExpressionBase {
 
 	@Override
 	public Expression getCloneWithArgs(List<Expression> args) {
-		return new NamedExpression(args.get(0), uid, description);
+		return new NamedCondition(args.get(0), uid, description);
 	}
 
 	@Override
 	public Optional<PValue> eval() {
 		return theExpr.eval();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((uid == null) ? 0 : uid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NamedCondition other = (NamedCondition) obj;
+		if (description != other.description)
+			return false;
+		if (uid == null) {
+			if (other.uid != null)
+				return false;
+		} else if (!uid.equals(other.uid))
+			return false;
+		return true;
 	}
 
 }

@@ -9,6 +9,7 @@ import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -160,5 +161,10 @@ public class LustreNamingConventions {
 	public static String getStateMapperId(NodeUID uid) {
 		return NameUtils.clean(uid.toString()+"__state");
 	}
-
+	
+	public static String getNamedConditionId(NamedCondition named) {
+		return NameUtils.clean(named.getUid()+"/"
+				+named.getDescription().toString().toLowerCase());
+	}
+	
 }
