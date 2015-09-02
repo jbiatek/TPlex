@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.NamedExpression;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
@@ -44,7 +45,7 @@ public class StateMachineBuilder {
 
 	private NodeToIL translator;
 	private Node astNode;
-    private Map<PlexilExprDescription, Expression> ilExprCache = new HashMap<>();
+    private Map<PlexilExprDescription, NamedExpression> ilExprCache = new HashMap<>();
 	private Map<PlexilExprDescription, NativeExpr> nativeExprCache = new HashMap<>();
 	    
 	
@@ -358,9 +359,13 @@ public class StateMachineBuilder {
      * All the various guards that are used in the diagrams ------------------
      */
     
+    private void cacheNamedExpression(PlexilExprDescription desc, Expression ilExpr) {
+    	ilExprCache.put(desc, new NamedExpression(ilExpr, translator.getUID(), desc));
+    }
+    
     private NativeExpr startCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.START_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.START_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.START_CONDITION, 
                     translator.toIL(astNode.getStartCondition()));
         }
         return makeGuard(PlexilExprDescription.START_CONDITION, cond);
@@ -368,7 +373,7 @@ public class StateMachineBuilder {
     
     private NativeExpr skipCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.SKIP_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.SKIP_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.SKIP_CONDITION, 
                     translator.toIL(astNode.getSkipCondition()));
         }
         return makeGuard(PlexilExprDescription.SKIP_CONDITION, cond);
@@ -376,7 +381,7 @@ public class StateMachineBuilder {
     
     private NativeExpr preCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.PRE_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.PRE_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.PRE_CONDITION, 
                     translator.toIL(astNode.getPreCondition()));
         }
         return makeGuard(PlexilExprDescription.PRE_CONDITION, cond);
@@ -384,7 +389,7 @@ public class StateMachineBuilder {
     
     private NativeExpr invariantCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.INVARIANT_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.INVARIANT_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.INVARIANT_CONDITION, 
                     translator.toIL(astNode.getInvariantCondition()));
         }
         return makeGuard(PlexilExprDescription.INVARIANT_CONDITION, cond);
@@ -392,7 +397,7 @@ public class StateMachineBuilder {
     
     private NativeExpr repeatCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.REPEAT_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.REPEAT_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.REPEAT_CONDITION, 
                     translator.toIL(astNode.getRepeatCondition()));
         }
         return makeGuard(PlexilExprDescription.REPEAT_CONDITION, cond);
@@ -400,7 +405,7 @@ public class StateMachineBuilder {
     
     private NativeExpr postCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.POST_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.POST_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.POST_CONDITION, 
                     translator.toIL(astNode.getPostCondition()));
         }
         return makeGuard(PlexilExprDescription.POST_CONDITION, cond);
@@ -443,14 +448,14 @@ public class StateMachineBuilder {
         		endCondition = translator.toIL(astNode.getEndCondition());
         	}
         	
-            ilExprCache.put(PlexilExprDescription.END_CONDITION, endCondition);
+            cacheNamedExpression(PlexilExprDescription.END_CONDITION, endCondition);
         }
         return makeGuard(PlexilExprDescription.END_CONDITION, cond);
     }
     
     private NativeExpr exitCondition(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.EXIT_CONDITION)) {
-            ilExprCache.put(PlexilExprDescription.EXIT_CONDITION, 
+            cacheNamedExpression(PlexilExprDescription.EXIT_CONDITION, 
                     translator.toIL(astNode.getExitCondition()));
         }
         return makeGuard(PlexilExprDescription.EXIT_CONDITION, cond);
@@ -458,7 +463,7 @@ public class StateMachineBuilder {
     
     private NativeExpr ancestorEndsDisjoined(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED)) {
-        	ilExprCache.put(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED, 
+        	cacheNamedExpression(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED, 
                 	translator.getParent().map(NodeToIL::getThisOrAncestorsEnds)
             		.orElse(new RootAncestorEndExpr()));
         }
@@ -467,7 +472,7 @@ public class StateMachineBuilder {
     
     private NativeExpr ancestorExitsDisjoined(Condition cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED)) {
-        	ilExprCache.put(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED, 
+        	cacheNamedExpression(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED, 
         			translator.getParent().map(NodeToIL::getThisOrAncestorsExits)
         			.orElse(new RootAncestorExitExpr()));
         }
@@ -476,7 +481,7 @@ public class StateMachineBuilder {
     
     private NativeExpr ancestorInvariantsConjoined(Condition cond) {
     	if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED)) {
-    		ilExprCache.put(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED, 
+    		cacheNamedExpression(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED, 
     				translator.getParent().map(NodeToIL::getThisAndAncestorsInvariants)
     				.orElse(new RootAncestorInvariantExpr()));
     	}

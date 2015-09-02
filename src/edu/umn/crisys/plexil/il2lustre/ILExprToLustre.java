@@ -16,6 +16,7 @@ import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.NamedExpression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
@@ -59,6 +60,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	public ILExprToLustre() { }
 	public ILExprToLustre(ReverseTranslationMap mapper) {
 		this.mapper = mapper;
+	}
+	
+	@Override
+	public Expr visit(NamedExpression named, ExprType expected) {
+		// TODO: Don't inline, that's the whole point!
+		return named.getExpression().accept(this, expected);
 	}
 	
 	@Override
