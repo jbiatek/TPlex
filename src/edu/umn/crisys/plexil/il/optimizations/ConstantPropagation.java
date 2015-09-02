@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
@@ -54,16 +55,42 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 
 	@Override
 	public NativeExpr visitPlexilExprToNative(PlexilExprToNative pen, Void param) {
-		Optional<PValue> eval = pen.getPlexilExpr().eval();
+		Expression optimized = pen.getPlexilExpr().accept(this);
+		Optional<PValue> eval = optimized.eval();
 		if (eval.isPresent()) {
 			return pen.getCondition().checkValue(eval.get()) ? 
 					NativeConstant.TRUE : NativeConstant.FALSE;
 		} else {
-			return pen;
+			return new PlexilExprToNative(optimized, pen.getCondition());
 		}
 	}
 	
 	
+	
+	
+	@Override
+	public Expression visit(Expression e, Void param) {
+		Optional<PValue> eval = e.eval();
+		if (eval.isPresent()) {
+			return eval.get();
+		} else {
+			return visitComposite(e, param);
+		}
+	}
+	
+	@Override
+	public Expression visit(NamedCondition named, Void param) {
+		Expression optimized = visit((Expression) named, param);
+		if (optimized instanceof NamedCondition) {
+			// If it's not an operator, just use it directly instead. 
+			NamedCondition newNamed = (NamedCondition) optimized;
+			if ( ! (newNamed.getExpression() instanceof Operation)) {
+				return newNamed.getExpression();
+			}
+		}
+		return optimized;
+	}
+
 	@Override
 	public Expression visit(Operation op, Void param) {
 		Optional<PValue> eval = op.eval();
@@ -77,10 +104,8 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 		switch(op.getOperator()) {
 		case AND: identity = BooleanValue.get(true); break;
 		case OR: identity = BooleanValue.get(false); break;
-		case ADD: 
-		case SUB: identity = IntegerValue.get(0); break;
-		case MUL:
-		case DIV: identity = IntegerValue.get(1); break;
+		case ADD: identity = IntegerValue.get(0); break;
+		case MUL: identity = IntegerValue.get(1); break;
 		default: identity = null;
 		}
 		
@@ -102,9 +127,15 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 						return true;
 					}
 				})
-				// They should propagate constants too
+				// Whatever is left should propagate constants too
 				.map((arg) -> arg.accept(this, null))
 				.collect(Collectors.toList());
+		if (newArgs.size() == 1) {
+			// No operation necessary. Just use the last remaining 
+			// subexpression.
+			return newArgs.get(0);
+		}
+		
 		return op.getCloneWithArgs(newArgs);
 	}
 
