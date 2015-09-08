@@ -25,12 +25,23 @@ import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 public class OriginalHierarchy {
 
 	private NodeUID uid;
+	private Optional<OriginalHierarchy> parent;
 	private Map<String, Expression> variables = new HashMap<>();
 	private Map<PlexilExprDescription, Expression> conditions = new HashMap<>();
 	private List<OriginalHierarchy> children = new ArrayList<>();
 	private Optional<LibraryVar> libraryChild = Optional.empty();
 	
-	public OriginalHierarchy(NodeToIL translator) {
+	public OriginalHierarchy(NodeToIL root) {
+		this(root, Optional.empty());
+	}
+	
+	public OriginalHierarchy(NodeToIL translator, Optional<OriginalHierarchy> parent) {
+		if (parent.isPresent() != translator.getParent().isPresent()) {
+			throw new RuntimeException("Node and translator parents don't match: presence is "
+					+ parent.isPresent() +" versus "+translator.getParent().isPresent());
+		}
+		
+		this.parent = parent;
 		this.uid = translator.getUID();
 		// Add state, since that isn't actually a variable
 		variables.put(".state", translator.getState());
@@ -44,13 +55,17 @@ public class OriginalHierarchy {
 		}
 		translator.translateConditions(conditions);
 		for (NodeToIL child : translator.getChildren()) {
-			children.add(new OriginalHierarchy(child));
+			children.add(new OriginalHierarchy(child, Optional.of(this)));
 		}
 		
 	}
 
 	public NodeUID getUID() {
 		return uid;
+	}
+	
+	public Optional<OriginalHierarchy> getParent() {
+		return parent;
 	}
 
 	public void removeDeletedVariables(Plan p) {
