@@ -11,8 +11,6 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
@@ -51,10 +49,6 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		return pp.toString();
 	}
 	
-	private static Expr pre(Expr arg) {
-		return new UnaryExpr(UnaryOp.PRE, arg);
-	}
-
 	private ReverseTranslationMap mapper;
 
 	public ILExprToLustre() { }
@@ -77,23 +71,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(LookupNowExpr lookup, ExprType expectedType) {
-		// Unguarded pre protection: The initial value for lookups
-		// is the raw input.
-		String rawInputId = LustreNamingConventions.getRawLookupId(
-				lookup.getLookupNameAsString());
-		
-		return new BinaryExpr(id(rawInputId), BinaryOp.ARROW, 
-				pre(id(LustreNamingConventions.getInputName(lookup))));
+		return id(LustreNamingConventions.getInputName(lookup));
 	}
 
 	@Override
 	public Expr visit(LookupOnChangeExpr lookup, ExprType expectedType) {
-		String rawInputId = LustreNamingConventions.getRawLookupId(
-				lookup.getLookupNameAsString());
-		
-		
-		return new BinaryExpr(id(rawInputId), BinaryOp.ARROW, 
-				pre(id(LustreNamingConventions.getInputName(lookup))));
+		return id(LustreNamingConventions.getInputName(lookup));
 	}
 
 	private static Expr toPBoolean(Expr e) {
@@ -351,14 +334,14 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	public Expr visit(SimpleVar var, ExprType expectedType) {
 		return new BinaryExpr(var.getInitialValue().accept(this, var.getType()), 
 				BinaryOp.ARROW, 
-				pre(id(LustreNamingConventions.getVariableId(var))));
+				id(LustreNamingConventions.getVariableId(var)));
 	}
 
 	@Override
 	public Expr visit(ArrayVar array, ExprType expectedType) {
 		return new BinaryExpr(array.getInitialValue().accept(this, array.getType()), 
 				BinaryOp.ARROW, 
-				pre(id(LustreNamingConventions.getVariableId(array))));
+				id(LustreNamingConventions.getVariableId(array)));
 	}
 
 	@Override

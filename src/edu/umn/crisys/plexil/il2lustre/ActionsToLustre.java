@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.il2lustre;
 
+import static jkind.lustre.LustreUtil.pre;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -122,9 +124,10 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		if (assign.getLHS() instanceof SimpleVar) {
 			SimpleVar v = (SimpleVar) assign.getLHS();
 			
-			// Add this assignment under this condition
+			// Add this assignment under this condition. The value should be
+			// the RHS *before* variables are committed.
 			varNextValue.get(v).addAssignment(actionCondition, 
-					translator.toLustre(assign.getRHS(), v.getType()));
+					pre(translator.toLustre(assign.getRHS(), v.getType())));
 		} else {
 			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported in "+assign.toString());
 		}
@@ -163,12 +166,9 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		Expr guard = translator.toLustre(inChangeableState);
 		
 		// If we're in any of those states between macro steps, take from the
-		// raw input. 
+		// raw input. And we want the final value, not the "pre" value.
 		varNextValue.get(cmd.getHandle()).addAssignmentBetweenMacro(
-				// If we *just* started executing, the "executing" condition will be false
-				// because the transition won't be visible yet. So we also have to
-				// include the action condition to cover this missing case. 
-				new BinaryExpr(actionCondition, BinaryOp.OR, guard), 
+				guard, 
 				new IdExpr(rawId));
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
