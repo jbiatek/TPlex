@@ -2,6 +2,8 @@ package edu.umn.crisys.plexil.il2lustre;
 
 import static jkind.lustre.LustreUtil.id;
 import static jkind.lustre.LustreUtil.pre;
+import static jkind.lustre.LustreUtil.ite;
+import static jkind.lustre.LustreUtil.arrow;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -212,10 +214,14 @@ public class PlanToLustre {
 		nb.addInput(new VarDecl(rawInputId, type));
 		// The "real" lookup can only change between macro steps
 		nb.addLocal(new VarDecl(lookupId, type));
-		PlexilEquationBuilder builder = new PlexilEquationBuilder(lookupId, rawInput);
-		builder.setDefaultAssignmentBetweenMacro(rawInput);
-		
-		nb.addEquation(builder.buildEquation());
+		// If this is a macrostep boundary, allow it to change,
+		// else use the previous value. 
+		Equation eq = new Equation(id(lookupId), 
+				ite(LustreNamingConventions.MACRO_STEP_ENDED,
+				rawInput,
+				arrow(rawInput, pre(id(lookupId)))));
+				
+		nb.addEquation(eq);
 		// Write this down for reverse mapping later
 		reverseMap.addLookupMapping(rawInputId, lookup.getName());
 	}
