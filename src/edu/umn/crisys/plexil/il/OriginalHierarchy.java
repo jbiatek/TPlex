@@ -35,6 +35,11 @@ public class OriginalHierarchy {
 		this(root, Optional.empty());
 	}
 	
+	@Override
+	public String toString() {
+		return uid.toString();
+	}
+	
 	public OriginalHierarchy(NodeToIL translator, Optional<OriginalHierarchy> parent) {
 		if (parent.isPresent() != translator.getParent().isPresent()) {
 			throw new RuntimeException("Node and translator parents don't match: presence is "

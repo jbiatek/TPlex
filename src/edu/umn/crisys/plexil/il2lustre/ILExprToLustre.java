@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il2lustre;
 
 import static jkind.lustre.LustreUtil.id;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,12 @@ import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
+import jkind.lustre.CastExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.RealExpr;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
@@ -176,9 +181,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case CAST_NUMERIC:
 			return op.getSingleExpectedArgument().accept(this, op.getActualArgumentType());
 		case CAST_INT:
-			return new NodeCallExpr("floor", op.getSingleExpectedArgument().accept(this, ExprType.NUMERIC));
+			return new CastExpr(NamedType.INT, op.getSingleExpectedArgument().accept(this, ExprType.NUMERIC));
 		case CAST_REAL:
-			return new NodeCallExpr("real", op.getSingleExpectedArgument().accept(this, ExprType.NUMERIC));
+			return new CastExpr(NamedType.REAL, op.getSingleExpectedArgument().accept(this, ExprType.NUMERIC));
 		case CAST_STRING:
 			return op.getArguments().get(0).accept(this, ExprType.STRING);
 		// ---------------- Node operators, which don't belong in the IL
@@ -272,12 +277,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(IntegerValue integer, ExprType expectedType) {
-		return id(integer.getIntValue()+"");
+		return new IntExpr(integer.getIntValue());
 	}
 
 	@Override
 	public Expr visit(RealValue real, ExprType expectedType) {
-		return id(real.getRealValue()+"");
+		return new RealExpr(new BigDecimal(real.getRealValue()));
 	}
 
 	@Override
@@ -291,9 +296,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case BOOLEAN:
 			return LustreNamingConventions.P_UNKNOWN;
 		case INTEGER:
-			return id("0");
+			return new IntExpr(0);
 		case REAL:
-			return id("0.0");
+			return new RealExpr(new BigDecimal(0));
 		case STRING:
 			return id(mapper.stringToEnum(unk));
 		default: 
@@ -332,16 +337,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(SimpleVar var, ExprType expectedType) {
-		return new BinaryExpr(var.getInitialValue().accept(this, var.getType()), 
-				BinaryOp.ARROW, 
-				id(LustreNamingConventions.getVariableId(var)));
+		return id(LustreNamingConventions.getVariableId(var));
 	}
 
 	@Override
 	public Expr visit(ArrayVar array, ExprType expectedType) {
-		return new BinaryExpr(array.getInitialValue().accept(this, array.getType()), 
-				BinaryOp.ARROW, 
-				id(LustreNamingConventions.getVariableId(array)));
+		return id(LustreNamingConventions.getVariableId(array));
 	}
 
 	@Override

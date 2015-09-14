@@ -1,14 +1,13 @@
 package edu.umn.crisys.plexil.il2lustre;
 
-import static jkind.lustre.LustreUtil.id;
-import static jkind.lustre.LustreUtil.pre;
-import static jkind.lustre.LustreUtil.ite;
-import static jkind.lustre.LustreUtil.arrow;
+import static jkind.lustre.LustreUtil.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import jkind.SolverOption;
+import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -17,6 +16,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
@@ -46,6 +46,10 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 
 public class PlanToLustre {
 
+	private static Expr equal(Expr one, Expr two) {
+		return new BinaryExpr(one, BinaryOp.EQUAL, two);
+	}
+	
 	public static enum Obligation {
 		NONE, EXECUTE
 	}
@@ -58,11 +62,14 @@ public class PlanToLustre {
 	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
 	private ILExprToLustre ilToLustre = new ILExprToLustre(reverseMap);
 	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
-
+	private LustrePropertyGenerator properties;
+	
+	
 	public PlanToLustre(Plan p) {
 		this.p = p;
 		
 		this.nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
+		this.properties = new LustrePropertyGenerator(this, nb);
 	}
 	
 	public String toLustreAsString() {
@@ -116,16 +123,7 @@ public class PlanToLustre {
 			p.getMachines().stream()
 			.flatMap(m -> m.getNodeIds().stream())
 			.forEach(uid -> {
-				String id = LustreNamingConventions.getStateMapperId(uid)+"_executes";
-				nb.addLocal(new VarDecl(id, NamedType.BOOL));
-				// This state could never be executing, right? Prove me wrong!
-				nb.addEquation(new Equation(new IdExpr(id), 
-						new BinaryExpr(
-								new IdExpr(LustreNamingConventions.getStateMapperId(uid)), 
-								BinaryOp.NOTEQUAL, 
-								toLustre(NodeState.EXECUTING, ExprType.STATE))
-						));
-				nb.addProperty(id);
+				properties.addPlainExecuteProperty(uid);
 
 			});
 			break;
@@ -147,7 +145,14 @@ public class PlanToLustre {
 						toLustre(p.getRootNodeState(), ExprType.STATE))));
 		
 		pb.addNode(nb.build());
-		return pb.build();
+		
+		Program program = pb.build();
+		StaticAnalyzer.check(program, SolverOption.Z3);
+		return program;
+	}
+	
+	public LustrePropertyGenerator getPropertyGenerator() {
+		return properties;
 	}
 	
 	
@@ -252,9 +257,12 @@ public class PlanToLustre {
 		p_and.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
 		p_and.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_and.addEquation(new Equation(new IdExpr("result"), 
-				new IdExpr("if (first = p_false or second = p_false) then p_false\n"
-           +"else if (first = p_unknown or second = p_unknown) then p_unknown\n"
-           +"else p_true")));
+				ite(or(equal(id("first"), id("p_false")),
+						equal(id("second"), id("p_false"))), id("p_false"),
+				ite(or(equal(id("first"), id("p_unknown")),
+					equal(id("second"), id("p_unknown"))), id("p_unknown"),
+				id("p_true")))
+				));
 		pb.addNode(p_and.build());
 		
 		NodeBuilder p_or = new NodeBuilder(LustreNamingConventions.OR_OPERATOR);
@@ -262,9 +270,12 @@ public class PlanToLustre {
 		p_or.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
 		p_or.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_or.addEquation(new Equation(new IdExpr("result"), 
-				new IdExpr("if (first = p_true or second = p_true) then p_true\n"
-           +"else if (first = p_unknown or second = p_unknown) then p_unknown\n"
-           +"else p_false")));
+				ite(or(equal(id("first"), id("p_true")),
+						equal(id("second"), id("p_true"))), id("p_true"),
+				ite(or(equal(id("first"), id("p_unknown")),
+					equal(id("second"), id("p_unknown"))), id("p_unknown"),
+				id("p_false")))
+				));
 		pb.addNode(p_or.build());
 		
 		
@@ -273,9 +284,9 @@ public class PlanToLustre {
 		p_not.addInput(new VarDecl("value", LustreNamingConventions.PBOOLEAN));
 		p_not.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_not.addEquation(new Equation(new IdExpr("result"), 
-				new IdExpr("if value = p_true then p_false\n"
-           +"else if value = p_false then p_true\n"
-           +"else p_unknown")));
+				ite(equal(id("value"), id("p_true")), id("p_false"),
+				ite(equal(id("value"), id("p_false")), id("p_true"),
+						id("p_unknown")))));
 		pb.addNode(p_not.build());
 		
 		NodeBuilder p_eq_bool = new NodeBuilder(LustreNamingConventions.EQ_BOOL_OPERATOR);
@@ -283,9 +294,9 @@ public class PlanToLustre {
 		p_eq_bool.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
 		p_eq_bool.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		p_eq_bool.addEquation(new Equation(new IdExpr("result"), 
-				new IdExpr("if (first = p_unknown or second = p_unknown) then p_unknown\n"
-           +"else if (first = second) then p_true\n"
-           +"else p_false")));
+				ite(or(equal(id("first"), id("p_unknown")), 
+                       equal(id("second"), id("p_unknown"))), id("p_unknown"),
+                   ite(equal(id("first"), id("second")), id("p_true"), id("p_false")))));
 		pb.addNode(p_eq_bool.build());
 		
 
@@ -293,7 +304,7 @@ public class PlanToLustre {
 		to_pboolean.addInput(new VarDecl("value", NamedType.BOOL));
 		to_pboolean.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
 		to_pboolean.addEquation(new Equation(new IdExpr("result"), 
-				new IdExpr("if value then p_true else p_false")));
+				ite(id("value"), id("p_true"), id("p_false"))));
 		pb.addNode(to_pboolean.build());
 		
 		return pb;
@@ -377,7 +388,7 @@ public class PlanToLustre {
 				map = new IfThenElseExpr(
 						// if the real state variable is this one
 						new BinaryExpr(getStateExpr(nsm), BinaryOp.EQUAL, 
-								new IdExpr(s.getIndex()+"")),
+								new IntExpr(s.getIndex())),
 						// then return the tag
 						toLustre(s.tags.get(uid), ExprType.STATE),
 						// else, the rest
@@ -393,7 +404,7 @@ public class PlanToLustre {
 	public Equation stateMachineEquation(NodeStateMachine nsm) {
 		// By IL semantics, we always start in state 0. 
 		PlexilEquationBuilder state = new PlexilEquationBuilder(
-				getStateExpr(nsm), new IdExpr("0"));
+				getStateExpr(nsm), new IntExpr(0));
 		
 		// Make sure we're doing this in order.
 		nsm.orderTransitionsByPriority();
@@ -401,7 +412,7 @@ public class PlanToLustre {
 		// Add guards for each transition with results
 		for (Transition t : nsm.getTransitions()) {
 			state.addAssignment(createGuardWithStateCheck(getStateExpr(nsm), t),
-					new IdExpr(t.end.getIndex()+""));
+					new IntExpr(t.end.getIndex()));
 		}
 		
 		// That should take care of it! Just build this equation.  
@@ -447,7 +458,7 @@ public class PlanToLustre {
 	public static Expr getEnteringThisSpecificState(NodeStateMachine nsm, State s) {
 		Expr currentState = getStateExpr(nsm);
 		Expr previousState = new UnaryExpr(UnaryOp.PRE, currentState);
-		Expr specifiedState = new IdExpr(s.getIndex()+"");
+		Expr specifiedState = new IntExpr(s.getIndex());
 		return new BinaryExpr(
 				new BinaryExpr(previousState, BinaryOp.NOTEQUAL, specifiedState), 
 				BinaryOp.AND, 
@@ -456,7 +467,7 @@ public class PlanToLustre {
 	
 	public static Expr getCurrentlyInSpecificState(NodeStateMachine nsm, State s) {
 		Expr currentState = getStateExpr(nsm);
-		Expr specifiedState = new IdExpr(s.getIndex()+"");
+		Expr specifiedState = new IntExpr(s.getIndex());
 		return new BinaryExpr(currentState, BinaryOp.EQUAL, specifiedState);
 	}
 	
@@ -483,7 +494,7 @@ public class PlanToLustre {
 		Expr guardExpr = new BinaryExpr(
 				new UnaryExpr(UnaryOp.PRE, stateId), 
 				BinaryOp.EQUAL, 
-				new IdExpr(t.start.getIndex()+""));
+				new IntExpr(t.start.getIndex()));
 		
 		// Then the transition's guards have to apply, if any.
 		if (t.isAlwaysTaken()) {

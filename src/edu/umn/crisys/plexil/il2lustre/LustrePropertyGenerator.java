@@ -44,17 +44,19 @@ public class LustrePropertyGenerator {
 	private PlanToLustre translator;
 	private NodeBuilder nb;
 	
+	public LustrePropertyGenerator(PlanToLustre translator, NodeBuilder nb) {
+		this.translator = translator;
+		this.nb = nb;
+	}
 	
-	
-	public Expr addPlainExecuteProperty(OriginalHierarchy node) {
-		IdExpr exec = getPlainExecuteExpr(node);
+	public Expr addPlainExecuteProperty(NodeUID uid) {
+		IdExpr exec = getPlainExecuteExpr(uid);
 		nb.addProperty(exec.id);
 		return exec; 
 
 	}
 	
-	public IdExpr getPlainExecuteExpr(OriginalHierarchy node) {
-		NodeUID uid = node.getUID();
+	public IdExpr getPlainExecuteExpr(NodeUID uid) {
 		String id = LustreNamingConventions.getStateMapperId(uid)+"_executes";
 		
 		if (checkForId(id)) return id(id);
@@ -80,15 +82,18 @@ public class LustrePropertyGenerator {
 		nb.addEquation(new Equation(id(id), step));
 	}
 	
+	public static String getNoFaiureExecuteId(OriginalHierarchy node) {
+		return LustreNamingConventions.getStateMapperId(
+				node.getUID())+"_executes_no_failures";
+	}
 	
 	public IdExpr addNoFailureExecuteProperty(OriginalHierarchy node) {
-		String id = LustreNamingConventions.getStateMapperId(
-				node.getUID())+"_executes_no_failures";
+		String id = getNoFaiureExecuteId(node);
 		if (checkForId(id)) return id(id);
 		
 		// Make sure that parents haven't failed, and also that our node executes
 		List<Expr> allConditions = new ArrayList<>();
-		allConditions.add(getPlainExecuteExpr(node));
+		allConditions.add(getPlainExecuteExpr(node.getUID()));
 		
 		Optional<OriginalHierarchy> parent = node.getParent();
 		while (parent.isPresent()) {
@@ -97,8 +102,9 @@ public class LustrePropertyGenerator {
 		}
 		
 		// Negate all the other stuff, in addition to having the node execute
-		addLocalBool(id, and(getPlainExecuteExpr(node),
+		addLocalBool(id, and(getPlainExecuteExpr(node.getUID()),
 					not(and(allConditions))));
+		nb.addProperty(id);
 		return id(id);
 	}
 

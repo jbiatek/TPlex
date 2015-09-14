@@ -93,7 +93,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 					((SimpleVar) v).getInitialValue(), v.getType());
 		} else if (v instanceof ArrayVar) { 
 			// Preliminary support for constant arrays
-			System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
+			//System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
 			
 			return translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
 		} else {
@@ -175,7 +175,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			System.err.println("WARNING: Variable assignments from commands not supported yet!");
 		}
 		if ( ! cmd.getArgs().isEmpty()) {
-			System.err.println("WARNING: All args to command "+cmd+" are being ignored!");
+			//System.err.println("WARNING: All args to command "+cmd+" are being ignored!");
 		}
 		
 		return null;

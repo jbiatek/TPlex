@@ -153,6 +153,11 @@ public class TPlex {
 			+ "execution will be output as a CSV file.")
 	public String lustreSimulateScriptsAgainst = "";
 	
+	@Parameter(names = "--lustre-incremental", description = 
+			"Generate test cases incrementally using JKind, putting any "
+			+ "resulting test cases in the output directory. ")
+	public boolean lustreIncrementalSearch = false;
+	
 
 	//Variables to use during translation
 	public Map<String, PlexilPlan> asts = new HashMap<>();
@@ -469,6 +474,11 @@ public class TPlex {
 			if (! printString(p.getPlanName()+".strings.txt",
 					new Gson().toJson(map))) {
 				return false;
+			}
+			if (lustreIncrementalSearch) {
+				// Probably needs to return results at some point, or be
+				// told where to put them. 
+				IncrementalJKindSearch.generate(p);
 			}
 		}
 		if ( ! scripts.isEmpty()) {
