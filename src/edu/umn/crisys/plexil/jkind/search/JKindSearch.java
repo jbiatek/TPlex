@@ -46,7 +46,8 @@ public class JKindSearch {
 	
 	public void go() {
 		// TODO This is just a test method.
-		JKindExecution.timeout = 600;
+		JKindExecution.timeout = Integer.MAX_VALUE;
+		JKindExecution.iteration = 20;
 		
 		System.out.println("Adding goals to execute each node with no failures");
 		// Try to execute each node
@@ -59,7 +60,6 @@ public class JKindSearch {
 			System.out.println("Have found "+allTraces.size()+" total traces.");
 			System.out.println("There are "+unmetGoals.size()+" goals remaining.");
 			search(generateNextSearchStep());
-			JKindExecution.timeout = 300;
 		}
 		
 		System.out.println("Didn't meet "+unmetGoals.size()+" goals out of "
@@ -111,7 +111,7 @@ public class JKindSearch {
 			
 			// What haven't we used already? 
 			Set<IncrementalTrace> tracesToTry = allTraces.stream()
-				.filter(trace -> trace.filterFailures(property))
+				.filter(trace -> trace.filterAlreadyDone(property))
 				.collect(Collectors.toSet());
 			
 			// The property thinks that these will work, so try them
@@ -136,7 +136,7 @@ public class JKindSearch {
 					} else {
 						System.out.println("Found "+intermediate.size()+" intermediate goals for trace "+trace);
 						for (TraceProperty next : intermediate) {
-							if (trace.filterFailures(next)) {
+							if (trace.filterAlreadyDone(next)) {
 								// This is a new goal, let's try
 								ret.add(trace, next);
 							} 
@@ -210,6 +210,9 @@ public class JKindSearch {
 						Util.asHashSet(prop));
 				allTraces.add(foundTrace);
 				unmetGoals.remove(prop);
+				if (prefix.isPresent()) {
+					prefix.get().addAsSuccess(prop, foundTrace);
+				}
 				found++;
 			} else {
 				// Can't get this one. Don't try this combination again.

@@ -1,7 +1,9 @@
 package edu.umn.crisys.plexil.jkind.search;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ public class IncrementalTrace {
 	private Optional<IncrementalTrace> prefix;
 	private Set<TraceProperty> properties = new HashSet<>();
 	private Set<TraceProperty> triedAndFailed = new HashSet<>();
+	private Map<TraceProperty,IncrementalTrace> triedAndSucceeded = new HashMap<>();
 	
 	public IncrementalTrace(LustreTrace theTrace, Set<TraceProperty> properties) {
 		this(theTrace, Optional.empty(), properties);
@@ -26,12 +29,17 @@ public class IncrementalTrace {
 		this.properties = Collections.unmodifiableSet(properties);
 	}
 
-	public boolean filterFailures(TraceProperty p) {
-		return ! triedAndFailed.contains(p);
+	public boolean filterAlreadyDone(TraceProperty p) {
+		return ! triedAndFailed.contains(p) 
+				&& ! triedAndSucceeded.keySet().contains(p);
 	}
 	
 	public void addAsFailure(TraceProperty p) {
 		triedAndFailed.add(p);
+	}
+	
+	public void addAsSuccess(TraceProperty p, IncrementalTrace child) {
+		triedAndSucceeded.put(p, child);
 	}
 	
 	public Optional<IncrementalTrace> getPrefix() {
