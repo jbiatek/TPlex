@@ -30,7 +30,7 @@ public class ReverseTranslationMap {
 		}
 
 		
-		String toReturn = NameUtils.clean(knownString.getString().replaceAll(" ", "_"));
+		String toReturn = NameUtils.clean(knownString.getString().replaceAll(" ", "_")+"/str");
 		if (toReturn.equals("")) {
 			throw new RuntimeException("Enumerated string was empty: "+knownString);
 		}

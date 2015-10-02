@@ -1,11 +1,24 @@
 package edu.umn.crisys.plexil.expr.ast;
 
+import java.util.Optional;
+
 import edu.umn.crisys.plexil.expr.ExprType;
 
 public class NodeIDExpression extends UnresolvedVariableExpr {
     
-    public NodeIDExpression(String nodeId) {
+	private Optional<NodeRefExpr> direction;
+	
+	public NodeIDExpression(String nodeId) {
+		this(nodeId, Optional.empty());
+	}
+	
+    public NodeIDExpression(String nodeId, Optional<NodeRefExpr> direction) {
         super(nodeId, ExprType.NODEREF);
+        this.direction = direction;
+    }
+    
+    public Optional<NodeRefExpr> getDirection() {
+    	return direction;
     }
 
 }

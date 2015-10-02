@@ -4,6 +4,7 @@ import static edu.umn.crisys.util.xml.XMLUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
@@ -183,8 +184,9 @@ public class ExprParser {
         if (localNameOf(start).equals("NodeId")) {
             toReturn = new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
-        	toReturn = NodeRefExpr.valueOf(attribute(start, "dir").toUpperCase());
-            assertClosedTag(start, xml);
+        	Optional<NodeRefExpr> dir = getPossibleAttribute(start, "dir")
+        			.map(str -> NodeRefExpr.valueOf(str.toUpperCase()));
+        	toReturn = new NodeIDExpression(getStringContent(start, xml), dir);
         } else {
             throw new RuntimeException("Was expecting a node reference, not a "+start);
         }

@@ -1,12 +1,14 @@
 package edu.umn.crisys.plexil.il;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.expr.Expression;
@@ -104,9 +106,70 @@ public class OriginalHierarchy {
 	public Map<PlexilExprDescription, Expression> getConditions() {
 		return conditions;
 	}
+	
+	public boolean isSibling(OriginalHierarchy otherNode) {
+		return parent.isPresent() && ! this.equals(otherNode)
+				&& parent.get().getChildren().contains(otherNode);
+	}
+	
+	public boolean isAncestorOf(OriginalHierarchy otherNode) {
+		return otherNode.getAllParents().contains(this);
+	}
+	
+	public boolean isDescendantOf(OriginalHierarchy otherNode) {
+		return getAllParents().contains(otherNode);
+	}
+	
+	public boolean isDirectParentOf(OriginalHierarchy otherNode) {
+		return otherNode.parent.isPresent() 
+				&& otherNode.parent.get().equals(this);
+	}
 
 	public List<OriginalHierarchy> getChildren() {
 		return children;
+	}
+	
+	public List<OriginalHierarchy> getSiblings() {
+		if (parent.isPresent()) {
+			List<OriginalHierarchy> sibs = new ArrayList<>(parent.get().children);
+			sibs.remove(this);
+			return sibs;
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
+	public List<OriginalHierarchy> getAllParents() {
+		List<OriginalHierarchy> ret = new ArrayList<>();
+		Optional<OriginalHierarchy> pointer = parent;
+		while (pointer.isPresent()) {
+			ret.add(pointer.get());
+			pointer = pointer.get().getParent();
+		}
+		return ret;
+	}
+	
+	public OriginalHierarchy getNearestCommonAncestor(OriginalHierarchy otherNode) {
+		List<OriginalHierarchy> myParents = getAllParents();
+		List<OriginalHierarchy> theirParents = otherNode.getAllParents();
+		
+		myParents.retainAll(theirParents);
+		if (myParents.isEmpty()) {
+			throw new RuntimeException("Nodes "+this+" and "+otherNode
+					+" share no ancestors");
+		}
+		return myParents.get(0);
+	}
+	
+	public Stream<OriginalHierarchy> streamEntireHierarchy() {
+		return getAllChildren().stream();
+	}
+	
+	private List<OriginalHierarchy> getAllChildren() {
+		List<OriginalHierarchy> all = new ArrayList<>();
+		all.add(this);
+		children.forEach(child -> all.addAll(child.getAllChildren()));
+		return all;
 	}
 
 	public Optional<LibraryVar> getLibraryChild() {

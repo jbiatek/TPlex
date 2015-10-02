@@ -115,7 +115,7 @@ public class JKindResultUtils {
 		// therefore different from the Program
 		varsToGet.addAll(lustreSim.getInputVars());
 		varsToGet.addAll(lustreSim.getLocalVars());
-		List<LustreTrace> rawResults = lustreSim.simulate(inputs, Simulation.PARTIAL, varsToGet);
+		List<LustreTrace> rawResults = lustreSim.simulate(inputs, Simulation.COMPLETE, varsToGet);
 		
 		// Enums and such are all integers in this trace. Let's fix that.
 		
@@ -140,6 +140,9 @@ public class JKindResultUtils {
 			EnumType enumType = (EnumType) type;
 			Signal<Value> newVar = new Signal<Value>(oldVar.getName());
 			oldVar.getValues().keySet().forEach(step -> {
+				if (oldVar.getValue(step) == null) {
+					throw new NullPointerException(oldVar.getName()+" null at step "+step);
+				}
 				newVar.putValue(step, new EnumValue(ValueToString.get(
 						oldVar.getValue(step), enumType)));
 			});

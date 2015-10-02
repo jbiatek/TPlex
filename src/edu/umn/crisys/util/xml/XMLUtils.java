@@ -2,6 +2,7 @@ package edu.umn.crisys.util.xml;
 
 
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -133,9 +134,14 @@ public class XMLUtils {
         return e.isEndElement() && localNameOf(e).equals(localName);
     }
     
+    public static Optional<String> getPossibleAttribute(XMLEvent e, String name) {
+    	return Optional.ofNullable(e.asStartElement().getAttributeByName(
+    			new QName(name)))
+    				.map(attr -> attr.getValue());
+    }
+    
     public static String attribute(XMLEvent e, String name) {
-        return e.asStartElement().getAttributeByName(
-                new QName(name)).getValue();
+        return getPossibleAttribute(e, name).get();
     }
     
     public static String localNameOf(XMLEvent e) {

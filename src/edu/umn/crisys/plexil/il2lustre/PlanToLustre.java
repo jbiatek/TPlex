@@ -56,7 +56,7 @@ public class PlanToLustre {
 	
 	private Plan p;
 	
-	private ProgramBuilder pb = getProgramWithPlexilTypes();
+	private ProgramBuilder pb;
 	private NodeBuilder nb;
 	
 	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
@@ -67,9 +67,10 @@ public class PlanToLustre {
 	
 	public PlanToLustre(Plan p) {
 		this.p = p;
-		
-		this.nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
-		this.properties = new LustrePropertyGenerator(this, nb);
+	}
+	
+	public Plan getILPlan() {
+		return p;
 	}
 	
 	public String toLustreAsString() {
@@ -88,6 +89,9 @@ public class PlanToLustre {
 	}
 	
 	public Program toLustre(Obligation obilgations) {
+		pb = getProgramWithPlexilTypes();
+		nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
+		properties = new LustrePropertyGenerator(this, nb);
 		
 		uninlineNamedExpressions();
 		
