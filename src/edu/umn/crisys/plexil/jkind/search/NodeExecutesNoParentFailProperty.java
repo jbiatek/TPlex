@@ -185,17 +185,17 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 		
 		return fellows.stream()
 				.map(fellow -> {
-					if (fellow.node.isAncestorOf(node)) {
-						// Try to execute any of their children
+//					if (fellow.node.isAncestorOf(node)) {
+//						// Try to execute any of their children
 						return fellow.node.streamEntireHierarchy()
 								.collect(Collectors.toSet());
-					} else if (fellow.node.isSibling(node)) {
-						return node.getParent().map(
-									parent -> new HashSet<>(parent.getChildren()))
-									.orElse(new HashSet<OriginalHierarchy>());
-					} else {
-						return new HashSet<OriginalHierarchy>();
-					}
+//					} /*else if (fellow.node.isSibling(node)) {
+//						return node.getParent().map(
+//									parent -> new HashSet<>(parent.getChildren()))
+//									.orElse(new HashSet<OriginalHierarchy>());
+//					} */ else {
+//						return new HashSet<OriginalHierarchy>();
+//					}
 				})
 				.flatMap(Collection::stream)
 				.map(node -> new NodeExecutesNoParentFailProperty(node))
@@ -235,6 +235,8 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 
 	@Override
 	public boolean traceLooksReachable(IncrementalTrace trace) {
+		return false;
+		/*
 		// Find other "node executes no parent fails":
 		Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
 		// Does this trace execute either our parent or a sibling?
@@ -242,7 +244,7 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 			.filter(fellow -> 
 					fellow.node.isDirectParentOf(node) 
 					|| fellow.node.isSibling(node))
-			.findAny().isPresent();
+			.findAny().isPresent();*/
 	}
 
 	@Override

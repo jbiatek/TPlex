@@ -46,8 +46,8 @@ public class JKindSearch {
 	
 	public void go() {
 		// TODO This is just a test method.
-		JKindExecution.timeout = Integer.MAX_VALUE;
-		JKindExecution.iteration = 20;
+		JKindExecution.timeout = 240;
+		//JKindExecution.iteration = 11;
 		
 		System.out.println("Adding goals to execute each node with no failures");
 		// Try to execute each node
@@ -59,7 +59,12 @@ public class JKindSearch {
 			System.out.println("Starting iteration "+(i+1));
 			System.out.println("Have found "+allTraces.size()+" total traces.");
 			System.out.println("There are "+unmetGoals.size()+" goals remaining.");
-			search(generateNextSearchStep());
+			JKindTestRun testRun = generateNextSearchStep();
+			if (testRun.isCompletelyEmpty()) {
+				System.out.println("Found absolutely nothing new to search.");
+				break;
+			}
+			search(testRun);
 		}
 		
 		System.out.println("Didn't meet "+unmetGoals.size()+" goals out of "
@@ -99,49 +104,39 @@ public class JKindSearch {
 	public JKindTestRun generateNextSearchStep() {
 		JKindTestRun ret = new JKindTestRun();
 		// Ask each property to find something to do
-		unmetGoals.forEach(property -> {
-			System.out.println("Trying property "+property);
+		unmetGoals.forEach(unmetProperty -> {
+			System.out.println("Trying property "+unmetProperty);
 			// Ask it for anything it wants to try without using history
-			Set<TraceProperty> fromScratch = property.createInitialGoals();
+			Set<TraceProperty> fromScratch = unmetProperty.createInitialGoals();
 			fromScratch.removeIf(goal -> nonPrefixedFailures.contains(goal));
 			if ( ! fromScratch.isEmpty()) {
 				System.out.println("It wants to try "+fromScratch.size()+" new goals without prefixes.");
 			}
 			fromScratch.forEach(ret::add);
 			
-			// What haven't we used already? 
+			// What traces haven't we been tried against already? 
 			Set<IncrementalTrace> tracesToTry = allTraces.stream()
-				.filter(trace -> trace.filterAlreadyDone(property))
+				.filter(trace -> trace.filterAlreadyDone(unmetProperty))
 				.collect(Collectors.toSet());
 			
 			// The property thinks that these will work, so try them
 			Set<IncrementalTrace> reachable = tracesToTry.stream()
-				.filter(property::traceLooksReachable)
+				.filter(unmetProperty::traceLooksReachable)
 				.collect(Collectors.toSet());
-			reachable.forEach(trace -> ret.add(trace, property));
+			reachable.forEach(trace -> ret.add(trace, unmetProperty));
 			System.out.println("It thinks that "+reachable.size()+" new traces are reachable.");
 			
 			if (reachable.isEmpty()) {
 				// It didn't see anything that looked reachable. Let's get some
 				// intermediate goals to try. 
-				tracesToTry.forEach( trace -> {
+				System.out.println("So instead, let's look for new intermediate goals.");
+				allTraces.forEach( trace -> {
 					// Ask our property to try and search forward from here
 					Set<TraceProperty> intermediate = 
-							property.createIntermediateGoalsFrom(trace, translator);
-					if (intermediate.isEmpty()) {
-						// The property must not think that it's reachable, and
-						// it didn't have a new direction for this trace. Let's
-						// not try this in the future.
-						trace.addAsFailure(property);
-					} else {
-						System.out.println("Found "+intermediate.size()+" intermediate goals for trace "+trace);
-						for (TraceProperty next : intermediate) {
-							if (trace.filterAlreadyDone(next)) {
-								// This is a new goal, let's try
-								ret.add(trace, next);
-							} 
-						}
-					}
+							unmetProperty.createIntermediateGoalsFrom(trace, translator);
+					intermediate.removeIf(property -> ! trace.filterAlreadyDone(property));
+					System.out.println("Found "+intermediate.size()+" intermediate goals for trace "+trace);
+					intermediate.forEach(prop -> ret.add(trace, prop));
 				});
 			}
 		});

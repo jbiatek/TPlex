@@ -19,6 +19,10 @@ public class JKindTestRun {
 				Util::merge);
 	}
 	
+	public boolean isCompletelyEmpty() {
+		return fromScratch.isEmpty() && testsToGet.isEmpty();
+	}
+	
 	public void add(TraceProperty prop) {
 		fromScratch.add(prop);
 	}
