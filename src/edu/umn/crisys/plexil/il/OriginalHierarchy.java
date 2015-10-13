@@ -129,6 +129,23 @@ public class OriginalHierarchy {
 		return children;
 	}
 	
+	public List<OriginalHierarchy> getSequentialExecutionPath() {
+		List<OriginalHierarchy> ret = new ArrayList<OriginalHierarchy>();
+		parent.ifPresent(p -> {
+			ret.addAll(p.getSequentialExecutionPath());
+			// Any siblings in our way?
+			// TODO: This should look and see if we are part of a sequence
+			if (conditions.containsKey(PlexilExprDescription.START_CONDITION)) {
+				for (OriginalHierarchy sibling : p.children) {
+					if (sibling == this) break;
+					ret.add(sibling);
+				}
+			}
+		});
+		ret.add(this);
+		return ret;
+	}
+	
 	public List<OriginalHierarchy> getSiblings() {
 		if (parent.isPresent()) {
 			List<OriginalHierarchy> sibs = new ArrayList<>(parent.get().children);

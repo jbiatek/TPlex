@@ -28,6 +28,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative.Condition;
@@ -135,6 +136,7 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 				checkFailure));
 		nb.addLocal(new VarDecl(idName, NamedType.BOOL));
 		nb.addEquation(eq(id, finalStatement));
+		
 		return id;
 	}
 
@@ -155,7 +157,8 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 		
 		String id = getPropertyId();
 		// This condition can never happen, right! It's impossible!
-		addLocalBool(id, nb, not(and(allConditions)));
+		Expr finalCondition = not(and(allConditions));
+		addLocalBool(id, nb, finalCondition);
 		nb.addProperty(id);
 	}
 	
@@ -181,62 +184,37 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 	@Override
 	public Set<TraceProperty> createIntermediateGoalsFrom(
 			IncrementalTrace trace, PlanToLustre translator) {
+		// These are the goals to try if we don't think that we might be reachable.
+		
+		// We should try to get to any ancestors that haven't been executed,
 		Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
 		
-		return fellows.stream()
+		List<OriginalHierarchy> mySequencePath = node.getSequentialExecutionPath();
+		return (Set<TraceProperty>) fellows.stream()
 				.map(fellow -> {
-//					if (fellow.node.isAncestorOf(node)) {
-//						// Try to execute any of their children
-						return fellow.node.streamEntireHierarchy()
-								.collect(Collectors.toSet());
-//					} /*else if (fellow.node.isSibling(node)) {
-//						return node.getParent().map(
-//									parent -> new HashSet<>(parent.getChildren()))
-//									.orElse(new HashSet<OriginalHierarchy>());
-//					} */ else {
-//						return new HashSet<OriginalHierarchy>();
-//					}
-				})
-				.flatMap(Collection::stream)
-				.map(node -> new NodeExecutesNoParentFailProperty(node))
-				.collect(Collectors.toSet());
-		/*
-		List<OriginalHierarchy> myParents = node.getAllParents();
-		return fellows.stream()
-				.map(fellow -> {
-					// Is there a clear path for getting closer to us?
-					if (fellow.node.isAncestorOf(node)) {
-						// One of our ancestors just got executed, so try to
-						// get one closer.
-						int fellowIndex = myParents.indexOf(fellow.node);
-						if (fellowIndex == 0) {
-							// Oh, this is our direct parent. We'll report ourselves
-							// as reachable, but we can also try
-							// for each of our siblings in case of sequences.
-							return node.getSiblings().stream()
-									.map(sibling -> new NodeExecutesNoParentFailProperty(sibling))
-									.collect(Collectors.toSet());
-						} else if (fellowIndex == -1) throw new RuntimeException("Should be in there somewhere");
-						
-						// Try to reach all of our parents
-						return myParents.stream()
-								.map(parent -> new NodeExecutesNoParentFailProperty(parent))
-								.collect(Collectors.toSet());
+					if (mySequencePath.contains(fellow.node)) {
+						// This one looks like it could move toward us.
+						// Ask for the rest of our path if possible.
+						Set<TraceProperty> customPath = new HashSet<>();
+						int theirIndex = mySequencePath.indexOf(fellow.node);
+						for (int i = theirIndex+1; i < mySequencePath.size(); i++) {
+							customPath.add(
+									new NodeExecutesNoParentFailProperty(mySequencePath.get(i)));
+						}
+						return customPath;
 					} else {
-						// It's not an ancestor of us, not much else to do.
+						// This isn't an ancestor, or a predecessor of an 
+						// ancestor. It's probably just doing something else.
 						return Collections.<TraceProperty>emptySet();
 					}
 				})
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
-				*/
-		
+	
 	}
 
 	@Override
 	public boolean traceLooksReachable(IncrementalTrace trace) {
-		return false;
-		/*
 		// Find other "node executes no parent fails":
 		Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
 		// Does this trace execute either our parent or a sibling?
@@ -244,7 +222,7 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 			.filter(fellow -> 
 					fellow.node.isDirectParentOf(node) 
 					|| fellow.node.isSibling(node))
-			.findAny().isPresent();*/
+			.findAny().isPresent();
 	}
 
 	@Override

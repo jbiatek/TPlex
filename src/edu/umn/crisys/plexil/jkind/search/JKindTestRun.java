@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import edu.umn.crisys.util.Util;
@@ -37,6 +40,14 @@ public class JKindTestRun {
 	
 	public boolean isEmpty() {
 		return fromScratch.isEmpty() && testsToGet.isEmpty();
+	}
+	
+	public List<Entry<IncrementalTrace,Set<TraceProperty>>> 
+	getSortedByMostProperties(int limit) {
+		return testsToGet.entrySet().stream()
+				.sorted((left, right) -> right.getValue().size() - left.getValue().size())
+				.limit(limit)
+				.collect(Collectors.toList());
 	}
 	
 	public Set<IncrementalTrace> getAllPrefixes() {

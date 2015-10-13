@@ -41,7 +41,8 @@ public class IncrementalJKindSearch {
 		Map<OriginalHierarchy, LustreTrace> results = tryForAllChildren(il);
 		for (Entry<OriginalHierarchy, LustreTrace> entry : results.entrySet()) {
 			if (entry.getValue() != null) {
-				System.out.println("Got test for "+entry.getKey());
+				System.out.println("Got test for "+entry.getKey()+": ");
+				System.out.println(entry.getValue());
 			}
 		}
 		
@@ -130,12 +131,18 @@ public class IncrementalJKindSearch {
 		Map<String, LustreTrace> strResult = 
 				JKindExecution.execute(lustre);
 		 
+		strResult.entrySet().removeIf(e -> e.getValue() == null 
+				|| e.getValue().getLength() == 0);
+		
 		// Remap it to be in terms of nodes
 		Map<OriginalHierarchy, LustreTrace> result = new HashMap<>();
 		allChildren.forEach(node -> 
 			result.put(node, strResult.get(
 					LustrePropertyGenerator.getNoFaiureExecuteId(node)))
 				);
+		result.entrySet().removeIf(e -> e.getValue() == null);
+		
+		
 		return result;
 	}
 

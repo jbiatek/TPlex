@@ -63,6 +63,52 @@ public class JKindResultUtils {
 		return jkind.Main.parseLustre(lusFile.getPath());
 	}
 	
+	
+	public static LustreTrace concatenate(LustreTrace first, LustreTrace second) {
+		LustreTrace newTrace = clone(first);
+		newTrace.addLustreTrace(second);
+		return newTrace;
+	}
+	
+	public static LustreTrace clone(LustreTrace original) {
+		LustreTrace newTrace = new LustreTrace(original.getLength());
+		for (String variable : original.getVariableNames()) {
+			Signal<Value> newSignal = new Signal<>(variable);
+			for (Entry<Integer, Value> e : 
+				original.getVariable(variable).getValues().entrySet()) {
+				newSignal.putValue(e.getKey(), e.getValue());
+			}
+			newTrace.addVariable(newSignal);
+		}
+		return newTrace;
+	}
+	
+	public static LustreTrace repeatLastStep(LustreTrace trace, int numTimes) {
+		int originalLength = trace.getLength();
+		int newLength = originalLength + numTimes;
+		LustreTrace newTrace = new LustreTrace(newLength);
+		for (String name : trace.getVariableNames()) {
+			Signal<Value> oldVar = trace.getVariable(name);
+			Signal<Value> newVar = new Signal<Value>(name);
+			Value lastValue = oldVar.getValue(originalLength-1);
+			for (int i = 0; i < newLength; i++) {
+				if (i < originalLength) {
+					newVar.putValue(i, oldVar.getValue(i));
+				} else {
+					newVar.putValue(i, lastValue);
+				}
+			}
+			newTrace.addVariable(newVar);
+		}
+		return newTrace;
+	}
+	
+	public static LustreTrace extendTestCase(LustreTrace inputs, Program program, int numSteps) {
+		LustreTrace lengthenedInputs = repeatLastStep(inputs, numSteps);
+		return simulate(program, lengthenedInputs);
+	}
+
+	
 	public static List<LustreTrace> simulateCSV(File lustreFile, String mainNode, 
 			File inputCsv) throws Exception{
 
@@ -99,8 +145,6 @@ public class JKindResultUtils {
 					Signal<Value> var = input.getVariable(name);
 					for (int i = 0; i < input.getLength(); i++) {
 						if (var.getValue(i) == null) {
-							System.err.println("Warning: Variable "+varDecl+
-									" has a null value for step "+i+", filling with default");
 							var.putValue(i, getDefaultValueFor(type).get());
 						}
 					}
