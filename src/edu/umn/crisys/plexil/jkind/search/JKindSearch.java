@@ -50,8 +50,11 @@ public class JKindSearch {
 	
 	public void go() {
 		// TODO This is just a test method.
-		JKindExecution.timeout = 240;
-		//JKindExecution.iteration = 7;
+		JKindExecution.timeout = Integer.MAX_VALUE;
+		JKindExecution.iteration = 20;
+		JKindExecution.k_induction = false;
+		JKindExecution.invariant_gen = false;
+		JKindExecution.pdr_threads = 0;
 		
 		System.out.println("Adding goals to execute each node with no failures");
 		// Try to execute each node, but not the root
@@ -60,7 +63,7 @@ public class JKindSearch {
 					.forEach(node -> addGoal(
 							new NodeExecutesNoParentFailProperty(node))));
 		
-		for (int i = 0; true; i++) {
+		for (int i = 0; i < 1; i++) {
 			if (unmetGoals.isEmpty()) break;
 			System.out.println("Starting iteration "+(i+1));
 			JKindTestRun testRun = generateNextSearchStep();
