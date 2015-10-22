@@ -58,6 +58,7 @@ import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.jkind.search.JKindSearch;
+import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
@@ -82,7 +83,7 @@ public class TPlex {
 	public List<File> files = new ArrayList<>();
 	
 	@Parameter(names="--directory", variableArity = true,
-			description = "Also include all PLX and PSX files found in the given directories.",
+			description = "Also include all files found in the given directories.",
 			converter = FileConverter.class)
 	public List<File> dirs = new ArrayList<>();
 	
@@ -158,6 +159,10 @@ public class TPlex {
 			"Generate test cases incrementally using JKind, putting any "
 			+ "resulting test cases in the output directory. ")
 	public boolean lustreIncrementalSearch = false;
+	
+	@Parameter(names = {"--depth", "-d"}, description = 
+			"Set the depth limit for incremental search")
+	public int lustreIncrementalDepth = 15;
 	
 
 	//Variables to use during translation
@@ -479,8 +484,9 @@ public class TPlex {
 			if (lustreIncrementalSearch) {
 				// Probably needs to return results at some point, or be
 				// told where to put them. 
-				JKindSearch searcher = new JKindSearch(p2l);
-				searcher.go();
+				JKindSearch searcher = new JKindSearch(p2l, new File(outputDir, "jkind-traces"));
+				searcher.go(JKindSettings.createBMCOnly(
+						Integer.MAX_VALUE, lustreIncrementalDepth));
 			}
 		}
 		if ( ! scripts.isEmpty()) {

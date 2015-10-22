@@ -45,10 +45,11 @@ public class JKindSearch {
 	private ForkJoinPool workQueue;
 	
 	private int fileNameCounter = 0;
-	private File outDir = new File("jkind-traces");
+	private File outDir;
 	
-	public JKindSearch(PlanToLustre translator) {
+	public JKindSearch(PlanToLustre translator, File outputDir) {
 		this.translator = translator;
+		outDir = outputDir;
 		System.out.println("Re-translating to Lustre");
 		this.lustreProgram = translator.toLustre();
 		StaticAnalyzer.check(lustreProgram, SolverOption.Z3);
