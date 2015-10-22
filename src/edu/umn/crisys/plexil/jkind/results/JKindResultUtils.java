@@ -163,22 +163,69 @@ public class JKindResultUtils {
 		
 		// Enums and such are all integers in this trace. Let's fix that.
 		
-		List<LustreTrace> newResults = new ArrayList<>();
-		
-		for (LustreTrace oldTrace : rawResults) {
-			LustreTrace newTrace = new LustreTrace(oldTrace.getLength());
-			for (String varName : oldTrace.getVariableNames()) {
-				Signal<Value> oldVar = oldTrace.getVariable(varName);
-				Type type = typeTable.get(varName);
-				
-				newTrace.addVariable(reEnumerateSignal(oldVar, type));
-			}
-			newResults.add(newTrace);
-		}
+		List<LustreTrace> newResults = rawResults.stream()
+				.map(raw -> reEnumerate(raw, typeTable))
+				.collect(Collectors.toList());
 		
 		return newResults;
 	}
 	
+	public static LustreTrace unEnumerate(LustreTrace t, Program p) {
+		return unEnumerate(t, ResolvedTypeTable.get(p));
+	}
+	
+	public static LustreTrace unEnumerate(LustreTrace t, Map<String,Type> typeTable) {
+		LustreTrace newTrace = new LustreTrace(t.getLength());
+		for (String varName : t.getVariableNames()) {
+			Signal<Value> oldVar = t.getVariable(varName);
+			Type type = typeTable.get(varName);
+			
+			newTrace.addVariable(unEnumerateSignal(oldVar, type));
+		}
+		return newTrace;
+	}
+	
+	public static Signal<Value> unEnumerateSignal(Signal<Value> oldVar, Type type) {
+		if (type instanceof EnumType) {
+			// We need to ensure that this value gets turned into an int
+			if (oldVar.getValue(0) instanceof EnumValue) {
+				// Here we go, let's change this
+				Signal<Value> newVar = new Signal<Value>(oldVar.getName());
+				oldVar.getValues().keySet().forEach(step -> {
+					// Get old value as enum
+					EnumValue oldValue = (EnumValue) oldVar.getValue(step);
+					newVar.putValue(step, values.StringToValue.get(oldValue.value, type));
+				});
+				return newVar;
+			} else if (oldVar.getValue(0) instanceof jkind.lustre.values.IntegerValue) {
+				// Our work is already done
+				return oldVar;
+			} else {
+				throw new RuntimeException("Passed in type was "+type
+						+" but actual values were "+oldVar.getValue(0).getClass());
+			}
+		} else {
+			// No need to change this
+			return oldVar;
+		}
+	}
+	
+	public static LustreTrace reEnumerate(LustreTrace t, Program p) {
+		return reEnumerate(t, ResolvedTypeTable.get(p));
+	}
+	
+	public static LustreTrace reEnumerate(LustreTrace t, Map<String,Type> typeTable) {
+		LustreTrace newTrace = new LustreTrace(t.getLength());
+		for (String varName : t.getVariableNames()) {
+			Signal<Value> oldVar = t.getVariable(varName);
+			Type type = typeTable.get(varName);
+			
+			newTrace.addVariable(reEnumerateSignal(oldVar, type));
+		}
+		return newTrace;
+	}
+	
+
 	public static Signal<Value> reEnumerateSignal(Signal<Value> oldVar, Type type) {
 		if (type instanceof EnumType) {
 			EnumType enumType = (EnumType) type;
@@ -307,7 +354,7 @@ public class JKindResultUtils {
 		// JKind's counterexamples inexplicably include some variables but not
 		// others. We'll simulate instead, since we know what we'll get back
 		// from that.
-		return simulate(lustreProgram, inputTrace);
+		return simulate(lustreProgram, unEnumerate(inputTrace, lustreProgram));
 	}
 	
 	public static Map<String, Counterexample> extractCounterexamples(JKindResult results) {
