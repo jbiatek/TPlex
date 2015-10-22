@@ -22,6 +22,16 @@ public class JKindTestRun {
 				Util::merge);
 	}
 	
+	public int getNumProperties() {
+		return fromScratch.size() + 
+				testsToGet.values().stream().mapToInt(Set::size)
+					.reduce(0, Integer::sum);
+	}
+	
+	public void add(IncrementalTrace prefix, Collection<? extends TraceProperty> props) {
+		props.forEach(p -> add(prefix, p));
+	}
+	
 	public boolean isCompletelyEmpty() {
 		return fromScratch.isEmpty() && testsToGet.isEmpty();
 	}

@@ -184,10 +184,14 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 	@Override
 	public Set<TraceProperty> createIntermediateGoalsFrom(
 			IncrementalTrace trace, PlanToLustre translator) {
+		return Collections.emptySet();
+		
 		// These are the goals to try if we don't think that we might be reachable.
 		
+		
+		
 		// We should try to get to any ancestors that haven't been executed,
-		Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
+		/*Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
 		
 		List<OriginalHierarchy> mySequencePath = node.getSequentialExecutionPath();
 		return (Set<TraceProperty>) fellows.stream()
@@ -210,19 +214,21 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 				})
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
-	
+		*/
 	}
 
 	@Override
 	public boolean traceLooksReachable(IncrementalTrace trace) {
+		return true;
 		// Find other "node executes no parent fails":
-		Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
+		/*Set<NodeExecutesNoParentFailProperty> fellows = filter(trace.getProperties());
 		// Does this trace execute either our parent or a sibling?
 		return fellows.stream()
 			.filter(fellow -> 
 					fellow.node.isDirectParentOf(node) 
 					|| fellow.node.isSibling(node))
 			.findAny().isPresent();
+			*/
 	}
 
 	@Override

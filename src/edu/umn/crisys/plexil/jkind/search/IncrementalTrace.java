@@ -26,13 +26,17 @@ public class IncrementalTrace {
 		this.properties = Collections.unmodifiableSet(properties);
 	}
 
-	public boolean filterAlreadyDone(TraceProperty p) {
+	public boolean propertyHasntBeenTriedYet(TraceProperty p) {
 		return ! triedAndFailed.contains(p) 
 				&& ! triedAndSucceeded.keySet().contains(p);
 	}
 	
 	public void addAsFailure(TraceProperty p) {
 		triedAndFailed.add(p);
+	}
+	
+	public void addAsSuccess(IncrementalTrace child) {
+		child.getProperties().forEach(prop -> triedAndSucceeded.put(prop, child));
 	}
 	
 	public void addAsSuccess(TraceProperty p, IncrementalTrace child) {

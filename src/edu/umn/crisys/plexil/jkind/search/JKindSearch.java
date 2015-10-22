@@ -10,10 +10,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import jkind.JKindExecution;
 import jkind.SolverOption;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
@@ -40,6 +40,12 @@ public class JKindSearch {
 	private Set<TraceProperty> unmetGoals = new HashSet<>();
 	private Set<IncrementalTrace> allTraces = new HashSet<>();
 	private Set<TraceProperty> nonPrefixAlreadyRun = new HashSet<>();
+	private JKindSettings jkind;
+	
+	private ForkJoinPool workQueue;
+	
+	private int fileNameCounter = 0;
+	private File outDir = new File("jkind-traces");
 	
 	public JKindSearch(PlanToLustre translator) {
 		this.translator = translator;
@@ -49,12 +55,12 @@ public class JKindSearch {
 	}
 	
 	public void go() {
+		go(JKindSettings.createBMCOnly(Integer.MAX_VALUE, 20));
+	}
+	
+	public void go(JKindSettings settings) {
 		// TODO This is just a test method.
-		JKindExecution.timeout = Integer.MAX_VALUE;
-		JKindExecution.iteration = 20;
-		JKindExecution.k_induction = false;
-		JKindExecution.invariant_gen = false;
-		JKindExecution.pdr_threads = 0;
+		jkind = settings;
 		
 		System.out.println("Adding goals to execute each node with no failures");
 		// Try to execute each node, but not the root
@@ -62,16 +68,28 @@ public class JKindSearch {
 			.forEach(child -> child.streamEntireHierarchy()
 					.forEach(node -> addGoal(
 							new NodeExecutesNoParentFailProperty(node))));
+
+		// Prepare the work queue
+		workQueue = new ForkJoinPool();
 		
-		for (int i = 0; i < 1; i++) {
-			if (unmetGoals.isEmpty()) break;
-			System.out.println("Starting iteration "+(i+1));
-			JKindTestRun testRun = generateNextSearchStep();
-			if (testRun.isCompletelyEmpty()) {
-				System.out.println("Found absolutely nothing new to search.");
-				break;
+		// We want to just run the initial goals in this thread, it'll spin off
+		// new threads. 
+		workerThread(generateMonolithicSearchStep());
+		System.out.println("Main thread now sleeping until work queue empties.");
+		// We can now wait until the work queue is emptied
+		boolean keepGoing = true;
+		while (keepGoing) {
+			try {
+				Thread.sleep(30 * 1000);
+				if (workQueue.isQuiescent()) {
+					System.out.println("Work queue has no more tasks");
+					workQueue.shutdown();
+					keepGoing = false;
+				}
+			} catch (InterruptedException e) {
+				workQueue.shutdownNow();
+				throw new RuntimeException(e);
 			}
-			search(testRun);
 		}
 		
 		System.out.println("Didn't meet "+unmetGoals.size()+" goals out of "
@@ -80,36 +98,8 @@ public class JKindSearch {
 			.filter(goal -> !unmetGoals.contains(goal))
 			.forEach(System.out::println);
 		
-		System.out.println("Dumping out traces to files.");
-		System.out.println("The last input step will be duplicated 10 times so that you can see where the plan was probably going.");
-		File outDir = new File("jkind-traces");
-		outDir.mkdir();
-		int i=0;
-		for (IncrementalTrace trace : allTraces) {
-			String props = trace.getProperties().stream()
-					.map(TraceProperty::toString)
-					.map(str -> str.replaceAll("[<>]", ""))
-					.map(str -> str.replace(' ', '_'))
-					.collect(Collectors.joining("."));
-			// We want to let the test case run a little more to give an idea
-			// of where it was going. Also, this will give us the full trace
-			// instead of just inputs, and those inputs will be enum names
-			// instead of raw ints. 
-			LustreTrace reEnumed = JKindResultUtils
-					.extendTestCase(trace.getFullTrace(), lustreProgram, 10);
-			
-			FileWriter fw = null;
-			try { 
-				File out = new File(outDir, "trace"+i+"-"+props+"-hash-"
-						+trace.hashCode()+".csv");
-				i++;
-				fw = new FileWriter(out);
-				fw.write(reEnumed.toString());
-				fw.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} 
-		}
+		System.out.println("Unmet goals were:");
+		unmetGoals.forEach(System.out::println);
 	}
 
 	public void addGoal(TraceProperty p) {
@@ -117,99 +107,146 @@ public class JKindSearch {
 		unmetGoals.add(p);
 	}
 	
-	public JKindTestRun generateNextSearchStep() {
+	public JKindTestRun generateMonolithicSearchStep() {
 		JKindTestRun ret = new JKindTestRun();
 		// Ask each property to find something to do
 		unmetGoals.forEach(unmetProperty -> {
-			System.out.println("Trying property "+unmetProperty);
-			// Ask it for anything it wants to try without using history
-			Set<TraceProperty> fromScratch = unmetProperty.createInitialGoals();
-			fromScratch.removeIf(goal -> nonPrefixAlreadyRun.contains(goal));
-			if ( ! fromScratch.isEmpty()) {
-				System.out.println("It wants to try "+fromScratch.size()+" new goals without prefixes.");
-			}
-			fromScratch.forEach(ret::add);
-			
-			// What traces haven't we been tried against already? 
-			Set<IncrementalTrace> tracesToTry = allTraces.stream()
-				.filter(trace -> trace.filterAlreadyDone(unmetProperty))
-				.collect(Collectors.toSet());
-			
-			// The property thinks that these will work, so try them
-			Set<IncrementalTrace> reachable = tracesToTry.stream()
-				//.filter(unmetProperty::traceLooksReachable)
-				.collect(Collectors.toSet());
-			reachable.forEach(trace -> ret.add(trace, unmetProperty));
-			System.out.println("It thinks that "+reachable.size()+" new traces are reachable.");
-			
-			/*if (reachable.isEmpty()) {
-				// It didn't see anything that looked reachable. Let's get some
-				// intermediate goals to try. 
-				System.out.println("So instead we will look for intermediate goals.");
-				
-				int count = 0;
-				for (IncrementalTrace trace : allTraces) {
-					// Ask our property to try and search forward from here
-					Set<TraceProperty> intermediate = 
-							unmetProperty.createIntermediateGoalsFrom(trace, translator);
-					intermediate.removeIf(property -> ! trace.filterAlreadyDone(property));
-					intermediate.forEach(prop -> ret.add(trace, prop));
-					count += intermediate.size();
-				}
-				System.out.println("Added "+count+" new intermediate goals.");
-			}*/
+			addToTestRun(unmetProperty, ret);
 		});
-		
-		// Almost done. Just remove any "initial" properties that we've already
-		// tried.
-		ret.removeAllFromWithoutPrefix(nonPrefixAlreadyRun);
 		
 		return ret;
 	}
 	
-	private static Program historify(Program simplified, LustreTrace trace) {
-		// Fill in null values
-		LustreTrace filled = FillNullValues.fill(trace, simplified, Generation.DEFAULT);
-		LustreSimulator sim = new LustreSimulator(simplified);
-		LustreTrace simulated;
-		try { 
-			simulated = sim.simulate(filled, Simulation.COMPLETE);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(simplified);
-			throw e;
-		}
+	synchronized private void writeTraceToFile(IncrementalTrace trace, LustreTrace reEnumed) {
+		outDir.mkdir();
+		String props = trace.getProperties().stream()
+				.map(TraceProperty::toString)
+				.map(str -> str.replaceAll("[<>]", ""))
+				.map(str -> str.replace(' ', '_'))
+				.collect(Collectors.joining("."));
 
-		// And add history
-		Node history = CreateHistoryVisitor.node(simplified.getMainNode(), simulated);
-		
-		// History translation kills all properties, add them back in
-		NodeBuilder nb = new NodeBuilder(history);
-		nb.addProperties(simplified.getMainNode().properties);
-		
-		return duplicateWithNewMainNode(simplified, nb.build());
+		FileWriter fw = null;
+		try { 
+			File out = new File(outDir, "trace"+fileNameCounter+"-"+props+"-hash-"
+					+trace.hashCode()+".csv");
+			fileNameCounter++;
+			fw = new FileWriter(out);
+			fw.write(reEnumed.toString());
+			fw.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} 
+
 	}
 	
-	private Program addProperties(Program p, Collection<TraceProperty> props) {
-		NodeBuilder nb = new NodeBuilder(p.getMainNode());
-		props.forEach(property -> property.addProperty(nb, translator));
-		return duplicateWithNewMainNode(p, nb.build());
+	synchronized private void addToWorkQueue(IncrementalTrace trace) {
+		JKindTestRun testRun = new JKindTestRun();
+		// Do any properties see stuff to do for this trace?
+		unmetGoals.forEach(goal -> {
+			if (trace.propertyHasntBeenTriedYet(goal) && 
+					goal.traceLooksReachable(trace)) {
+				testRun.add(trace, goal);
+			} 
+			goal.createIntermediateGoalsFrom(trace, translator).stream()
+				.filter(trace::propertyHasntBeenTriedYet)
+				.forEach(prop -> testRun.add(trace, prop));
+		});
+		if (testRun.isCompletelyEmpty()) return;
+		workQueue.execute(() -> workerThread(testRun));
 	}
 	
-	private static Program duplicateWithNewMainNode(Program old, Node newNode) {
-		ProgramBuilder pb = new ProgramBuilder();
-		pb.addNode(newNode);
-		pb.setMain(newNode.id);
-		pb.addTypes(old.types);
-		pb.addConstants(old.constants);
-		for (Node n : old.nodes) {
-			if (n.id.equals(old.main)) continue;
-			pb.addNode(n);
+	synchronized private void addToTestRun(TraceProperty unmetProperty, JKindTestRun ret) {
+		System.out.println("Trying property "+unmetProperty);
+		// Ask it for anything it wants to try without using history
+		Set<TraceProperty> fromScratch = unmetProperty.createInitialGoals();
+		fromScratch.removeIf(goal -> nonPrefixAlreadyRun.contains(goal));
+		if ( ! fromScratch.isEmpty()) {
+			System.out.println("It wants to try "+fromScratch.size()+" new goals without prefixes.");
 		}
-		return pb.build();
+		fromScratch.forEach(ret::add);
+		
+		// What traces haven't we been tried against already? 
+		Set<IncrementalTrace> tracesToTry = allTraces.stream()
+			.filter(trace -> trace.propertyHasntBeenTriedYet(unmetProperty))
+			.collect(Collectors.toSet());
+		
+		// The property thinks that these will work, so try them
+		Set<IncrementalTrace> reachable = tracesToTry.stream()
+			//.filter(unmetProperty::traceLooksReachable)
+			.collect(Collectors.toSet());
+		reachable.forEach(trace -> ret.add(trace, unmetProperty));
+		System.out.println("It thinks that "+reachable.size()+" new traces are reachable.");
+		
+		/*if (reachable.isEmpty()) {
+			// It didn't see anything that looked reachable. Let's get some
+			// intermediate goals to try. 
+			System.out.println("So instead we will look for intermediate goals.");
+			
+			int count = 0;
+			for (IncrementalTrace trace : allTraces) {
+				// Ask our property to try and search forward from here
+				Set<TraceProperty> intermediate = 
+						unmetProperty.createIntermediateGoalsFrom(trace, translator);
+				intermediate.removeIf(property -> ! trace.filterAlreadyDone(property));
+				intermediate.forEach(prop -> ret.add(trace, prop));
+				count += intermediate.size();
+			}
+			System.out.println("Added "+count+" new intermediate goals.");
+		}*/
+	}
+
+	private synchronized void fileSuccess(IncrementalTrace foundTrace, LustreTrace reEnumedTrace) {
+		allTraces.add(foundTrace);
+		writeTraceToFile(foundTrace, reEnumedTrace);
+		unmetGoals.removeAll(foundTrace.getProperties());
+		if (foundTrace.getPrefix().isPresent()) {
+			foundTrace.getPrefix().get().addAsSuccess(foundTrace);
+		} else {
+			nonPrefixAlreadyRun.addAll(foundTrace.getProperties());
+		}
 	}
 	
-	private synchronized void fileResults(Optional<IncrementalTrace> prefix, 
+	private synchronized void fileFailure(Optional<IncrementalTrace> prefix, TraceProperty prop) {
+		if (prefix.isPresent()) {
+			prefix.get().addAsFailure(prop);
+		} else {
+			nonPrefixAlreadyRun.add(prop);
+		}
+	}
+	
+	
+	public void workerThread(JKindTestRun run) {
+		searchAllNoPrefix(run);
+		run.getAllPrefixes().forEach(prefix -> 
+			searchPrefix(prefix, run.getPropertiesForPrefix(prefix)));
+	}
+
+
+	private void searchAllNoPrefix(JKindTestRun run) {
+		if ( ! run.getPropertiesWithoutPrefix().isEmpty()) {
+			// Yes. Add the properties and go.
+			Program init = simplify(addProperties(lustreProgram, 
+					run.getPropertiesWithoutPrefix(), translator));
+			StaticAnalyzer.check(init, SolverOption.Z3);
+			Map<String, LustreTrace> result = jkind.execute(init, System.out);
+			fileResults(Optional.empty(), result, run.getPropertiesWithoutPrefix());
+		}
+	}
+
+	private void searchPrefix(IncrementalTrace prefix, Set<TraceProperty> propertiesToTry) {
+		if (propertiesToTry.isEmpty()) return;
+		// Start from the end of the prefix, and add properties specified
+		// in the test run
+		Program prog = historify(
+				simplify(addProperties(lustreProgram, propertiesToTry, translator)), 
+				prefix.getFullTrace());
+		
+		StaticAnalyzer.check(prog, SolverOption.Z3);
+		Map<String, LustreTrace> result = jkind.execute(prog, System.out);
+		fileResults(Optional.of(prefix), result, propertiesToTry);
+	}
+	
+	private void fileResults(Optional<IncrementalTrace> prefix, 
 			Map<String,LustreTrace> result, Collection<TraceProperty> attemptedProps) {
 		int found = 0;
 		int notFound = 0;
@@ -223,61 +260,33 @@ public class JKindSearch {
 						result.get(prop.getPropertyId()), 
 						prefix,
 						Util.asHashSet(prop));
-				allTraces.add(foundTrace);
-				unmetGoals.remove(prop);
-				if (prefix.isPresent()) {
-					prefix.get().addAsSuccess(prop, foundTrace);
-				} else {
-					nonPrefixAlreadyRun.add(prop);
-				}
+				LustreTrace reEnumed = reEnumAndExtend(
+						foundTrace.getFullTrace(), lustreProgram);
+				fileSuccess(foundTrace, reEnumed);
 				found++;
+				addToWorkQueue(foundTrace);
 			} else {
 				// Can't get this one. Don't try this combination again.
-				if (prefix.isPresent()) {
-					prefix.get().addAsFailure(prop);
-				} else {
-					nonPrefixAlreadyRun.add(prop);
-				}
+				fileFailure(prefix, prop);
 				notFound++;
 			}
 		}
 		System.out.println("Logged results for "
 				+prefix.map(t -> "prefix "+t).orElse("run with no prefix"));
 		System.out.println("Found "+found+" new traces, didn't find "+notFound+".");
+		System.out.println("Current progress: ");
+		System.out.println("Have found "+allTraces.size()+" total traces.");
+		System.out.println("There are "+unmetGoals.size()+" goals remaining.");
 	}
+
 	
-	private static Program simplify(Program p) {
-		return new Program(RemoveEnumTypes.node(Translate.translate(p)));
-	}
-	
-	private void searchAllNoPrefix(JKindTestRun run) {
-		if ( ! run.getPropertiesWithoutPrefix().isEmpty()) {
-			// Yes. Add the properties and go.
-			Program init = simplify(addProperties(lustreProgram, run.getPropertiesWithoutPrefix()));
-			StaticAnalyzer.check(init, SolverOption.Z3);
-			Map<String, LustreTrace> result = JKindExecution.execute(init);
-			fileResults(Optional.empty(), result, run.getPropertiesWithoutPrefix());
-		}
-	}
-	
-	private void searchPrefix(IncrementalTrace prefix, Set<TraceProperty> propertiesToTry) {
-		// Start from the end of the prefix, and add properties specified
-		// in the test run
-		Program prog = historify(
-				simplify(addProperties(lustreProgram, propertiesToTry)), 
-				prefix.getFullTrace());
-		
-		StaticAnalyzer.check(prog, SolverOption.Z3);
-		Map<String, LustreTrace> result = JKindExecution.execute(prog);
-		fileResults(Optional.of(prefix), result, propertiesToTry);
-	}
-	
-	
-	public void search(JKindTestRun run) {
+
+	private void search(JKindTestRun run) {
 		System.out.println("Current progress: ");
 		System.out.println("Have found "+allTraces.size()+" total traces.");
 		System.out.println("There are "+unmetGoals.size()+" goals remaining.");
 		System.out.println("Next JKind execution run starting...");
+		
 		
 		ExecutorService pool = Executors.newWorkStealingPool();
 		
@@ -308,6 +317,61 @@ public class JKindSearch {
 			throw new RuntimeException(e);
 		}
 		
+	}
+	
+	private static LustreTrace reEnumAndExtend(LustreTrace trace, Program lustreProgram) {
+		// We want to let the test case run a little more to give an idea
+		// of where it was going. Also, this will give us the full trace
+		// instead of just inputs, and those inputs will be enum names
+		// instead of raw ints. 
+		return JKindResultUtils.extendTestCase(trace, lustreProgram, 10);
+	}
+
+	private static Program historify(Program simplified, LustreTrace trace) {
+		// Fill in null values
+		LustreTrace filled = FillNullValues.fill(trace, simplified, Generation.DEFAULT);
+		LustreSimulator sim = new LustreSimulator(simplified);
+		LustreTrace simulated;
+		try { 
+			simulated = sim.simulate(filled, Simulation.COMPLETE);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(simplified);
+			throw e;
+		}
+
+		// And add history
+		Node history = CreateHistoryVisitor.node(simplified.getMainNode(), simulated);
+		
+		// History translation kills all properties, add them back in
+		NodeBuilder nb = new NodeBuilder(history);
+		nb.addProperties(simplified.getMainNode().properties);
+		
+		return duplicateWithNewMainNode(simplified, nb.build());
+	}
+	
+	private static Program addProperties(Program p, Collection<TraceProperty> props,
+			PlanToLustre translator) {
+		NodeBuilder nb = new NodeBuilder(p.getMainNode());
+		props.forEach(property -> property.addProperty(nb, translator));
+		return duplicateWithNewMainNode(p, nb.build());
+	}
+	
+	private static Program duplicateWithNewMainNode(Program old, Node newNode) {
+		ProgramBuilder pb = new ProgramBuilder();
+		pb.addNode(newNode);
+		pb.setMain(newNode.id);
+		pb.addTypes(old.types);
+		pb.addConstants(old.constants);
+		for (Node n : old.nodes) {
+			if (n.id.equals(old.main)) continue;
+			pb.addNode(n);
+		}
+		return pb.build();
+	}
+	
+	private static Program simplify(Program p) {
+		return new Program(RemoveEnumTypes.node(Translate.translate(p)));
 	}
 	
 	
