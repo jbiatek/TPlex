@@ -234,8 +234,10 @@ public class ILSimulator extends JavaPlan {
 
 				@Override
 				public Void visit(ArrayVar arrayInfo, Void param) {
-					SimplePArray<PValue> array = new SimplePArray<PValue>(arrayInfo.getType(),
-							arrayInfo.getMaxSize(), arrayInfo.getInitialValue());
+					@SuppressWarnings("unchecked")
+					SimplePArray<PValue> array = new SimplePArray<PValue>(
+							arrayInfo.getMaxSize(), 
+							(PValueList<PValue>) arrayInfo.getInitialValue());
 					arrayVars.put(arrayInfo, array);
 					return null;
 				}

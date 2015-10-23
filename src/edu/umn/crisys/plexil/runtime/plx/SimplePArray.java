@@ -43,9 +43,9 @@ public class SimplePArray<T extends PValue> {
 		next = new ArrayList<T>(current);
 	}
 	
-	public SimplePArray(ExprType t, int size, PValueList<T> init) {
+	public SimplePArray(int size, PValueList<T> init) {
 		this.current = init;
-		this.type = t;
+		this.type = init.getType();
 		this.maxSize = size;
 		this.modified = new boolean[maxSize];
 		

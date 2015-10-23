@@ -437,7 +437,7 @@ public class RegressionTest {
 		String lustreString = hackyILExprToLustre(e, e.getType(), mapper);
 		
 		if (e instanceof ArrayVar) {
-			// Maybe it's split up by index
+			// In the trace these are split up by index
 			ArrayVar array = (ArrayVar) e;
 			for (int i = 0; i < array.getMaxSize(); i++) {
 				String indexed = lustreString+"["+i+"]";
