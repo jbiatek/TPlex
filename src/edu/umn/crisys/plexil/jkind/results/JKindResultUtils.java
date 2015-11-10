@@ -469,7 +469,7 @@ public class JKindResultUtils {
 				+" doesn't have a translation to PlexilScript");
 	}
 
-	private static PValue parseValue(Value value, 
+	public static PValue parseValue(Value value, 
 			ReverseTranslationMap stringMap) {
 		switch(getType(value)) {
 		case "int":

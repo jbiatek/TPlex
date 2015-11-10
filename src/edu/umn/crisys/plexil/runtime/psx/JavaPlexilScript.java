@@ -101,20 +101,13 @@ public class JavaPlexilScript implements ExternalWorld {
 	 */
 	
 	@Override
-	public void quiescenceReached(JavaPlan plan) {
+	public void endOfMacroStep(JavaPlan plan) {
 		if ( ! outOfEvents() ) {
 			env.applyEvent(events.get(eventCounter));
 			eventCounter++;
 		}
 	}
 	
-	@Override
-	public void prematureEndOfMacroStep(JavaPlan plan) {
-		// Do the same thing as when quiescence is reached
-		quiescenceReached(plan);
-	}
-	
-
 	@Override
 	public boolean stop() {
 		return outOfEvents();

@@ -409,7 +409,8 @@ public class RegressionTest {
 		
 		// Here we go!
 		//try { 
-			sim.runPlanToCompletion();
+		JavaPlan.DEBUG = true;
+		sim.runPlanToCompletion();
 //		} catch (Exception e) {
 //			System.out.println(ScriptSimulation.toCSV(rawTrace));
 //			throw e;
