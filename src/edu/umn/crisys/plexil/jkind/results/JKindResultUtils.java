@@ -41,8 +41,13 @@ import simulation.LustreSimulator;
 import types.ResolvedTypeTable;
 import values.ValueToString;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -52,6 +57,8 @@ import edu.umn.crisys.plexil.script.ast.FunctionCall;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.ast.Simultaneous;
 import edu.umn.crisys.plexil.script.ast.StateChange;
+import edu.umn.crisys.plexil.test.java.LustreComplianceChecker;
+import edu.umn.crisys.plexil.test.java.RegressionTest;
 import enums.Simulation;
 
 public class JKindResultUtils {
@@ -263,31 +270,7 @@ public class JKindResultUtils {
 		return result;
 	}
 	
-	public static Map<Counterexample,PlexilScript> translateToScripts(JKindResult results,
-			ReverseTranslationMap reverseMap) {
-		return namedCounterexamplesToScripts(extractCounterexamples(results), reverseMap);
-	}
-	
-	public static Map<Counterexample,PlexilScript> translateToScripts(
-			Map<String,LustreTrace> namedTraces, ReverseTranslationMap reverseMap) {
-		Map<String, Counterexample> namedCexes = namedTraces.entrySet().stream()
-					.collect(Collectors.toMap(
-							Entry::getKey, 
-							e -> toCounterexample(e.getValue())));
-		
-		return namedCounterexamplesToScripts(namedCexes, reverseMap);
-	}
-	
-	private static Map<Counterexample, PlexilScript> namedCounterexamplesToScripts(
-			Map<String, Counterexample> cexes, ReverseTranslationMap reverseMap) {
-		return cexes.entrySet().stream()
-				.collect(Collectors.toMap(
-						Entry::getValue, 
-						entry -> translateToScript(
-								entry.getKey(), entry.getValue(), reverseMap)
-						));
-	}
-	
+
 	public static List<LustreTrace> translateToTraces(JKindResult results,
 			Program prog) {
 		return extractCounterexamples(results).entrySet().stream()
@@ -366,6 +349,11 @@ public class JKindResultUtils {
 					InvalidProperty::getCounterexample));
 	}
 	
+	public static Map<String, LustreTrace> extractTraces(JKindResult result, Program p) {
+		return extractCounterexamples(result).entrySet().stream()
+				.collect(Collectors.toMap(Entry::getKey, e -> toTrace(e.getValue(), p)));
+	}
+	
 	public static Counterexample toCounterexample(LustreTrace trace) {
 		Counterexample cex = new Counterexample(trace.getLength());
 		for (String varName : trace.getVariableNames()) {
@@ -373,69 +361,28 @@ public class JKindResultUtils {
 		}
 		return cex;
 	}
-
-	public static PlexilScript translateToScript(String name, Counterexample cex,
-			ReverseTranslationMap map) {
-		PlexilScript script = new PlexilScript(name);
-		
-		List<Signal<Value>> relevant = cex.getSignals().stream()
-				.filter(sig -> 
-					// We want raw lookup inputs
-					(sig.getName().startsWith("Lookup") && sig.getName().endsWith("__raw"))
-					// We also want command handle inputs
-					|| (sig.getName().endsWith(COMMAND_HANDLE_SUFFIX))
-					)
-				.collect(Collectors.toList());
-		int[] macroStepBoundaries = 
-				cex.getBooleanSignal(LustreNamingConventions.MACRO_STEP_ENDED_ID)
-				.getValues().entrySet().stream()
-				// What steps is the macro step over? (Also, we want the first
-				// step regardless)
-				.filter(e -> e.getValue().value || e.getKey() == 0)
-				// Get those step numbers, but we are actually interested in the
-				// interim step, which happens 1 step later, unless it's the
-				// initial step which we do want as-is.
-				.mapToInt(e -> e.getKey() == 0 ? 0 : e.getKey() + 1)
-				// In order, please
-				.sorted()
-				// And save it
-				.toArray();
-		
-		
-		
-		for (int index = 0; index < macroStepBoundaries.length; index++) {
-			int step = macroStepBoundaries[index];
-			if (step == cex.getLength()) {
-				// Oop, this end of macrostep doesn't have an interim because
-				// it's the end. 
-				continue;
-			}
-			Simultaneous thisMacroStep = new Simultaneous();
-			
-			for (Signal<Value> signal : relevant) {
-				// Read this value as a PValue
-				PValue plexilValue = parseValue(signal.getValue(step), map);
-				if (index > 0) {
-					int prevStep = macroStepBoundaries[index-1]; 
-					PValue previous = parseValue(signal.getValue(prevStep), map);
-					if (plexilValue.equals(previous)) {
-						// This value hasn't actually changed this step. Skip it.
-						continue;
-					}
-				}
-				// Based on the signal name, create a PlexilScript event
-				toScriptEvent(signal.getName(), plexilValue, map)
-					.ifPresent(e -> thisMacroStep.addEvent(e));
-			}
-			if (step == 0 ) {
-				script.addInitialEvent(thisMacroStep.getCleanestEvent());
-			} else {
-				script.addMainEvent(thisMacroStep.getCleanestEvent());
-			}
-		}
-		return script;
-	}
 	
+	public static PlexilScript translateToScript(String name, LustreTrace trace,
+			ReverseTranslationMap map, Plan ilPlan) {
+		
+		JavaPlan.DEBUG = true;
+		ScriptedEnvironment.DEBUG = true;
+
+		// Use the recorder as the environment, it will create proper events
+		// from the Lustre trace that we give it. 
+		ScriptRecorderFromLustreData recorder = new ScriptRecorderFromLustreData(trace, map);
+		LustreComplianceChecker checker = 
+				RegressionTest.createComplianceChecker(trace, ilPlan, map);
+		ILSimulator sim = new ILSimulator(ilPlan, recorder);
+		sim.addObserver(recorder);
+		sim.addObserver(checker);
+		sim.runPlanToCompletion();
+		
+		// No exceptions means that it's all good!
+		PlexilScript theScript = recorder.convertToPlexilScript(name);
+		return theScript;
+		
+	}
 	private static String getType(Value v) {
 		if (v instanceof jkind.lustre.values.BooleanValue) {
 			return "bool";
@@ -448,27 +395,6 @@ public class JKindResultUtils {
 		}
 	}
 	
-	private static Optional<Event> toScriptEvent(String signal, PValue v, 
-			ReverseTranslationMap map) {
-		if (signal.startsWith("Lookup__")) {
-			String stateName = signal.replaceFirst("Lookup__", "");
-			return Optional.of(new StateChange(new FunctionCall(stateName), v));
-		} else if (signal.endsWith(COMMAND_HANDLE_SUFFIX)) {
-			// If this is unknown, no point in creating an event. But if it 
-			// is, we'll need the command's name from the map.
-			if (v.isKnown()) {
-				FunctionCall call = new FunctionCall(
-						map.getCommandNameFromHandleId(signal).get());
-				return Optional.of(new CommandAck(call, (CommandHandleState)v));
-			} else {
-				// No point in acknowlidging with nothing
-				return Optional.empty();
-			}
-		}
-		throw new RuntimeException("Signal "+signal
-				+" doesn't have a translation to PlexilScript");
-	}
-
 	public static PValue parseValue(Value value, 
 			ReverseTranslationMap stringMap) {
 		switch(getType(value)) {
@@ -482,6 +408,15 @@ public class JKindResultUtils {
 		default:
 			throw new RuntimeException("Parsing for type "+getType(value)+" not implemented");
 		}
+	}
+
+
+	public static Map<LustreTrace, PlexilScript> translateToScripts(Map<String, LustreTrace> namedTraces,
+			ReverseTranslationMap stringMapForLus, Plan ilPlan) {
+		return namedTraces.entrySet().stream()
+			.collect(Collectors.toMap(e -> e.getValue(), 
+					e -> translateToScript(e.getKey(), e.getValue(), 
+							stringMapForLus, ilPlan)));
 	}
 
 

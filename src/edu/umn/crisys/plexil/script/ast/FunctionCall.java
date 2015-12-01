@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.script.ast;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class FunctionCall {
@@ -18,6 +19,10 @@ public class FunctionCall {
 		return args;
 	}
 
+	public FunctionCall(PString name, PValue...args) {
+		this(name.getString(), args);
+	}
+	
 	public FunctionCall(String name, PValue... args) {
 		this.name = name;
 		this.args = args;

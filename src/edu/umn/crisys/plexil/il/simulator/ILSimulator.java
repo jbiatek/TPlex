@@ -42,6 +42,7 @@ import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.jkind.results.ScriptRecorderFromLustreData;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
@@ -339,8 +340,15 @@ public class ILSimulator extends JavaPlan {
 					args = cmd.getArgs().stream().map(ILSimulator.this::eval)
 							.collect(Collectors.toList()).toArray(new PValue[]{});
 				}
-				
-				getWorld().command(handle, commandName, args);
+				 
+				if (getWorld() instanceof ScriptRecorderFromLustreData) {
+					// This needs to be told the *name* of the node in addition
+					// to all the other stuff. 
+					ScriptRecorderFromLustreData rec = (ScriptRecorderFromLustreData) getWorld();
+					rec.specialCommand(cmd.getHandle(), handle, commandName, args);
+				} else {
+					getWorld().command(handle, commandName, args);
+				}
 				return null;
 			}
 
@@ -433,6 +441,8 @@ public class ILSimulator extends JavaPlan {
 					commitAfterMicroStep(states.get(nsm));
 					// Finally, notify that we didn't quiesce
 					changeOccurred();
+					// And stop trying to find new transitions.
+					break;
 				}
 			}
 			// Whatever state we're entering, execute its "in" actions

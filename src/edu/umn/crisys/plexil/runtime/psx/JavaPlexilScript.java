@@ -44,6 +44,18 @@ public class JavaPlexilScript implements ExternalWorld {
 		reset();
 	}
 	
+	public PlexilScript convertToPlexilScript(String scriptName) {
+		PlexilScript ret = new PlexilScript(scriptName);
+		for (int i = 0; i < getEvents().size(); i++) {
+			if (i == 0) {
+				ret.addInitialEvent(getEvents().get(i));
+			} else {
+				ret.addMainEvent(getEvents().get(i));
+			}
+		}
+		return ret;
+	}
+	
     public void reset() {
     	env.reset();
     	

@@ -38,6 +38,15 @@ public class LustreComplianceChecker extends TestOracle {
 		// macro steps begin, we'll see the new input values correctly.
 		ILSimulator sim = (ILSimulator) plan;
 		System.out.println("Checking Lustre step "+step);
+		
+		checkMacroStepBoundary();
+		checkAllExpressions(sim);
+		exceptionIfErrorsExist();
+
+		step++;
+	}
+	
+	private void checkMacroStepBoundary() {
 		boolean lustreMacroStepEnd = macrostepEnded.getValue(step)
 				.toString().equalsIgnoreCase("true");
 		if (macroStepShouldBeEnding) {
@@ -53,16 +62,22 @@ public class LustreComplianceChecker extends TestOracle {
 		} else if (lustreMacroStepEnd) {
 			errors.add("Lustre thought the macro step was ending, but IL didn't.");
 		}
-		
+
+	}
+	
+	private void checkAllExpressions(ILSimulator sim) {
 		for (Expression expr : ilTrace.keySet()) {
 			checkValue(expr, sim);
 		}
+	}
+	
+	private void exceptionIfErrorsExist() {
 		if (errors.size() != 0) {
+			errors.add("Macrostep info from Lustre: "+generateHistory(macrostepEnded));
+			
 			throw new RuntimeException("Error(s) at microstep "+step+": "
 					+errors.stream().collect(Collectors.joining(", ")));
-		} else {
-			step++;
-		}
+		} 
 	}
 
 	private void endOfMacroStep(String reason) {
@@ -78,27 +93,28 @@ public class LustreComplianceChecker extends TestOracle {
 		//TODO: is this really the best way to compare them?
 		if ( expectedStr == null || actual == null || 
 				! expectedStr.equals(actual.toString())) {
-			//This is an error, give some info back
-			String history = " (history: ";
-			String macroStep = " (macrostep end: ";
-			for (int i = Math.max(0, step-2); i < step+3; i++) {
-				if (i == step) {
-					history += "["+ilTrace.get(e).getValue(i)+"] ";
-					macroStep += "["+macrostepEnded.getValue(i)+"] ";
-				} else {
-					history += ilTrace.get(e).getValue(i)+" ";
-					macroStep += macrostepEnded.getValue(i)+" ";
-				}
-			}
-			history += ")";
-			macroStep += ")";
-			
+			String history = generateHistory(ilTrace.get(e));
 			errors.add("Values for "+e+" don't match: expected "+expected+", "
 					+"which should be "+expectedStr
 					+" in Lustre, but instead saw "+actual
-					+ history
-					+ macroStep);
+					+ " "+history);
 		}
+	}
+	
+	private String generateHistory(Signal<Value> v) {
+		int start = Math.max(0, step-2);
+		int end = step + 3;
+		
+		String history = "(history: ";
+		for (int i = start; i < end; i++) {
+			if (i == step) {
+				history += "["+v.getValue(i)+"] ";
+			} else {
+				history += v.getValue(i)+" ";
+			}
+		}
+		history += ")";
+		return history;
 	}
 
 	@Override

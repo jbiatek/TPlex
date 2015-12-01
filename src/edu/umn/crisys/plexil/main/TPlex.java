@@ -170,7 +170,7 @@ public class TPlex {
 	public Map<String, PlexilScript> scripts = new HashMap<>();
 	public Map<String, Plan> ilPlans = new HashMap<>();
 	public Map<String, ReverseTranslationMap> lustreTranslationMap = new HashMap<>();
-	public Map<Counterexample, PlexilScript> lustreResultsTranslated = new HashMap<>();
+	public Map<LustreTrace, PlexilScript> lustreResultsTranslated = new HashMap<>();
 //	public Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
 //	public Map<Plan, PlexilPlan> originalAst = new HashMap<>();
 	public Map<String, String> idToFile = new HashMap<>();
@@ -315,11 +315,20 @@ public class TPlex {
 					return false;
 				} 
 			} else if (f.getName().endsWith(".lus.xml")) {
+				if (simLustreFile == null) {
+					System.err.println("Error: A Lustre program must be supplied. Use --sim-lustre-file.");
+					return false;
+				}
+				if (compliancePlexilProgram == null) {
+					System.err.println("Error: A PLEXIL plx file must be supplied for compliance testing. Use --compliance-plx.");
+				}
 				try {
 					JKindResult results = JKindResultUtils.parseJKindFile(f);
-					Map<Counterexample, PlexilScript> parsedScripts = 
-							JKindResultUtils.translateToScripts(results, 
-									getStringMapForXml(f));
+					Map<LustreTrace, PlexilScript> parsedScripts = JKindResultUtils.translateToScripts(
+							JKindResultUtils.extractTraces(results, 
+									JKindResultUtils.parseProgram(simLustreFile)), 
+							getStringMapForXml(f), 
+							quickParsePlan(compliancePlexilProgram));
 					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
 					lustreResultsTranslated.putAll(parsedScripts);
 				} catch (Exception e) {
@@ -331,6 +340,9 @@ public class TPlex {
 				if (simLustreFile == null) {
 					System.err.println("Error: A Lustre program must be supplied. Use --sim-lustre-file.");
 					return false;
+				}
+				if (compliancePlexilProgram == null) {
+					System.err.println("Error: A PLEXIL plx file must be supplied for compliance testing. Use --compliance-plx.");
 				}
 				try {
 					List<LustreTrace> traces = JKindResultUtils.simulateCSV(
@@ -344,10 +356,11 @@ public class TPlex {
 					for (int i = 0; i < traces.size(); i++) {
 						namedTraces.put(baseName+"_"+i, traces.get(i));
 					}
-					Map<Counterexample, PlexilScript> parsedScripts = 
+					Map<LustreTrace, PlexilScript> parsedScripts = 
 							JKindResultUtils.translateToScripts(
 									namedTraces, 
-									getStringMapForLus(simLustreFile));
+									getStringMapForLus(simLustreFile),
+									quickParsePlan(compliancePlexilProgram));
 					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
 					lustreResultsTranslated.putAll(parsedScripts);
 				} catch (Exception e) {
@@ -442,7 +455,7 @@ public class TPlex {
 	}
 
 	private boolean generatePlexil() {
-		for (Entry<Counterexample, PlexilScript> e : lustreResultsTranslated.entrySet()) {
+		for (Entry<LustreTrace, PlexilScript> e : lustreResultsTranslated.entrySet()) {
 			// Print these PlexilScripts to output directory
 			try {
 				String filename = e.getValue().getScriptName()+".psx";
@@ -627,6 +640,14 @@ public class TPlex {
 		return lusFile.getName().replaceFirst("\\.lus$", "");
 	}
 	
+	public Plan quickParsePlan(File f) {
+		try {
+			return optimizeIL(translateToIL(PlxParser.parseFile(f)));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} 
+	}
+	
 	private void doComplianceTesting() throws Exception {
 		// Both better be there
 		if (simLustreFile == null) {
@@ -644,12 +665,11 @@ public class TPlex {
 		
 		Program lustreProg = JKindResultUtils.parseProgram(simLustreFile);
 		
-		Plan ilPlan = optimizeIL(translateToIL(
-				PlxParser.parseFile(compliancePlexilProgram)));
+		Plan ilPlan = quickParsePlan(compliancePlexilProgram);
 		
 		ReverseTranslationMap mapper = getStringMapForLus(simLustreFile);
 		
-		for (Entry<Counterexample, PlexilScript> e : lustreResultsTranslated.entrySet()) {
+		for (Entry<LustreTrace, PlexilScript> e : lustreResultsTranslated.entrySet()) {
 			doLustreCompliance(lustreProg, ilPlan, mapper, e.getKey(), e.getValue());
 		}
 		
@@ -657,10 +677,8 @@ public class TPlex {
 
 	private void doLustreCompliance(Program lustreProg, Plan ilPlan,
 			ReverseTranslationMap mapper,
-			Counterexample counterexample, PlexilScript plexilScript 
+			LustreTrace trace, PlexilScript plexilScript 
 			) throws Exception {
-
-		LustreTrace trace = JKindResultUtils.toTrace(counterexample, lustreProg);
 
 		System.out.println("Testing translated script "+plexilScript.getScriptName());
 		try {

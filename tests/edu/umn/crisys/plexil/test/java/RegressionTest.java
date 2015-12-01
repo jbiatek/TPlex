@@ -382,6 +382,23 @@ public class RegressionTest {
 	public static void complianceTest(Plan ilPlan, ExternalWorld environment,
 			LustreTrace rawTrace, ReverseTranslationMap mapper) throws Exception{
 
+		// Attach an observer to check these values against the IL sim
+
+		ILSimulator sim = new ILSimulator(ilPlan, environment);
+		sim.addObserver(createComplianceChecker(rawTrace, ilPlan, mapper));
+		// Here we go!
+		//try { 
+		JavaPlan.DEBUG = true;
+		sim.runPlanToCompletion();
+//		} catch (Exception e) {
+//			System.out.println(ScriptSimulation.toCSV(rawTrace));
+//			throw e;
+//		}
+		
+	}
+	
+	public static LustreComplianceChecker createComplianceChecker(
+			LustreTrace rawTrace, Plan ilPlan, ReverseTranslationMap mapper) {
 		// Put the trace in terms of variable names
 		Map<String, Signal<Value>> stringTrace = new HashMap<>();
 		rawTrace.getVariableNames().forEach(
@@ -403,19 +420,8 @@ public class RegressionTest {
 		final Signal<Value> macrostepEnded = 
 				stringTrace.get(LustreNamingConventions.MACRO_STEP_ENDED_ID);
 		
-		// Attach an observer to check these values against the IL sim
-		ILSimulator sim = new ILSimulator(ilPlan, environment);
-		sim.addObserver(new LustreComplianceChecker(ilTrace, macrostepEnded, mapper));
-		
-		// Here we go!
-		//try { 
-		JavaPlan.DEBUG = true;
-		sim.runPlanToCompletion();
-//		} catch (Exception e) {
-//			System.out.println(ScriptSimulation.toCSV(rawTrace));
-//			throw e;
-//		}
-		
+		return new LustreComplianceChecker(ilTrace, macrostepEnded, mapper);
+
 	}
 	
 	static String hackyILExprToLustre(Expression e, ExprType type, ReverseTranslationMap mapper) {
