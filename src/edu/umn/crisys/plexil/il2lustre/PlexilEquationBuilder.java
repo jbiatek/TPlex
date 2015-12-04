@@ -2,7 +2,6 @@ package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import edu.umn.crisys.util.Pair;
 import jkind.lustre.BinaryExpr;
@@ -42,7 +41,6 @@ public class PlexilEquationBuilder {
 	private IdExpr id;
 	private Expr init;
 	private Expr unconditionalStandard;
-	private Optional<Expr> unconditionalMacro;
 	private List<Pair<Expr,Expr>> standardAssignments = new ArrayList<>(); 
 	private List<Pair<Expr,Expr>> betweenMacroAssignments = new ArrayList<>();
 	
@@ -54,7 +52,6 @@ public class PlexilEquationBuilder {
 		this.id = id;
 		this.init = init;
 		this.unconditionalStandard = new UnaryExpr(UnaryOp.PRE, id);
-		this.unconditionalMacro = Optional.empty();
 	}
 
 	/**
@@ -79,16 +76,6 @@ public class PlexilEquationBuilder {
 	}
 	
 	/**
-	 * Set an assignment to this variable to occur between macro steps if no
-	 * guarded assignment is active. By default, it's the previous value.
-	 * 
-	 * @param result
-	 */
-	public void setDefaultAssignmentBetweenMacro(Expr result) {
-		unconditionalMacro = Optional.of(result);
-	}
-	
-	/**
 	 * Add an assignment to this variable to occur in between macro steps if
 	 * the guard is met. If multiple guards are true, the first one added takes
 	 * precedence. 
@@ -101,7 +88,7 @@ public class PlexilEquationBuilder {
 	}
 	
 	private boolean hasSpecialMacroStepRules() {
-		return (! betweenMacroAssignments.isEmpty()) || unconditionalMacro.isPresent(); 
+		return (! betweenMacroAssignments.isEmpty()); 
 	}
 	
 	public Equation buildEquation() {
@@ -109,9 +96,7 @@ public class PlexilEquationBuilder {
 			// v = init -> if (new macrostep) then (that chain) else
 			// (standard chain)
 			
-			// Use pre(id) if they didn't specify anything.
-			Expr realUnconditionalMacro = unconditionalMacro
-					.orElse(new UnaryExpr(UnaryOp.PRE, id));
+			Expr standardAssignmentChain = buildIfElseChain(standardAssignments, unconditionalStandard);
 			
 			return new Equation(id, 
 					new BinaryExpr(
@@ -120,10 +105,17 @@ public class PlexilEquationBuilder {
 						new IfThenElseExpr(
 							// If we're beginning a new macro step next time
 							PlanToLustre.isCurrentlyEndOfMacroStep(), 
-							// then do those
-							buildIfElseChain(betweenMacroAssignments, realUnconditionalMacro),
-							// else do the standard assignments
-							buildIfElseChain(standardAssignments, unconditionalStandard)
+							// then do those rules first. (If none of those 
+							// guards apply, then the standard rules should 
+							// still run. In effect, what we're saying is "do 
+							// the standard rules, but before the next step 
+							// they get overwritten by what happened between 
+							// macrosteps. If nothing happens between macro
+							// steps, then anything that happend "normally"
+							// remains. )
+							buildIfElseChain(betweenMacroAssignments, standardAssignmentChain),
+							// else just do the standard assignments
+							standardAssignmentChain
 						)));
 		} else {
 			// v = init -> if (guard) then v else ... else unguarded
