@@ -11,10 +11,7 @@ import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
@@ -465,7 +462,7 @@ public class StateMachineBuilder {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED)) {
         	cacheNamedExpression(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED, 
                 	translator.getParent().map(NodeToIL::getThisOrAncestorsEnds)
-            		.orElse(new RootAncestorEndExpr()));
+            		.orElse(RootAncestorExpr.END));
         }
         return makeGuard(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED, cond);
     }
@@ -474,7 +471,7 @@ public class StateMachineBuilder {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED)) {
         	cacheNamedExpression(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED, 
         			translator.getParent().map(NodeToIL::getThisOrAncestorsExits)
-        			.orElse(new RootAncestorExitExpr()));
+        			.orElse(RootAncestorExpr.EXIT));
         }
         return makeGuard(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED, cond);
     }
@@ -483,7 +480,7 @@ public class StateMachineBuilder {
     	if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED)) {
     		cacheNamedExpression(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED, 
     				translator.getParent().map(NodeToIL::getThisAndAncestorsInvariants)
-    				.orElse(new RootAncestorInvariantExpr()));
+    				.orElse(RootAncestorExpr.INVARIANT));
     	}
     	return makeGuard(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED, cond);
     }
@@ -504,7 +501,7 @@ public class StateMachineBuilder {
         if ( ! nativeExprCache.containsKey(d) ) {
         	nativeExprCache.put(d, new NativeEqual(state, 
         			translator.getParent().map((parent) -> (Expression)parent.getState())
-        			.orElse(new RootParentStateExpr())
+        			.orElse(RootAncestorExpr.STATE)
         			));
         }
         return nativeExprCache.get(d);

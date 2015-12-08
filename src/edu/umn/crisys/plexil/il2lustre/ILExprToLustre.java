@@ -27,10 +27,7 @@ import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -361,23 +358,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(RootParentStateExpr state, ExprType expectedType) {
-		throw new RuntimeException("Libraries aren't supported");
-	}
-
-	@Override
-	public Expr visit(RootAncestorExitExpr ancExit, ExprType expectedType) {
-		throw new RuntimeException("Libraries aren't supported");
-	}
-
-	@Override
-	public Expr visit(RootAncestorEndExpr ancEnd, ExprType expectedType) {
-		throw new RuntimeException("Libraries aren't supported");
-	}
-
-	@Override
-	public Expr visit(RootAncestorInvariantExpr ancInv,
-			ExprType expectedType) {
+	public Expr visit(RootAncestorExpr root, ExprType expectedType) {
 		throw new RuntimeException("Libraries aren't supported");
 	}
 

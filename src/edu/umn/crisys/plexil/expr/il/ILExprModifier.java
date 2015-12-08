@@ -183,27 +183,9 @@ implements NativeExprVisitor<Param, NativeExpr> {
 	}
 
 	@Override
-	public Expression visit(RootParentStateExpr state,
+	public Expression visit(RootAncestorExpr root,
 			Param param) {
-		return state;
-	}
-
-	@Override
-	public Expression visit(RootAncestorExitExpr ancExit,
-			Param param) {
-		return ancExit;
-	}
-
-	@Override
-	public Expression visit(RootAncestorEndExpr ancEnd,
-			Param param) {
-		return ancEnd;
-	}
-
-	@Override
-	public Expression visit(
-			RootAncestorInvariantExpr ancInv, Param param) {
-		return ancInv;
+		return root;
 	}
 
 }

@@ -11,10 +11,7 @@ import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -132,17 +129,8 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
 	public default R visit(AliasExpr alias, P param) {
 		return visit((Expression)alias, param);
 	}
-    public default R visit(RootParentStateExpr state, P param) {
-		return visit((Expression)state, param);
-	}
-    public default R visit(RootAncestorExitExpr ancExit, P param) {
-		return visit((Expression)ancExit, param);
-	}
-    public default R visit(RootAncestorEndExpr ancEnd, P param) {
-		return visit((Expression)ancEnd, param);
-	}
-    public default R visit(RootAncestorInvariantExpr ancInv, P param) {
-		return visit((Expression)ancInv, param);
+    public default R visit(RootAncestorExpr root, P param) {
+		return visit((Expression)root, param);
 	}
 
     

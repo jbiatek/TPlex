@@ -7,17 +7,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
 import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
@@ -166,27 +162,20 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public Expression visit(RootParentStateExpr state, Void param) {
-			return getInterface().evalParentState();
+		public Expression visit(RootAncestorExpr root, Void param) {
+			switch (root) {
+			case END:
+				return getInterface().evalAncestorEnd();
+			case EXIT:
+				return getInterface().evalAncestorExit();
+			case INVARIANT:
+				return getInterface().evalAncestorInvariant();
+			case STATE:
+				return getInterface().evalParentState();
+			default:
+				throw new RuntimeException("missing case");
+			}
 		}
-
-		@Override
-		public Expression visit(RootAncestorExitExpr ancExit,
-				Void param) {
-			return getInterface().evalAncestorExit();
-		}
-
-		@Override
-		public Expression visit(RootAncestorEndExpr ancEnd, Void param) {
-			return getInterface().evalAncestorEnd();
-		}
-
-		@Override
-		public Expression visit(
-				RootAncestorInvariantExpr ancInv, Void param) {
-			return getInterface().evalAncestorInvariant();
-		}
-
 
 		@Override
 		public Expression visit(SimpleVar var, Void param) {

@@ -18,10 +18,7 @@ import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -248,28 +245,19 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 
 
     @Override
-    public JExpression visit(RootParentStateExpr state,
-            JCodeModel cm) {
-        return JExpr.invoke("getInterface").invoke("evalParentState");
-    }
-
-    @Override
-    public JExpression visit(RootAncestorExitExpr ancExit,
-            JCodeModel cm) {
-        return JExpr.invoke("getInterface").invoke("evalAncestorExit");
-
-    }
-
-    @Override
-    public JExpression visit(RootAncestorEndExpr ancEnd,
-            JCodeModel cm) {
-        return JExpr.invoke("getInterface").invoke("evalAncestorEnd");
-    }
-
-    @Override
-    public JExpression visit(
-            RootAncestorInvariantExpr ancInv, JCodeModel cm) {
-        return JExpr.invoke("getInterface").invoke("evalAncestorInvariant");
+    public JExpression visit(RootAncestorExpr root, JCodeModel cm) {
+    	switch(root) {
+    	case END:
+            return JExpr.invoke("getInterface").invoke("evalAncestorEnd");
+    	case EXIT:
+            return JExpr.invoke("getInterface").invoke("evalAncestorExit");
+    	case INVARIANT:
+            return JExpr.invoke("getInterface").invoke("evalAncestorInvariant");
+    	case STATE:
+            return JExpr.invoke("getInterface").invoke("evalParentState");
+    	default:
+    		throw new RuntimeException("missing case");
+    	}
     }
 
 	@Override

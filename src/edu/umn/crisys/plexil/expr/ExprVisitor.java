@@ -11,10 +11,7 @@ import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -83,10 +80,7 @@ public interface ExprVisitor<P, R> {
     public R visit(NamedCondition named, P param);
 	public R visit(GetNodeStateExpr state, P param);
 	public R visit(AliasExpr alias, P param);
-    public R visit(RootParentStateExpr state, P param);
-    public R visit(RootAncestorExitExpr ancExit, P param);
-    public R visit(RootAncestorEndExpr ancEnd, P param);
-    public R visit(RootAncestorInvariantExpr ancInv, P param);
+    public R visit(RootAncestorExpr root, P param);
 
     
     //ILVariables

@@ -3,10 +3,7 @@ package edu.umn.crisys.plexil.il.optimizations;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
-import edu.umn.crisys.plexil.expr.il.RootParentStateExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -40,31 +37,23 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 	}
 
 	@Override
-	public Expression visit(RootParentStateExpr state,
-			Void param) {
-		// Plexil root states are always EXECUTING.
-		return NodeState.EXECUTING;
-	}
-
-	@Override
-	public Expression visit(RootAncestorExitExpr ancExit,
-			Void param) {
-		// Their parent isn't exiting.
-		return BooleanValue.get(false);
-	}
-
-	@Override
-	public Expression visit(RootAncestorEndExpr ancEnd,
-			Void param) {
-		// Their parent isn't ending.
-		return BooleanValue.get(false);
-	}
-
-	@Override
-	public Expression visit(
-			RootAncestorInvariantExpr ancInv, Void param) {
-		// Parent's invariant hasn't failed.
-		return BooleanValue.get(true);
+	public Expression visit(RootAncestorExpr root, Void param) {
+		switch (root) {
+		case STATE:
+			// Plexil root states are always EXECUTING.
+			return NodeState.EXECUTING;
+		case EXIT:
+			// Their parent isn't exiting.
+			return BooleanValue.get(false);
+		case END:
+			// Their parent isn't ending.
+			return BooleanValue.get(false);
+		case INVARIANT:
+			// Parent's invariant hasn't failed.
+			return BooleanValue.get(true);
+		default:
+			throw new RuntimeException("Missing case");
+		}
 	}
 
 }

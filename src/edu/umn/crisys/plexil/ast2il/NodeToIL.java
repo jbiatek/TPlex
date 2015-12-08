@@ -20,9 +20,7 @@ import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorEndExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExitExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorInvariantExpr;
+import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -327,7 +325,7 @@ public class NodeToIL {
         Expression parentExit = 
         		parent.map(p -> name(p.getThisOrAncestorsExits(),
         				PlexilExprDescription.ANCESTOR_EXITS_DISJOINED))
-        			.orElse(new RootAncestorExitExpr());
+        			.orElse(RootAncestorExpr.EXIT);
         
         return Operation.or(myExit, parentExit);
     }
@@ -338,7 +336,7 @@ public class NodeToIL {
         Expression parentEnd = 
         		parent.map(p -> name(p.getThisOrAncestorsEnds(),
         				PlexilExprDescription.ANCESTOR_ENDS_DISJOINED))
-        			.orElse(new RootAncestorEndExpr());
+        			.orElse(RootAncestorExpr.END);
         
         return Operation.or(myEnd, parentEnd);
     }
@@ -349,7 +347,7 @@ public class NodeToIL {
         Expression parentInv = 
         		parent.map(p -> name(p.getThisAndAncestorsInvariants(),
         				PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED))
-        			.orElse(new RootAncestorInvariantExpr());
+        			.orElse(RootAncestorExpr.INVARIANT);
         
         return Operation.and(myInv, parentInv);
     }
