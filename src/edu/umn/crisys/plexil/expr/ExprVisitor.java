@@ -47,118 +47,53 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  */
 public interface ExprVisitor<P, R> {
 	
-	public default R visit(Expression e, P param) {
-		throw new RuntimeException("This visitor does not support "
-				+e.getClass().getSimpleName());
-	}
+	public R visit(Expression e, P param);
     
 	
 	//PValues
-	public default R visit(PValue v, P param) {
-		return visit((Expression) v, param);
-	}
-	public default R visit(BooleanValue bool, P param) {
-		return visit((PValue)bool, param);
-	}
-	public default R visit(IntegerValue integer, P param) {
-		return visit((PValue)integer, param);
-	}
-	public default R visit(RealValue real, P param) {
-		return visit((PValue)real, param);
-	}
-	public default R visit(StringValue string, P param) {
-		return visit((PValue)string, param);
-	}
-	public default R visit(UnknownValue unk, P param) {
-		return visit((PValue)unk, param);
-	}
-	public default R visit(PValueList<?> list, P param) {
-		return visit((PValue)list, param);
-	}
-	public default R visit(CommandHandleState state, P param) {
-		return visit((PValue)state, param);
-	}
-	public default R visit(NodeFailureType type, P param) {
-		return visit((PValue)type, param);
-	}
-	public default R visit(NodeOutcome outcome, P param) {
-		return visit((PValue)outcome, param);
-	}
-	public default R visit(NodeState state, P param) {
-		return visit((PValue)state, param);
-	}
+	public R visit(PValue v, P param);
+	public R visit(BooleanValue bool, P param);
+	public R visit(IntegerValue integer, P param);
+	public R visit(RealValue real, P param);
+	public R visit(StringValue string, P param);
+	public R visit(UnknownValue unk, P param);
+	public R visit(PValueList<?> list, P param);
+	public R visit(CommandHandleState state, P param);
+	public R visit(NodeFailureType type, P param);
+	public R visit(NodeOutcome outcome, P param);
+	public R visit(NodeState state, P param);
 
 	// Lookups
-	public default R visit(LookupExpr lookup, P param) {
-		return visit((Expression)lookup, param);
-	}
-    public default R visit(LookupNowExpr lookup, P param) {
-		return visit((LookupExpr)lookup, param);
-	}
-    public default R visit(LookupOnChangeExpr lookup, P param) {
-		return visit((LookupExpr)lookup, param);
-	}
+	public R visit(LookupExpr lookup, P param);
+    public R visit(LookupNowExpr lookup, P param);
+    public R visit(LookupOnChangeExpr lookup, P param);
 	
 	
-    public default R visit(ArrayIndexExpr array, P param) {
-		return visit((Expression)array, param);
-	}
-    public default R visit(Operation op, P param) {
-		return visit((Expression)op, param);
-	}
+    public R visit(ArrayIndexExpr array, P param);
+    public R visit(Operation op, P param);
 
     // AST expressions
-    public default R visit(UnresolvedVariableExpr expr, P param) {
-		return visit((Expression)expr, param);
-	}
-    public default R visit(NodeRefExpr ref, P param) {
-		return visit((Expression)ref, param);
-	}
-    public default R visit(DefaultEndExpr end, P param) {
-		return visit((Expression)end, param);
-	}
-    public default R visit(NodeTimepointExpr timept, P param) {
-		return visit((Expression)timept, param);
-	}
+    public R visit(UnresolvedVariableExpr expr, P param);
+    public R visit(NodeRefExpr ref, P param);
+    public R visit(DefaultEndExpr end, P param);
+    public R visit(NodeTimepointExpr timept, P param);
 
     
     // IL expressions
-    public default R visit(NamedCondition named, P param) {
-    	return visit((Expression) named, param);
-    }
-	public default R visit(GetNodeStateExpr state, P param) {
-		return visit((Expression)state, param);
-	}
-	public default R visit(AliasExpr alias, P param) {
-		return visit((Expression)alias, param);
-	}
-    public default R visit(RootParentStateExpr state, P param) {
-		return visit((Expression)state, param);
-	}
-    public default R visit(RootAncestorExitExpr ancExit, P param) {
-		return visit((Expression)ancExit, param);
-	}
-    public default R visit(RootAncestorEndExpr ancEnd, P param) {
-		return visit((Expression)ancEnd, param);
-	}
-    public default R visit(RootAncestorInvariantExpr ancInv, P param) {
-		return visit((Expression)ancInv, param);
-	}
+    public R visit(NamedCondition named, P param);
+	public R visit(GetNodeStateExpr state, P param);
+	public R visit(AliasExpr alias, P param);
+    public R visit(RootParentStateExpr state, P param);
+    public R visit(RootAncestorExitExpr ancExit, P param);
+    public R visit(RootAncestorEndExpr ancEnd, P param);
+    public R visit(RootAncestorInvariantExpr ancInv, P param);
 
     
     //ILVariables
-    public default R visit(ILVariable v, P param) {
-    	return visit((Expression)v, param);
-    }
-	public default R visit(SimpleVar var, P param) {
-		return visit((ILVariable)var, param);
-	}
-	public default R visit(ArrayVar array, P param) {
-		return visit((ILVariable)array, param);
-	}
-	public default R visit(LibraryVar lib, P param) {
-		return visit((ILVariable)lib, param);
-	}
+    public R visit(ILVariable v, P param);
+	public R visit(SimpleVar var, P param);
+	public R visit(ArrayVar array, P param);
+	public R visit(LibraryVar lib, P param);
 
     
 }

@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.expr.il;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
+import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
@@ -8,7 +8,7 @@ import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 
 public abstract class ILExprVisitor<P, R> 
-implements ExprVisitor<P, R>
+implements CascadingExprVisitor<P, R>
 {
 	
 	private R visitASTExpr(Expression e) {

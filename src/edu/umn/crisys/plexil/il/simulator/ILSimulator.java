@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
@@ -223,7 +224,7 @@ public class ILSimulator extends JavaPlan {
 		ilPlan.getOriginalHierarchy().removeDeletedVariables(ilPlan);
 		
 		for (ILVariable var : ilPlan.getVariables()) {
-			var.accept(new ExprVisitor<Void,Void>() {
+			var.accept(new CascadingExprVisitor<Void,Void>() {
 
 				@Override
 				public Void visit(SimpleVar varInfo, Void param) {
