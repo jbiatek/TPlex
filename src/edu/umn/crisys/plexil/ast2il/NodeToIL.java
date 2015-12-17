@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.Node;
+import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
@@ -17,9 +18,11 @@ import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -145,7 +148,7 @@ public class NodeToIL {
             Map<String,Expression> aliases = new HashMap<String, Expression>();
             
             for (String alias : lib.getAliases()) {
-                aliases.put(alias, toIL(lib.getAlias(alias)));
+                aliases.put(alias, toIL(lib.getAlias(alias), ExprType.UNKNOWN));
             }
             
             LibraryVar libRef = new LibraryVar(
@@ -215,35 +218,35 @@ public class NodeToIL {
      * @param e
      * @return the expression, translated in this context
      */
-    Expression toIL(Expression e) {
-        return e.accept(exprToIL, null);
+    Expression toIL(Expression e, ExprType expectedType) {
+        return e.accept(exprToIL, expectedType);
     }
     
-    List<Expression> toIL(List<? extends Expression> list) {
+    List<Expression> toIL(List<? extends Expression> list, ExprType expectedType) {
         List<Expression> ret = new ArrayList<Expression>();
         for (Expression e : list) {
-            ret.add(toIL(e));
+            ret.add(toIL(e, expectedType));
         }
         return ret;
     }
     
     public void translateConditions(Map<PlexilExprDescription, Expression> map) {
     	map.put(PlexilExprDescription.START_CONDITION, 
-    			toIL(myNode.getStartCondition()));
+    			toIL(myNode.getStartCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.SKIP_CONDITION, 
-    			toIL(myNode.getSkipCondition()));
+    			toIL(myNode.getSkipCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.PRE_CONDITION, 
-    			toIL(myNode.getPreCondition()));
+    			toIL(myNode.getPreCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.INVARIANT_CONDITION, 
-    			toIL(myNode.getInvariantCondition()));
+    			toIL(myNode.getInvariantCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.REPEAT_CONDITION, 
-    			toIL(myNode.getRepeatCondition()));
+    			toIL(myNode.getRepeatCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.POST_CONDITION, 
-    			toIL(myNode.getPostCondition()));
+    			toIL(myNode.getPostCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.END_CONDITION, 
-    			toIL(myNode.getEndCondition()));
+    			toIL(myNode.getEndCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.EXIT_CONDITION, 
-    			toIL(myNode.getExitCondition()));
+    			toIL(myNode.getExitCondition(), ExprType.BOOLEAN));
     }
     
     public int getPriority() {
@@ -320,36 +323,36 @@ public class NodeToIL {
     }
     
     Expression getThisOrAncestorsExits() {
-        Expression myExit = name(toIL(myNode.getExitCondition()),
+        Expression myExit = name(toIL(myNode.getExitCondition(), ExprType.BOOLEAN),
         		PlexilExprDescription.EXIT_CONDITION);
         Expression parentExit = 
         		parent.map(p -> name(p.getThisOrAncestorsExits(),
         				PlexilExprDescription.ANCESTOR_EXITS_DISJOINED))
         			.orElse(RootAncestorExpr.EXIT);
         
-        return Operation.or(myExit, parentExit);
+        return ILOperator.POR.expr(myExit, parentExit);
     }
 
     Expression getThisOrAncestorsEnds() {
-        Expression myEnd = name(toIL(myNode.getEndCondition()),
+        Expression myEnd = name(toIL(myNode.getEndCondition(), ExprType.BOOLEAN),
         		PlexilExprDescription.END_CONDITION);
         Expression parentEnd = 
         		parent.map(p -> name(p.getThisOrAncestorsEnds(),
         				PlexilExprDescription.ANCESTOR_ENDS_DISJOINED))
         			.orElse(RootAncestorExpr.END);
         
-        return Operation.or(myEnd, parentEnd);
+        return ILOperator.POR.expr(myEnd, parentEnd);
     }
 
     Expression getThisAndAncestorsInvariants() {
-        Expression myInv = name(toIL(myNode.getInvariantCondition()),
+        Expression myInv = name(toIL(myNode.getInvariantCondition(), ExprType.BOOLEAN),
         		PlexilExprDescription.INVARIANT_CONDITION);
         Expression parentInv = 
         		parent.map(p -> name(p.getThisAndAncestorsInvariants(),
         				PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED))
         			.orElse(RootAncestorExpr.INVARIANT);
         
-        return Operation.and(myInv, parentInv);
+        return ILOperator.PAND.expr(myInv, parentInv);
     }
 
     public NodeUID getUID() {
@@ -429,16 +432,18 @@ public class NodeToIL {
         	Expression alias = createAlias(name, false);
         	
         	// Since it's an alias, we should cast it if we know the type.
-            if (type == ExprType.BOOLEAN) {
-                return Operation.castToBoolean(alias);
-            } else if (type.isNumeric()) {
-                return Operation.castToNumeric(alias);
-            } else if (type == ExprType.STRING) {
-                return Operation.castToString(alias);
-            } else {
-            	return alias;
-            }
-
+        	switch (type) {
+        	case BOOLEAN:
+        		return ILOperator.CAST_PBOOL.expr(alias);
+        	case INTEGER: 
+        		return ILOperator.CAST_PINT.expr(alias);
+        	case REAL:
+        		return ILOperator.CAST_PREAL.expr(alias);
+        	case STRING:
+        		return ILOperator.CAST_PSTRING.expr(alias);
+    		default:
+    			return alias;
+        	}
         	
         }
         return expr.get();
@@ -489,7 +494,8 @@ public class NodeToIL {
         } else if (e instanceof ArrayIndexExpr) {
             ArrayIndexExpr arr = (ArrayIndexExpr) e;
             return new ArrayIndexExpr(
-                    (ArrayVar) resolveVariableForWriting(arr.getArray()), toIL(arr.getIndex()));
+                    (ArrayVar) resolveVariableForWriting(arr.getArray()), 
+                    toIL(arr.getIndex(), ExprType.INTEGER));
         }
         throw new RuntimeException(e+" says it's assignable, but I don't know how to read it.");
     }
@@ -543,6 +549,12 @@ public class NodeToIL {
     	.findFirst().map(ld -> ld.getReturnValue().map(vd -> vd.getType())
     			.orElse(ExprType.UNKNOWN))
     			.orElse(ExprType.UNKNOWN);
+    }
+    
+    public Optional<LookupDecl> getLookupTypeInfo(String name) {
+    	return myNode.getPlan().getStateDeclarations().stream()
+		    	.filter(d -> d.getName().equals(name))
+		    	.findFirst();
     }
     
     

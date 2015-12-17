@@ -23,7 +23,7 @@ public enum RootAncestorExpr implements Expression {
 
 	@Override
 	public String asString() {
-		return "<root ancestor's "+this.toString().toLowerCase().replaceAll("_", " ")+">";
+		return "<root ancestor's "+this.toString().toLowerCase()+">";
 	}
 	
 }

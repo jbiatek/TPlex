@@ -3,19 +3,16 @@ package edu.umn.crisys.plexil.il.optimizations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative.Condition;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.il.Plan;
 
 public class UnknownBiasing extends ILExprModifier<Void> {
-	
+
 	/**
 	 * Replace some 3-valued operations with 2-valued ones, allowing more
 	 * native expressions to be used. 
@@ -26,151 +23,188 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 		ilPlan.modifyAllExpressions(new UnknownBiasing(), null);
 	}
 
-	@Override
-	public NativeExpr visitNativeOperation(NativeOperation op, Void param) {
-		// We're already native, but child expressions might have things to do
-		return new NativeOperation(op.getOperation(),
-				op.getArgs().stream()
-				.map((arg) -> arg.accept(this, null))
-				.collect(Collectors.toList()));
-	}
-	
-	private static NativeExpr collect(NativeOp op, Condition c, List<Expression> args) {
-		return new NativeOperation(op, args.stream()
-				.map((arg) -> new PlexilExprToNative(arg, c))
+	private static Expression collect(ILOperator topOperator, 
+			ILOperator insideOperator, List<Expression> args) {
+		return topOperator.expr(args.stream().map(arg -> insideOperator.expr(arg))
 				.collect(Collectors.toList()));
 	}
 
-	@Override
-	public NativeExpr visitPlexilExprToNative(PlexilExprToNative original, Void param) {
-		// Is this something that we can push down on?
-		if (original.getPlexilExpr() instanceof Operation) {
-			NativeExpr ret;
-			Operation oper = (Operation) original.getPlexilExpr();
-			switch(oper.getOperator()) {
-			case AND:
-				switch(original.getCondition()) {
-				case TRUE:
-					// (a && b).isTrue() becomes (a.isTrue() && b.isTrue())
-					// We want to know if all our args are true. 
-					ret = collect(NativeOp.AND, Condition.TRUE, oper.getArguments());
-					break;
-				case FALSE:
-					// (a && b).isFalse() becomes
-					// (a.isFalse() || b.isFalse())
-					// (if any of them are false, then the whole thing is false)
-					ret = collect(NativeOp.OR, Condition.FALSE, oper.getArguments());
-					break;
-				case UNKNOWN:
-					// (a && b).isUnknown() becomes
-					// ((a.isUnknown() || b.isUnknown()) && (a.isNotFalse() && b.isNotFalse()))
-					NativeExpr oneIsUnknown = collect(NativeOp.OR, Condition.UNKNOWN, oper.getArguments());
-					NativeExpr noneAreFalse = collect(NativeOp.OR, Condition.NOTFALSE, oper.getArguments());
 
-					ret = new NativeOperation(NativeOp.AND, oneIsUnknown, noneAreFalse);
-					break;
-				case NOTTRUE:
-					// (a && b).isNotTrue() becomes 
-					// (a.isNotTrue() || b.isNotTrue())
-					ret = collect(NativeOp.OR, Condition.NOTTRUE, oper.getArguments());
-					break;
-				case NOTFALSE:
-					// (a && b).isNotFalse() becomes
-					// (a.isNotFalse() && b.isNotFalse())
-					ret = collect(NativeOp.AND, Condition.NOTFALSE, oper.getArguments());
-					break;
-				case KNOWN:
-					// (a && b).isKnown() becomes 
-					// (a.isKnown() && b.isKnown()) || (a.isFalse() || b.isFalse())
-					NativeExpr allAreKnown = collect(NativeOp.AND, Condition.KNOWN, oper.getArguments());
-					NativeExpr oneIsFalse = collect(NativeOp.OR, Condition.FALSE, oper.getArguments());
-					ret = new NativeOperation(NativeOp.OR, allAreKnown, oneIsFalse);
-					break;
-				default:
-					throw new RuntimeException("Missing case");
-				}
+
+	@Override
+	public Expression visit(ILOperation oper, Void param) {
+		// Looking for PLEXIL booleans that are being biased into regular bools.
+		if (oper.getType() != ExprType.NATIVE_BOOL || 
+				oper.getArguments().size() != 1) {
+			// Nope, not applicable. 
+			return visitComposite(oper, null);
+		}
+		
+		// We can only push the bias down PLEXIL's boolean operators.
+		Expression argSomeType = oper.getUnaryArg();
+		if ( ! (argSomeType instanceof ILOperation)) {
+			return visitComposite(oper, null);
+		}
+		ILOperation arg = (ILOperation) argSomeType;
+		if (arg.getType() != ExprType.BOOLEAN) {
+			return visitComposite(oper, null);
+		}
+		// Okay, this is at least a PBoolean -> bool situation. 
+
+		Expression ret;
+		switch(oper.getOperator()) {
+		case IS_TRUE:
+			switch (arg.getOperator()) {
+			case PAND:
+				// (a && b).isTrue() becomes (a.isTrue() && b.isTrue())
+				// We want to know if all our args are true. 
+				ret = collect(ILOperator.AND, ILOperator.IS_TRUE, arg.getArguments());
 				break;
-			case OR:
-				switch(original.getCondition()) {
-				case TRUE:
-					// (a || b).isTrue() becomes (a.isTrue() || b.isTrue())
-					ret = collect(NativeOp.OR, Condition.TRUE, oper.getArguments());
-					break;
-				case FALSE:
-					// (a || b).isFalse() becomes (a.isFalse() && b.isFalse())
-					// (both have to be false for the whole thing to be false)
-					ret = collect(NativeOp.AND, Condition.FALSE, oper.getArguments());
-					break;
-				case UNKNOWN:
-					// (a || b).isUnknown() becomes 
-					NativeExpr oneIsUnknown = collect(NativeOp.OR, Condition.UNKNOWN, oper.getArguments());
-					NativeExpr noneAreTrue = collect(NativeOp.OR, Condition.NOTTRUE, oper.getArguments());
-					ret = new NativeOperation(NativeOp.AND, oneIsUnknown, noneAreTrue);
-					break;
-				case NOTTRUE:
-					// (a || b).isNotTrue() becomes (a.isNotTrue() && b.isNotTrue())
-					ret = collect(NativeOp.AND, Condition.NOTTRUE, oper.getArguments());
-					break;
-				case NOTFALSE:
-					// (a || b).isNotFalse() becomes (a.isNotFalse() || b.isNotFalse())
-					ret = collect(NativeOp.OR, Condition.NOTFALSE, oper.getArguments());
-					break;
-				case KNOWN:
-					// (a || b).isKnown() becomes
-					NativeExpr allAreKnown = collect(NativeOp.AND, Condition.KNOWN, oper.getArguments());
-					NativeExpr oneIsTrue = collect(NativeOp.OR, Condition.TRUE, oper.getArguments());
-					ret = new NativeOperation(NativeOp.OR, allAreKnown, oneIsTrue);
-					break;
-				default:
-					throw new RuntimeException("Missing case");
-				}
+			case POR:
+				// (a || b).isTrue() becomes (a.isTrue() || b.isTrue())
+				ret = collect(ILOperator.OR, ILOperator.IS_TRUE, arg.getArguments());
 				break;
-			case NOT:
-				// Remove the NOT operator and just flip the bias around.
-				switch(original.getCondition()) {
-				case TRUE:
-					// (!a).isTrue() -> a.isFalse()
-					ret = PlexilExprToNative.isFalse(oper.getArguments().get(0));
-					break;
-				case FALSE:
-					// (!a).isFalse() -> a.isTrue();
-					ret = PlexilExprToNative.isTrue(oper.getArguments().get(0));
-					break;
-				case UNKNOWN:
-					// (!a).isUnknown() -> a.isUnknown();
-					ret = PlexilExprToNative.isUnknown(oper.getArguments().get(0));
-					break;
-				case NOTTRUE:
-					// (!a).isNotTrue() -> a.isNotFalse();
-					ret = PlexilExprToNative.isNotFalse(oper.getArguments().get(0));
-					break;
-				case NOTFALSE: 
-					ret = PlexilExprToNative.isNotTrue(oper.getArguments().get(0));
-					break;
-				case KNOWN:
-					ret = PlexilExprToNative.isKnown(oper.getArguments().get(0));
-					break;
-				default:
-					throw new RuntimeException("Missing case");
-				}
+			case PNOT:
+				// (!a).isTrue() -> a.isFalse()
+				ret = ILOperator.IS_FALSE.expr(arg.getUnaryArg());
 				break;
 			default:
-				// We don't care about other operators
-				return original;
+				// Nothing to change here after all
+				return visitComposite(oper, null);
 			}
-			// Okay, if we're here, we've got a new expression. Give it a chance
-			// to bias more, and that's it.
-			return ret.accept(this, null);	
-		} else {
-			// Nothing to do, leave it as is
-			return original;
-		}
-	}
+			break;
+		case IS_FALSE:
+			switch (arg.getOperator()) {
+			case PAND:
+				// (a && b).isFalse() becomes
+				// (a.isFalse() || b.isFalse())
+				// (if any of them are false, then the whole thing is false)
+				ret = collect(ILOperator.OR, ILOperator.IS_FALSE, arg.getArguments());
+				break;
 
-	@Override
-	public NativeExpr visitNativeConstant(NativeConstant c, Void param) {
-		// These should probably be removed by something somewhere...
-		return c;
+			case POR:
+				// (a || b).isFalse() becomes (a.isFalse() && b.isFalse())
+				// (both have to be false for the whole thing to be false)
+				ret = collect(ILOperator.AND, ILOperator.IS_FALSE, arg.getArguments());
+				break;
+
+			case PNOT:
+				// (!a).isFalse() -> a.isTrue();
+				ret = ILOperator.IS_TRUE.expr(arg.getUnaryArg());
+				break;
+			default:
+				// Nothing to change here after all
+				return visitComposite(oper, null);
+			}
+			break;
+		case IS_UNKNOWN:
+			Expression oneIsUnknown = collect(ILOperator.OR, ILOperator.IS_UNKNOWN, arg.getArguments());
+			switch (arg.getOperator()) {
+			case PAND:
+				// (a && b).isUnknown() becomes
+				// ((a.isUnknown() || b.isUnknown()) && (a.isNotFalse() && b.isNotFalse()))
+				Expression noneAreFalse = collect(ILOperator.OR, ILOperator.IS_NOT_FALSE, arg.getArguments());
+
+				ret = ILOperator.AND.expr(oneIsUnknown, noneAreFalse);
+				break;
+			case POR:
+				// (a || b).isUnknown() becomes 
+				// ((a.isUnknown() || b.isUnknown()) && (a.isNotTrue() && b.isNotTrue()))
+				Expression noneAreTrue = collect(ILOperator.OR, ILOperator.IS_NOT_TRUE, arg.getArguments());
+				ret = ILOperator.AND.expr(oneIsUnknown, noneAreTrue);
+				break;
+			case PNOT:
+				// The NOT operator doesn't change whether it's known or not,
+				// so we can just strip it out entirely. 
+				// (!a).isUnknown() -> a.isUnknown();
+				ret = ILOperator.IS_UNKNOWN.expr(arg.getUnaryArg());
+				break;
+			default:
+				// Nothing to change here after all
+				return visitComposite(oper, null);
+			}
+			break;
+		case IS_NOT_TRUE:
+			switch (arg.getOperator()) {
+			case PAND:
+				// (a && b).isNotTrue() becomes 
+				// (a.isNotTrue() || b.isNotTrue())
+				ret = collect(ILOperator.OR, ILOperator.IS_NOT_TRUE, arg.getArguments());
+				break;
+
+			case POR:
+				// (a || b).isNotTrue() becomes (a.isNotTrue() && b.isNotTrue())
+				ret = collect(ILOperator.AND, ILOperator.IS_NOT_TRUE, arg.getArguments());
+				break;
+
+			case PNOT:
+				// (!a).isNotTrue() -> a.isNotFalse();
+				ret = ILOperator.IS_NOT_FALSE.expr(arg.getUnaryArg());
+				break;
+
+			default:
+				// Nothing to change here after all
+				return visitComposite(oper, null);
+			}
+			break;
+		case IS_NOT_FALSE:
+			switch (arg.getOperator()) {
+			case PAND:
+				// (a && b).isNotFalse() becomes
+				// (a.isNotFalse() && b.isNotFalse())
+				ret = collect(ILOperator.AND, ILOperator.IS_NOT_FALSE, arg.getArguments());
+				break;
+
+			case POR:
+				// (a || b).isNotFalse() becomes (a.isNotFalse() || b.isNotFalse())
+				ret = collect(ILOperator.OR, ILOperator.IS_NOT_FALSE, arg.getArguments());
+				break;
+
+			case PNOT:
+				ret = ILOperator.IS_NOT_TRUE.expr(arg.getUnaryArg());
+				break;
+
+			default:
+				// Nothing to change here after all
+				return visitComposite(oper, null);
+			}
+			break;
+		case IS_KNOWN:
+			Expression allAreKnown = collect(ILOperator.AND, ILOperator.IS_KNOWN, arg.getArguments());
+			switch (arg.getOperator()) {
+			case PAND:
+				// (a && b).isKnown() becomes 
+				// (a.isKnown() && b.isKnown()) || (a.isFalse() || b.isFalse())
+				Expression oneIsFalse = collect(ILOperator.OR, ILOperator.IS_FALSE, arg.getArguments());
+				ret = ILOperator.OR.expr(allAreKnown, oneIsFalse);
+				break;
+
+			case POR:
+				// (a || b).isKnown() becomes
+				Expression oneIsTrue = collect(ILOperator.OR, ILOperator.IS_TRUE, arg.getArguments());
+				ret = ILOperator.OR.expr(allAreKnown, oneIsTrue);
+				break;
+
+			case PNOT:
+				// NOT doesn't change known-ness, so remove it.
+				ret =ILOperator.IS_KNOWN.expr(arg.getUnaryArg());
+				break;
+
+			default:
+				// Nothing to change here after all
+				return visitComposite(oper, null);
+			}
+			break;
+		default:
+			// Nope, this must be something else.
+			return visitComposite(oper, null);
+		}
+		
+		// We've got a new expression now, it should be a native operator on
+		// some biased PLEXIL terms. We might be able to optimize those terms
+		// further, so we'll run it through the default "composite" method 
+		// which will propagate this visitor to the arguments. 
+		return visitComposite(ret, null);
 	}
 
 

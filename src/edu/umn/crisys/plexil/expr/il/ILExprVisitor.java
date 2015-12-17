@@ -6,6 +6,7 @@ import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 
 public abstract class ILExprVisitor<P, R> 
 implements CascadingExprVisitor<P, R>
@@ -29,6 +30,9 @@ implements CascadingExprVisitor<P, R>
     public final R visit(NodeTimepointExpr timept, P param) {
     	return visitASTExpr(timept);
     }
-
+    
+    public final R visit(ASTOperation op, P param) {
+    	return visitASTExpr(op);
+    }
     
 }

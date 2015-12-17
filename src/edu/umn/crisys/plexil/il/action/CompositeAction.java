@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il.action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompositeAction implements PlexilAction {
 	
@@ -27,11 +28,8 @@ public class CompositeAction implements PlexilAction {
 	
 	@Override
 	public String toString() {
-		String ret = "";
-		for (PlexilAction action : actions) {
-			ret += action.toString()+", ";
-		}
-		return ret.replaceAll(", $", "");
+		return actions.stream().map(Object::toString)
+				.collect(Collectors.joining(", "));
 	}
 
 }

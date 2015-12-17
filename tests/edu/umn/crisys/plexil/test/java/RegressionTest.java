@@ -66,6 +66,8 @@ public class RegressionTest {
 	public static final File LUSTRE_FILES = new File("tests/generated/lustre");
 	public static final String TPLEX_OUTPUT_PACKAGE = "generated.java";
 	
+	public static boolean SIMULATE_ALL_JAVA_FILES = false;
+	
 	public static class TestSuite {
 		public String planFile;
 		public String[] planScripts;
@@ -335,6 +337,13 @@ public class RegressionTest {
 	}
 	
 	public static JavaPlan getPlan(String planName, ExternalWorld world) throws ReflectiveOperationException {
+		if (SIMULATE_ALL_JAVA_FILES) {
+			// Give them an IL simulator instead. 
+			TPlex exec = new TPlex();
+			Plan p = exec.quickParsePlan(new File(RESOURCES, planName+".plx"));
+//			System.out.println(p.printFullPlan());
+			return new ILSimulator(p, world);
+		}
 		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
 		return (JavaPlan) main.getConstructor(ExternalWorld.class).newInstance(world);
 	}

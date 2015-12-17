@@ -16,7 +16,7 @@ public class NamedCondition extends ExpressionBase {
 	
 	public NamedCondition(Expression e, NodeUID uid, 
 			PlexilExprDescription desc) {
-		super(ExprType.BOOLEAN);
+		super(e.getType());
 		this.theExpr = e;
 		this.uid = uid;
 		this.description = desc;

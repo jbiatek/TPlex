@@ -22,11 +22,12 @@ import edu.umn.crisys.plexil.script.translator.ScriptParser;
 
 public enum ExprType {
 
+	NATIVE_BOOL     (Optional.empty()),
     BOOLEAN			(Optional.of(UnknownValue.get())),
     INTEGER			(Optional.of(UnknownValue.get())),
     REAL			(Optional.of(UnknownValue.get())),
     STRING			(Optional.of(UnknownValue.get())),
-    NUMERIC			(Optional.of(UnknownValue.get())),
+    //NUMERIC			(Optional.of(UnknownValue.get())),
     UNKNOWN			(Optional.of(UnknownValue.get())),
     ARRAY           (Optional.empty()),
     BOOLEAN_ARRAY	(Optional.empty()),
@@ -43,7 +44,6 @@ public enum ExprType {
     private final Optional<PValue> unknown;
 
     private ExprType(Optional<PValue>unknown) {
-    	
         this.unknown = unknown;
     }
 
@@ -65,7 +65,7 @@ public enum ExprType {
         case INTEGER: return PInteger.class;
         case REAL: return PReal.class;
         case STRING: return PString.class;
-        case NUMERIC: return PNumeric.class;
+        //case NUMERIC: return PNumeric.class;
         case STATE: return NodeState.class;
         case OUTCOME: return NodeOutcome.class;
         case FAILURE: return NodeFailureType.class;
@@ -112,7 +112,7 @@ public enum ExprType {
     }
     
     public boolean isSpecificType() {
-    	return this != NUMERIC && this != UNKNOWN &&  this != ARRAY;
+    	return /*this != NUMERIC && */this != UNKNOWN &&  this != ARRAY;
     }
     
     public ExprType getMoreSpecific(ExprType other) {
@@ -168,6 +168,8 @@ public enum ExprType {
             } else {
                 return STRING;
             }
+        } else if (name.equals("NUMERIC")) {
+        	return REAL;
         }
         
         // Just look for an easy match
@@ -209,7 +211,7 @@ public enum ExprType {
         case INTEGER:
             return IntegerValue.get(Integer.parseInt(value));
         case REAL:
-        case NUMERIC:
+//        case NUMERIC:
             return RealValue.get(Double.parseDouble(value));
         case STRING:
             return StringValue.get(value);
@@ -325,7 +327,7 @@ public enum ExprType {
      * @return true if this is a numeric type of some sort.
      */
     public boolean isNumeric() {
-        return this == INTEGER || this == REAL || this == NUMERIC;
+        return this == INTEGER || this == REAL;// || this == NUMERIC;
     }
 
 }

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,9 +30,11 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.google.gson.Gson;
+import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JPackage;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
@@ -40,6 +43,7 @@ import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
@@ -415,12 +419,14 @@ public class TPlex {
 		}
 
 
+		ConstantPropagation.optimize(ilPlan);
+		RemoveDeadTransitions.optimize(ilPlan);
 		if (!noBiasing) {
 			UnknownBiasing.optimize(ilPlan);
 		}
 		PruneUnusedVariables.optimize(ilPlan);
-		RemoveDeadTransitions.optimize(ilPlan);
-		ConstantPropagation.optimize(ilPlan);
+		
+		System.out.println(ilPlan.printFullPlan());
 		
 		return ilPlan;
 	}
@@ -551,6 +557,7 @@ public class TPlex {
 			} else {
 				PlanToJava.addBlankSnapshotMethod(clazz);
 			}
+			
 		}
 		for (String filename : scripts.keySet()) {
 			PlexilScript script = scripts.get(filename);
@@ -561,15 +568,13 @@ public class TPlex {
 				return false;
 			}
 		}
-		
-		
 		// Write code to the output directory
-		try {
+		try {	
 			cm.build(outputDir);
 		} catch (IOException e) {
 			System.err.println("Error writing Java code to output directory: "+e.getMessage());
 			return false;
-		}
+		} 
 		return true;
 	}
 

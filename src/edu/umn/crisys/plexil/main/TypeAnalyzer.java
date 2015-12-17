@@ -26,7 +26,7 @@ import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -112,19 +112,13 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
                 map.put(key, value);
                 return;
             } else if (map.get(key) == ExprType.INTEGER &&
-                    (value == ExprType.REAL || value == ExprType.NUMERIC)) {
+                    (value == ExprType.REAL)) {
             	// Hmm, we thought this was an integer, but I guess we can't be
             	// that specific.
-                map.put(key, ExprType.NUMERIC);
+                map.put(key, ExprType.REAL);
                 return;
             } else if (map.get(key) == ExprType.REAL &&
-                    (value == ExprType.INTEGER || value == ExprType.NUMERIC)) {
-            	// Hmm, we thought it was a real, but I guess we can't be that specific.
-                map.put(key, ExprType.NUMERIC);
-                return;
-            } else if (map.get(key) == ExprType.NUMERIC &&
-                    (value == ExprType.REAL || value == ExprType.INTEGER)) {
-            	// Yeah, we already knew it was numeric.
+                    (value == ExprType.INTEGER)) {
                 return;
             } else {
             	// They didn't match, and it wasn't numeric? Bad times.
@@ -213,21 +207,13 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 	}
 
 	@Override
-	public Void visit(Operation op, ExprType currentType) {
+	public Void visit(ASTOperation op, ExprType currentType) {
 		// Operators contain information about their argument types.
 		ExprType argType = op.getExpectedArgumentType();
 		
 		// If it's a NodeRef, there's no point in continuing.
 		if (argType == ExprType.NODEREF) return null;
 
-        // It's possible that we can be more specific than "numeric":
-        if (argType == ExprType.NUMERIC) {
-            // Do we know if this is gonna be a real or integer already?
-            if (currentType == ExprType.INTEGER ||
-                    currentType == ExprType.REAL) {
-                argType = currentType;
-            } 
-        }
         // Move down, and pass along the argument type.
         String lookup = null;
         Set<PValue> constants = new HashSet<PValue>();

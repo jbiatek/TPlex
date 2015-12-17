@@ -44,7 +44,6 @@ public interface PValue extends Expression {
 	 * 
 	 * <ul>
 	 * <li> If we're already the right type, return this
-	 * <li> If the desired type is NUMERIC and we're already numeric, return this
 	 * <li> If we're UNKNOWN, return an appropriate UNKNOWN
 	 * </ul> 
 	 * 
@@ -60,11 +59,7 @@ public interface PValue extends Expression {
 	default public PValue castTo(ExprType type)  {
 		if (this.getType() == type) {
 			return this;
-		} else if (type == ExprType.NUMERIC 
-				&& this instanceof PNumeric) { 
-			return this;
-		}
-		else if (this.isUnknown()) {
+		} else if (this.isUnknown()) {
 			return type.getUnknown();
 		}
 		throw new RuntimeException(

@@ -12,12 +12,10 @@ import static jkind.lustre.LustreUtil.or;
 import static jkind.lustre.LustreUtil.pre;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import jkind.lustre.BinaryExpr;
@@ -28,10 +26,9 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
-import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative.Condition;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
@@ -99,18 +96,15 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 				// else keep it true, indicating failure
 				TRUE
 				);
-		PlexilExprToNative invFailGuard = new PlexilExprToNative(
+		Expression invFailGuard = ILOperator.IS_FALSE.expr(
 				node.getConditions().get(
-						PlexilExprDescription.INVARIANT_CONDITION), 
-				Condition.FALSE);
-		PlexilExprToNative exitGuard = new PlexilExprToNative(
+						PlexilExprDescription.INVARIANT_CONDITION));
+		Expression exitGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
-						PlexilExprDescription.EXIT_CONDITION), 
-				Condition.TRUE);
-		PlexilExprToNative endGuard = new PlexilExprToNative(
+						PlexilExprDescription.EXIT_CONDITION));
+		Expression endGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
-						PlexilExprDescription.END_CONDITION),
-				Condition.TRUE);
+						PlexilExprDescription.END_CONDITION));
 		
 		
 		Expr failure = or(or(translator.toLustre(invFailGuard),

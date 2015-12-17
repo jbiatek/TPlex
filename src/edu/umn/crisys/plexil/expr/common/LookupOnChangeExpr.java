@@ -16,7 +16,7 @@ public class LookupOnChangeExpr extends LookupExpr {
 	public LookupOnChangeExpr(ExprType type, Expression name, Expression tolerance, List<Expression> args) {
 		super(type, name, args);
 		
-	    ExprType.NUMERIC.typeCheck(tolerance.getType());
+	    ExprType.REAL.typeCheck(tolerance.getType());
 	    this.tolerance = tolerance;
 	}
 	

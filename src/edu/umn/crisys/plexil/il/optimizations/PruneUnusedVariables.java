@@ -6,12 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExprVisitor;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.Plan;
@@ -46,7 +40,7 @@ public class PruneUnusedVariables {
 	    safeList.add(ilPlan.getRootNodeState());
 	    for (NodeStateMachine sm : ilPlan.getMachines()) {
 	        for (Transition t : sm.getTransitions()) {
-	            saveAllVariablesInNative(t.guard, safeList);
+	            saveAllVariablesInExpression(t.guard, safeList);
 	            for (PlexilAction a : t.actions) {
 	                scanAllExpressionsInAction(a, safeList);
 	            }
@@ -127,40 +121,6 @@ public class PruneUnusedVariables {
 
 	}
 	
-	private static void saveAllVariablesInNative(NativeExpr expr, Set<Expression> safeList) {
-		expr.accept(new NativeExprVisitor<Set<Expression>, Void>() {
-
-			@Override
-			public Void visitNativeOperation(NativeOperation op,
-					Set<Expression> param) {
-				op.getArgs().forEach((arg) -> arg.accept(this, param));
-				return null;
-			}
-
-			@Override
-			public Void visitPlexilExprToNative(PlexilExprToNative pen,
-					Set<Expression> param) {
-				saveAllVariablesInExpression(pen.getPlexilExpr(), param);
-				return null;
-			}
-
-			@Override
-			public Void visitNativeEqual(NativeEqual e, Set<Expression> param) {
-				saveAllVariablesInExpression(e.getLeft(), param);
-				saveAllVariablesInExpression(e.getRight(), param);
-				return null;
-			}
-			
-			@Override
-			public Void visitNativeConstant(NativeConstant c,
-					Set<Expression> param) {
-				// No need to do anything
-				return null;
-			}
-
-		}, safeList);
-	}
-
 	private static void saveAllVariablesInExpressions(List<Expression> es, Set<Expression> s) {
 	    for (Expression e : es) {
 	        saveAllVariablesInExpression(e, s);

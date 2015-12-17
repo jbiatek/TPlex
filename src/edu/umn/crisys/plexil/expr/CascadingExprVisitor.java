@@ -8,9 +8,10 @@ import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -19,6 +20,7 @@ import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -100,7 +102,7 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
     public default R visit(ArrayIndexExpr array, P param) {
 		return visit((Expression)array, param);
 	}
-    public default R visit(Operation op, P param) {
+    public default R visit(ASTOperation op, P param) {
 		return visit((Expression)op, param);
 	}
 
@@ -132,9 +134,15 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
     public default R visit(RootAncestorExpr root, P param) {
 		return visit((Expression)root, param);
 	}
+	default R visit(NativeBool b, P param) {
+		return visit((Expression)b, param);
+	}
+	default R visit(ILOperation op, P param) {
+		return visit((Expression)op, param);
+	}
 
-    
-    //ILVariables
+
+	//ILVariables
     public default R visit(ILVariable v, P param) {
     	return visit((Expression)v, param);
     }

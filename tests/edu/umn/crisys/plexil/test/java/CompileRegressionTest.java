@@ -41,7 +41,9 @@ public class CompileRegressionTest {
 			tplex.files.add(new File(resources, libName+".plx"));
 		}
 
-		tplex.execute();
+		if ( ! tplex.execute()) {
+			throw new RuntimeException("TPlex didn't execute cleanly!");
+		}
 	}
 	
 	private static void buildTestLustre(TestSuite suite, File resources, File outputDir) throws Exception {
@@ -60,7 +62,9 @@ public class CompileRegressionTest {
 			//args.add(new File(resources, libName+".plx").getPath());
 		}
 		
-		tplex.execute();
+		if ( ! tplex.execute()) {
+			throw new RuntimeException("TPlex didn't execute cleanly!");
+		}
 	}
 
 }

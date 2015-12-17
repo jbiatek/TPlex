@@ -169,7 +169,6 @@ public abstract class SymbolicDecisionMaker implements ScriptDecisionMaker {
 		case INTEGER:
 			return new IntegerValue(source.symbolicInteger(0));
 		case REAL:
-		case NUMERIC:
 			return new RealValue(source.symbolicDouble(0.0));
 		default:
 			throw new RuntimeException("Type "+t+

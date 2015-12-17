@@ -4,10 +4,12 @@ import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 
 public abstract class ASTExprVisitor<P, R> implements CascadingExprVisitor<P, R>{
 
@@ -32,6 +34,16 @@ public abstract class ASTExprVisitor<P, R> implements CascadingExprVisitor<P, R>
 	}
 	public final R visit(LibraryVar lib, P param) {
 		return visitILExpression(lib);
+	}
+
+	@Override
+	public final R visit(NativeBool b, P param) {
+		return visitILExpression(b);
+	}
+
+	@Override
+	public final R visit(ILOperation op, P param) {
+		return visitILExpression(op);
 	}
 
 }

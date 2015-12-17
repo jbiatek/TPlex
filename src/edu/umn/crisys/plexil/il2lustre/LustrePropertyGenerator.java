@@ -27,11 +27,10 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.common.Operation;
-import edu.umn.crisys.plexil.expr.common.Operation.Operator;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative.Condition;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
@@ -126,18 +125,15 @@ public class LustrePropertyGenerator {
 				// else keep it true, indicating failure
 				TRUE
 				);
-		PlexilExprToNative invFailGuard = new PlexilExprToNative(
+		Expression invFailGuard = ILOperator.IS_FALSE.expr(
 				node.getConditions().get(
-						PlexilExprDescription.INVARIANT_CONDITION), 
-				Condition.FALSE);
-		PlexilExprToNative exitGuard = new PlexilExprToNative(
+						PlexilExprDescription.INVARIANT_CONDITION));
+		Expression exitGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
-						PlexilExprDescription.EXIT_CONDITION), 
-				Condition.TRUE);
-		PlexilExprToNative endGuard = new PlexilExprToNative(
+						PlexilExprDescription.EXIT_CONDITION));
+		Expression endGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
-						PlexilExprDescription.END_CONDITION),
-				Condition.TRUE);
+						PlexilExprDescription.END_CONDITION));
 		
 		
 		Expr failure = or(or(translator.toLustre(invFailGuard),
@@ -199,8 +195,8 @@ public class LustrePropertyGenerator {
 	}
 	
 	private static void findNodeFinishedChecks(Expression e, Set<NodeUID> found) {
-		if (e instanceof Operation) {
-			Operation oper = (Operation) e;
+		if (e instanceof ASTOperation) {
+			ASTOperation oper = (ASTOperation) e;
 			if (oper.getOperator() == Operator.EQ) {
 				if (oper.getArguments().contains(NodeState.FINISHED)) {
 					Expression other = oper.getArguments().get(0);

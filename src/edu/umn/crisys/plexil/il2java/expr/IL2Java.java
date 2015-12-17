@@ -14,10 +14,10 @@ import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -27,12 +27,12 @@ import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
 import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
@@ -51,6 +51,140 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
     }
     
     @Override
+	public JExpression visit(NativeBool b, JCodeModel cm) {
+		return b.getValue() ? JExpr.TRUE : JExpr.FALSE;
+	}
+
+	@Override
+	public JExpression visit(ILOperation op, JCodeModel cm) {
+		List<JExpression> children = op.getArguments().stream()
+				.map(arg -> arg.accept(this, cm))
+				.collect(Collectors.toList());
+		
+		switch (op.getOperator()) {
+		case PBOOL_EQ:
+		case PINT_EQ:
+		case PREAL_EQ:
+		case PSTRING_EQ:
+		case PSTATE_EQ:
+		case POUTCOME_EQ:
+		case PFAILURE_EQ:
+		case PHANDLE_EQ:
+            return binaryOperation(children, "equalTo");
+		case PAND:
+        	if (ILExprToJava.SHORT_CIRCUITING) {
+        		return shortCircuitAnd(children, cm);
+        	} else {
+        		return multiOperation(children, "and");
+        	}
+		case POR:
+        	if (ILExprToJava.SHORT_CIRCUITING) {
+        		return shortCircuitOr(children, cm);
+        	} else {
+        		return multiOperation(children, "or");
+        	}
+		case PXOR:
+            return multiOperation(children, "xor");
+		case PNOT:
+            return unaryOperation(children, "not");
+		case PINT_GE:
+		case PREAL_GE:
+            return binaryOperation(children, "ge");
+		case PINT_GT:
+		case PREAL_GT:
+            return binaryOperation(children, "gt");
+		case PINT_LE:
+		case PREAL_LE:
+            return binaryOperation(children, "le");
+		case PINT_LT:
+		case PREAL_LT:
+            return binaryOperation(children, "lt");
+		case PINT_ABS:
+		case PREAL_ABS:
+            return unaryOperation(children, "abs");
+		case PINT_ADD:
+		case PREAL_ADD:
+            return multiOperation(children, "add");
+		case PINT_DIV:
+		case PREAL_DIV:
+            return binaryOperation(children, "div");
+		case PINT_MAX:
+		case PREAL_MAX:
+            return binaryOperation(children, "max");
+		case PINT_MIN:
+		case PREAL_MIN:
+            return binaryOperation(children, "min");
+		case PINT_MOD:
+		case PREAL_MOD:
+            return binaryOperation(children, "mod");
+		case PINT_MUL:
+		case PREAL_MUL:
+            return binaryOperation(children, "mul");
+		case PINT_SUB:
+		case PREAL_SUB:
+            return binaryOperation(children, "sub");
+		case PREAL_SQRT:
+            return unaryOperation(children, "sqrt");
+
+		case PREAL_TO_PINT:
+			return unaryOperation(children, "castToInteger");
+		case TO_PREAL:
+			return unaryOperation(children, "castToReal");
+			
+		case PSTR_CONCAT: 
+			return binaryOperation(children, "concat");
+		case PBOOL_INDEX:
+		case PINT_INDEX:
+		case PREAL_INDEX:
+		case PSTRING_INDEX:
+	    	return binaryOperation(children, "get");
+		case ISKNOWN_OPERATOR:
+			return unaryOperation(children, "isKnown");
+		case CAST_PBOOL:
+            return JExpr.cast(cm.ref(PBoolean.class), children.get(0));
+        case CAST_PINT:
+        	return JExpr.cast(cm.ref(PInteger.class), children.get(0));
+        case CAST_PREAL:
+        	return JExpr.cast(cm.ref(PReal.class), children.get(0));
+        case CAST_PSTRING:
+            return JExpr.cast(cm.ref(PString.class), children.get(0));
+
+		case NOT :
+			return children.get(0).not();
+		case AND:
+			return children.stream()
+					.reduce(JExpression::cand)
+					.orElseThrow(() -> new RuntimeException("No args???"));
+		case OR:
+			return children.stream()
+					.reduce(JExpression::cor)
+					.orElseThrow(() -> new RuntimeException("No args to operator"));
+		case EQ:
+			return children.get(0).eq(children.get(1));
+		case DIRECT_COMPARE:
+			return binaryOperation(children, "equals");
+		
+		case IS_TRUE:
+			return unaryOperation(children, "isTrue");
+		case IS_FALSE:
+			return unaryOperation(children, "isFalse");
+		case IS_NOT_TRUE:
+			return unaryOperation(children, "isNotTrue");
+		case IS_NOT_FALSE:
+			return unaryOperation(children, "isNotFalse");
+		case IS_KNOWN:
+			return unaryOperation(children, "isKnown");
+		case IS_UNKNOWN:
+			return unaryOperation(children, "isUnknown");
+		case WRAP_BOOLEAN:
+            return cm.ref(BooleanValue.class).staticInvoke("get").arg(
+                    children.get(0));
+        default:
+            throw new RuntimeException("Missing operation: "+op.getOperator());
+		}
+	}
+
+	@Override
     public JExpression visit(LookupNowExpr lookup, JCodeModel cm) {
         JInvocation jlookup = 
             JExpr.invoke("getWorld").invoke("lookupNow")
@@ -59,7 +193,12 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
         for (Expression arg : lookup.getLookupArgs()) {
             jlookup.arg(arg.accept(this, cm));
         }
-        return jlookup;
+        // If it has a type, it needs to be cast to that type
+        if (lookup.getType().isSpecificType()) {
+        	return JExpr.cast(cm.ref(lookup.getType().getTypeClass()), jlookup);
+        } else {
+        	return jlookup;
+        }
     }
 
     @Override
@@ -73,91 +212,11 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
         for (Expression arg : lookup.getLookupArgs()) {
             jlookup.arg(arg.accept(this, cm));
         }
-        return jlookup;
-    }
-    
-    @Override
-    public JExpression visit(Operation op, JCodeModel cm) {
-        List<JExpression> children = op.getArguments().stream()
-        		// Translate args to Java
-        		.map(arg -> arg.accept(this, cm))
-        		.collect(Collectors.toList());
-        
-        switch (op.getOperator()) {
-        case ABS:
-            return unaryOperation(children, "abs");
-        case ADD:
-            return multiOperation(children, "add");
-        case AND: 
-        	if (ILExprToJava.SHORT_CIRCUITING) {
-        		return shortCircuitAnd(children, cm);
-        	} else {
-        		return multiOperation(children, "and");
-        	}
-        case CAST_BOOL:
-            return JExpr.cast(cm.ref(PBoolean.class), children.get(0));
-        case CAST_NUMERIC:
-            return JExpr.cast(cm.ref(PNumeric.class), children.get(0));
-        case CAST_INT:
-        	return JExpr.cast(cm.ref(PInteger.class), children.get(0));
-        case CAST_REAL:
-        	return JExpr.cast(cm.ref(PReal.class), children.get(0));
-        case CAST_STRING:
-            return JExpr.cast(cm.ref(PString.class), children.get(0));
-        case CONCAT:
-        	if (children.size() == 1) {
-        		return children.get(0);
-        	} else {
-        		return binaryOperation(children, "concat");
-        	}
-        case DIV:
-            return binaryOperation(children, "div");
-        case EQ:
-            return binaryOperation(children, "equalTo");
-        case GE:
-            return binaryOperation(children, "ge");
-        case GET_COMMAND_HANDLE:
-        case GET_FAILURE:
-        case GET_OUTCOME:
-        case GET_STATE:
-            throw new RuntimeException("Variable should already have been resolved");
-        case GT:
-            return binaryOperation(children, "gt");
-        case ISKNOWN:
-            // isKnown() returns a Java boolean, not a PBoolean.
-            // Biasing would make this not a problem.
-            return cm.ref(BooleanValue.class).staticInvoke("get").arg(
-                    unaryOperation(children, "isKnown"));
-        case LE:
-            return binaryOperation(children, "le");
-        case LT:
-            return binaryOperation(children, "lt");
-        case MAX:
-            return binaryOperation(children, "max");
-        case MIN:
-            return binaryOperation(children, "min");
-        case MOD:
-            return binaryOperation(children, "mod");
-        case MUL:
-            return multiOperation(children, "mul");
-        case NE:
-            return binaryOperation(children, "equalTo").invoke("not");
-        case NOT:
-            return unaryOperation(children, "not");
-        case OR:
-        	if (ILExprToJava.SHORT_CIRCUITING) {
-        		return shortCircuitOr(children, cm);
-        	} else {
-        		return multiOperation(children, "or");
-        	}
-        case SQRT:
-            return unaryOperation(children, "sqrt");
-        case SUB:
-            return binaryOperation(children, "sub");
-        case XOR:
-            return binaryOperation(children, "xor");
-        default:
-            throw new RuntimeException("Missing operation: "+op.getOperator());
+        // If it has a type, it needs to be cast to that type
+        if (lookup.getType().isSpecificType()) {
+        	return JExpr.cast(cm.ref(lookup.getType().getTypeClass()), jlookup);
+        } else {
+        	return jlookup;
         }
     }
     

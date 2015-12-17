@@ -19,8 +19,8 @@ import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
-import edu.umn.crisys.plexil.expr.common.Operation.Operator;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation.Operator;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -32,42 +32,10 @@ public class ExprParser {
 
     private ExprParser() {}
     
-    /**
-     * If necessary, wraps the given Expression in a cast operation to make it
-     * the expected type. Casting to boolean, numeric, and string is
-     * supported. This is necessary for things like Lookups, which could return
-     * anything. In the future, hopefully more static typechecking could make
-     * this unnecessary.  
-     * 
-     * @param expr
-     * @param expectedType
-     * @return
-     */
-    public static Expression ensureType(Expression expr, ExprType expectedType) {
-        if (expr.getType() == expectedType) {
-            return expr;
-        }
-        if( expr.getType().isNumeric() && expectedType.isNumeric()) {
-            return expr;
-        }
-        // Hmm, not looking the same. 
-        expectedType.typeCheck(expr.getType());
-        // Okay, we can cast. 
-        if (expectedType == ExprType.BOOLEAN) {
-            return Operation.castToBoolean(expr);
-        } else if (expectedType.isNumeric()) {
-            return Operation.castToNumeric(expr);
-        } else if (expectedType == ExprType.STRING) {
-            return Operation.castToString(expr);
-        }
-        
-        // Nothing else to try to do, unfortunately.
-        return expr;
-    }
     
     public static Expression parse(StartElement start, XMLEventReader xml, ExprType expectedType) {
         Expression expr = methodDispatcher(start, xml);
-        return ensureType(expr, expectedType);
+        return expr;
     }
     
     private static Expression methodDispatcher(StartElement start, XMLEventReader xml) {
@@ -124,9 +92,9 @@ public class ExprParser {
         return false;
     }
 
-    public static Operation parseOperation(StartElement start, XMLEventReader xml) {
-        return Operation.construct(localNameOf(start), 
-                parseMultiple(start, xml, Operation.getArgType(localNameOf(start))));
+    public static ASTOperation parseOperation(StartElement start, XMLEventReader xml) {
+        return ASTOperation.construct(localNameOf(start), 
+                parseMultiple(start, xml, ASTOperation.getArgType(localNameOf(start))));
     }
 
     private static boolean isRHS(String tag) {
@@ -198,11 +166,11 @@ public class ExprParser {
         return tag.equals("NodeStateVariable");
     }
 
-    public static Operation parseNodeStateVar(StartElement start, XMLEventReader xml) {
+    public static ASTOperation parseNodeStateVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
-        return Operation.getState(nodeRef);
+        return ASTOperation.getState(nodeRef);
     }
 
 
@@ -210,11 +178,11 @@ public class ExprParser {
         return tag.equals("NodeOutcomeVariable");
     }
 
-    public static Operation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
+    public static ASTOperation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
-        return Operation.getOutcome(nodeRef);
+        return ASTOperation.getOutcome(nodeRef);
     }
 
 
@@ -222,11 +190,11 @@ public class ExprParser {
         return tag.equals("NodeFailureVariable");
     }
 
-    public static Operation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
+    public static ASTOperation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
-        return Operation.getFailure(nodeRef);
+        return ASTOperation.getFailure(nodeRef);
     }
 
 
@@ -234,11 +202,11 @@ public class ExprParser {
         return tag.equals("NodeCommandHandleVariable");
     }
 
-    public static Operation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
+    public static ASTOperation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
         Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
         assertClosedTag(start, xml);
-        return Operation.getCommandHandle(nodeRef);
+        return ASTOperation.getCommandHandle(nodeRef);
     }
 
 
@@ -279,7 +247,7 @@ public class ExprParser {
         return tag.startsWith("EQ") || tag.startsWith("NE");
     }
 
-    public static Operation parseEqOrNe(StartElement start, XMLEventReader xml) {
+    public static ASTOperation parseEqOrNe(StartElement start, XMLEventReader xml) {
         boolean negate = isTagStartingWith(start, "NE");
         // Slice off the "NE" or "EQ" to get the expected type.
         ExprType type = ExprType.fuzzyValueOf(localNameOf(start).substring(2));
@@ -289,9 +257,9 @@ public class ExprParser {
         assertClosedTag(start, xml);
 
         if (negate) {
-            return Operation.ne(one, two, type);
+            return ASTOperation.ne(one, two, type);
         } else {
-            return Operation.eq(one, two, type);
+            return ASTOperation.eq(one, two, type);
         }    
     }
 
@@ -312,7 +280,7 @@ public class ExprParser {
                 name = parse(nextTag(xml), xml, ExprType.STRING);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Tolerance")) {
-                tolerance = parse(nextTag(xml), xml, ExprType.NUMERIC);
+                tolerance = parse(nextTag(xml), xml, ExprType.REAL);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Arguments")) {
                 args = parseMultiple(e, xml, ExprType.UNKNOWN);

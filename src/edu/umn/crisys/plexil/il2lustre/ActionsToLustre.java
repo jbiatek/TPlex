@@ -14,10 +14,9 @@ import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -158,10 +157,11 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		//TODO: Check with Plexil team and see if this is acceptable.
 		NodeUID node = cmd.getHandle().getNodeUID();
 		
-		NativeEqual executing = new NativeEqual(NodeState.EXECUTING, new GetNodeStateExpr(node));
-		NativeEqual finishing = new NativeEqual(NodeState.FINISHING, new GetNodeStateExpr(node));
-		NativeEqual failing = new NativeEqual(NodeState.FAILING, new GetNodeStateExpr(node));
-		NativeOperation inChangeableState = new NativeOperation(NativeOp.OR, executing, finishing, failing);
+		Expression executing = ILOperator.DIRECT_COMPARE.expr(NodeState.EXECUTING, new GetNodeStateExpr(node));
+		Expression finishing = ILOperator.DIRECT_COMPARE.expr(NodeState.FINISHING, new GetNodeStateExpr(node));
+		Expression failing = ILOperator.DIRECT_COMPARE.expr(NodeState.FAILING, new GetNodeStateExpr(node));
+		Expression inChangeableState = ILOperator.OR.expr(
+				executing, finishing, failing);
 		// Need to be starting a new macro step, and in one of those states.
 		Expr guard = translator.toLustre(inChangeableState);
 		

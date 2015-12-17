@@ -26,7 +26,6 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
-import edu.umn.crisys.plexil.il2java.expr.NativeExprToJava;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -186,7 +185,7 @@ public class StateMachineToJava {
 		// Is each of our guards satisfied?
 	    JExpression condExp = null;
 	    if ( ! t.isAlwaysTaken()) {
-	    	condExp = t.guard.accept(new NativeExprToJava(), cm);
+	    	condExp = ILExprToJava.toJava(t.guard, cm); 
 	    }
 		
 		// Figure out if we're doing if, else if, nothing at all...

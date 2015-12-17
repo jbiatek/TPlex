@@ -67,6 +67,15 @@ public class Plan {
     	return planName;
     }
     
+    public String printFullPlan() {
+    	StringBuilder sb = new StringBuilder();
+    	
+    	variables.forEach(v -> sb.append("IL Variable: "+v+"\n"));
+    	stateMachines.forEach(nsm -> sb.append(nsm.toLongString()));
+    	
+    	return sb.toString();
+    }
+    
     public List<LibraryDecl> getLibraryDecls() {
 		return libraryDecls;
 	}
@@ -192,7 +201,7 @@ public class Plan {
 		}
 
 	}
-
+	
 	public OriginalHierarchy getOriginalHierarchy() {
 		return snapshot;
 	}

@@ -56,7 +56,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		public Void visitAssignment(AssignmentBody assignment, Void p) {
 		    Expression lhsUntranslated = assignment.getLeftHandSide();
 		    Expression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated);
-		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide());
+		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide(), ExprType.UNKNOWN);
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
 		    ExprType type = lhsUntranslated.getType();
@@ -97,10 +97,10 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitCommand(CommandBody cmd, Void p) {
-		    Expression name = nodeToIL.toIL(cmd.getCommandName());
+		    Expression name = nodeToIL.toIL(cmd.getCommandName(), ExprType.STRING);
 		    Optional<Expression> returnTo = cmd.getVarToAssign().map(
 		    		nodeToIL::resolveVariableForWriting);
-		    List<Expression> args = nodeToIL.toIL(cmd.getCommandArguments());
+		    List<Expression> args = nodeToIL.toIL(cmd.getCommandArguments(), ExprType.UNKNOWN);
 		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);
 		    
@@ -152,7 +152,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), 
 		    		nodeToIL.getUID().getShortName());
 		    for ( Pair<String, Expression> pair : update.getUpdates()) {
-		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second));
+		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second, ExprType.UNKNOWN));
 		    }
 		    map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
 		    map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());

@@ -14,12 +14,6 @@ import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeEqual;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExprVisitor;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.expr.il.nativebool.PlexilExprToNative;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -46,6 +40,7 @@ import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.runtime.plx.SimplePArray;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
@@ -65,51 +60,6 @@ public class ILSimulator extends JavaPlan {
 	private Map<Expression, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
 	private Map<Expression, SimplePArray<PValue>> arrayVars = new HashMap<>();
 	private Map<NodeStateMachine, SimpleCurrentNext<Integer>> states = new HashMap<>();
-	private NativeExprVisitor<Void,Boolean> myNativeEval = 
-			new NativeExprVisitor<Void,Boolean>() {
-
-		@Override
-		public Boolean visitPlexilExprToNative(
-				PlexilExprToNative pen, Void param) {
-			return pen.getCondition().checkValue(
-					ILSimulator.this.eval(pen.getPlexilExpr()));
-		}
-		
-		@Override
-		public Boolean visitNativeEqual(NativeEqual e, Void param) {
-			PValue left = ILSimulator.this.eval(e.getLeft());
-			PValue right = ILSimulator.this.eval(e.getRight());
-			
-			return left.equals(right);
-		}
-
-		@Override
-		public Boolean visitNativeOperation(NativeOperation op,
-				Void param) {
-			List<Boolean> args = op.getArgs().stream()
-					.map(arg -> arg.accept(this, null))
-					.collect(Collectors.toList());
-			switch(op.getOperation()) {
-			case AND: 
-				return args.stream().reduce(Boolean::logicalAnd)
-						.orElseThrow(() -> new RuntimeException("No args?!"));
-			case OR:
-				return args.stream().reduce(Boolean::logicalOr)
-						.orElseThrow(() -> new RuntimeException("No args?!"));
-			case NOT:
-				return ! args.get(0);
-			}
-			throw new RuntimeException("Missing case");
-		}
-
-		@Override
-		public Boolean visitNativeConstant(NativeConstant c,
-				Void param) {
-			return c.getValue();
-		}
-
-		
-	};
 	
 	private ILExprModifier<Void> myResolver = new ILExprModifier<Void>() {
 
@@ -253,8 +203,8 @@ public class ILSimulator extends JavaPlan {
 				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
 	}
 	
-	private boolean eval(NativeExpr e) {
-		return e.accept(myNativeEval, null);
+	private boolean evalNative(Expression e) {
+		return ((NativeBool) eval(e)).getValue();
 	}
 	
 	private void exec(PlexilAction a) {
@@ -417,7 +367,7 @@ public class ILSimulator extends JavaPlan {
 			// Run this state machine
 			State currentState = nsm.getStates().get(states.get(nsm).getCurrent());
 			for (Transition t : nsm.getTransitions()) {
-				if (t.start.equals(currentState) && eval(t.guard) ) {
+				if (t.start.equals(currentState) && evalNative(t.guard) ) {
 					if (JavaPlan.DEBUG) {
 						System.out.println(t.toString());
 					}

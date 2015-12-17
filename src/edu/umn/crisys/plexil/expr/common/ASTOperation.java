@@ -25,168 +25,164 @@ import edu.umn.crisys.util.Pair;
  * @author jbiatek
  *
  */
-public class Operation extends ExpressionBase {
+public class ASTOperation extends ExpressionBase {
     
     public static ExprType getArgType(String opName) {
         return Operator.valueOf(opName.toUpperCase()).argType;
     }
     
-    public static Operation construct(String opName, Expression...args) {
-        return new Operation(Operator.valueOf(opName.toUpperCase()), args);
+    public static ASTOperation construct(String opName, Expression...args) {
+        return new ASTOperation(Operator.valueOf(opName.toUpperCase()), args);
     }
     
-    public static Operation construct(String opName, List<Expression> args) {
-        return new Operation(Operator.valueOf(opName.toUpperCase()), args);
+    public static ASTOperation construct(String opName, List<Expression> args) {
+        return new ASTOperation(Operator.valueOf(opName.toUpperCase()), args);
     }
     
-    public static Operation and(Expression...args) {
-        return new Operation(Operator.AND, args);
+    public static ASTOperation and(Expression...args) {
+        return new ASTOperation(Operator.AND, args);
     }
     
-    public static Operation and(List<Expression> args) {
-        return new Operation(Operator.AND, args);
+    public static ASTOperation and(List<Expression> args) {
+        return new ASTOperation(Operator.AND, args);
     }
     
-    public static Operation or(Expression...args) {
-        return new Operation(Operator.OR, args);
+    public static ASTOperation or(Expression...args) {
+        return new ASTOperation(Operator.OR, args);
     }
     
-    public static Operation or(List<Expression> args) {
-        return new Operation(Operator.OR, args);
+    public static ASTOperation or(List<Expression> args) {
+        return new ASTOperation(Operator.OR, args);
     }
     
-    public static Operation xor(Expression...args) {
-        return new Operation(Operator.XOR, args);
+    public static ASTOperation xor(Expression...args) {
+        return new ASTOperation(Operator.XOR, args);
     }
 
-    public static Operation xor(List<Expression> args) {
-        return new Operation(Operator.XOR, args);
+    public static ASTOperation xor(List<Expression> args) {
+        return new ASTOperation(Operator.XOR, args);
     }
     
-    public static Operation not(Expression arg) {
-        return new Operation(Operator.NOT, arg);
+    public static ASTOperation not(Expression arg) {
+        return new ASTOperation(Operator.NOT, arg);
     }
     
-    public static Operation eq(Expression one, Expression two) {
-        return new Operation(Operator.EQ, one, two);
+    public static ASTOperation eq(Expression one, Expression two) {
+        return new ASTOperation(Operator.EQ, one, two);
     }
     
-    public static Operation ne(Expression one, Expression two) {
-        return new Operation(Operator.NE, one, two);
+    public static ASTOperation ne(Expression one, Expression two) {
+        return new ASTOperation(Operator.NE, one, two);
     }
     
-    public static Operation eq(Expression one, Expression two, ExprType extraInfo) {
-        return new Operation(Operator.EQ, extraInfo, one, two);
+    public static ASTOperation eq(Expression one, Expression two, ExprType extraInfo) {
+        return new ASTOperation(Operator.EQ, extraInfo, one, two);
     }
     
-    public static Operation ne(Expression one, Expression two, ExprType extraInfo) {
-        return new Operation(Operator.NE, extraInfo, one, two);
+    public static ASTOperation ne(Expression one, Expression two, ExprType extraInfo) {
+        return new ASTOperation(Operator.NE, extraInfo, one, two);
     }
 
     
-    public static Operation ge(Expression one, Expression two) {
-        return new Operation(Operator.GE, one, two);
+    public static ASTOperation ge(Expression one, Expression two) {
+        return new ASTOperation(Operator.GE, one, two);
     }
     
-    public static Operation gt(Expression one, Expression two) {
-        return new Operation(Operator.GT, one, two);
+    public static ASTOperation gt(Expression one, Expression two) {
+        return new ASTOperation(Operator.GT, one, two);
     }
     
-    public static Operation le(Expression one, Expression two) {
-        return new Operation(Operator.LE, one, two);
+    public static ASTOperation le(Expression one, Expression two) {
+        return new ASTOperation(Operator.LE, one, two);
     }
     
-    public static Operation lt(Expression one, Expression two) {
-        return new Operation(Operator.LT, one, two);
+    public static ASTOperation lt(Expression one, Expression two) {
+        return new ASTOperation(Operator.LT, one, two);
     }
     
-    public static Operation isKnown(Expression arg) {
-        return new Operation(Operator.ISKNOWN, arg);
+    public static ASTOperation isKnown(Expression arg) {
+        return new ASTOperation(Operator.ISKNOWN, arg);
     }
     
-    public static Operation castToBoolean(Expression arg) {
-        return new Operation(Operator.CAST_BOOL, arg);
+    public static ASTOperation castToBoolean(Expression arg) {
+        return new ASTOperation(Operator.CAST_BOOL, arg);
     }
     
-    public static Operation castToNumeric(Expression arg) {
-        return new Operation(Operator.CAST_NUMERIC, arg);
+    public static ASTOperation castToInteger(Expression arg) {
+        return new ASTOperation(Operator.CAST_INT, arg);
     }
     
-    public static Operation castToInteger(Expression arg) {
-        return new Operation(Operator.CAST_INT, arg);
+    public static ASTOperation castToReal(Expression arg) {
+        return new ASTOperation(Operator.CAST_REAL, arg);
     }
     
-    public static Operation castToReal(Expression arg) {
-        return new Operation(Operator.CAST_REAL, arg);
+    public static ASTOperation castToString(Expression arg) {
+        return new ASTOperation(Operator.CAST_STRING, arg);
     }
     
-    public static Operation castToString(Expression arg) {
-        return new Operation(Operator.CAST_STRING, arg);
+    public static ASTOperation abs(Expression arg) {
+        return new ASTOperation(Operator.ABS, arg);
     }
     
-    public static Operation abs(Expression arg) {
-        return new Operation(Operator.ABS, arg);
-    }
-    
-    public static Operation add(Expression...args) {
-        return new Operation(Operator.ADD, args);
+    public static ASTOperation add(Expression...args) {
+        return new ASTOperation(Operator.ADD, args);
     }
 
-    public static Operation add(List<Expression> args) {
-        return new Operation(Operator.ADD, args);
+    public static ASTOperation add(List<Expression> args) {
+        return new ASTOperation(Operator.ADD, args);
     }
     
-    public static Operation div(Expression one, Expression two) {
-        return new Operation(Operator.DIV, one, two);
+    public static ASTOperation div(Expression one, Expression two) {
+        return new ASTOperation(Operator.DIV, one, two);
     }
     
-    public static Operation max(Expression one, Expression two) {
-        return new Operation(Operator.MAX, one, two);
+    public static ASTOperation max(Expression one, Expression two) {
+        return new ASTOperation(Operator.MAX, one, two);
     }
     
-    public static Operation min(Expression one, Expression two) {
-        return new Operation(Operator.MIN, one, two);
+    public static ASTOperation min(Expression one, Expression two) {
+        return new ASTOperation(Operator.MIN, one, two);
     }
     
-    public static Operation mod(Expression one, Expression two) {
-        return new Operation(Operator.MOD, one, two);
+    public static ASTOperation mod(Expression one, Expression two) {
+        return new ASTOperation(Operator.MOD, one, two);
     }
     
-    public static Operation mul(Expression...args) {
-        return new Operation(Operator.MUL, args);
+    public static ASTOperation mul(Expression...args) {
+        return new ASTOperation(Operator.MUL, args);
     }
 
-    public static Operation mul(List<Expression> args) {
-        return new Operation(Operator.MUL, args);
+    public static ASTOperation mul(List<Expression> args) {
+        return new ASTOperation(Operator.MUL, args);
     }
 
-    public static Operation sqrt(Expression arg) {
-        return new Operation(Operator.SQRT, arg);
+    public static ASTOperation sqrt(Expression arg) {
+        return new ASTOperation(Operator.SQRT, arg);
     }
     
-    public static Operation sub(Expression one, Expression two) {
-        return new Operation(Operator.SUB, one, two);
+    public static ASTOperation sub(Expression one, Expression two) {
+        return new ASTOperation(Operator.SUB, one, two);
     }
     
-    public static Operation concat(Expression...args) {
-        return new Operation(Operator.CONCAT, args);
+    public static ASTOperation concat(Expression...args) {
+        return new ASTOperation(Operator.CONCAT, args);
     }
     
-    public static Operation concat(List<Expression> args) {
-        return new Operation(Operator.CONCAT, args);
+    public static ASTOperation concat(List<Expression> args) {
+        return new ASTOperation(Operator.CONCAT, args);
     }
     
-    public static Operation getState(Expression node) {
-        return new Operation(Operator.GET_STATE, node);
+    public static ASTOperation getState(Expression node) {
+        return new ASTOperation(Operator.GET_STATE, node);
     }
-    public static Operation getOutcome(Expression node) {
-        return new Operation(Operator.GET_OUTCOME, node);
+    public static ASTOperation getOutcome(Expression node) {
+        return new ASTOperation(Operator.GET_OUTCOME, node);
     }
-    public static Operation getFailure(Expression node) {
-        return new Operation(Operator.GET_FAILURE, node);
+    public static ASTOperation getFailure(Expression node) {
+        return new ASTOperation(Operator.GET_FAILURE, node);
     }
-    public static Operation getCommandHandle(Expression node) {
-        return new Operation(Operator.GET_COMMAND_HANDLE, node);
+    public static ASTOperation getCommandHandle(Expression node) {
+        return new ASTOperation(Operator.GET_COMMAND_HANDLE, node);
     }
 
     public static enum Operator {
@@ -198,29 +194,28 @@ public class Operation extends ExpressionBase {
         EQ(2, "==", ExprType.UNKNOWN, ExprType.BOOLEAN),
         NE(2, "!=", ExprType.UNKNOWN, ExprType.BOOLEAN),
 
-        GE(2, ">=", ExprType.NUMERIC, ExprType.BOOLEAN),
-        GT(2, ">", ExprType.NUMERIC, ExprType.BOOLEAN),
-        LE(2, "<=", ExprType.NUMERIC, ExprType.BOOLEAN),
-        LT(2, "<", ExprType.NUMERIC, ExprType.BOOLEAN),
+        GE(2, ">=", ExprType.INTEGER, ExprType.BOOLEAN),
+        GT(2, ">", ExprType.INTEGER, ExprType.BOOLEAN),
+        LE(2, "<=", ExprType.INTEGER, ExprType.BOOLEAN),
+        LT(2, "<", ExprType.INTEGER, ExprType.BOOLEAN),
         
         ISKNOWN(1, "isKnown(", ExprType.UNKNOWN, ExprType.BOOLEAN),
                 
         // TODO: Do we need casting?
         CAST_BOOL(1, "(PBoolean) (", ExprType.BOOLEAN, ExprType.BOOLEAN),
-        CAST_NUMERIC(1, "(PNumeric) (", ExprType.NUMERIC, ExprType.NUMERIC),
-        CAST_INT(1, "(PInteger) (", ExprType.NUMERIC, ExprType.INTEGER),
-        CAST_REAL(1, "(PReal) (", ExprType.NUMERIC, ExprType.REAL),
+        CAST_INT(1, "(PInteger) (", ExprType.INTEGER, ExprType.INTEGER),
+        CAST_REAL(1, "(PReal) (", ExprType.INTEGER, ExprType.REAL),
         CAST_STRING(1, "(PString) (", ExprType.STRING, ExprType.STRING),
         
-        ABS(1, "abs(", ExprType.NUMERIC, ExprType.NUMERIC),
-        ADD(-1, "+", ExprType.NUMERIC, ExprType.NUMERIC),
-        DIV(2, "/", ExprType.NUMERIC, ExprType.NUMERIC),
-        MAX(2, "max(", ExprType.NUMERIC, ExprType.NUMERIC),
-        MIN(2, "min(", ExprType.NUMERIC, ExprType.NUMERIC),
-        MOD(2, "%", ExprType.NUMERIC, ExprType.NUMERIC),
-        MUL(-1, "*", ExprType.NUMERIC, ExprType.NUMERIC),
-        SQRT(1, "sqrt(", ExprType.NUMERIC, ExprType.NUMERIC),
-        SUB(2, "-", ExprType.NUMERIC, ExprType.NUMERIC),
+        ABS(1, "abs(", ExprType.INTEGER, ExprType.INTEGER),
+        ADD(-1, "+", ExprType.INTEGER, ExprType.INTEGER),
+        DIV(2, "/", ExprType.INTEGER, ExprType.INTEGER),
+        MAX(2, "max(", ExprType.INTEGER, ExprType.INTEGER),
+        MIN(2, "min(", ExprType.INTEGER, ExprType.INTEGER),
+        MOD(2, "%", ExprType.INTEGER, ExprType.INTEGER),
+        MUL(-1, "*", ExprType.INTEGER, ExprType.INTEGER),
+        SQRT(1, "sqrt(", ExprType.INTEGER, ExprType.INTEGER),
+        SUB(2, "-", ExprType.INTEGER, ExprType.INTEGER),
         
         CONCAT(-1, "+", ExprType.STRING, ExprType.STRING),
         
@@ -323,7 +318,6 @@ public class Operation extends ExpressionBase {
         		}
         		return xor;
         	case CAST_BOOL:
-        	case CAST_NUMERIC:
         	case CAST_STRING: 
         		return values.get(0);
         	default:
@@ -378,7 +372,7 @@ public class Operation extends ExpressionBase {
     private List<Expression> args;
     private ExprType argType;
     
-    private Operation(Operator op, ExprType argType, List<Expression> args) {
+    private ASTOperation(Operator op, ExprType argType, List<Expression> args) {
     	super(op.returnType);
         this.op = op;
         this.args = args;
@@ -386,15 +380,15 @@ public class Operation extends ExpressionBase {
         checkArgs();
     }
     
-    private Operation(Operator op, List<Expression> args) {
+    private ASTOperation(Operator op, List<Expression> args) {
     	this(op, op.argType, args);
     }
     
-    private Operation(Operator op, Expression... args) {
+    private ASTOperation(Operator op, Expression... args) {
         this(op, op.argType, Arrays.asList(args));
     }
     
-    private Operation(Operator op, ExprType argType, Expression... args) {
+    private ASTOperation(Operator op, ExprType argType, Expression... args) {
         this(op, argType, Arrays.asList(args));
     }
     
@@ -407,7 +401,6 @@ public class Operation extends ExpressionBase {
         // For casts, we're obviously skipping this. Everything else should 
         // check out, though. 
         if (op != Operator.CAST_BOOL && 
-        		op != Operator.CAST_NUMERIC &&
         		op != Operator.CAST_STRING) {
 	        for (Expression e : args) {
 	            argType.typeCheck(e.getType());
@@ -426,9 +419,11 @@ public class Operation extends ExpressionBase {
 
     public ExprType getActualArgumentType() {
     	if (argType != ExprType.UNKNOWN &&
-    			argType != ExprType.NUMERIC) {
+    			argType != ExprType.INTEGER) {
     		return argType;
     	}
+    	// Numbers might actually be reals, and we might be able to do better
+    	// than unknown. 
     	ExprType mostSpecific = argType;
     	for (Expression e : args) {
     		mostSpecific = argType.getMoreSpecific(e.getType());
@@ -488,8 +483,8 @@ public class Operation extends ExpressionBase {
     }
 
     @Override
-    public Operation getCloneWithArgs(List<Expression> args) {
-        return new Operation(op, args);
+    public ASTOperation getCloneWithArgs(List<Expression> args) {
+        return new ASTOperation(op, args);
     }
 
     @Override

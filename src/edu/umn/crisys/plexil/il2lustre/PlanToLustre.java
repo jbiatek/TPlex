@@ -33,7 +33,6 @@ import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -61,7 +60,6 @@ public class PlanToLustre {
 	
 	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
 	private ILExprToLustre ilToLustre = new ILExprToLustre(reverseMap);
-	private NativeExprToLustre nativeToLustre = new NativeExprToLustre(ilToLustre);
 	private LustrePropertyGenerator properties;
 	
 	
@@ -151,7 +149,7 @@ public class PlanToLustre {
 		pb.addNode(nb.build());
 		
 		Program program = pb.build();
-		StaticAnalyzer.check(program, SolverOption.Z3);
+		//StaticAnalyzer.check(program, SolverOption.Z3);
 		return program;
 	}
 	
@@ -239,8 +237,8 @@ public class PlanToLustre {
 		return e.accept(ilToLustre, expectedType);
 	}
 	
-	public Expr toLustre(NativeExpr e) {
-		return e.accept(nativeToLustre, null);
+	public Expr toLustre(Expression e) {
+		return e.accept(ilToLustre, ExprType.NATIVE_BOOL);
 	}
 	
 	public ReverseTranslationMap getTranslationMap() {

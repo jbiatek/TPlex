@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.il2lustre;
 
-import static jkind.lustre.LustreUtil.id;
+import static jkind.lustre.LustreUtil.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,10 +10,9 @@ import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.CastExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.visitors.PrettyPrintVisitor;
@@ -23,10 +22,10 @@ import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -34,6 +33,7 @@ import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -60,7 +60,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	
 	@Override
 	public Expr visit(NamedCondition named, ExprType expected) {
-		// This should have been inlined for us. 
+		// This should have been de-inlined for us. 
 		return id(LustreNamingConventions.getNamedConditionId(named));
 	}
 	
@@ -86,112 +86,150 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	}
 	
+	
 	@Override
-	public Expr visit(Operation op, ExprType expectedType) {
+	public Expr visit(NativeBool b, ExprType param) {
+		return b.getValue() ? LustreUtil.TRUE : LustreUtil.FALSE;
+	}
+	
+	
+	@Override
+	public Expr visit(ILOperation op, ExprType expectedType) {
 		switch (op.getOperator()) {
-		// ---------------- Boolean operators
+		// ---------------- Native boolean operators
 		case AND:
-			return multi(op.getArguments(), LustreNamingConventions.AND_OPERATOR, ExprType.BOOLEAN);
-		case NOT:
-			return unary(op.getArguments(), LustreNamingConventions.NOT_OPERATOR, ExprType.BOOLEAN);
+			return multi(op.getArguments(), BinaryOp.AND, ExprType.NATIVE_BOOL);
 		case OR:
+			return multi(op.getArguments(), BinaryOp.OR, ExprType.NATIVE_BOOL);
+		case NOT:
+			return LustreUtil.not(op.getUnaryArg().accept(this, ExprType.NATIVE_BOOL));
+		case IS_TRUE:
+			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+					BinaryOp.EQUAL, LustreNamingConventions.P_TRUE);
+		case IS_FALSE:
+			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+					BinaryOp.EQUAL, LustreNamingConventions.P_FALSE);
+		case IS_NOT_TRUE:
+			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+					BinaryOp.NOTEQUAL, LustreNamingConventions.P_TRUE);
+		case IS_NOT_FALSE:
+			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+					BinaryOp.NOTEQUAL, LustreNamingConventions.P_FALSE);
+		case IS_UNKNOWN:
+			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+					BinaryOp.EQUAL, LustreNamingConventions.P_UNKNOWN);
+		case IS_KNOWN:
+			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+					BinaryOp.NOTEQUAL, LustreNamingConventions.P_UNKNOWN);
+		case DIRECT_COMPARE:
+			return binary(op.getArguments(), BinaryOp.EQUAL, ExprType.UNKNOWN);
+		case WRAP_BOOLEAN:
+			return toPBoolean(op.getUnaryArg().accept(this, ExprType.BOOLEAN));
+			
+			
+		// ---------------- Plexil boolean operators
+		case PAND:
+			return multi(op.getArguments(), LustreNamingConventions.AND_OPERATOR, ExprType.BOOLEAN);
+		case PNOT:
+			return unary(op.getArguments(), LustreNamingConventions.NOT_OPERATOR, ExprType.BOOLEAN);
+		case POR:
 			return multi(op.getArguments(), LustreNamingConventions.OR_OPERATOR, ExprType.BOOLEAN);
-		case XOR:
+		case PXOR:
 			return binary(op.getArguments(), LustreNamingConventions.XOR_OPERATOR, ExprType.BOOLEAN);
-		case EQ:
-			switch (op.getActualArgumentType()) {
-			case BOOLEAN: 
-				return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ExprType.BOOLEAN);
-			default:
-				return toPBoolean(binary(op.getArguments(), BinaryOp.EQUAL, op.getExpectedArgumentType()));
-			}
-		case NE:
-			switch (op.getActualArgumentType()) {
+		case PBOOL_EQ:
+			return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ExprType.BOOLEAN);
+		case PINT_EQ:
+		case PREAL_EQ:
+		case PSTRING_EQ: 
+		case PSTATE_EQ:
+		case POUTCOME_EQ:
+		case PFAILURE_EQ:
+		case PHANDLE_EQ:
+				return toPBoolean(binary(op.getArguments(), BinaryOp.EQUAL, 
+						op.getBinaryFirst().getType()));
+		case ISKNOWN_OPERATOR:
+			// note: this operator returns a *native* bool
+			switch (op.getUnaryArg().getType()) {
 			case BOOLEAN:
-				return new NodeCallExpr(LustreNamingConventions.NOT_OPERATOR, 
-						binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ExprType.BOOLEAN));
-			default:
-				return toPBoolean(binary(op.getArguments(), BinaryOp.NOTEQUAL, op.getExpectedArgumentType()));
-			}
-		case ISKNOWN:
-			// TODO: get stricter types so this wrapping and unwrapping goes away!
-			switch (op.getActualArgumentType()) {
-			case BOOLEAN:
-				return toPBoolean(new BinaryExpr(
+				return new BinaryExpr(
 						op.getArguments().get(0).accept(this, ExprType.BOOLEAN), 
 						BinaryOp.NOTEQUAL, 
-						LustreNamingConventions.P_UNKNOWN));
+						LustreNamingConventions.P_UNKNOWN);
 			case OUTCOME:
 			case FAILURE:
 			case COMMAND_HANDLE:
 				// All of these are simple enums
-				return toPBoolean(new BinaryExpr(
-						op.getArguments().get(0).accept(this, op.getActualArgumentType()),
+				return new BinaryExpr(
+						op.getArguments().get(0).accept(this, op.getUnaryArg().getType()),
 						BinaryOp.NOTEQUAL,
-						op.getActualArgumentType().getUnknown().accept(this, op.getActualArgumentType())));
+						op.getUnaryArg().getType().getUnknown()
+							.accept(this, op.getUnaryArg().getType()));
 			case ARRAY:
 			case BOOLEAN_ARRAY:
 			case INTEGER_ARRAY:
 			case REAL_ARRAY:
 			case STRING_ARRAY:
 			case STATE:
+			case INTEGER: //TODO: these shouldn't be just "true"
+			case REAL:
 				// All of these are always known
-				return LustreNamingConventions.P_TRUE;
+				return LustreUtil.TRUE;
 			default:
-				System.err.println("Missing case in isKnown translation: "+op.getActualArgumentType());
+				System.err.println("Missing case in isKnown translation: "+op.getUnaryArg().getType());
 			}
 
 		// ---------------- Numeric operators
-		case ABS:
-			return unary(op.getArguments(), "abs", op.getActualArgumentType());
-		case ADD:
-			return reduce(op.getArguments(), BinaryOp.PLUS, op.getActualArgumentType());
-		case DIV:
-			return binaryReduce(op.getArguments(), BinaryOp.DIVIDE, op.getActualArgumentType());
-		case GE:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATEREQUAL, ExprType.NUMERIC));
-		case GT:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATER, op.getActualArgumentType()));
-		case LE:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.LESSEQUAL, op.getActualArgumentType()));
-		case LT:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.LESS, op.getActualArgumentType()));
-		case MAX:
-			return binary(op.getArguments(), "max", op.getActualArgumentType());
-		case MIN:
-			return binary(op.getArguments(), "min", op.getActualArgumentType());
-		case MOD:
-			return binary(op.getArguments(), BinaryOp.MODULUS, op.getActualArgumentType());
-		case MUL:
-			return multi(op.getArguments(), BinaryOp.MULTIPLY, op.getActualArgumentType());
-		case SQRT:
-			return unary(op.getArguments(), "sqrt", op.getActualArgumentType());
-		case SUB:
-			return binary(op.getArguments(), BinaryOp.MINUS, op.getActualArgumentType());
+		case PINT_ABS:
+		case PREAL_ABS:
+			return unary(op.getArguments(), "abs", op.getUnaryArg().getType());
+		case PINT_ADD:
+		case PREAL_ADD:
+			return reduce(op.getArguments(), BinaryOp.PLUS, op.getBinaryFirst().getType());
+		case PINT_DIV:
+		case PREAL_DIV:
+			return binaryReduce(op.getArguments(), BinaryOp.DIVIDE, op.getBinaryFirst().getType());
+		case PINT_GE:
+		case PREAL_GE:
+			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATEREQUAL, 
+					op.getBinaryFirst().getType()));
+		case PINT_GT:
+		case PREAL_GT:
+			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATER, 
+					op.getBinaryFirst().getType()));
+		case PINT_LE:
+		case PREAL_LE:
+			return toPBoolean(binary(op.getArguments(), BinaryOp.LESSEQUAL, 
+					op.getBinaryFirst().getType()));
+		case PINT_LT:
+		case PREAL_LT:
+			return toPBoolean(binary(op.getArguments(), BinaryOp.LESS, 
+					op.getBinaryFirst().getType()));
+		case PINT_MAX:
+		case PREAL_MAX:
+			return binary(op.getArguments(), "max", 
+					op.getBinaryFirst().getType());
+		case PINT_MIN:
+		case PREAL_MIN:
+			return binary(op.getArguments(), "min", 
+					op.getBinaryFirst().getType());
+		case PINT_MOD:
+		case PREAL_MOD:
+			return binary(op.getArguments(), BinaryOp.MODULUS, 
+					op.getBinaryFirst().getType());
+		case PINT_MUL:
+		case PREAL_MUL:
+			return multi(op.getArguments(), BinaryOp.MULTIPLY, 
+					op.getBinaryFirst().getType());
+		case PREAL_SQRT:
+			return unary(op.getArguments(), "sqrt", ExprType.REAL);
+		case PINT_SUB:
+		case PREAL_SUB:
+			return binary(op.getArguments(), BinaryOp.MINUS, 
+					op.getBinaryFirst().getType());
 
 		// ---------------- String operators (not supported)
-		case CONCAT:
+		case PSTR_CONCAT:
 			throw new RuntimeException("String concatenation not supported when translating to Lustre");
-		// ---------------- Casting operators (are these needed?)
-		case CAST_BOOL:
-			return op.getArguments().get(0).accept(this, ExprType.BOOLEAN);
-		case CAST_NUMERIC:
-			return op.getSingleExpectedArgument().accept(this, op.getActualArgumentType());
-		case CAST_INT:
-			return new CastExpr(NamedType.INT, op.getSingleExpectedArgument().accept(this, ExprType.NUMERIC));
-		case CAST_REAL:
-			return new CastExpr(NamedType.REAL, op.getSingleExpectedArgument().accept(this, ExprType.NUMERIC));
-		case CAST_STRING:
-			return op.getArguments().get(0).accept(this, ExprType.STRING);
-		// ---------------- Node operators, which don't belong in the IL
-		case GET_COMMAND_HANDLE:
-			throw new RuntimeException("Handles should be resolved by now!");
-		case GET_FAILURE:
-			throw new RuntimeException("Node failure variables should be resolved by now!");
-		case GET_OUTCOME:
-			throw new RuntimeException("Node outcome variables should be resolved by now!");
-		case GET_STATE:
-			throw new RuntimeException("Node states should be resolved to an expression by now!");
 		default:
 			throw new RuntimeException("Missing operator: "+op.getOperator());
 		}
@@ -206,7 +244,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	
 	private Expr reduce(List<Expression> args, BinaryOp op, ExprType argType) {
 		return args.stream()
-				.map((arg) -> arg.ensureType(argType).accept(this, argType))
+				.map((arg) -> arg.accept(this, argType))
 				.reduce((l, r) -> new BinaryExpr(l, op, r))
 				.orElseThrow(() -> new RuntimeException("No arguments passed in!"));
 	}

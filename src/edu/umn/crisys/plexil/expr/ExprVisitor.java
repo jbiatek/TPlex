@@ -8,9 +8,10 @@ import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -19,6 +20,7 @@ import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -49,6 +51,7 @@ public interface ExprVisitor<P, R> {
 	
 	//PValues
 	public R visit(PValue v, P param);
+	public R visit(NativeBool b, P param);
 	public R visit(BooleanValue bool, P param);
 	public R visit(IntegerValue integer, P param);
 	public R visit(RealValue real, P param);
@@ -67,7 +70,7 @@ public interface ExprVisitor<P, R> {
 	
 	
     public R visit(ArrayIndexExpr array, P param);
-    public R visit(Operation op, P param);
+    public R visit(ASTOperation op, P param);
 
     // AST expressions
     public R visit(UnresolvedVariableExpr expr, P param);
@@ -81,7 +84,7 @@ public interface ExprVisitor<P, R> {
 	public R visit(GetNodeStateExpr state, P param);
 	public R visit(AliasExpr alias, P param);
     public R visit(RootAncestorExpr root, P param);
-
+    public R visit(ILOperation op, P param);
     
     //ILVariables
     public R visit(ILVariable v, P param);

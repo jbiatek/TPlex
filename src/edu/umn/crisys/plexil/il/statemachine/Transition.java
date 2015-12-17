@@ -4,11 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeConstant;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeExpr;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation;
-import edu.umn.crisys.plexil.expr.il.nativebool.NativeOperation.NativeOp;
+import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class Transition implements Comparable<Transition> {
 	
@@ -19,32 +20,38 @@ public class Transition implements Comparable<Transition> {
 	public int priority;
 	public State start;
 	public State end;
-	public NativeExpr guard;
+	public Expression guard;
 	public List<PlexilAction> actions = new LinkedList<PlexilAction>() ; 
 	
 	public Transition(String description, int priority, State start, State end, 
-			NativeExpr... guards) {
+			Expression... guards) {
 	    this.description = description;
 		this.priority = priority;
 		this.start = start;
 		if (guards.length == 0) {
-			this.guard = NativeConstant.TRUE;
+			this.guard = NativeBool.TRUE;
 		} else if (guards.length == 1) {
-			this.guard = guards[0];
+			if (guards[0].getType().equals(ExprType.NATIVE_BOOL)) {
+				this.guard = guards[0];
+			} else {
+				throw new RuntimeException("Type error: Guard had type "
+						+guards[0].getType());
+			}
 		} else {
-			this.guard = new NativeOperation(NativeOp.AND, guards);
+			// This will type check for us
+			this.guard = ILOperator.AND.expr(guards);
 		}
 		this.end = end;
 	}
 	
 	public boolean isNeverTaken() {
-	    Optional<Boolean> result = guard.eval();
-	    return result.isPresent() && result.get() == false;
+	    Optional<PValue> result = guard.eval();
+	    return result.isPresent() && result.get().equals(NativeBool.FALSE);
 	}
 	
 	public boolean isAlwaysTaken() {
-	    Optional<Boolean> result = guard.eval();
-	    return result.isPresent() && result.get();
+	    Optional<PValue> result = guard.eval();
+	    return result.isPresent() && result.get().equals(NativeBool.TRUE);
 	}
 	
 	public Transition addAction(PlexilAction action) {
@@ -56,24 +63,17 @@ public class Transition implements Comparable<Transition> {
 	 * Add an additional guard. This will be ANDed to the existing guard(s).
 	 * @param newGuard
 	 */
-	public void addGuard(NativeExpr newGuard) {
-	    if (guard instanceof NativeOperation) {
-	    	NativeOperation guardAsOperation = (NativeOperation) guard;
-	    	if (guardAsOperation.getOperation() == NativeOp.AND) {
-	    		guardAsOperation.addClause(newGuard);
-	    		return;
-	    	}
-	    }
-		this.guard = new NativeOperation(NativeOp.AND, this.guard, newGuard);
+	public void addGuard(Expression newGuard) {
+		this.guard = ILOperator.AND.expr(guard, newGuard);
 	}
 	
 	@Override
 	public String toString() {
 		String ret = "("+start+") priority "+priority+" ----> \n";
-		ret += description + "\n";
-		ret += guard.toString() + "\n";
+		ret += "    "+description + "\n";
+		ret += "    Guard: "+guard.toString() + "\n";
 		for (PlexilAction action : actions) {
-		    ret += "[ " +action.toString()+" ]\n";
+		    ret += "    Action: [ " +action.toString()+" ]\n";
 		}
 		
 		return ret + " ----> ("+end+")";

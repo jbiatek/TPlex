@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -71,10 +72,18 @@ public class NodeStateMachine {
 	    }
 	    ret += "\nState mappings: \n";
 	    for (State s : states) {
-	        ret += "    State "+indexOf(s)+": ";
+	        ret += "  State "+indexOf(s)+": ";
 	        for (NodeUID node : s.tags.keySet()) {
-	            ret += node + " => " + s.tags.get(node) + ", ";
+	            ret += node + " => " + s.tags.get(node) + ",\n";
 	        }
+	        ret += "    Entry Actions: \n";
+	        ret += "        "+s.entryActions.stream()
+	        		.map(Object::toString)
+	        		.collect(Collectors.joining(", "))+"\n";
+	        ret += "    In actions: \n";
+	        ret += "        "+s.inActions.stream()
+    				.map(Object::toString)
+    					.collect(Collectors.joining(", "))+"\n";
 	    }
 	    ret += "\nTransitions: \n";
 	    for (Transition t : transitions) {

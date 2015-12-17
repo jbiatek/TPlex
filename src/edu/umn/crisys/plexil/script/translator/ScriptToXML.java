@@ -164,7 +164,6 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 		switch (t) {
 		case BOOLEAN: return "bool";
 		case INTEGER: return "int";
-		case NUMERIC:
 		case REAL: return "real";
 		case STRING: 
 		case COMMAND_HANDLE: return "string";

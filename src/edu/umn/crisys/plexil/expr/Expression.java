@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.common.Operation;
+import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public interface Expression {
@@ -23,6 +23,45 @@ public interface Expression {
      */
     public default List<Expression> getArguments() {
     	return Collections.emptyList();
+    }
+    
+    /**
+     * If you're sure that this expression has exactly one argument, use
+     * this method to get it. An exception will be thrown if you are wrong.
+     * 
+     * @return
+     */
+    public default Expression getUnaryArg() {
+    	if (getArguments().size() != 1) {
+    		throw new RuntimeException("Expression is not unary: "+this);
+    	}
+    	return getArguments().get(0);
+    }
+    
+    /**
+     * If you're sure that this expression has exactly two arguments,
+     * use this method to get the first one. An exception will be thrown if
+     * you are wrong. 
+     * @return
+     */
+    public default Expression getBinaryFirst() {
+    	if (getArguments().size() != 2) {
+    		throw new RuntimeException("Expression is not binary: "+this);
+    	}
+    	return getArguments().get(0);
+    }
+    
+    /**
+     * If you're sure that this expression has exactly two arguments,
+     * use this method to get the second one. An exception will be thrown if
+     * you are wrong. 
+     * @return
+     */
+    public default Expression getBinarySecond() {
+    	if (getArguments().size() != 2) {
+    		throw new RuntimeException("Expression is not binary: "+this);
+    	}
+    	return getArguments().get(1);
     }
     
     /**
@@ -59,21 +98,4 @@ public interface Expression {
     	return false;
     }
     
-    public default Expression ensureType(ExprType type) {
-    	if (type == this.getType()) return this;
-    	
-    	if (type == ExprType.BOOLEAN) {
-    		return Operation.castToBoolean(this);
-    	} else if (type == ExprType.INTEGER) {
-    		return Operation.castToInteger(this);
-    	} else if (type == ExprType.REAL) {
-    		return Operation.castToReal(this);
-    	} else if (type == ExprType.NUMERIC) {
-    		return Operation.castToNumeric(this);
-    	} else if (type == ExprType.STRING) {
-    		return Operation.castToString(this);
-    	} else {
-    		throw new RuntimeException("No casting operator for "+type);
-    	}
-    }
 }
