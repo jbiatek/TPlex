@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;

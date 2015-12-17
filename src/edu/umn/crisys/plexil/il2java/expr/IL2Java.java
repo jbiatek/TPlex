@@ -11,7 +11,7 @@ import com.sun.codemodel.JOp;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;

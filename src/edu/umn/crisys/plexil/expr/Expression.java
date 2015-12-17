@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.common.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public interface Expression {

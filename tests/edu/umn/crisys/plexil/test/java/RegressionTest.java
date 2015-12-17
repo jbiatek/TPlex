@@ -20,8 +20,8 @@ import org.junit.*;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;

@@ -1,14 +1,14 @@
 package edu.umn.crisys.plexil.expr;
 
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
@@ -68,11 +68,10 @@ public interface ExprVisitor<P, R> {
     public R visit(LookupNowExpr lookup, P param);
     public R visit(LookupOnChangeExpr lookup, P param);
 	
-	
-    public R visit(ArrayIndexExpr array, P param);
-    public R visit(ASTOperation op, P param);
 
     // AST expressions
+    public R visit(ArrayIndexExpr array, P param);
+    public R visit(ASTOperation op, P param);
     public R visit(UnresolvedVariableExpr expr, P param);
     public R visit(NodeRefExpr ref, P param);
     public R visit(DefaultEndExpr end, P param);

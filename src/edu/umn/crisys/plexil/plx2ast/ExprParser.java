@@ -12,15 +12,15 @@ import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeIDExpression;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.ASTOperation;
-import edu.umn.crisys.plexil.expr.common.ASTOperation.Operator;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;

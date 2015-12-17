@@ -1,14 +1,14 @@
 package edu.umn.crisys.plexil.expr;
 
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
-import edu.umn.crisys.plexil.expr.common.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;

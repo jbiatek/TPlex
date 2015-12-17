@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.common.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;

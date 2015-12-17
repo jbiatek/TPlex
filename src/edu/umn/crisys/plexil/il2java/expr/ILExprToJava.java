@@ -9,9 +9,9 @@ import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.common.ASTOperation;
-import edu.umn.crisys.plexil.expr.common.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;

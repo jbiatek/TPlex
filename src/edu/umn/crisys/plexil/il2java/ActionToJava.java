@@ -16,7 +16,7 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.common.ArrayIndexExpr;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
