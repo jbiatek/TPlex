@@ -3,11 +3,12 @@ package edu.umn.crisys.plexil.il2lustre;
 import static jkind.lustre.LustreUtil.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import jkind.SolverOption;
-import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -17,6 +18,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
@@ -187,24 +189,20 @@ public class PlanToLustre {
 	}
 
 	/**
-	 * Adds an input to the NodeBuilder for this command handle. This
-	 * is *raw* input, so it is completely unconstrained. ActionsToLustre, the
-	 * class responsible for finding and translating Actions like assigning 
-	 * variables and issuing commands, is probably the only class that should
-	 * use this. (It will create a constrained variable that uses this input
-	 * as a source of nondeterminism but adheres to Plexil's semantics.)
+	 * Adds an input to the NodeBuilder for this command handle. It will not
+	 * be constrained, so make sure to restrict it correctly. 
+	 * 
 	 * @param handle The actual Plexil handle (for naming purposes)
-	 * @return the Lustre ID for the new input, which is also available from 
-	 * LustreNamingConventions.getRawCommandHandleId(). 
+	 * @return the Lustre ID for the new input, which conforms to the
+	 * Lustre naming conventions for the IL variable. 
 	 */
-	public String addRawCommandHandleInputFor(ILVariable handle, String cmdName) {
-		// We'll need a raw input of type command handle
-		String rawInputId = LustreNamingConventions.getRawCommandHandleId(handle);
-		Type cmdType = LustreNamingConventions.PCOMMAND;
-		nb.addInput(new VarDecl(rawInputId, cmdType));
-		String actualVarId = LustreNamingConventions.getVariableId(handle);
-		reverseMap.addCommandHandleMapping(actualVarId, cmdName);
-		return rawInputId;
+	public String addCommandHandleInputFor(ILVariable handle, String cmdName) {
+		// Actually, this is an input, not a variable that we control. We
+		// do have to make sure that it behaves properly, though. 
+		String theId = LustreNamingConventions.getVariableId(handle);
+		nb.addInput(new VarDecl(theId, LustreNamingConventions.PCOMMAND));
+		// It must follow PLEXIL's rules about changing mid-step:
+		return theId;
 	}
 
 	private void addLookupToNode(LookupDecl lookup) {
@@ -214,23 +212,55 @@ public class PlanToLustre {
 		}
 		
 		
-		String rawInputId = LustreNamingConventions.getRawLookupId(lookup.getName());
-		Expr rawInput = new IdExpr(rawInputId);
-		String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
-		Type type = getLustreType(lookup.getReturnValue().get().getType());
-		nb.addInput(new VarDecl(rawInputId, type));
-		// The "real" lookup can only change between macro steps
-		nb.addLocal(new VarDecl(lookupId, type));
-		// If this is a macrostep boundary, allow it to change,
-		// else use the previous value. 
-		Equation eq = new Equation(id(lookupId), 
-				ite(LustreNamingConventions.MACRO_STEP_ENDED,
-				rawInput,
-				arrow(rawInput, pre(id(lookupId)))));
-				
-		nb.addEquation(eq);
-		// Write this down for reverse mapping later
-		reverseMap.addLookupMapping(rawInputId, lookup.getName());
+		ExprType plexilType = lookup.getReturnValue().get().getType();
+		Type type = getLustreType(plexilType);
+		if (LustreNamingConventions.hasValueAndKnownSplit(plexilType)) {
+			// This should be two inputs, the value and whether it's known
+			String valueId = LustreNamingConventions.getLookupIdValuePart(lookup.getName());
+			String knownId = LustreNamingConventions.getLookupIdValuePart(lookup.getName());
+			
+			nb.addInput(new VarDecl(valueId, type));
+			nb.addInput(new VarDecl(knownId, NamedType.BOOL));
+			
+			// As an input, it must follow PLEXIL rules:
+			restrictInputVariableToMacroSteps(id(valueId));
+			restrictInputVariableToMacroSteps(id(knownId));
+			
+			// Write this down for reverse mapping later
+			reverseMap.addLookupMapping(valueId, lookup.getName());
+			
+		} else {
+			String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
+
+			nb.addInput(new VarDecl(lookupId, type));
+			// As an input, it must follow PLEXIL rules:
+			restrictInputVariableToMacroSteps(id(lookupId));
+			
+			// Write this down for reverse mapping later
+			reverseMap.addLookupMapping(lookupId, lookup.getName());
+		}
+		
+		
+	}
+	
+	/**
+	 * Add an assertion to the Lustre plan. The given boolean expression will
+	 * be guaranteed to always hold true in all test cases generated. 
+	 * @param e
+	 */
+	void addAssertion(Expr e) {
+		nb.addAssertion(e);
+	}
+	
+	void restrictInputVariableToMacroSteps(IdExpr theVariable) {
+		// PLEXIL requires that an input only change when the macro step ends.
+		// In other words, if the macro step isn't over, then the current
+		// lookup value must equal the previous one. 
+		nb.addAssertion(
+				arrow(LustreUtil.TRUE, 
+				implies(not(LustreNamingConventions.MACRO_STEP_ENDED),
+						equal(theVariable, pre(theVariable)))));
+
 	}
 	
 	public Expr toLustre(Expression e, ExprType expectedType) {
@@ -309,7 +339,48 @@ public class PlanToLustre {
 				ite(id("value"), id("p_true"), id("p_false"))));
 		pb.addNode(to_pboolean.build());
 		
+		// Numeric operations that use the unknown bit
+		Map<String, BinaryOp> boolComparators = new HashMap<>();
+		boolComparators.put("ge", BinaryOp.GREATEREQUAL);
+		boolComparators.put("gt", BinaryOp.GREATER);
+		boolComparators.put("le", BinaryOp.LESSEQUAL);
+		boolComparators.put("lt", BinaryOp.LESS);
+		boolComparators.put("eq", BinaryOp.EQUAL);
+		for (Entry<String, BinaryOp> e : boolComparators.entrySet()) {
+			// Do an integer version and a real version
+			pb.addNode(numericComparator("pint_"+e.getKey(), e.getValue(), NamedType.INT));
+			pb.addNode(numericComparator("preal_"+e.getKey(), e.getValue(), NamedType.REAL));
+		}
+		
+		// Since tuples aren't really first-class citizens, we unfortunately
+		// can't declare nodes that take tuples and therefore can't have 
+		// those operations as nodes. Instead, they're basically inlined. 
+		// Expressions use the value component and the known component 
+		// separately. We do, however, need to implement a few "native"
+		// operations. 
+		
+		
+		
 		return pb;
+	}
+	
+	private static jkind.lustre.Node numericComparator(String name, BinaryOp op, Type t) {
+		NodeBuilder nb = new NodeBuilder(name);
+		nb.addInput(new VarDecl("av", t));
+		nb.addInput(new VarDecl("ak", NamedType.BOOL));
+		nb.addInput(new VarDecl("bv", t));
+		nb.addInput(new VarDecl("bk", NamedType.BOOL));
+		nb.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
+		nb.addEquation(new Equation(id("result"), 
+				ite(and(id("ak"), id("bk")), 
+						ite(new BinaryExpr(id("av"), op, id("bv")),
+							LustreNamingConventions.P_TRUE,
+							LustreNamingConventions.P_FALSE),
+						LustreNamingConventions.P_UNKNOWN)
+				));
+		
+		
+		return nb.build();
 	}
 	
 	private static void addEnumType(ProgramBuilder pb, EnumType et) {
@@ -362,7 +433,22 @@ public class PlanToLustre {
 			t = getLustreType(v.getType());
 		}
 		
-		nb.addLocal(new VarDecl(LustreNamingConventions.getVariableId(v), t));
+		if (v.getType() == ExprType.COMMAND_HANDLE) {
+			// Really, this is an input. We need the command's information 
+			// too, so the Command action is responsible for telling us to
+			// add this variable. 
+			return;
+		}
+		if (v.getType().isNumeric()) {
+			// Declare both the value and the known bit.
+			nb.addLocal(new VarDecl(LustreNamingConventions
+					.getNumericVariableValueId(v), t));
+			nb.addLocal(new VarDecl(LustreNamingConventions
+					.getNumericVariableKnownId(v), NamedType.BOOL));
+		} else {
+			// Everything else is a simple enum, including an UNKNOWN entry
+			nb.addLocal(new VarDecl(LustreNamingConventions.getVariableId(v), t));
+		}
 	}
 
 	private static IdExpr getStateExpr(NodeStateMachine nsm) {

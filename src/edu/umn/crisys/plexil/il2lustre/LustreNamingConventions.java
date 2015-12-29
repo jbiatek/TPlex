@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.il2lustre;
 
+import static jkind.lustre.LustreUtil.id;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +9,9 @@ import java.util.Optional;
 
 import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
+import jkind.lustre.TupleExpr;
 import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
@@ -17,11 +21,13 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
@@ -109,6 +115,12 @@ public class LustreNamingConventions {
 		for (CommandHandleState cmdHandle : CommandHandleState.values()){ 
 			if (getEnumId(cmdHandle).equals(enumValue)) return cmdHandle;
 		}
+		if (enumValue.matches("\\d+")) {
+			return IntegerValue.get(Integer.parseInt(enumValue));
+		} else if (enumValue.matches("\\d*\\.\\d*")) {
+			return RealValue.get(Double.parseDouble(enumValue));
+		}
+		
 		if (stringMap.isPresent()) {
 			Optional<PString> ret = stringMap.get().getPStringFromEnumId(enumValue);
 			return ret.orElseThrow(() -> new RuntimeException
@@ -116,6 +128,20 @@ public class LustreNamingConventions {
 		}
 		throw new RuntimeException("Couldn't reverse translate "+enumValue+", "
 				+ "there was no string map so it might be a string.");
+	}
+	
+	public static PValue reverseTranslateNumber(String valuePart, 
+			String knownPart, ExprType type) {
+		if (knownPart.equals("false")) {
+			return UnknownValue.get();
+		}
+		if (type == ExprType.INTEGER) {
+			return IntegerValue.get(Integer.parseInt(valuePart));
+		}
+		if (type == ExprType.REAL) {
+			return RealValue.get(Double.parseDouble(valuePart));
+		}
+		throw new RuntimeException("Type "+type+" is not a number.");
 	}
 	
 	private static String getLookupId(Expression rawName) {
@@ -134,24 +160,48 @@ public class LustreNamingConventions {
 		return NameUtils.clean("Lookup/"+lookupName);
 	}
 	
-	public static String getRawLookupId(String lookupName) {
-		return getLookupId(lookupName+"/raw");
+	public static String getLookupIdValuePart(String lookupName) {
+		return NameUtils.clean("Lookup/"+lookupName+".value");
 	}
 	
-	public static String getInputName(LookupNowExpr lookup) {
-		return getLookupId(lookup.getLookupName());
+	public static String getLookupIdKnownPart(String lookupName) {
+		return NameUtils.clean("Lookup/"+lookupName+".isknown");
 	}
 	
-	public static String getInputName(LookupOnChangeExpr lookup) {
-		return getLookupId(lookup.getLookupName());
+	public static boolean hasValueAndKnownSplit(ILVariable v) {
+		return hasValueAndKnownSplit(v.getType());
 	}
 	
-	public static String getRawCommandHandleId(ILVariable cmdHandle) {
-		return getVariableId(cmdHandle)+NameUtils.clean("/raw");
+	public static boolean hasValueAndKnownSplit(ExprType type) {
+		return type == ExprType.INTEGER
+				|| type == ExprType.REAL
+				|| type == ExprType.INTEGER_ARRAY
+				|| type == ExprType.REAL_ARRAY;
 	}
-	
+
 	public static String getVariableId(ILVariable v) {
+		if (hasValueAndKnownSplit(v)) {
+			throw new RuntimeException("Numeric variables have a value "
+					+ "component and a 'known' component: "+v);
+		}
 		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
+	}
+	
+	public static jkind.lustre.Expr getNumericValue(ILVariable v) {
+		return new TupleExpr(Arrays.asList(id(getNumericVariableValueId(v)),
+				id(getNumericVariableKnownId(v))));
+	}
+	
+	public static String getNumericVariableValueId(ILVariable v) {
+		if ( ! hasValueAndKnownSplit(v)) {
+			throw new RuntimeException("Not a numeric variable: "+v);
+		}
+		
+		return NameUtils.clean(v.getNodeUID() + "/" + v.getName()+".value");
+	}
+	
+	public static String getNumericVariableKnownId(ILVariable v) {
+		return NameUtils.clean(v.getNodeUID() + "/" + v.getName()+".isknown");
 	}
 
 	public static String getStateId(NodeStateMachine nsm) {

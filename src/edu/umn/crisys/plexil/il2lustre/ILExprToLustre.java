@@ -4,6 +4,7 @@ import static jkind.lustre.LustreUtil.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jkind.lustre.ArrayAccessExpr;
@@ -15,6 +16,7 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
@@ -27,9 +29,8 @@ import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
-import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
+import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -60,25 +61,61 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	
 	@Override
 	public Expr visit(NamedCondition named, ExprType expected) {
-		// This should have been de-inlined for us. 
+		// This means that the contents of this expression are de-inlined.
+		// We can just return the variable id. 
 		return id(LustreNamingConventions.getNamedConditionId(named));
 	}
 	
 	@Override
-	public ArrayAccessExpr visit(ArrayIndexExpr array, ExprType expectedType) {
-		// Arrays are static right now, otherwise this would need a pre(). 
-		return new ArrayAccessExpr(array.getArray().accept(this, null), 
-				array.getIndex().accept(this, null));
+	public Expr visit(ArrayIndexExpr array, ExprType expectedType) {
+		Expr theArray = array.getArray().accept(this, null);
+		Expr theIndex = array.getIndex().accept(this, null);
+
+		if (LustreNamingConventions.hasValueAndKnownSplit(array.getType())) {
+			// We'll actually be getting two arrays instead of 1.
+			Expr arrayValue = getValueComponent(theArray);
+			Expr arrayKnownFlags = getKnownComponent(theArray);
+			
+			return tuple(
+					new ArrayAccessExpr(arrayValue, theIndex),
+					new ArrayAccessExpr(arrayKnownFlags, theIndex));
+		}
+		
+		return new ArrayAccessExpr(theArray, theIndex);
 	}
 
 	@Override
 	public Expr visit(LookupNowExpr lookup, ExprType expectedType) {
-		return id(LustreNamingConventions.getInputName(lookup));
+		if (LustreNamingConventions.hasValueAndKnownSplit(expectedType)
+				|| LustreNamingConventions.hasValueAndKnownSplit(lookup.getType())) {
+			// This value has a value part and a known part.
+			return tuple(
+					id(LustreNamingConventions.getLookupIdValuePart(
+							lookup.getLookupNameAsString())),
+					id(LustreNamingConventions.getLookupIdKnownPart(
+							lookup.getLookupNameAsString()))
+					);
+		} else {
+			return id(LustreNamingConventions.getLookupId(
+					lookup.getLookupNameAsString()));
+		}
 	}
 
 	@Override
 	public Expr visit(LookupOnChangeExpr lookup, ExprType expectedType) {
-		return id(LustreNamingConventions.getInputName(lookup));
+		if (LustreNamingConventions.hasValueAndKnownSplit(expectedType)
+				|| LustreNamingConventions.hasValueAndKnownSplit(lookup.getType())) {
+			// This value has a value part and a known part.
+			return tuple(
+					id(LustreNamingConventions.getLookupIdValuePart(
+							lookup.getLookupNameAsString())),
+					id(LustreNamingConventions.getLookupIdKnownPart(
+							lookup.getLookupNameAsString()))
+					);
+		} else {
+			return id(LustreNamingConventions.getLookupId(
+					lookup.getLookupNameAsString()));
+		}
 	}
 
 	private static Expr toPBoolean(Expr e) {
@@ -86,6 +123,52 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	}
 	
+	private static Expr tuple(Expr one, Expr two) {
+		return new TupleExpr(Arrays.asList(one, two));
+	}
+	
+	/**
+	 * Numeric expressions always return a tuple containing the value itself
+	 * and an unknown flag. When you need to do an operation on one, though,
+	 * it won't work since tuples can't be added, divided, etc., and since
+	 * nodes can't take tuples either, we're a little stuck. What we have to
+	 * do is at translation time, when we need to operate on a number, split it
+	 * into a numeric component and a known-ness component. Luckily, none of
+	 * the numeric operators have any complex behavior, so they can be 
+	 * entirely separated. 
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public static Expr getValueComponent(Expr e) {
+		if (e instanceof TupleExpr) {
+			return ((TupleExpr) e).elements.get(0);
+		} else {
+			throw new RuntimeException("Not a tuple: "+e);
+		}
+	}
+	
+	/**
+	 * Numeric expressions always return a tuple containing the value itself
+	 * and an unknown flag. When you need to do an operation on one, though,
+	 * it won't work since tuples can't be added, divided, etc., and since
+	 * nodes can't take tuples either, we're a little stuck. What we have to
+	 * do is at translation time, when we need to operate on a number, split it
+	 * into a numeric component and a known-ness component. Luckily, none of
+	 * the numeric operators have any complex behavior, so they can be 
+	 * entirely separated. 
+	 * 
+	 * @param e
+	 * @return
+	 */
+
+	public static Expr getKnownComponent(Expr e) {
+		if (e instanceof TupleExpr) {
+			return ((TupleExpr) e).elements.get(1);
+		} else {
+			throw new RuntimeException("Not a tuple: "+e);
+		}
+	}
 	
 	@Override
 	public Expr visit(NativeBool b, ExprType param) {
@@ -98,9 +181,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		switch (op.getOperator()) {
 		// ---------------- Native boolean operators
 		case AND:
-			return multi(op.getArguments(), BinaryOp.AND, ExprType.NATIVE_BOOL);
+			return binary(op.getArguments(), BinaryOp.AND, ExprType.NATIVE_BOOL);
 		case OR:
-			return multi(op.getArguments(), BinaryOp.OR, ExprType.NATIVE_BOOL);
+			return binary(op.getArguments(), BinaryOp.OR, ExprType.NATIVE_BOOL);
 		case NOT:
 			return LustreUtil.not(op.getUnaryArg().accept(this, ExprType.NATIVE_BOOL));
 		case IS_TRUE:
@@ -129,22 +212,21 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 			
 		// ---------------- Plexil boolean operators
 		case PAND:
-			return multi(op.getArguments(), LustreNamingConventions.AND_OPERATOR, ExprType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.AND_OPERATOR, ExprType.BOOLEAN);
 		case PNOT:
 			return unary(op.getArguments(), LustreNamingConventions.NOT_OPERATOR, ExprType.BOOLEAN);
 		case POR:
-			return multi(op.getArguments(), LustreNamingConventions.OR_OPERATOR, ExprType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.OR_OPERATOR, ExprType.BOOLEAN);
 		case PXOR:
 			return binary(op.getArguments(), LustreNamingConventions.XOR_OPERATOR, ExprType.BOOLEAN);
 		case PBOOL_EQ:
 			return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ExprType.BOOLEAN);
-		case PINT_EQ:
-		case PREAL_EQ:
 		case PSTRING_EQ: 
 		case PSTATE_EQ:
 		case POUTCOME_EQ:
 		case PFAILURE_EQ:
 		case PHANDLE_EQ:
+			// TODO: This is wrong, it doesn't handle unknowns correctly at all
 				return toPBoolean(binary(op.getArguments(), BinaryOp.EQUAL, 
 						op.getBinaryFirst().getType()));
 		case ISKNOWN_OPERATOR:
@@ -178,32 +260,49 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 				System.err.println("Missing case in isKnown translation: "+op.getUnaryArg().getType());
 			}
 
+		// ---------------- Numeric comparators
+		// Each one has a special node operator that takes all 4 components
+		// of the 2 numbers being compared. We can deal with them all the same
+		// way. 
+		case PINT_EQ:
+		case PREAL_EQ:
+		case PINT_GE:
+		case PREAL_GE:
+		case PINT_GT:
+		case PREAL_GT:
+		case PINT_LE:
+		case PREAL_LE:
+		case PINT_LT:
+		case PREAL_LT:
+			{
+				String nodeName = op.getOperator().toString().toLowerCase();
+				ExprType type = ExprType.INTEGER;
+				if (nodeName.startsWith("preal")) {
+					type = ExprType.REAL;
+				}
+				Expr first = op.getBinaryFirst().accept(this, type);
+				Expr second = op.getBinarySecond().accept(this, type);
+				return new NodeCallExpr(nodeName, 
+						getValueComponent(first),
+						getKnownComponent(first),
+						getValueComponent(second),
+						getKnownComponent(second));
+			}
+			
+
+			
 		// ---------------- Numeric operators
+		// These need special tuple handling too, but the unary() and binary()
+		// methods all handle that for us. 
 		case PINT_ABS:
 		case PREAL_ABS:
 			return unary(op.getArguments(), "abs", op.getUnaryArg().getType());
 		case PINT_ADD:
 		case PREAL_ADD:
-			return reduce(op.getArguments(), BinaryOp.PLUS, op.getBinaryFirst().getType());
+			return binary(op.getArguments(), BinaryOp.PLUS, op.getBinaryFirst().getType());
 		case PINT_DIV:
 		case PREAL_DIV:
-			return binaryReduce(op.getArguments(), BinaryOp.DIVIDE, op.getBinaryFirst().getType());
-		case PINT_GE:
-		case PREAL_GE:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATEREQUAL, 
-					op.getBinaryFirst().getType()));
-		case PINT_GT:
-		case PREAL_GT:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.GREATER, 
-					op.getBinaryFirst().getType()));
-		case PINT_LE:
-		case PREAL_LE:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.LESSEQUAL, 
-					op.getBinaryFirst().getType()));
-		case PINT_LT:
-		case PREAL_LT:
-			return toPBoolean(binary(op.getArguments(), BinaryOp.LESS, 
-					op.getBinaryFirst().getType()));
+			return binary(op.getArguments(), BinaryOp.DIVIDE, op.getBinaryFirst().getType());
 		case PINT_MAX:
 		case PREAL_MAX:
 			return binary(op.getArguments(), "max", 
@@ -218,7 +317,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 					op.getBinaryFirst().getType());
 		case PINT_MUL:
 		case PREAL_MUL:
-			return multi(op.getArguments(), BinaryOp.MULTIPLY, 
+			return binary(op.getArguments(), BinaryOp.MULTIPLY, 
 					op.getBinaryFirst().getType());
 		case PREAL_SQRT:
 			return unary(op.getArguments(), "sqrt", ExprType.REAL);
@@ -235,34 +334,40 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		}
 	}
 	
-	private Expr binaryReduce(List<Expression> args, BinaryOp op, ExprType argType) {
-		if (args.size() != 2) {
-			throw new RuntimeException("Expected 2 args, found "+args.size());
-		}
-		return reduce(args, op, argType);
-	}
-	
-	private Expr reduce(List<Expression> args, BinaryOp op, ExprType argType) {
-		return args.stream()
-				.map((arg) -> arg.accept(this, argType))
-				.reduce((l, r) -> new BinaryExpr(l, op, r))
-				.orElseThrow(() -> new RuntimeException("No arguments passed in!"));
-	}
-
-
 	private Expr unary(List<Expression> args, String fn, ExprType argType) {
 		if (args.size() != 1) {
 			throw new RuntimeException("Expected 1 arg here for "+fn);
 		}
-		return new NodeCallExpr(fn, args.get(0).accept(this, argType));
+		Expr arg = args.get(0).accept(this, argType);
+		if (argType.isNumeric()) {
+			// Do the actual operation on the numeric component.
+			return tuple(new NodeCallExpr(fn, getValueComponent(arg)), 
+					getKnownComponent(arg));
+		} else {
+			return new NodeCallExpr(fn, arg);
+		}
 	}
 	
 	private Expr binary(List<Expression> args, String fn, ExprType argType) {
 		if (args.size() != 2) {
 			throw new RuntimeException("Expected 2 args here for "+fn);
 		}
-		return new NodeCallExpr(fn, args.get(0).accept(this, argType),
-				args.get(1).accept(this, argType));
+		Expr first = args.get(0).accept(this, argType);
+		Expr second = args.get(1).accept(this, argType);
+		if (argType.isNumeric()) {
+			// Hold up, we actually need to un-tuple these and re-tuple the
+			// result.
+			Expr firstValue = getValueComponent(first);
+			Expr firstKnown = getKnownComponent(first);
+			Expr secondValue = getValueComponent(second);
+			Expr secondKnown = getValueComponent(secondValue);
+			
+			return tuple(new NodeCallExpr(fn, firstValue, secondValue), 
+					and(firstKnown, secondKnown));
+			
+		} else {
+			return new NodeCallExpr(fn, first, second); 
+		}
 	}
 	
 	
@@ -271,34 +376,23 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		if (args.size() != 2) {
 			throw new RuntimeException("Expected 2 args here for "+op);
 		}
-		return new BinaryExpr(args.get(0).accept(this, argType), op, 
-				args.get(1).accept(this, argType));
+		Expr first = args.get(0).accept(this, argType);
+		Expr second = args.get(1).accept(this, argType);
+		if (argType.isNumeric()) {
+			// Wait, we need to un-tuple these and re-tuple the result.
+			Expr firstValue = getValueComponent(first);
+			Expr firstKnown = getKnownComponent(first);
+			Expr secondValue = getValueComponent(second);
+			Expr secondKnown = getKnownComponent(second);
+			
+			return tuple(new BinaryExpr(firstValue, op, secondValue), 
+					and(firstKnown, secondKnown));
+		}
+		
+		
+		return new BinaryExpr(first, op, second);
 	}
 	
-	private Expr multi(List<Expression> args, String fn, ExprType argType) {
-		Expr ret = null;
-		for (Expression arg : args) {
-			if (ret == null) {
-				ret = arg.accept(this, argType);
-			} else {
-				ret = new NodeCallExpr(fn, ret, arg.accept(this, argType));
-			}
-		}
-		return ret;
-	}
-	
-	private Expr multi(List<Expression> args, BinaryOp op, ExprType argType) {
-		Expr ret = null;
-		for (Expression arg : args) {
-			if (ret == null) { 
-				ret = arg.accept(this, argType);
-			} else {
-				ret = new BinaryExpr(ret, op, arg.accept(this, argType));
-			}
-		}
-		return ret;
-	}
-
 	@Override
 	public Expr visit(BooleanValue bool, ExprType expectedType) {
 		if (bool.isTrue()) {
@@ -312,12 +406,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(IntegerValue integer, ExprType expectedType) {
-		return new IntExpr(integer.getIntValue());
+		return tuple(new IntExpr(integer.getIntValue()), LustreUtil.TRUE);
 	}
 
 	@Override
 	public Expr visit(RealValue real, ExprType expectedType) {
-		return new RealExpr(new BigDecimal(real.getRealValue()));
+		return tuple(new RealExpr(new BigDecimal(real.getRealValue())), LustreUtil.TRUE);
 	}
 
 	@Override
@@ -331,9 +425,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case BOOLEAN:
 			return LustreNamingConventions.P_UNKNOWN;
 		case INTEGER:
-			return new IntExpr(0);
+			return tuple(new IntExpr(0), LustreUtil.FALSE);
 		case REAL:
-			return new RealExpr(new BigDecimal(0));
+			return tuple(new RealExpr(new BigDecimal(0)), LustreUtil.FALSE);
 		case STRING:
 			return id(mapper.stringToEnum(unk));
 		default: 
@@ -371,13 +465,16 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(SimpleVar var, ExprType expectedType) {
+	public Expr visit(ILVariable var, ExprType expectedType) {
+		if (LustreNamingConventions.hasValueAndKnownSplit(var)) {
+			// Numerics have a known bit that must also be there
+			return tuple(
+					id(LustreNamingConventions.getNumericVariableValueId(var)),
+					id(LustreNamingConventions.getNumericVariableKnownId(var))
+					);
+		}
+		// Everything else is an enum, which includes an UNKNOWN entry. 
 		return id(LustreNamingConventions.getVariableId(var));
-	}
-
-	@Override
-	public Expr visit(ArrayVar array, ExprType expectedType) {
-		return id(LustreNamingConventions.getVariableId(array));
 	}
 
 	@Override

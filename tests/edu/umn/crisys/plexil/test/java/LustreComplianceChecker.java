@@ -14,7 +14,7 @@ import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class LustreComplianceChecker extends TestOracle {
-	private final Map<Expression, Signal<Value>> ilTrace;
+	private final Map<Expression, List<PValue>> ilTrace;
 	private final Signal<Value> macrostepEnded;
 	private int step = 0;
 	private List<String> errors = new ArrayList<String>();
@@ -22,7 +22,7 @@ public class LustreComplianceChecker extends TestOracle {
 	private String lastEndingReason = "";
 	private ReverseTranslationMap mapper;
 	
-	public LustreComplianceChecker(Map<Expression, Signal<Value>> ilTrace,
+	public LustreComplianceChecker(Map<Expression, List<PValue>> ilTrace,
 			Signal<Value> macrostepEnded,
 			ReverseTranslationMap mapper) {
 		this.ilTrace = ilTrace;
@@ -87,12 +87,11 @@ public class LustreComplianceChecker extends TestOracle {
 
 	private void checkValue(Expression e, ILSimulator sim) {
 		PValue expected = sim.eval(e);
-		Value actual = ilTrace.get(e).getValue(step);
+		PValue actual = ilTrace.get(e).get(step);
 		String expectedStr = RegressionTest.hackyILExprToLustre(expected, e.getType(), mapper);
 		
-		//TODO: is this really the best way to compare them?
-		if ( expectedStr == null || actual == null || 
-				! expectedStr.equals(actual.toString())) {
+		if ( expected == null || actual == null || 
+				! expected.equals(actual)) {
 			String history = generateHistory(ilTrace.get(e));
 			errors.add("Values for "+e+" don't match: expected "+expected+", "
 					+"which should be "+expectedStr
@@ -111,6 +110,23 @@ public class LustreComplianceChecker extends TestOracle {
 				history += "["+v.getValue(i)+"] ";
 			} else {
 				history += v.getValue(i)+" ";
+			}
+		}
+		history += ")";
+		return history;
+	}
+
+	
+	private String generateHistory(List<PValue> v) {
+		int start = Math.max(0, step-2);
+		int end = step + 3;
+		
+		String history = "(history: ";
+		for (int i = start; i < end; i++) {
+			if (i == step) {
+				history += "["+v.get(i)+"] ";
+			} else {
+				history += v.get(i)+" ";
 			}
 		}
 		history += ")";

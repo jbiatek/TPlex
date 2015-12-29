@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.il2lustre;
 
-import static jkind.lustre.LustreUtil.pre;
+import static jkind.lustre.LustreUtil.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +14,7 @@ import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
@@ -34,11 +35,13 @@ import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 
 public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
 	private Map<ILVariable, PlexilEquationBuilder> varNextValue = new HashMap<>();
+	private Map<ILVariable, PlexilEquationBuilder> varKnown = new HashMap<>();
 	private PlexilEquationBuilder macroStepIsEnded
 		= new PlexilEquationBuilder(LustreNamingConventions.MACRO_STEP_ENDED, LustreUtil.FALSE);
 	
@@ -51,9 +54,22 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	public void navigate(Plan p) {
 		// Initialize variables
 		for (ILVariable v : p.getVariables()) {
-			varNextValue.put(v, new PlexilEquationBuilder(
-					new IdExpr(LustreNamingConventions.getVariableId(v)), 
-					translateInitial(v)));
+			if (v.getType() == ExprType.COMMAND_HANDLE) {
+				// These are inputs, not really variables, so skip them.
+				continue;
+			} else if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
+				// There are two equations to build here
+				varNextValue.put(v, new PlexilEquationBuilder(
+						new IdExpr(LustreNamingConventions.getNumericVariableValueId(v)), 
+						translateInitialValue(v)));
+				varKnown.put(v, new PlexilEquationBuilder(
+						new IdExpr(LustreNamingConventions.getNumericVariableKnownId(v)),
+						translateInitialKnownComponent(v)));
+			} else {
+				varNextValue.put(v, new PlexilEquationBuilder(
+						new IdExpr(LustreNamingConventions.getVariableId(v)), 
+						translateInitialValue(v)));
+			}
 		}
 		// Set up the macro step ended variable:
 		// Get the default macro step assignment (quiescence reached) 
@@ -86,10 +102,18 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		}
 	}
 	
-	private Expr translateInitial(ILVariable v) {
+	private Expr translateInitialValue(ILVariable v) {
 		if (v instanceof SimpleVar) {
-			return translator.toLustre(						
+			Expr init = translator.toLustre(						
 					((SimpleVar) v).getInitialValue(), v.getType());
+			if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
+				// We just want the value part here.
+				return ILExprToLustre.getValueComponent(init);
+			} else {
+				// These are fine to return as-is.
+				return init;
+			}
+			
 		} else if (v instanceof ArrayVar) { 
 			// Preliminary support for constant arrays
 			//System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
@@ -100,10 +124,23 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		}
 	}
 	
+	private Expr translateInitialKnownComponent(ILVariable v) {
+		if (v instanceof SimpleVar) {
+			SimpleVar simp = (SimpleVar) v;
+			Expr init = translator.toLustre(simp.getInitialValue(), v.getType());
+			return ILExprToLustre.getKnownComponent(init);
+		} else {
+			throw new RuntimeException("No 'known' component for "+v.getClass());
+		}
+	}
+	
 	public void toLustre(NodeBuilder nb) {
 		// Build out all these variables
 		for (Entry<ILVariable, PlexilEquationBuilder> entry : varNextValue.entrySet()) {
 			nb.addEquation(entry.getValue().buildEquation());
+		}
+		for (Entry<ILVariable, PlexilEquationBuilder> e : varKnown.entrySet()) {
+			nb.addEquation(e.getValue().buildEquation());
 		}
 		
 		nb.addLocal(new VarDecl(LustreNamingConventions.MACRO_STEP_ENDED_ID, 
@@ -123,10 +160,30 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		if (assign.getLHS() instanceof SimpleVar) {
 			SimpleVar v = (SimpleVar) assign.getLHS();
 			
+			if (v.getType() == ExprType.COMMAND_HANDLE) {
+				// A special case here: command handles are inputs, not 
+				// variables. All their assignments and such are handled 
+				// elsewhere.
+				return null;
+			}
+			
+			Expr lustreRHS = translator.toLustre(assign.getRHS(), v.getType());
 			// Add this assignment under this condition. The value should be
 			// the RHS *before* variables are committed.
-			varNextValue.get(v).addAssignment(actionCondition, 
-					pre(translator.toLustre(assign.getRHS(), v.getType())));
+			if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
+				// Split this up into the separate parts
+				Expr value = ILExprToLustre.getValueComponent(lustreRHS);
+				Expr known = ILExprToLustre.getKnownComponent(lustreRHS);
+				varNextValue.get(v).addAssignment(actionCondition, 
+						pre(value));
+				varKnown.get(v).addAssignment(actionCondition, 
+						pre(known));
+
+			} else {
+				varNextValue.get(v).addAssignment(actionCondition, 
+						pre(lustreRHS));
+			}
+			
 		} else {
 			throw new RuntimeException("Assigning to "+assign.getLHS().getClass()+" not supported in "+assign.toString());
 		}
@@ -135,41 +192,38 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
 	@Override
 	public Void visitCommand(CommandAction cmd, Expr actionCondition) {
-		// We need a command handle input
-		String rawId = translator.addRawCommandHandleInputFor(cmd.getHandle(),
-				cmd.getNameAsConstantString());
+		// There's no actual need to send a "command" anywhere in Lustre. 
+		// We just get "results" back from the environment. To do that, we
+		// need the handle to be an input, not a regular variable. 
 		
-		/*
-		 * It kind of looks like handles should only change in EXECUTING, 
-		 * FINISHING, and FAILING maybe. Before that, no command has been 
-		 * issued, and afterward the node is all done and there have been some 
-		 * checks to ensure that at least something happened with the command. 
-		 * 
-		 * In theory, in the PLEXIL exec, I don't think there's anything
-		 * stopping an ill-behaved environment from doing weird things with
-		 * command handles, like marking them as successful before they even
-		 * start or changing their status after they finish. Maybe the exec
-		 * guards against that, and we can make these guarantees. If not,
-		 * it would probably be good to make this check optional in the
-		 * translator, since one might want to make sure that properties hold
-		 * even in the face of a badly behaved environment. 
-		 */
-		//TODO: Check with Plexil team and see if this is acceptable.
+		String inputName = translator.addCommandHandleInputFor(cmd.getHandle(), 
+				cmd.getNameAsConstantString());
+		Expr inputId = id(inputName);
+
+		
+		// To simulate resets, the Inactive and Waiting states are set to only
+		// allow an UNKNOWN value. 
 		NodeUID node = cmd.getHandle().getNodeUID();
 		
-		Expression executing = ILOperator.DIRECT_COMPARE.expr(NodeState.EXECUTING, new GetNodeStateExpr(node));
-		Expression finishing = ILOperator.DIRECT_COMPARE.expr(NodeState.FINISHING, new GetNodeStateExpr(node));
-		Expression failing = ILOperator.DIRECT_COMPARE.expr(NodeState.FAILING, new GetNodeStateExpr(node));
-		Expression inChangeableState = ILOperator.OR.expr(
-				executing, finishing, failing);
-		// Need to be starting a new macro step, and in one of those states.
-		Expr guard = translator.toLustre(inChangeableState);
+		Expression inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
+		Expression waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
+		Expression inAStartingStateIL = ILOperator.OR.expr(inactive, waiting);
 		
-		// If we're in any of those states between macro steps, take from the
-		// raw input. And we want the final value, not the "pre" value.
-		varNextValue.get(cmd.getHandle()).addAssignmentBetweenMacro(
-				guard, 
-				new IdExpr(rawId));
+		Expr inAStartingState = translator.toLustre(inAStartingStateIL);
+		Expr cmdUnknown = translator.toLustre(CommandHandleState.UNKNOWN, 
+				ExprType.COMMAND_HANDLE);
+		translator.addAssertion(
+				implies(inAStartingState, 
+						new BinaryExpr(inputId, BinaryOp.EQUAL, cmdUnknown)));
+		
+		// In the other states, it is only allowed to change if the macro
+		// step has ended. 
+		translator.addAssertion(
+				arrow(LustreUtil.TRUE, 
+				implies(and(not(inAStartingState), 
+						    not(LustreNamingConventions.MACRO_STEP_ENDED)),
+				new BinaryExpr(inputId, BinaryOp.EQUAL, pre(inputId)))));
+		
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
 			System.err.println("WARNING: Variable assignments from commands not supported yet!");

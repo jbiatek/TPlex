@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import jkind.lustre.values.Value;
@@ -30,7 +31,6 @@ import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
-import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
@@ -38,6 +38,7 @@ import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
 
@@ -414,7 +415,7 @@ public class RegressionTest {
 				name -> stringTrace.put(name, rawTrace.getVariable(name)));
 		
 		// Now, for each IL expression we're interested in, find it in Lustre. 
-		final Map<Expression, Signal<Value>> ilTrace = new HashMap<>();
+		final Map<Expression, List<PValue>> ilTrace = new HashMap<>();
 		// States aren't stored as variables, so those first
 		ilPlan.getMachines().forEach(nsm -> 
 				nsm.getNodeIds().forEach(uid -> 
@@ -446,34 +447,143 @@ public class RegressionTest {
 		
 	}
 	
+	private static List<PValue> reverseTranslate(Signal<Value> signal, 
+			ExprType type,
+			ReverseTranslationMap map) {
+		if (LustreNamingConventions.hasValueAndKnownSplit(type)) {
+			throw new RuntimeException("This needs to be split: "+type);
+		}
+		
+		List<PValue> filled = new ArrayList<>();
+		
+		for (int i=0; i < signal.getValues().size(); i++) {
+			// Check that there aren't any "holes" in the signal
+			if ( ! signal.getValues().containsKey(i)) {
+				throw new RuntimeException("Hole in Lustre signal "+signal+
+						": step "+i+" is not present!");
+			}
+			filled.add(LustreNamingConventions.reverseTranslate(
+					signal.getValue(i).toString(), 
+					Optional.of(map)));
+			
+		}
+		return filled;
+	}
+	
+	private static List<PValue> reverseTranslate(
+			Signal<Value> valueSignal,
+			Signal<Value> knownSignal,
+			ExprType type) {
+		List<PValue> filled = new ArrayList<>();
+		
+		for (int i = 0; i < valueSignal.getValues().size(); i++) {
+			if ( ! valueSignal.getValues().containsKey(i)) {
+				throw new RuntimeException("Hole in Lustre signal "+valueSignal+
+						": step "+i+" is not present!");
+			}
+			
+			filled.add(LustreNamingConventions.reverseTranslateNumber(
+							valueSignal.getValue(i).toString(), 
+							knownSignal.getValue(i).toString(), 
+							type));
+		}
+		
+		return filled;
+	}
+	
+	/**
+	 * Take an IL expression and the map of Lustre IDs and values over time,
+	 * and add the IL expression to the given map of IL expressions and their
+	 * PValues over time. 
+	 * 
+	 * @param e
+	 * @param stringTrace
+	 * @param ilTrace
+	 * @param mapper
+	 */
 	private static void attachILExprToLustreVar(Expression e, 
 			Map<String, Signal<Value>> stringTrace,
-			Map<Expression, Signal<Value>> ilTrace,
+			Map<Expression, List<PValue>> ilTrace,
 			ReverseTranslationMap mapper) {
-		String lustreString = hackyILExprToLustre(e, e.getType(), mapper);
-		
-		if (e instanceof ArrayVar) {
-			// In the trace these are split up by index
-			ArrayVar array = (ArrayVar) e;
-			for (int i = 0; i < array.getMaxSize(); i++) {
-				String indexed = lustreString+"["+i+"]";
-				if (stringTrace.containsKey(indexed)) {
-					ilTrace.put(new ArrayIndexExpr(array, IntegerValue.get(i)), 
-							stringTrace.get(indexed));
+		if (e instanceof ILVariable
+				&& LustreNamingConventions.hasValueAndKnownSplit((ILVariable) e)) {
+			// Actually, we must split these into two
+			if (e instanceof ArrayVar) {
+				// Complicated... these two arrays are further split into 
+				// indexes. 
+				ArrayVar v = (ArrayVar) e;
+				String valueArrayName = LustreNamingConventions.getNumericVariableValueId(v);
+				String knownArrayName = LustreNamingConventions.getNumericVariableKnownId(v);
+				for (int i = 0; i < v.getMaxSize(); i++) {
+					String valIndex = valueArrayName+"["+i+"]";
+					String knownIndex = knownArrayName+"["+i+"]";
+					if (stringTrace.containsKey(valIndex)
+							&& stringTrace.containsKey(knownIndex)) {
+						// That's what we need!
+						ilTrace.put(new ArrayIndexExpr(v, IntegerValue.get(i)), 
+								reverseTranslate(
+										stringTrace.get(valueArrayName), 
+										stringTrace.get(knownArrayName), 
+										v.getType().elementType()));
+					} else {
+						throw new RuntimeException("Looking for a numeric array index, " +
+								valueArrayName +" or "+knownArrayName+" was not found in Lustre trace.");
+					}
+				}
+			} else {
+				// Find the two names and translate back
+				ILVariable v = (ILVariable) e;
+				String valueName = LustreNamingConventions.getNumericVariableValueId(v);
+				String knownName = LustreNamingConventions.getNumericVariableKnownId(v);
+				if (stringTrace.containsKey(valueName)
+						&& stringTrace.containsKey(knownName)) {
+					// Bingo
+					ilTrace.put(e, reverseTranslate(
+							stringTrace.get(valueName), 
+							stringTrace.get(knownName), 
+							v.getType()));
 				} else {
-					throw new RuntimeException("Couldn't find array index "+indexed
-							+ " in Lustre trace" +
-							"(the Lustre trace had "+stringTrace.size()+" entries)");
+					throw new RuntimeException("Looking for a numeric variable, " +
+							valueName +" or "+knownName+" was not found in Lustre trace.");
 				}
 			}
-		} else if (stringTrace.containsKey(lustreString)) {
-			ilTrace.put(e, stringTrace.get(lustreString));
 		} else {
-			throw new RuntimeException("Didn't find IL expression in Lustre trace: "
-					+e+", was looking for it in Lustre as "+lustreString+
-					"(the Lustre trace had "+stringTrace.size()+" entries)");
+			// The rest are simpler, it's a 1:1 translation.
+
+			String lustreString = hackyILExprToLustre(e, e.getType(), mapper);
+
+			if (e instanceof ArrayVar) {
+				// In the trace these are split up by index
+				ArrayVar array = (ArrayVar) e;
+				for (int i = 0; i < array.getMaxSize(); i++) {
+					String indexed = lustreString+"["+i+"]";
+					if (stringTrace.containsKey(indexed)) {
+						ilTrace.put(new ArrayIndexExpr(array, IntegerValue.get(i)), 
+								reverseTranslate(
+										stringTrace.get(indexed), 
+										array.getType().elementType(), 
+										mapper));
+					} else {
+						throw new RuntimeException("Couldn't find array index "+indexed
+								+ " in Lustre trace" +
+								"(the Lustre trace had "+stringTrace.size()+" entries)");
+					}
+				}
+			} else if (stringTrace.containsKey(lustreString)) {
+				ilTrace.put(e, reverseTranslate(
+						stringTrace.get(lustreString),
+						e.getType(),
+						mapper));
+			} else {
+				throw new RuntimeException("Didn't find IL expression in Lustre trace: "
+						+e+", was looking for it in Lustre as "+lustreString+
+						"(the Lustre trace had "+stringTrace.size()+" entries)");
+			}
 		}
 	}
+	
+	
+	
 	public static LustreTrace getLustreTraceData(File lustreFile, String mainNode, 
 			File inputCsv) throws Exception{
 		List<LustreTrace> ret = 

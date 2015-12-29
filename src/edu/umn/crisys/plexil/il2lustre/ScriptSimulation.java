@@ -43,15 +43,14 @@ public class ScriptSimulation {
 		// Print the headers first
 		List<String> line = new ArrayList<String>();
 		for (Expression expr : data.keySet()) {
-			// Need to make sure we're getting raw input names
 			if (expr instanceof LookupExpr) {
 				// Get the raw input name
-				line.add(LustreNamingConventions.getRawLookupId(
+				line.add(LustreNamingConventions.getLookupId(
 						((LookupExpr) expr).getLookupNameAsString()));
 			} else if (expr instanceof ILVariable) {
 				// These should be command handles
 				line.add(LustreNamingConventions
-						.getRawCommandHandleId((ILVariable) expr));
+						.getVariableId((ILVariable) expr));
 			}
 		}
 		// Print that first line
