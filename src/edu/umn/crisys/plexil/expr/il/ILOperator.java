@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.expr.il;
 
 import static java.util.Arrays.asList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,6 @@ import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public enum ILOperator {
 
@@ -454,11 +454,36 @@ public enum ILOperator {
 	private List<ExprType> argTypes;
 	private ExprType returnType;
     
+	private static <T> List<T> repeatList(T item, int times) {
+		List<T> list = new ArrayList<>();
+		for (int i = 0; i < times; i++) {
+			list.add(item);
+		}
+		return list;
+	}
+	
+	/**
+	 * Create an IL Operator where the arguments are all the same type.
+	 * 
+	 * @param args Number of args expected.
+	 * @param symbol The string symbol to use.
+	 * @param argType The type of all args to this operator
+	 * @param returnType The type returned by this operator. 
+	 */
 	private ILOperator(int args, String symbol, 
     		ExprType argType, 
     		ExprType returnType) {
-		this(args, symbol, asList(argType), returnType);
+		this(args, symbol, repeatList(argType, args), returnType);
     }
+	
+	/**
+	 * Create an IL operator as specified. 
+	 * 
+	 * @param args Number of args expected.
+	 * @param symbol The string symbol to use.
+	 * @param argTypes The type of all args to this operator
+	 * @param returnType The type returned by this operator. 
+	 */
     private ILOperator(int args, String symbol, 
     		List<ExprType> argTypes, 
     		ExprType returnType) {
@@ -466,6 +491,15 @@ public enum ILOperator {
     	this.symbol = symbol;
     	this.argTypes = argTypes;
     	this.returnType = returnType;
+    	
+    	if (argSize < 1) { 
+    		throw new RuntimeException("Args for "+this+" is "+argSize);
+    	}
+    	if (args != argTypes.size()) {
+    		throw new RuntimeException(this+" expects "+args+" args, but "
+    				+argTypes.size()+" types were provided");
+    	}
+    	
     }
     
     public ILOperation expr(Expression...args) {
@@ -486,46 +520,21 @@ public enum ILOperator {
     	return returnType;
     }
     
+    /**
+     * Get a list that represents expected argument types. For the most part,
+     * these should match exactly with their corresponding argument. The one
+     * exception is the CAST operators -- they have an argument type of 
+     * UNKNOWN, but their argument should be any PLEXIL type.  
+     * 
+     * 
+     * @return
+     */
+    public List<ExprType> getArgumentTypeList() {
+    	return argTypes;
+    }
+    
 	public boolean isAcceptableArgNumber(int argNumber) {
-		if (argNumber < 1) return false;
-		else return argNumber == argSize;
-	}
-	
-	public boolean isTypeSafe(List<Expression> args) {
-		if (argTypes.size() == 1) {
-			// Same type for all of them. 
-			// They should all match the type that we have.
-			return args.stream().allMatch(e -> checkArgType(argTypes.get(0), e));
-		} else {
-			 if (argTypes.size() != args.size()) {
-				 throw new RuntimeException("Type number and arg number don't match for "+this+"!");
-			 }
-			 boolean allValid = true;
-			 for (int i=0; i < argTypes.size(); i++) {
-				 if ( ! checkArgType(argTypes.get(i), args.get(i))) {
-					 allValid = false;
-					 break;
-				 }
-			 }
-			 return allValid;
-		}
-	}
-	
-	private boolean checkArgType(ExprType type, Expression arg) {
-		if (arg instanceof UnknownValue) {
-			// This is fine as long as it's one of these types
-			return type == ExprType.BOOLEAN 
-					|| type == ExprType.INTEGER
-					|| type == ExprType.REAL
-					|| type == ExprType.STRING;
-		}
-		
-		if (type == ExprType.UNKNOWN) {
-			// We use UNKNOWN for any type of PValue here
-			return ! arg.getType().equals(ExprType.NATIVE_BOOL);
-		} else {
-			return arg.getType().equals(type);
-		}
+		return argNumber == argSize;
 	}
 	
 	public String getStringPrefix() {

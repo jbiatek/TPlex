@@ -18,6 +18,7 @@ import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
@@ -193,7 +194,15 @@ public class Plan {
 		return;
 	}
 	
-	public <Param> void modifyAllExpressions(ILExprModifier<Param> visitor, Param param) {
+	public <P> void visitAllGuards(ILExprVisitor<P, ?> visitor, P param) {
+		for (NodeStateMachine nsm : getMachines()) {
+			for (Transition t : nsm.getTransitions()) {
+				t.guard.accept(visitor, param);
+			}
+		}
+	}
+	
+	public <Param> void modifyAllGuards(ILExprModifier<Param> visitor, Param param) {
 		for (NodeStateMachine nsm : getMachines()) {
 			for (Transition t : nsm.getTransitions()) {
 				t.guard = t.guard.accept(visitor, param);

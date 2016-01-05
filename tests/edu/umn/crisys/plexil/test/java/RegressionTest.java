@@ -150,7 +150,12 @@ public class RegressionTest {
 	 */
 	public static List<TestSuite> getLustreTestSuites() {
 		// Preeeeety limited for now. 
-		return Arrays.asList(produceSameNameTest("DriveToSchool"));
+		return Arrays.asList(
+				produceSameNameTest("DriveToSchool"),
+				produceSameNameTest("DriveToTarget"),
+				produceSameNameTest("CruiseControl"),
+				//produceSameNameTest("SimpleDrive"),
+				produceSameNameTest("SafeDrive"));
 	}
 	
 	
@@ -174,6 +179,8 @@ public class RegressionTest {
 	@Test
 	public void CruiseControl() throws Exception {
 		runSingleTestJava("CruiseControl", "CruiseControl");
+		runSingleTestLustre("CruiseControl", "CruiseControl");
+
 	}
 	
 	@Test
@@ -185,11 +192,14 @@ public class RegressionTest {
 	@Test
 	public void DriveToTarget() throws Exception {
 		runSingleTestJava("DriveToTarget", "DriveToTarget");
+		runSingleTestLustre("DriveToTarget", "DriveToTarget");
+
 	}
 	
 	@Test
 	public void SafeDrive() throws Exception {
 		runSingleTestJava("SafeDrive", "SafeDrive");
+		runSingleTestLustre("SafeDrive", "SafeDrive");
 	}
 	
 	@Test

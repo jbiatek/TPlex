@@ -1,7 +1,6 @@
 package edu.umn.crisys.plexil.il.simulator;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,18 +69,6 @@ public class ILSimulator extends JavaPlan {
 					.collect(Collectors.toList()));
 		}
 		
-		@Override
-		public Expression visit(ArrayIndexExpr array, Void param) {
-			PValue theArray = ILSimulator.this.eval(array.getArray());
-			PValue theIndex = ILSimulator.this.eval(array.getIndex());
-
-			if (theArray instanceof PValueList && theIndex instanceof PInteger) {
-				return ((PValueList<?>)theArray).get(((PInteger)theIndex));
-			} else {
-				throw new RuntimeException("Tried to get index "+theIndex+" of "+theArray);
-			}
-		}
-
 		@Override
 		public Expression visit(LookupNowExpr lookup, Void param) {
 			PValue[] args = new PValue[]{};

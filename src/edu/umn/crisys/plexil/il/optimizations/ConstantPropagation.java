@@ -21,7 +21,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-		ilPlan.modifyAllExpressions(new ConstantPropagation(), null);
+		ilPlan.modifyAllGuards(new ConstantPropagation(), null);
 	}
 
 	@Override

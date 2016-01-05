@@ -20,7 +20,7 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-		ilPlan.modifyAllExpressions(new UnknownBiasing(), null);
+		ilPlan.modifyAllGuards(new UnknownBiasing(), null);
 	}
 
 	private static Expression collect(ILOperator topOperator, 

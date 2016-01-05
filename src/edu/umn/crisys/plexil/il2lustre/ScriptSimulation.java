@@ -1,11 +1,13 @@
 package edu.umn.crisys.plexil.il2lustre;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import jkind.lustre.Expr;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import lustre.LustreTrace;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
@@ -21,6 +23,7 @@ import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 
 public class ScriptSimulation {
@@ -34,7 +37,7 @@ public class ScriptSimulation {
 		int size = data.entrySet().stream()
 			.mapToInt(entry -> entry.getValue().size())
 			.reduce((a,b) -> a == b ? a : -1)
-			.orElse(0);
+			.orElse(-1);
 
 		if (size == -1) {
 			throw new RuntimeException("CSV data was not all the same length!");
@@ -44,9 +47,15 @@ public class ScriptSimulation {
 		List<String> line = new ArrayList<String>();
 		for (Expression expr : data.keySet()) {
 			if (expr instanceof LookupExpr) {
-				// Get the raw input name
-				line.add(LustreNamingConventions.getLookupId(
-						((LookupExpr) expr).getLookupNameAsString()));
+				// Check for a value/known split
+				if (LustreNamingConventions.hasValueAndKnownSplit(expr.getType())) {
+					line.add(LustreNamingConventions.getLookupIdValuePart(((LookupExpr) expr)));
+					line.add(LustreNamingConventions.getLookupIdKnownPart(((LookupExpr) expr)));
+				} else {
+					// Get the raw input name
+					line.add(LustreNamingConventions.getLookupId(
+							((LookupExpr) expr)));
+				}
 			} else if (expr instanceof ILVariable) {
 				// These should be command handles
 				line.add(LustreNamingConventions
@@ -61,12 +70,26 @@ public class ScriptSimulation {
 		ILExprToLustre exprToLustre = new ILExprToLustre(stringMap);
 		for (int i = 0; i < size; i++) {
 			line.clear();
-			for (List<PValue> list : data.values()) {
-				PrettyPrintVisitor pp = new PrettyPrintVisitor();
-				// Translate to Lustre, then 
-				list.get(i).accept(exprToLustre, null)
-						.accept(pp);
-				line.add(pp.toString());
+			for (Entry<Expression, List<PValue>> e : data.entrySet()) {
+				List<PValue> list = e.getValue();
+				// Needs to be translated to Lustre first
+				if (LustreNamingConventions.hasValueAndKnownSplit(
+						e.getKey().getType())) {
+					// Split these up into separate entries!
+					PrettyPrintVisitor valuePrinter = new PrettyPrintVisitor();
+					PrettyPrintVisitor knownPrinter = new PrettyPrintVisitor();
+					Expr tuple = list.get(i).accept(exprToLustre, e.getKey().getType());
+					ILExprToLustre.getValueComponent(tuple).accept(valuePrinter);
+					ILExprToLustre.getKnownComponent(tuple).accept(knownPrinter);
+					line.add(valuePrinter.toString());
+					line.add(knownPrinter.toString());
+				} else {
+					PrettyPrintVisitor pp = new PrettyPrintVisitor();
+					// Simple translation, easy peasy
+					list.get(i).accept(exprToLustre, e.getKey().getType())
+							.accept(pp);
+					line.add(pp.toString());
+				}
 			}
 			csv.append(line.stream().collect(Collectors.joining(",", "", "\n")));
 		}
@@ -136,7 +159,11 @@ public class ScriptSimulation {
 			if (lookup.getParameters().size() != 0) {
 				System.err.println("Warning: lookups with parameters aren't supported!");
 			}
-			csv.put(new LookupNowExpr(lookup.getName()), new ArrayList<>());
+			csv.put(new LookupNowExpr(
+					lookup.getReturnValue().get().getType(),
+					StringValue.get(lookup.getName()), Collections.emptyList()), 
+					
+					new ArrayList<>());
 		}
 		// Need to find all the command handles too
 		for (ILVariable var : ilPlan.getVariables()) {

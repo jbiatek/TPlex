@@ -26,10 +26,7 @@ public class ILOperation extends ExpressionBase {
 			throw new RuntimeException("Syntax error: Operator "+op
 					+" does not accept "+args.size()+" arguments.");
 		}
-		if (! op.isTypeSafe(getArguments())) {
-			throw new RuntimeException("Type safety error: Operator "+op
-					+" says that "+args+" is not type safe");
-		}
+		ILTypeChecker.typeCheck(this, op.getReturnType());
 	}
 
 	@Override

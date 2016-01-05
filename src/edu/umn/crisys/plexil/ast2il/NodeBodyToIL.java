@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -55,19 +56,22 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		@Override
 		public Void visitAssignment(AssignmentBody assignment, Void p) {
 		    Expression lhsUntranslated = assignment.getLeftHandSide();
-		    Expression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated);
-		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide(), ExprType.UNKNOWN);
+		    ExprType typeGuess = lhsUntranslated.getType().getMoreSpecific(
+		    		assignment.getRightHandSide().getType());
+		    Expression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated,
+		    		typeGuess);
+		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide(), lhsExpr.getType());
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
 		    ExprType type = lhsUntranslated.getType();
-		    if (type == ExprType.UNKNOWN) {
+		    if (! type.isSpecificType()) {
 		    	// If it's an array element, the type info isn't stored in the
 		    	// original XML (at least, not here.) Let's try the translated
 		    	// version:
-		    	if (lhsExpr.getType() != ExprType.UNKNOWN) {
+		    	if (lhsExpr.getType().isSpecificType()) {
 		    		// Here we go. 
 		    		type = lhsExpr.getType();
-		    	} else if (rhs.getType() != ExprType.UNKNOWN) {
+		    	} else if (rhs.getType().isSpecificType()) {
 		    		type = rhs.getType();
 		    	} else {
 		    		throw new RuntimeException("Find the type of this assignment."); 
@@ -99,7 +103,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		public Void visitCommand(CommandBody cmd, Void p) {
 		    Expression name = nodeToIL.toIL(cmd.getCommandName(), ExprType.STRING);
 		    Optional<Expression> returnTo = cmd.getVarToAssign().map(
-		    		nodeToIL::resolveVariableForWriting);
+		    		lhs -> nodeToIL.resolveVariableForWriting(lhs, lhs.getType()));
 		    List<Expression> args = nodeToIL.toIL(cmd.getCommandArguments(), ExprType.UNKNOWN);
 		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);

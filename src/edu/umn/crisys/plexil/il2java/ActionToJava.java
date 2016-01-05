@@ -16,8 +16,8 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -68,11 +68,11 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 				block.invoke(JExpr.ref(ILExprToJava.getFieldName((ArrayVar) lhs)), 
 						"arrayAssign").arg(rhs);
 				return Optional.of((ArrayVar) lhs);
-			} else if (lhs instanceof ArrayIndexExpr) {
-				// Just an index. 
-				ArrayIndexExpr arrayIndex = (ArrayIndexExpr) lhs;
-				ArrayVar array = (ArrayVar) arrayIndex.getArray();
-				Expression index = (Expression) arrayIndex.getIndex();
+			} else if (lhs instanceof ILOperation) {
+				// Must be an index of an array. 
+				ILOperation arrayIndex = (ILOperation) lhs;
+				ArrayVar array = (ArrayVar) arrayIndex.getBinaryFirst();
+				Expression index = (Expression) arrayIndex.getBinarySecond();
 				
 				block.invoke(JExpr.ref(ILExprToJava.getFieldName(array)), "indexAssign")
 					.arg(ILExprToJava.toJava(index, cm)).arg(rhs);

@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.expr.il;
 import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
@@ -16,6 +17,10 @@ implements CascadingExprVisitor<P, R>
 		throw new RuntimeException("This is an AST expression: "+e);
 	}
 
+	public final R visit(ArrayIndexExpr index, P param) {
+		return visitASTExpr(index);
+	}
+	
     public final R visit(UnresolvedVariableExpr expr, P param) {
     	return visitASTExpr(expr);
     }

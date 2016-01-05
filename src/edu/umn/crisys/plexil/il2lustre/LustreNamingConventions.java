@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
+import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -156,6 +157,18 @@ public class LustreNamingConventions {
 		throw new RuntimeException(rawName+" is dynamic.");
 	}
 	
+	public static String getLookupId(LookupExpr lookupExpr) {
+		return getLookupId(lookupExpr.getLookupNameAsString());
+	}
+	
+	public static String getLookupIdKnownPart(LookupExpr lookupExpr) {
+		return getLookupIdKnownPart(lookupExpr.getLookupNameAsString());
+	}
+
+	public static String getLookupIdValuePart(LookupExpr lookupExpr) {
+		return getLookupIdValuePart(lookupExpr.getLookupNameAsString());
+	}
+	
 	public static String getLookupId(String lookupName) {
 		return NameUtils.clean("Lookup/"+lookupName);
 	}
@@ -173,6 +186,9 @@ public class LustreNamingConventions {
 	}
 	
 	public static boolean hasValueAndKnownSplit(ExprType type) {
+		if (type == ExprType.UNKNOWN) {
+			throw new RuntimeException("Types need to be known to answer this");
+		}
 		return type == ExprType.INTEGER
 				|| type == ExprType.REAL
 				|| type == ExprType.INTEGER_ARRAY
@@ -216,5 +232,6 @@ public class LustreNamingConventions {
 		return NameUtils.clean(named.getUid()+"/"
 				+named.getDescription().toString().toLowerCase());
 	}
+
 	
 }

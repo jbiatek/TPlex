@@ -44,6 +44,7 @@ import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
@@ -399,7 +400,9 @@ public class TPlex {
 			StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
 		}
 		
-		return PlexilPlanToILPlan.translate(plan);
+		Plan ret =  PlexilPlanToILPlan.translate(plan);
+		ILTypeChecker.typeCheck(ret);
+		return ret;
 	}
 
 	public boolean optimizeIL() {
@@ -427,6 +430,7 @@ public class TPlex {
 		PruneUnusedVariables.optimize(ilPlan);
 		
 		System.out.println(ilPlan.printFullPlan());
+		ILTypeChecker.typeCheck(ilPlan);
 		
 		return ilPlan;
 	}

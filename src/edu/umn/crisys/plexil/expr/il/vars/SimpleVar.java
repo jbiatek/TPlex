@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.expr.il.vars;
 
 import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -17,6 +18,7 @@ public class SimpleVar extends ILVariable {
 	
 	public SimpleVar(String name, NodeUID uid, ExprType type, Expression init) {
 		super(name, uid, type);
+		ILTypeChecker.checkTypeIsLegalInIL(type);
 		if (init == null) {
 			if (type.isArrayType()) {
 				// Just use an empty array
@@ -27,6 +29,7 @@ public class SimpleVar extends ILVariable {
 		} else {
 			this.init = init;
 		}
+		ILTypeChecker.typeCheck(this.init, type);
 	}
 	
 	public Expression getInitialValue() {

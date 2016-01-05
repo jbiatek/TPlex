@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.ast2il;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
@@ -22,12 +23,14 @@ import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
+import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -53,11 +56,17 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
 	}
 
 	@Override
-	public Expression visit(LookupNowExpr lookup, ExprType expected) {
+	public Expression visit(LookupExpr lookup, ExprType expected) {
     	List<Expression> translatedArgs = lookup.getLookupArgs().stream()
     			.map(e -> e.accept(this, ExprType.UNKNOWN))
     			.collect(Collectors.toList());
     	Expression translatedName = lookup.getLookupName().accept(this, ExprType.STRING);
+    	Optional<Expression> translatedTolerance = Optional.empty();
+    	if (lookup instanceof LookupOnChangeExpr) {
+    		translatedTolerance = Optional.of(
+    		    		((LookupOnChangeExpr) lookup).getTolerance()
+    		    		.accept(this, ExprType.REAL));
+    	}
     	
     	// Try to add some type information
     	ExprType typeToUse = expected;
@@ -65,41 +74,18 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     		ExprType declaredType = context.getTypeOfLookup(lookup.getLookupNameAsString());
     		typeToUse = expected.getMoreSpecific(declaredType);
     	}
-    	Expression ilVersion = new LookupNowExpr(typeToUse, translatedName, translatedArgs);
-    	
-    	if (ilVersion.getType() == ExprType.UNKNOWN && expected != ExprType.UNKNOWN) {
-    		// Cast to the expected type then
-    		return cast(ilVersion, expected);
-    	} else {
-    		return ilVersion;
-    	}
+    	ILTypeChecker.checkTypeIsLegalInIL(typeToUse);
+    	return makeLookup(typeToUse, translatedName, 
+    			translatedArgs, translatedTolerance);
 	}
-
-	@Override
-	public Expression visit(LookupOnChangeExpr lookup,
-			ExprType expected) {
-    	List<Expression> translatedArgs = lookup.getLookupArgs().stream()
-    			.map(e -> e.accept(this, ExprType.UNKNOWN))
-    			.collect(Collectors.toList());
-    	Expression translatedName = lookup.getLookupName().accept(this, ExprType.STRING);
-    	Expression translatedTolerance = lookup.getTolerance().accept(this, ExprType.REAL);
-    	
-    	// Try to add some type information
-    	ExprType typeToUse = expected;
-    	if (lookup.hasConstantLookupName()) {
-    		ExprType declaredType = context.getTypeOfLookup(lookup.getLookupNameAsString());
-    		typeToUse = expected.getMoreSpecific(declaredType);
-    	}
-    	
-    	Expression ilVersion = new LookupOnChangeExpr(typeToUse, translatedName, 
-    			translatedTolerance, translatedArgs);
-    	
-    	if (ilVersion.getType() == ExprType.UNKNOWN && expected != ExprType.UNKNOWN) {
-    		// Cast to the expected type then
-    		return cast(ilVersion, expected);
-    	} else {
-    		return ilVersion;
-    	}
+	
+	private Expression makeLookup(ExprType type, Expression name, List<Expression> args, 
+			Optional<Expression> tolerance) {
+		if (tolerance.isPresent()) {
+			return new LookupOnChangeExpr(type, name, tolerance.get(), args);
+		} else {
+			return new LookupNowExpr(type, name, args);
+		}
 	}
 
 	@Override

@@ -16,13 +16,12 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -429,7 +428,7 @@ public class NodeToIL {
         	// library, and this variable is a part of our Interface.
         	// It could also be the case that someone messed up. 
         	
-        	Expression alias = createAlias(name, false);
+        	Expression alias = createAlias(name, type, false);
         	
         	// Since it's an alias, we should cast it if we know the type.
         	switch (type) {
@@ -460,7 +459,7 @@ public class NodeToIL {
     	return list;
     }
     
-    private Expression createAlias(String name, boolean writeable) {
+    private Expression createAlias(String name, ExprType type, boolean writeable) {
     	// Since a variable typo is indistinguishable from an alias
     	// when there isn't an explicit Interface, we want to do some basic
     	// checking, and print a warning if they probably didn't mean it. 
@@ -479,10 +478,12 @@ public class NodeToIL {
     		System.err.println("If this plan isn't used as a library inside of a plan that defines "+name+", it will crash.");
     	}
     	
-    	return new AliasExpr(name, ExprType.UNKNOWN, writeable);
+    	ILTypeChecker.checkTypeIsLegalInIL(type);
+    	
+    	return new AliasExpr(name, type, writeable);
     }
     
-    public Expression resolveVariableForWriting(Expression e) {
+    public Expression resolveVariableForWriting(Expression e, ExprType expectedType) {
     	if ( ! e.isAssignable()) {
     		throw new RuntimeException(e+" is not a valid LHS");
     	}
@@ -490,12 +491,24 @@ public class NodeToIL {
         if (e instanceof UnresolvedVariableExpr) {
             UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
             Optional<Expression> expr = resolveVariableInternal(var.getName(), true);
-            return expr.orElseGet( () -> createAlias(var.getName(), true));
+            return expr.orElseGet( () -> createAlias(var.getName(), expectedType, true));
         } else if (e instanceof ArrayIndexExpr) {
             ArrayIndexExpr arr = (ArrayIndexExpr) e;
-            return new ArrayIndexExpr(
-                    (ArrayVar) resolveVariableForWriting(arr.getArray()), 
-                    toIL(arr.getIndex(), ExprType.INTEGER));
+            ArrayVar theArray = (ArrayVar) resolveVariableForWriting(
+            		arr.getArray(), expectedType.toArrayType());
+            Expression theIndex = toIL(arr.getIndex(), ExprType.INTEGER);
+            switch (theArray.getType()) {
+            case BOOLEAN_ARRAY:
+            	return ILOperator.PBOOL_INDEX.expr(theArray, theIndex);
+            case INTEGER_ARRAY:
+            	return ILOperator.PINT_INDEX.expr(theArray, theIndex);
+            case REAL_ARRAY:
+            	return ILOperator.PREAL_INDEX.expr(theArray, theIndex);
+            case STRING_ARRAY:
+            	return ILOperator.PSTRING_INDEX.expr(theArray, theIndex);
+    		default:
+    			throw new RuntimeException("Illegal array type: "+theArray.getType());
+            }
         }
         throw new RuntimeException(e+" says it's assignable, but I don't know how to read it.");
     }

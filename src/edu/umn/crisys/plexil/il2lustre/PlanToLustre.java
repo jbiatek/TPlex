@@ -163,7 +163,7 @@ public class PlanToLustre {
 	private void uninlineNamedExpressions() {
 		Set<NamedCondition> alreadyDone = new HashSet<>();
 		// Read all named expressions and create variables for them. 
-		p.modifyAllExpressions(new ILExprModifier<Void>() {
+		p.modifyAllGuards(new ILExprModifier<Void>() {
 
 			@Override
 			public Expression visit(NamedCondition named, Void param) {

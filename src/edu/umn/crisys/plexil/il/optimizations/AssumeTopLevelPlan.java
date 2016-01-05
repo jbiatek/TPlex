@@ -32,7 +32,7 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-		ilPlan.modifyAllExpressions(new AssumeTopLevelPlan(), null);
+		ilPlan.modifyAllGuards(new AssumeTopLevelPlan(), null);
 		ilPlan.setTopLevelPlan(true);
 	}
 

@@ -21,7 +21,6 @@ import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
@@ -66,24 +65,6 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		return id(LustreNamingConventions.getNamedConditionId(named));
 	}
 	
-	@Override
-	public Expr visit(ArrayIndexExpr array, ExprType expectedType) {
-		Expr theArray = array.getArray().accept(this, null);
-		Expr theIndex = array.getIndex().accept(this, null);
-
-		if (LustreNamingConventions.hasValueAndKnownSplit(array.getType())) {
-			// We'll actually be getting two arrays instead of 1.
-			Expr arrayValue = getValueComponent(theArray);
-			Expr arrayKnownFlags = getKnownComponent(theArray);
-			
-			return tuple(
-					new ArrayAccessExpr(arrayValue, theIndex),
-					new ArrayAccessExpr(arrayKnownFlags, theIndex));
-		}
-		
-		return new ArrayAccessExpr(theArray, theIndex);
-	}
-
 	@Override
 	public Expr visit(LookupNowExpr lookup, ExprType expectedType) {
 		if (LustreNamingConventions.hasValueAndKnownSplit(expectedType)
@@ -208,7 +189,14 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 			return binary(op.getArguments(), BinaryOp.EQUAL, ExprType.UNKNOWN);
 		case WRAP_BOOLEAN:
 			return toPBoolean(op.getUnaryArg().accept(this, ExprType.BOOLEAN));
-			
+		case PBOOL_INDEX:
+			return arrayIndexer(op, ExprType.BOOLEAN_ARRAY);
+		case PINT_INDEX:
+			return arrayIndexer(op, ExprType.INTEGER_ARRAY);
+		case PREAL_INDEX:
+			return arrayIndexer(op, ExprType.REAL_ARRAY);
+		case PSTRING_INDEX:
+			return arrayIndexer(op, ExprType.STRING_ARRAY);
 			
 		// ---------------- Plexil boolean operators
 		case PAND:
@@ -334,6 +322,37 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		}
 	}
 	
+	private Expr arrayIndexer(ILOperation op, ExprType arrayType) {
+		Expr array = op.getBinaryFirst().accept(this, arrayType);
+		Expr indexTuple = op.getBinarySecond().accept(this, ExprType.INTEGER);
+
+		// The index is split, we need both parts of it separately.
+		Expr indexValue = getValueComponent(indexTuple);
+		Expr indexKnown = getKnownComponent(indexTuple);
+		Expr unknownValue = UnknownValue.get().accept(this, op.getType());
+		
+		// Is the array also split? 
+		if (LustreNamingConventions.hasValueAndKnownSplit(op.getType())) {
+			// Yes. 
+			Expr arrayValue = getValueComponent(array);
+			Expr arrayKnown = getKnownComponent(array);
+
+			// If the index is unknown... return unknown I guess?
+			// TODO: Figure out the correct semantics for this. 
+			return ite(indexKnown, 
+					tuple(new ArrayAccessExpr(arrayValue, indexValue),
+					      new ArrayAccessExpr(arrayKnown, indexValue)),
+					unknownValue);
+		} else {
+			// No, just the index is split.
+			//TODO: Same problem here as above. 
+			return ite(indexKnown,
+					new ArrayAccessExpr(array, indexValue),
+					unknownValue);
+		}
+		
+	}
+	
 	private Expr unary(List<Expression> args, String fn, ExprType argType) {
 		if (args.size() != 1) {
 			throw new RuntimeException("Expected 1 arg here for "+fn);
@@ -431,7 +450,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case STRING:
 			return id(mapper.stringToEnum(unk));
 		default: 
-			throw new RuntimeException("Unknowns not supported yet except booleans -- "+expectedType);	
+			throw new RuntimeException("Need an expected type here, but got "+expectedType);	
 		}
 	}
 
