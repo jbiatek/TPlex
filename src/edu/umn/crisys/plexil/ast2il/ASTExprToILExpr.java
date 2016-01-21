@@ -1,45 +1,34 @@
 package edu.umn.crisys.plexil.ast2il;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
-import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
-import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
-import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
-import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
-import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
-import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
+import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
-import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
-import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
-import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NativeBool;
-import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 
 public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expression> {
     
@@ -56,58 +45,43 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
 	}
 
 	@Override
-	public Expression visit(LookupExpr lookup, ExprType expected) {
+	public Expression visit(ASTLookupExpr lookup, ExprType expected) {
     	List<Expression> translatedArgs = lookup.getLookupArgs().stream()
     			.map(e -> e.accept(this, ExprType.UNKNOWN))
     			.collect(Collectors.toList());
     	Expression translatedName = lookup.getLookupName().accept(this, ExprType.STRING);
-    	Optional<Expression> translatedTolerance = Optional.empty();
-    	if (lookup instanceof LookupOnChangeExpr) {
-    		translatedTolerance = Optional.of(
-    		    		((LookupOnChangeExpr) lookup).getTolerance()
-    		    		.accept(this, ExprType.REAL));
+    	Optional<Expression> translatedTolerance =
+    			lookup.getTolerance().map(t -> t.accept(this, ExprType.REAL));
+    	
+    	if (translatedName.equals(StringValue.get("time"))) {
+    		// This is built in to Plexil, we don't need to find a declaration
+    		return LookupExpr.lookupTime(NodeToIL.TIMEPOINT_TYPE);
     	}
     	
-    	// Try to add some type information
-    	ExprType typeToUse = expected;
-    	if (lookup.hasConstantLookupName()) {
-    		ExprType declaredType = context.getTypeOfLookup(lookup.getLookupNameAsString());
-    		typeToUse = expected.getMoreSpecific(declaredType);
+    	// Find the lookup declaration
+    	Optional<LookupDecl> decl = context.getLookupDeclaration(lookup);
+    	if (decl.isPresent()) {
+    		// Use it to create the lookup.
+    		return new LookupExpr(decl.get(), translatedName, 
+        			translatedArgs, translatedTolerance);
+    	} else {
+    		// Might be a lookup with a dynamic name, might be undeclared.
+    		// Have we been given enough type information to guess?
+    		if (expected.isSpecificType()) {
+    			// Yeah. We'll just make something up then I guess.
+    			LookupDecl fakeDecl = new LookupDecl("<guessed>");
+    			fakeDecl.setReturnValue(new VariableDecl("<guessed>", expected));
+    			return new LookupExpr(fakeDecl, translatedName, translatedArgs, 
+    					translatedTolerance);
+    		} else {
+    			throw new RuntimeException(
+    					"Error translating lookup "+lookup+": "
+    					+"Type was not declared, and expected type was "+expected    					);
+    		}
     	}
-    	ILTypeChecker.checkTypeIsLegalInIL(typeToUse);
-    	return makeLookup(typeToUse, translatedName, 
-    			translatedArgs, translatedTolerance);
+    	
 	}
 	
-	private Expression makeLookup(ExprType type, Expression name, List<Expression> args, 
-			Optional<Expression> tolerance) {
-		if (tolerance.isPresent()) {
-			return new LookupOnChangeExpr(type, name, tolerance.get(), args);
-		} else {
-			return new LookupNowExpr(type, name, args);
-		}
-	}
-
-	@Override
-	public Expression visit(ArrayIndexExpr array, ExprType expected) {
-		ExprType theArrayType = expected.isSpecificType() ? 
-				expected.toArrayType() : ExprType.UNKNOWN;
-		Expression theArray = array.getArray().accept(this, theArrayType);
-		Expression theIndex = array.getIndex().accept(this, ExprType.INTEGER);
-		switch(theArray.getType()) {
-		case BOOLEAN_ARRAY:
-			return ILOperator.PBOOL_INDEX.expr(theArray, theIndex);
-		case INTEGER_ARRAY:
-			return ILOperator.PINT_INDEX.expr(theArray, theIndex);
-		case REAL_ARRAY:
-			return ILOperator.PREAL_INDEX.expr(theArray, theIndex);
-		case STRING_ARRAY:
-			return ILOperator.PSTRING_INDEX.expr(theArray, theIndex);
-		default:
-			throw new RuntimeException("Cannot have an array of type "+theArray.getType());
-		}
-	}
-
 	@Override
     public Expression visit(UnresolvedVariableExpr expr, ExprType expected) {
         if (expr.getType() == ExprType.NODEREF) {
@@ -122,84 +96,6 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
 		throw new RuntimeException("This reference should have been resolved by the operation that used it");
 	}
 
-	@Override
-    public Expression visit(DefaultEndExpr end, ExprType expected) {
-		// The default end condition depends on the body type:
-        return context.getASTNodeBody().accept(new NodeBodyVisitor<NodeToIL, Expression>() {
-
-            @Override
-            public Expression visitEmpty(NodeBody empty, NodeToIL node) {
-                // This one is simple: True.
-                return BooleanValue.get(true);
-            }
-
-            @Override
-            public Expression visitAssignment(AssignmentBody assign, NodeToIL node) {
-                // TODO Make sure this is right by doing some experiments.
-                // The detailed semantics say "assignment completed". And then 
-                // there's a footnote saying that assignments always complete unless
-                // there's an error evaluating the right hand side. Somehow. I'm
-                // guessing an error like that is a showstopper, so it's safe to
-                // just say that they always complete. 
-                return BooleanValue.get(true);
-            }
-
-            @Override
-            public Expression visitCommand(CommandBody cmd, NodeToIL node) {
-                // The wiki says "Command handle received". But what does that mean?
-            	
-            	// The PLEXIL source code seems to imply that the default
-            	// end condition for Command nodes is just "true". Not
-            	// "command handle received" as the wiki states. (CommandNode.cc)
-            	// What it does is OR whatever end condition it has with 
-            	// handle == denied || handle == failed. 
-
-                //return Operation.isKnown(node.getCommandHandle());
-            	return BooleanValue.get(true);
-            }
-
-            @Override
-            public Expression visitLibrary(LibraryBody lib, NodeToIL node) {
-            	// If the library got included statically, this NodeToIL might 
-            	// actually have a real child instead of a handle.
-            	if (node.hasLibraryHandle()) {
-    	            // Treat it the same as a list: "All children FINISHED". 
-    	    		// But there's just one child, so it's easy.
-    	            return ILOperator.PSTATE_EQ.expr(
-    	            		NodeState.FINISHED, 
-                            node.getLibraryHandle());
-            	} else {
-            		// Since we don't actually care about the AST body, passing in
-            		// null is fine. 
-            		return visitNodeList(null, node);
-            	}
-            }
-
-            @Override
-            public Expression visitNodeList(NodeListBody list, NodeToIL node) {
-                // All children FINISHED.
-                List<Expression> childStates = new ArrayList<Expression>();
-                for (NodeToIL child : node.getChildren()) {
-                    childStates.add(
-                            ILOperator.PSTATE_EQ.expr(
-                            		NodeState.FINISHED,
-                                    child.getState()));
-                }
-                if (childStates.size() == 1) {
-                	return childStates.get(0);
-                } else {
-                	return ILOperator.PAND.expr(childStates);
-                }
-            }
-
-            @Override
-            public Expression visitUpdate(UpdateBody update, NodeToIL node) {
-                // Invocation success. Pretty sure this just means ACK. 
-                return node.getUpdateHandle();
-            }
-            
-        }, context);
-    }
     
 
     private NodeToIL resolveNode(Expression e) {
@@ -261,6 +157,12 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
             return resolveNode(op.getUnaryArg()).getFailure();
         case GET_COMMAND_HANDLE:
             return resolveNode(op.getUnaryArg()).getCommandHandle();
+        case ARRAY_INDEX:
+        	Expression array = op.getBinaryFirst().accept(this, 
+        			expected.isSpecificType() ? 
+        					expected.toArrayType() : ExprType.UNKNOWN);
+        	Expression index = op.getBinarySecond().accept(this, ExprType.INTEGER);
+        	return ILOperator.arrayIndex(array, index);
         case NE:
         	// Change to not(equal)
         	ASTOperation fixed = ASTOperation.not(ASTOperation.eq(

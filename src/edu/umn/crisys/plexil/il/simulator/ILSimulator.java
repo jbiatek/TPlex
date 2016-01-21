@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
+import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.ILOperation;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -70,7 +70,7 @@ public class ILSimulator extends JavaPlan {
 		}
 		
 		@Override
-		public Expression visit(LookupNowExpr lookup, Void param) {
+		public Expression visit(LookupExpr lookup, Void param) {
 			PValue[] args = new PValue[]{};
 			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
 				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
@@ -79,23 +79,14 @@ public class ILSimulator extends JavaPlan {
 						.collect(Collectors.toList()).toArray(new PValue[]{});
 			}
 			
-			return getWorld().lookupNow(asString(eval(lookup.getLookupName())), 
-					args);
-		}
-
-		@Override
-		public Expression visit(LookupOnChangeExpr lookup, Void param) {
-			PValue[] args = new PValue[]{};
-			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
-				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
+			if (lookup.getTolerance().isPresent()) {
+				return getWorld().lookupOnChange(asString(eval(lookup.getLookupName())), 
+						asReal(eval(lookup.getTolerance().get())),
+						args);
 			} else {
-				args = lookup.getLookupArgs().stream().map(ILSimulator.this::eval)
-						.collect(Collectors.toList()).toArray(new PValue[]{});
+				return getWorld().lookupNow(asString(eval(lookup.getLookupName())), 
+						args);
 			}
-			
-			return getWorld().lookupOnChange(asString(eval(lookup.getLookupName())), 
-					asReal(eval(lookup.getTolerance())),
-					args);
 		}
 
 		@Override
@@ -214,13 +205,20 @@ public class ILSimulator extends JavaPlan {
 					arrayVars.get(assign.getLHS()).arrayAssign(
 							eval(assign.getRHS()));
 					commitAfterMicroStep(arrayVars.get(assign.getLHS()));
-				} else if (assign.getLHS() instanceof ArrayIndexExpr) {
-					ArrayIndexExpr lhs = (ArrayIndexExpr) assign.getLHS();
-					PInteger index = asInt(eval(lhs.getIndex()));
-					arrayVars.get(lhs.getArray()).indexAssign(index, 
+				} else if (assign.getLHS() instanceof ILOperation) {
+					// This will be an array index of some sort.
+					ILOperation arrayIndex = (ILOperation) assign.getLHS();
+					if (arrayIndex.getOperator() != ILOperator.PBOOL_INDEX
+							&& arrayIndex.getOperator() != ILOperator.PINT_INDEX
+							&& arrayIndex.getOperator() != ILOperator.PREAL_INDEX
+							&& arrayIndex.getOperator() != ILOperator.PSTRING_INDEX) {
+						throw new RuntimeException("Assigning to "+arrayIndex+" not supported");
+					}
+					arrayVars.get(arrayIndex.getBinaryFirst())
+						.indexAssign(
+							asInt(eval(arrayIndex.getBinarySecond())), 
 							eval(assign.getRHS()));
-					
-					commitAfterMicroStep(arrayVars.get(lhs.getArray()));
+					commitAfterMicroStep(arrayVars.get(arrayIndex.getBinaryFirst()));
 				} else {
 					throw new RuntimeException("Handle "+assign.getLHS().getClass()+" here");
 				}

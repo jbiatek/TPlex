@@ -1,14 +1,11 @@
 package edu.umn.crisys.plexil.expr;
 
+import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
-import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
@@ -91,16 +88,8 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
 	public default R visit(LookupExpr lookup, P param) {
 		return visit((Expression)lookup, param);
 	}
-    public default R visit(LookupNowExpr lookup, P param) {
-		return visit((LookupExpr)lookup, param);
-	}
-    public default R visit(LookupOnChangeExpr lookup, P param) {
-		return visit((LookupExpr)lookup, param);
-	}
-	
-	
-    public default R visit(ArrayIndexExpr array, P param) {
-		return visit((Expression)array, param);
+    public default R visit(ASTLookupExpr lookup, P param) {
+		return visit((Expression)lookup, param);
 	}
     public default R visit(ASTOperation op, P param) {
 		return visit((Expression)op, param);
@@ -112,9 +101,6 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
 	}
     public default R visit(NodeRefExpr ref, P param) {
 		return visit((Expression)ref, param);
-	}
-    public default R visit(DefaultEndExpr end, P param) {
-		return visit((Expression)end, param);
 	}
     public default R visit(NodeTimepointExpr timept, P param) {
 		return visit((Expression)timept, param);

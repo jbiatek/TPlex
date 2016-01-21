@@ -11,8 +11,7 @@ import com.sun.codemodel.JOp;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
+import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
@@ -176,15 +175,24 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 	}
 
 	@Override
-    public JExpression visit(LookupNowExpr lookup, JCodeModel cm) {
-        JInvocation jlookup = 
-            JExpr.invoke("getWorld").invoke("lookupNow")
-                .arg(lookup.getLookupName().accept(this, cm));
+    public JExpression visit(LookupExpr lookup, JCodeModel cm) {
+		// Whether it's a LookupNow or LookupOnChange depends on if it has a 
+		// tolerance.
+		JInvocation jlookup; 
+		if (lookup.getTolerance().isPresent()) {
+			jlookup = JExpr.invoke("getWorld").invoke("lookupOnChange")
+		                .arg(lookup.getLookupName().accept(this, cm))
+		                .arg(lookup.getTolerance().get().accept(this, cm));
+		} else {
+			jlookup = JExpr.invoke("getWorld").invoke("lookupNow")
+                    .arg(lookup.getLookupName().accept(this, cm));
+		}
         
         for (Expression arg : lookup.getLookupArgs()) {
             jlookup.arg(arg.accept(this, cm));
         }
-        // If it has a type, it needs to be cast to that type
+        // If it has a type, it needs to be cast to that type, because the
+        // external world will just return a PValue. 
         if (lookup.getType().isSpecificType()) {
         	return JExpr.cast(cm.ref(lookup.getType().getTypeClass()), jlookup);
         } else {
@@ -192,25 +200,6 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
         }
     }
 
-    @Override
-    public JExpression visit(LookupOnChangeExpr lookup,
-            JCodeModel cm) {
-        JInvocation jlookup = 
-            JExpr.invoke("getWorld").invoke("lookupOnChange")
-                .arg(lookup.getLookupName().accept(this, cm))
-                .arg(lookup.getTolerance().accept(this, cm));
-        
-        for (Expression arg : lookup.getLookupArgs()) {
-            jlookup.arg(arg.accept(this, cm));
-        }
-        // If it has a type, it needs to be cast to that type
-        if (lookup.getType().isSpecificType()) {
-        	return JExpr.cast(cm.ref(lookup.getType().getTypeClass()), jlookup);
-        } else {
-        	return jlookup;
-        }
-    }
-    
     private JExpression unaryOperation(List<JExpression> children, String invoke) {
         if (children.size() != 1) {
             throw new RuntimeException("Expected 1 argument here");

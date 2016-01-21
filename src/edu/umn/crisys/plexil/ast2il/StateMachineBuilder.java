@@ -9,9 +9,7 @@ import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
+import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
@@ -227,6 +225,11 @@ public class StateMachineBuilder {
      * Support methods for creating the IL state machine ----------------------
      */
     
+    private Expression lookupTime() {
+    	return translator.toIL(new ASTLookupExpr(NodeToIL.TIMEPOINT_TYPE, TIME), 
+    			NodeToIL.TIMEPOINT_TYPE);
+    }
+    
     private Transition makeTransition(Map<NodeState,State> map, int priority, 
             NodeState start, NodeState end,
             Expression...guards) {
@@ -236,10 +239,10 @@ public class StateMachineBuilder {
         // Timepoints get set for every single transition
         // The starting state is now ending
         t.addAction(new AssignAction(translator.getNodeTimepoint(start, NodeTimepoint.END), 
-        		new LookupNowExpr(TIME), 0));
+        		lookupTime(), 0));
         // And the destination state is now starting.
         t.addAction(new AssignAction(translator.getNodeTimepoint(end, NodeTimepoint.START), 
-        		new LookupNowExpr(TIME), 0));
+        		lookupTime(), 0));
         
         return t;
     }
@@ -353,7 +356,6 @@ public class StateMachineBuilder {
      */
     
     private void cacheNamedExpression(PlexilExprDescription desc, Expression ilExpr) {
-    	Expression named;
     	ilExprCache.put(desc, new NamedCondition(ilExpr, translator.getUID(), desc));
     }
     
@@ -407,46 +409,8 @@ public class StateMachineBuilder {
     
     private Expression endCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.END_CONDITION)) {
-        	// Hold up! From the documentation:
-        	// The actual End Condition of Command and Update nodes is the 
-        	// conjunction of the explicitly specified expression and the default 
-        	// condition.
-        	
-        	// But actually, this isn't the whole truth. For commands:
-        	// Note that the supplied EndCondition is ORed with 
-        	// (command_handle == COMMAND_DENIED || command_handle == COMMAND_FAILED) . 
-        	// This allows the node to transition in the event the resource 
-        	// arbiter rejects the command.
-        	
-        	// In the source code, it seems that the latter is correct. The
-        	// end condition isn't conjoined with anything, but it is disjoined
-        	// with that expression. (CommandNode.cc)
-        	
-        	// It also looks like the default end condition of commands is
-        	// actually just "true". The semantics wiki page apparently lies 
-        	// about that. 
-        	
-        	Expression endCondition;
-        	
-        	if (astNode.isUpdateNode()) {
-        		endCondition = translator.toIL(
-        				ASTOperation.and(DefaultEndExpr.get(), 
-        						astNode.getEndCondition()), ExprType.BOOLEAN);
-        	} else if (astNode.isCommandNode()) {
-        		endCondition = 
-        				ILOperator.POR.expr(
-        						translator.toIL(astNode.getEndCondition(), ExprType.BOOLEAN), 
-        						ILOperator.PHANDLE_EQ.expr(translator.getCommandHandle(), 
-        								CommandHandleState.COMMAND_DENIED),
-        						ILOperator.PHANDLE_EQ.expr(translator.getCommandHandle(), 
-        								CommandHandleState.COMMAND_FAILED)
-        						);
-        	} else {
-        		// No wrapper necessary
-        		endCondition = translator.toIL(astNode.getEndCondition(), ExprType.BOOLEAN);
-        	}
-        	
-            cacheNamedExpression(PlexilExprDescription.END_CONDITION, endCondition);
+            cacheNamedExpression(PlexilExprDescription.END_CONDITION, 
+            		translator.getCalculatedILEndCondition());
         }
         return makeGuard(PlexilExprDescription.END_CONDITION, cond);
     }

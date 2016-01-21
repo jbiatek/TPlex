@@ -10,13 +10,18 @@ import java.util.Set;
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
+import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
+import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
+import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
+import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
+import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
@@ -33,6 +38,7 @@ import edu.umn.crisys.plexil.il.PlexilExprDescription;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -243,7 +249,7 @@ public class NodeToIL {
     	map.put(PlexilExprDescription.POST_CONDITION, 
     			toIL(myNode.getPostCondition(), ExprType.BOOLEAN));
     	map.put(PlexilExprDescription.END_CONDITION, 
-    			toIL(myNode.getEndCondition(), ExprType.BOOLEAN));
+    			getCalculatedILEndCondition());
     	map.put(PlexilExprDescription.EXIT_CONDITION, 
     			toIL(myNode.getExitCondition(), ExprType.BOOLEAN));
     }
@@ -317,6 +323,16 @@ public class NodeToIL {
         return tpt;
     }
     
+    public Optional<LookupDecl> getLookupDeclaration(ASTLookupExpr lookup) {
+    	if (lookup.hasConstantLookupName()) {
+    		return myNode.getPlan().getStateDeclarations().stream()
+    				.filter(d -> d.getName().equals(lookup.getLookupNameAsString()))
+    				.findFirst();
+    	}
+    	// If it's not static, there won't be a declaration.
+    	return Optional.empty();
+    }
+    
     private Expression name(Expression e, PlexilExprDescription desc) {
     	return new NamedCondition(e, myUid, desc);
     }
@@ -333,7 +349,7 @@ public class NodeToIL {
     }
 
     Expression getThisOrAncestorsEnds() {
-        Expression myEnd = name(toIL(myNode.getEndCondition(), ExprType.BOOLEAN),
+        Expression myEnd = name(getCalculatedILEndCondition(),
         		PlexilExprDescription.END_CONDITION);
         Expression parentEnd = 
         		parent.map(p -> name(p.getThisOrAncestorsEnds(),
@@ -352,6 +368,140 @@ public class NodeToIL {
         			.orElse(RootAncestorExpr.INVARIANT);
         
         return ILOperator.PAND.expr(myInv, parentInv);
+    }
+    
+    Expression getCalculatedILEndCondition() {
+    	// End conditions in PLEXIL have a lot of defaults and modifications.
+    	// Unlike the other conditions, we can't just translate what the user
+    	// said to do. 
+    	
+    	// From the documentation:
+    	// The actual End Condition of Command and Update nodes is the 
+    	// conjunction of the explicitly specified expression and the default 
+    	// condition.
+    	
+    	// But actually, this isn't the whole truth. For commands:
+    	// Note that the supplied EndCondition is ORed with 
+    	// (command_handle == COMMAND_DENIED || command_handle == COMMAND_FAILED) . 
+    	// This allows the node to transition in the event the resource 
+    	// arbiter rejects the command.
+    	
+    	// In the source code, it seems that the latter is correct. The
+    	// end condition isn't conjoined with anything, but it is disjoined
+    	// with that expression. (CommandNode.cc)
+    	
+    	// It also looks like the default end condition of commands is
+    	// actually just "true". The semantics wiki page apparently lies 
+    	// about that. 
+
+    	if (myNode.isUpdateNode()) {
+    		// If we have one, conjunct it with the default. If not, just the
+    		// default.
+    		return myNode.getEndCondition()
+    				.map(astEnd -> (Expression) ILOperator.PAND.expr(
+    							toIL(astEnd, ExprType.BOOLEAN),
+    							createILDefaultEndCondition()
+    						))
+    				.orElse(createILDefaultEndCondition());
+    	} else if (myNode.isCommandNode()) {
+    		// OR together the given end condition (or "true" if not present)
+    		// with the expression specified above. 
+    		Expression givenEnd = myNode.getEndCondition()
+    				.map(e -> toIL(e, ExprType.BOOLEAN))
+    				.orElse(BooleanValue.get(true));
+    		
+    		return ILOperator.POR.expr(
+    						givenEnd, 
+    						ILOperator.PHANDLE_EQ.expr(getCommandHandle(), 
+    								CommandHandleState.COMMAND_DENIED),
+    						ILOperator.PHANDLE_EQ.expr(getCommandHandle(), 
+    								CommandHandleState.COMMAND_FAILED)
+    						);
+    	} else {
+    		// No wrapper necessary.
+    		return myNode.getEndCondition()
+    				.map(e -> toIL(e, ExprType.BOOLEAN))
+    				.orElse(createILDefaultEndCondition());
+    	}
+    }
+    
+    Expression createILDefaultEndCondition() {
+    		// The default end condition depends on the body type:
+            return getASTNodeBody().accept(new NodeBodyVisitor<NodeToIL, Expression>() {
+
+                @Override
+                public Expression visitEmpty(NodeBody empty, NodeToIL node) {
+                    // This one is simple: True.
+                    return BooleanValue.get(true);
+                }
+
+                @Override
+                public Expression visitAssignment(AssignmentBody assign, NodeToIL node) {
+                    // TODO Make sure this is right by doing some experiments.
+                    // The detailed semantics say "assignment completed". And then 
+                    // there's a footnote saying that assignments always complete unless
+                    // there's an error evaluating the right hand side. Somehow. I'm
+                    // guessing an error like that is a showstopper, so it's safe to
+                    // just say that they always complete. 
+                    return BooleanValue.get(true);
+                }
+
+                @Override
+                public Expression visitCommand(CommandBody cmd, NodeToIL node) {
+                    // The wiki says "Command handle received". But what does that mean?
+                	
+                	// The PLEXIL source code seems to imply that the default
+                	// end condition for Command nodes is just "true". Not
+                	// "command handle received" as the wiki states. (CommandNode.cc)
+                	// What it does is OR whatever end condition it has with 
+                	// handle == denied || handle == failed. 
+
+                    //return Operation.isKnown(node.getCommandHandle());
+                	return BooleanValue.get(true);
+                }
+
+                @Override
+                public Expression visitLibrary(LibraryBody lib, NodeToIL node) {
+                	// If the library got included statically, this NodeToIL might 
+                	// actually have a real child instead of a handle.
+                	if (node.hasLibraryHandle()) {
+        	            // Treat it the same as a list: "All children FINISHED". 
+        	    		// But there's just one child, so it's easy.
+        	            return ILOperator.PSTATE_EQ.expr(
+        	            		NodeState.FINISHED, 
+                                node.getLibraryHandle());
+                	} else {
+                		// Since we don't actually care about the AST body, passing in
+                		// null is fine. 
+                		return visitNodeList(null, node);
+                	}
+                }
+
+                @Override
+                public Expression visitNodeList(NodeListBody list, NodeToIL node) {
+                    // All children FINISHED.
+                    List<Expression> childStates = new ArrayList<Expression>();
+                    for (NodeToIL child : node.getChildren()) {
+                        childStates.add(
+                                ILOperator.PSTATE_EQ.expr(
+                                		NodeState.FINISHED,
+                                        child.getState()));
+                    }
+                    if (childStates.size() == 1) {
+                    	return childStates.get(0);
+                    } else {
+                    	return ILOperator.PAND.expr(childStates);
+                    }
+                }
+
+                @Override
+                public Expression visitUpdate(UpdateBody update, NodeToIL node) {
+                    // Invocation success. Pretty sure this just means ACK. 
+                    return node.getUpdateHandle();
+                }
+                
+            }, this);
+
     }
 
     public NodeUID getUID() {
@@ -492,11 +642,18 @@ public class NodeToIL {
             UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
             Optional<Expression> expr = resolveVariableInternal(var.getName(), true);
             return expr.orElseGet( () -> createAlias(var.getName(), expectedType, true));
-        } else if (e instanceof ArrayIndexExpr) {
-            ArrayIndexExpr arr = (ArrayIndexExpr) e;
+        } else if (e instanceof ASTOperation) {
+        	// Must be an array index, right?
+            ASTOperation arr = (ASTOperation) e;
+            if (arr.getOperator() != ASTOperation.Operator.ARRAY_INDEX) {
+            	throw new RuntimeException("Writing to "+e+" is not implemented");
+            }
+            // We'll have to resolve the array in writing mode as well. 
+            
+            
             ArrayVar theArray = (ArrayVar) resolveVariableForWriting(
-            		arr.getArray(), expectedType.toArrayType());
-            Expression theIndex = toIL(arr.getIndex(), ExprType.INTEGER);
+            		arr.getBinaryFirst(), expectedType.toArrayType());
+            Expression theIndex = toIL(arr.getBinarySecond(), ExprType.INTEGER);
             switch (theArray.getType()) {
             case BOOLEAN_ARRAY:
             	return ILOperator.PBOOL_INDEX.expr(theArray, theIndex);
@@ -569,7 +726,6 @@ public class NodeToIL {
 		    	.filter(d -> d.getName().equals(name))
 		    	.findFirst();
     }
-    
     
     public void translate(final Plan ilPlan) {
         // The IL is basically a bag of variables and state machines.

@@ -12,15 +12,13 @@ import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeIDExpression;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -294,9 +292,9 @@ public class ExprParser {
         }
 
         if (isTag(start, "LookupNow")) {
-            return new LookupNowExpr(name, args);
+            return new ASTLookupExpr(name, args);
         } else if (isTag(start, "LookupOnChange")) {
-            return new LookupOnChangeExpr(name, tolerance, args);
+            return new ASTLookupExpr(name, tolerance, args);
         } else {
             throw new RuntimeException("uh, what happened here? "+start);
         }
@@ -307,7 +305,7 @@ public class ExprParser {
         return tag.equals("ArrayElement");
     }
 
-    public static ArrayIndexExpr parseArrayElement(StartElement start, XMLEventReader xml) {
+    public static ASTOperation parseArrayElement(StartElement start, XMLEventReader xml) {
         UnresolvedVariableExpr array = null;
         Expression index = null;
 
@@ -326,7 +324,7 @@ public class ExprParser {
             throw new RuntimeException("Didn't find an array name or index, " +
                     "instead found "+array+" and "+index);
         }
-        return new ArrayIndexExpr(array, index);
+        return ASTOperation.arrayIndex(array, index);
     }
 
 }

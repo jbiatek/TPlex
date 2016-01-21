@@ -21,9 +21,9 @@ import org.junit.*;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.Plan;
@@ -530,7 +530,7 @@ public class RegressionTest {
 					if (stringTrace.containsKey(valIndex)
 							&& stringTrace.containsKey(knownIndex)) {
 						// That's what we need!
-						ilTrace.put(new ArrayIndexExpr(v, IntegerValue.get(i)), 
+						ilTrace.put(ILOperator.arrayIndex(v, IntegerValue.get(i)), 
 								reverseTranslate(
 										stringTrace.get(valueArrayName), 
 										stringTrace.get(knownArrayName), 
@@ -568,7 +568,7 @@ public class RegressionTest {
 				for (int i = 0; i < array.getMaxSize(); i++) {
 					String indexed = lustreString+"["+i+"]";
 					if (stringTrace.containsKey(indexed)) {
-						ilTrace.put(new ArrayIndexExpr(array, IntegerValue.get(i)), 
+						ilTrace.put(ILOperator.arrayIndex(array, IntegerValue.get(i)), 
 								reverseTranslate(
 										stringTrace.get(indexed), 
 										array.getType().elementType(), 

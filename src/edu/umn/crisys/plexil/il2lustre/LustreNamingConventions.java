@@ -15,8 +15,6 @@ import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
@@ -140,7 +138,17 @@ public class LustreNamingConventions {
 			return IntegerValue.get(Integer.parseInt(valuePart));
 		}
 		if (type == ExprType.REAL) {
-			return RealValue.get(Double.parseDouble(valuePart));
+			if (valuePart.contains("/")) {
+				// The Lustre traces sometimes contain fractions :P
+				// We need to turn it back into a double.
+				String numerator = valuePart.split("/")[0];
+				String denominator = valuePart.split("/")[1];
+				return RealValue.get(
+						Double.parseDouble(numerator) /
+						Double.parseDouble(denominator));
+			} else {
+				return RealValue.get(Double.parseDouble(valuePart));
+			}
 		}
 		throw new RuntimeException("Type "+type+" is not a number.");
 	}

@@ -22,8 +22,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.ast.ArrayIndexExpr;
-import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
@@ -131,7 +129,7 @@ public class NodeParser {
             throw new RuntimeException("Resources not implemented");
         }
         // Optional variable expression
-        Expression var = null;
+        Optional<Expression> var = Optional.empty();
         if (isTagEndingWith(child, "Variable") || 
                 localNameOf(child).equals("ArrayElement")) {
             ExprType type;
@@ -140,7 +138,7 @@ public class NodeParser {
             } else {
                 type = ExprType.fuzzyValueOf(localNameOf(child).replaceAll("Variable$", ""));
             }
-            var = ExprParser.parse(child, xml, type);
+            var = Optional.of(ExprParser.parse(child, xml, type));
             child = nextTag(xml);
         }
         // Must be a name at this point.
@@ -162,15 +160,8 @@ public class NodeParser {
             assertEnd("Command", child);
         }
         
-        if (var == null) {
-            return new CommandBody(name, args);
-        } else if (var instanceof UnresolvedVariableExpr) {
-            return new CommandBody((UnresolvedVariableExpr) var, name, args);
-        } else if (var instanceof ArrayIndexExpr) {
-            return new CommandBody((ArrayIndexExpr) var, name, args);
-        } else {
-            throw new RuntimeException("Some kind of LHS expected, not "+var);
-        }
+        return var.map(v -> new CommandBody(v, name, args))
+        		.orElse(new CommandBody(name, args));
     }
 
     private static NodeBody parseAssignment(StartElement start,
@@ -183,14 +174,7 @@ public class NodeParser {
         rhs = ExprParser.parse(nextTag(xml), xml, ExprType.UNKNOWN);
         // That should be it.
         assertClosedTag(start, xml);
-        
-        if (var instanceof UnresolvedVariableExpr) {
-            return new AssignmentBody((UnresolvedVariableExpr) var, rhs);
-        } else if (var instanceof ArrayIndexExpr) {
-            return new AssignmentBody((ArrayIndexExpr) var, rhs);
-        } else {
-            throw new RuntimeException(var+"is not a valid left hand side.");
-        }
+        return new AssignmentBody(var, rhs);
     }
 
     private static NodeBody parseUpdate(StartElement start, XMLEventReader xml) {

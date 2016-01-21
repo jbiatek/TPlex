@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.ast.globaldecl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * PLEXIL doesn't actually have functions, but it does have two things 
@@ -42,4 +43,12 @@ public abstract class FunctionDeclaration {
 		parameters.add(param);
 	}
 
+	@Override
+	public String toString() {
+		return ret.map(v -> v.getType().toString()+" ").orElse("")
+				+ name 
+				+ parameters.stream()
+					.map(v -> v.getType().toString())
+					.collect(Collectors.joining(", ", "(", ")"));
+	}
 }

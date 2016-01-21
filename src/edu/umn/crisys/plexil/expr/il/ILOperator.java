@@ -502,6 +502,21 @@ public enum ILOperator {
     	
     }
     
+    public static ILOperation arrayIndex(Expression array, Expression index) {
+    	switch (array.getType()) {
+		case BOOLEAN_ARRAY:
+			return ILOperator.PBOOL_INDEX.expr(array, index);
+		case INTEGER_ARRAY:
+			return ILOperator.PINT_INDEX.expr(array, index);
+		case REAL_ARRAY:
+			return ILOperator.PREAL_INDEX.expr(array, index);
+		case STRING_ARRAY:
+			return ILOperator.PSTRING_INDEX.expr(array, index);
+		default:
+			throw new RuntimeException("Cannot have an array of type "+array.getType());
+		}
+    }
+    
     public ILOperation expr(Expression...args) {
     	return expr(Arrays.asList(args));
     }

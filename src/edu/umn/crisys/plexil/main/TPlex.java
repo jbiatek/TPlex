@@ -108,6 +108,10 @@ public class TPlex {
 	@Parameter(names = "--no-root-plans", description="Disable the optimization which removes some code from plans that look like they aren't going to be used as libraries. ")
 	public boolean noGuessTopLevelPlans = false;
 	
+
+	@Parameter(names = "--infer-types", description="Use static analysis to try to fill in missing Lookup and Command declarations.")
+	public boolean inferTypes = false;
+	
 	@Parameter(names = "--int-timepoints", description="When generating node timepoints, set the type as Integer. By default, they're assumed to be Real.")
 	public boolean forceIntTimepoints = false;
 	
@@ -396,6 +400,14 @@ public class TPlex {
 	public Plan translateToIL(PlexilPlan plan) {
 		NodeToIL toIl = new NodeToIL(plan.getRootNode());
 
+		if (inferTypes) {
+			// Find lookups and commands without global declarations and
+			// try to figure them out from context. 
+			TypeAnalyzer ta = new TypeAnalyzer();
+			ta.checkNode(plan.getRootNode());
+			ta.inferTypeDeclarations(plan);
+		}
+		
 		if (!skipAllOptimizations && staticLibraries) {
 			StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
 		}

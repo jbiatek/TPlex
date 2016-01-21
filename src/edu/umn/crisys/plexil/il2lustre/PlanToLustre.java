@@ -217,7 +217,7 @@ public class PlanToLustre {
 		if (LustreNamingConventions.hasValueAndKnownSplit(plexilType)) {
 			// This should be two inputs, the value and whether it's known
 			String valueId = LustreNamingConventions.getLookupIdValuePart(lookup.getName());
-			String knownId = LustreNamingConventions.getLookupIdValuePart(lookup.getName());
+			String knownId = LustreNamingConventions.getLookupIdKnownPart(lookup.getName());
 			
 			nb.addInput(new VarDecl(valueId, type));
 			nb.addInput(new VarDecl(knownId, NamedType.BOOL));

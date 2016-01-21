@@ -5,8 +5,7 @@ import java.util.List;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
+import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
@@ -36,6 +35,22 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 		p.getVariables().forEach(v -> checkTypeIsLegalInIL(v.getType()));
 		p.visitAllGuards(SINGLETON, ExprType.NATIVE_BOOL);
 		p.visitAllActions(SINGLETON, null);
+	}
+	
+	public static void ensureExpressionContainsLegalTypes(Expression e) {
+		// Recursively check that types are legal. 
+		if (e instanceof UnknownValue) {
+			// Oh, wait, that's fine.
+			return;
+		}
+		
+		try {
+			checkTypeIsLegalInIL(e.getType());
+		} catch (Exception ex) {
+			throw new RuntimeException("Expression "+e+" has illegal type "+e.getType(), ex);
+		}
+		e.getArguments().stream()
+			.forEach(ILTypeChecker::ensureExpressionContainsLegalTypes);
 	}
 	
 	public static void typeCheck(Expression e, ExprType expected) {
@@ -130,13 +145,7 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 	}
 
 	@Override
-	public Void visit(LookupNowExpr lookup, ExprType expected) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Void visit(LookupOnChangeExpr lookup, ExprType expected) {
+	public Void visit(LookupExpr lookup, ExprType expected) {
 		// TODO Auto-generated method stub
 		return null;
 	}

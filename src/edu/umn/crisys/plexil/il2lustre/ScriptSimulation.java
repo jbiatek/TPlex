@@ -14,7 +14,6 @@ import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.common.LookupExpr;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.Plan;
@@ -159,8 +158,8 @@ public class ScriptSimulation {
 			if (lookup.getParameters().size() != 0) {
 				System.err.println("Warning: lookups with parameters aren't supported!");
 			}
-			csv.put(new LookupNowExpr(
-					lookup.getReturnValue().get().getType(),
+			csv.put(new LookupExpr(
+					lookup,
 					StringValue.get(lookup.getName()), Collections.emptyList()), 
 					
 					new ArrayList<>());
@@ -176,54 +175,16 @@ public class ScriptSimulation {
 		}
 		
 		sim.addObserver(new JavaPlanObserver() {
-			
-			private boolean captureStartOfNextMicroStepInstead = false;
 
-			@Override
-			public void beforePlanExecution(JavaPlan plan) {
-				// We want the initial state of the plan as our first entry.
-				if (DEBUG) {
-					System.out.println("Capturing initial plan state");
-				}
-				captureState(plan);
-			}
-
-			@Override
-			public void endOfMicroStepAfterCommit(JavaPlan plan) {
-				// Normally, we just capture every micro step after it gets 
-				// committed...
-				if (DEBUG) {
-					System.out.println("Capturing after micro step was committed");
-				}
-				captureState(plan);
-			}
-
-			@Override
-			public void endOfMacroStep(JavaPlan plan) {
-				// ...However, inputs change between macro steps. In Lustre, 
-				// that means those changes have to become visible in the last 
-				// micro step before the new macro step begins. Whatever we just
-				// captured in endOfMicroStepAfterCommit() might change, so
-				// we'll just delete it. 
-				if (DEBUG) {
-					System.out.println("Macro step ended! Deleting last state, will capture before the next step commits. ");
-				}
-				deleteLastState();
-				captureStartOfNextMicroStepInstead = true;
-			}
 
 			@Override
 			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
-				if (captureStartOfNextMicroStepInstead) {
-					// Now that we're starting the next macro step, capture
-					// pre-commit values. That way, we're recording the same 
-					// new inputs that the plan saw.
-					if (DEBUG) {
-						System.out.println("Replacing deleted state before first micro step is committed");
-					}
-					captureState(plan);
-					captureStartOfNextMicroStepInstead = false;
-				}
+				// Capture all values just before they flip over to the new 
+				// values. This corresponds with what Lustre does in practice,
+				// and more importantly it incorporates the fact that in Lustre,
+				// inputs actually appear to change "early" so that they are 
+				// visible in the next macro step.
+				captureState(plan);
 			}
 
 			private void captureState(JavaPlan plan) {

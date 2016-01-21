@@ -12,9 +12,11 @@ import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PNumeric;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 import edu.umn.crisys.util.Pair;
@@ -184,6 +186,10 @@ public class ASTOperation extends ExpressionBase {
     public static ASTOperation getCommandHandle(Expression node) {
         return new ASTOperation(Operator.GET_COMMAND_HANDLE, node);
     }
+    
+    public static ASTOperation arrayIndex(Expression array, Expression index) {
+    	return new ASTOperation(Operator.ARRAY_INDEX, array, index);
+    }
 
     public static enum Operator {
         AND(-1, "&&", ExprType.BOOLEAN, ExprType.BOOLEAN),
@@ -200,6 +206,7 @@ public class ASTOperation extends ExpressionBase {
         LT(2, "<", ExprType.INTEGER, ExprType.BOOLEAN),
         
         ISKNOWN(1, "isKnown(", ExprType.UNKNOWN, ExprType.BOOLEAN),
+        ARRAY_INDEX(2, "[]", ExprType.ARRAY, ExprType.UNKNOWN),
                 
         // TODO: Do we need casting?
         CAST_BOOL(1, "(PBoolean) (", ExprType.BOOLEAN, ExprType.BOOLEAN),
@@ -262,6 +269,10 @@ public class ASTOperation extends ExpressionBase {
         			}
         		}
         		return ret;
+        	case ARRAY_INDEX:
+        		PValueList<?> array = (PValueList<?>) values.get(0);
+        		PInteger index = (PInteger) values.get(1);
+        		return array.get(index);
         	case CONCAT:
         		PString str = StringValue.get("");
         		for (PValue s : values) {
@@ -340,7 +351,9 @@ public class ASTOperation extends ExpressionBase {
             String ret;
             String infix;
             String end;
-            if (symbol.endsWith("(")) {
+            if (symbol.equals("[]")) {
+            	return args.get(0)+"["+args.get(1)+"]";
+            } else if (symbol.endsWith("(")) {
                 // Function style. Start with name, separate by comma, end with
                 // closing parenthesis. 
                 ret = symbol;
@@ -398,6 +411,14 @@ public class ASTOperation extends ExpressionBase {
         } else if (op.expectedArgs != -1 && op.expectedArgs != args.size()) {
             throw new RuntimeException("Expected "+op.expectedArgs+" args, not "+args.size());
         }
+        
+        if (op == Operator.ARRAY_INDEX) {
+        	// Bit of a special case here
+        	ExprType.ARRAY.typeCheck(args.get(0).getType());
+        	ExprType.INTEGER.typeCheck(args.get(1).getType());
+        	return;
+        }
+        
         // For casts, we're obviously skipping this. Everything else should 
         // check out, though. 
         if (op != Operator.CAST_BOOL && 
@@ -422,6 +443,10 @@ public class ASTOperation extends ExpressionBase {
     			argType != ExprType.INTEGER) {
     		return argType;
     	}
+    	if (op == Operator.ARRAY_INDEX) {
+    		return args.get(0).getType().elementType();
+    	}
+    	
     	// Numbers might actually be reals, and we might be able to do better
     	// than unknown. 
     	ExprType mostSpecific = argType;
@@ -499,7 +524,7 @@ public class ASTOperation extends ExpressionBase {
 
 	@Override
 	public boolean isAssignable() {
-		return false;
+		return op == Operator.ARRAY_INDEX;
 	}
 
 }

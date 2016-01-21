@@ -27,44 +27,47 @@ public class CompileRegressionTest {
 		}
 	}
 	
-	private static void buildTestJava(TestSuite suite, File resources, File outputDir) throws Exception {
-		TPlex tplex = new TPlex();
-		tplex.outputLanguage = OutputLanguage.JAVA;
-		tplex.outputDir = outputDir;
-		tplex.javaPackage = RegressionTest.TPLEX_OUTPUT_PACKAGE;
+	private static void buildTestGeneric(TPlex preconfigured, TestSuite suite,
+			File resources, File outputDir) throws Exception {
+		preconfigured.outputDir = outputDir;
+		preconfigured.inferTypes = true;
 		
-		tplex.files.add(new File(resources, suite.planFile+".plx"));
+		preconfigured.files.add(new File(resources, suite.planFile+".plx"));
 		for (String scriptName : suite.planScripts) {
-			tplex.files.add(new File(resources, scriptName+".psx"));
+			preconfigured.files.add(new File(resources, scriptName+".psx"));
 		}
 		for (String libName : suite.libs) {
-			tplex.files.add(new File(resources, libName+".plx"));
+			preconfigured.files.add(new File(resources, libName+".plx"));
 		}
 
-		if ( ! tplex.execute()) {
-			throw new RuntimeException("TPlex didn't execute cleanly!");
+		try {
+			if ( ! preconfigured.execute()) {
+				throw new RuntimeException("TPlex didn't execute cleanly!");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Problem compiling "+suite.planFile, e);
 		}
+
+	}
+	
+	private static void buildTestJava(TestSuite suite, File resources, File outputDir) throws Exception {
+		TPlex preconfigured = new TPlex();
+		preconfigured.outputLanguage = OutputLanguage.JAVA;
+		preconfigured.javaPackage = RegressionTest.TPLEX_OUTPUT_PACKAGE;
+
+		buildTestGeneric(preconfigured, suite, resources, outputDir);
 	}
 	
 	private static void buildTestLustre(TestSuite suite, File resources, File outputDir) throws Exception {
-		TPlex tplex = new TPlex();
-		tplex.outputLanguage = OutputLanguage.LUSTRE;
-		tplex.outputDir = outputDir;
-		tplex.lustreSimulateScriptsAgainst = suite.planFile;
+		TPlex preconfigured = new TPlex();
+		preconfigured.outputLanguage = OutputLanguage.LUSTRE;
+		preconfigured.lustreSimulateScriptsAgainst = suite.planFile;
 		
-		tplex.files.add(new File(resources, suite.planFile+".plx"));
-		
-		for (String scriptName : suite.planScripts) {
-			tplex.files.add(new File(resources, scriptName+".psx"));
-		}
-		for (String libName : suite.libs) {
+		if (suite.libs.length > 0) {
 			throw new RuntimeException("Libraries not supported in Lustre testing yet");
-			//args.add(new File(resources, libName+".plx").getPath());
 		}
 		
-		if ( ! tplex.execute()) {
-			throw new RuntimeException("TPlex didn't execute cleanly!");
-		}
+		buildTestGeneric(preconfigured, suite, resources, outputDir);
 	}
 
 }

@@ -21,8 +21,7 @@ import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.common.LookupNowExpr;
-import edu.umn.crisys.plexil.expr.common.LookupOnChangeExpr;
+import edu.umn.crisys.plexil.expr.common.LookupExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
@@ -66,24 +65,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 	
 	@Override
-	public Expr visit(LookupNowExpr lookup, ExprType expectedType) {
-		if (LustreNamingConventions.hasValueAndKnownSplit(expectedType)
-				|| LustreNamingConventions.hasValueAndKnownSplit(lookup.getType())) {
-			// This value has a value part and a known part.
-			return tuple(
-					id(LustreNamingConventions.getLookupIdValuePart(
-							lookup.getLookupNameAsString())),
-					id(LustreNamingConventions.getLookupIdKnownPart(
-							lookup.getLookupNameAsString()))
-					);
-		} else {
-			return id(LustreNamingConventions.getLookupId(
-					lookup.getLookupNameAsString()));
-		}
-	}
-
-	@Override
-	public Expr visit(LookupOnChangeExpr lookup, ExprType expectedType) {
+	public Expr visit(LookupExpr lookup, ExprType expectedType) {
 		if (LustreNamingConventions.hasValueAndKnownSplit(expectedType)
 				|| LustreNamingConventions.hasValueAndKnownSplit(lookup.getType())) {
 			// This value has a value part and a known part.
@@ -430,7 +412,10 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(RealValue real, ExprType expectedType) {
-		return tuple(new RealExpr(new BigDecimal(real.getRealValue())), LustreUtil.TRUE);
+		// Make sure to use the string constructor, since the one that takes
+		// an actual number behaves unintuitively (as noted in its JavaDoc). 
+		return tuple(new RealExpr(new BigDecimal(real.getRealValue()+"")), 
+				LustreUtil.TRUE);
 	}
 
 	@Override

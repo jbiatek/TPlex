@@ -14,7 +14,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 
 public class Node {
@@ -31,7 +30,7 @@ public class Node {
     private Expression invariantCondition = BooleanValue.get(true);
     private Expression repeatCondition = BooleanValue.get(false);
     private Expression postCondition = BooleanValue.get(true);
-    private Expression endCondition = DefaultEndExpr.get();
+    private Optional<Expression> endCondition = Optional.empty();
     private Expression exitCondition = BooleanValue.get(false);
     
     private int priority = Integer.MAX_VALUE;
@@ -153,7 +152,7 @@ public class Node {
     public void setInvariantCondition(Expression e) { invariantCondition = e; }
     public void setRepeatCondition(Expression e) { repeatCondition = e; }
     public void setPostCondition(Expression e) { postCondition = e; }
-    public void setEndCondition(Expression e) { endCondition = e; }
+    public void setEndCondition(Expression e) { endCondition = Optional.of(e); }
     public void setExitCondition(Expression e) { exitCondition = e; }
     
     public Expression getRepeatCondition() { return repeatCondition; }
@@ -162,8 +161,10 @@ public class Node {
     public Expression getPreCondition() { return preCondition; }
     public Expression getInvariantCondition() { return invariantCondition; }
     public Expression getPostCondition() { return postCondition; }
-    public Expression getEndCondition() { return endCondition; }
     public Expression getExitCondition() { return exitCondition; }
 
+    public Optional<Expression> getEndCondition() { 
+    	return endCondition; 
+	}
 
 }

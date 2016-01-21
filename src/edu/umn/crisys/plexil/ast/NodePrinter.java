@@ -9,7 +9,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ast.DefaultEndExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.util.Pair;
@@ -81,7 +80,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
             str.append(tab(TAB)+"PostCondition "+n.getPostCondition()+";");
             newLine(str, indent);
         }
-        if ( n.getEndCondition() != DefaultEndExpr.get()) {
+        if ( n.getEndCondition().isPresent()) {
             str.append(tab(TAB)+"EndCondition "+n.getEndCondition()+";");
             newLine(str, indent);
         }

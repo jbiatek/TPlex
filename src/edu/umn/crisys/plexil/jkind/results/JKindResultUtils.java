@@ -304,7 +304,7 @@ public class JKindResultUtils {
 							new BigInteger("0")));
 				} else if (type.equals(NamedType.REAL)) {
 					return Optional.of(new jkind.lustre.values.RealValue(
-							new BigFraction(new BigDecimal("0.0"))));
+							new BigFraction(new BigInteger("0"))));
 				} else {
 					throw new IllegalArgumentException("Unknown type: " + type + " "
 							+ type.getClass());
