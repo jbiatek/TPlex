@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr.common;
+package edu.umn.crisys.plexil.expr.il;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.expr.ExprType;

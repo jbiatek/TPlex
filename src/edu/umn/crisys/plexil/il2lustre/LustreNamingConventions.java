@@ -14,7 +14,7 @@ import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.NamedCondition;
-import edu.umn.crisys.plexil.expr.common.LookupExpr;
+import edu.umn.crisys.plexil.expr.il.LookupExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
