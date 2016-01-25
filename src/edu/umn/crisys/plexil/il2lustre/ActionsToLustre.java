@@ -118,7 +118,13 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 			// Preliminary support for constant arrays
 			//System.out.println("WARNING: Array "+v+" is being initialized, but assignments to it are being skipped.");
 			
-			return translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
+			Expr init = translator.toLustre(((ArrayVar) v).getInitialValue(), v.getType());
+			if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
+				// Same here, we just want the value component
+				return ILExprToLustre.getValueComponent(init);
+			} else {
+				return init;
+			}
 		} else {
 			throw new RuntimeException("Not supported yet: "+v.getClass());
 		}
@@ -128,6 +134,10 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		if (v instanceof SimpleVar) {
 			SimpleVar simp = (SimpleVar) v;
 			Expr init = translator.toLustre(simp.getInitialValue(), v.getType());
+			return ILExprToLustre.getKnownComponent(init);
+		} else if (v instanceof ArrayVar) {
+			ArrayVar arr = (ArrayVar) v;
+			Expr init = translator.toLustre(arr.getInitialValue(), v.getType());
 			return ILExprToLustre.getKnownComponent(init);
 		} else {
 			throw new RuntimeException("No 'known' component for "+v.getClass());

@@ -426,9 +426,11 @@ public class PlanToLustre {
 		// Assignments are handled by actions. We'll do the declaration 
 		// and leave the rest to them. 
 		Type t;
+		Type knownFlagType = NamedType.BOOL;
 		if (v instanceof ArrayVar) {
 			ArrayVar array = (ArrayVar) v;
 			t = getLustreType(array.getType(), array.getMaxSize());
+			knownFlagType = new ArrayType(NamedType.BOOL, array.getMaxSize());
 		} else {
 			t = getLustreType(v.getType());
 		}
@@ -439,12 +441,14 @@ public class PlanToLustre {
 			// add this variable. 
 			return;
 		}
-		if (v.getType().isNumeric()) {
+		if (v.getType().isNumeric() 
+				|| (v.getType().isArrayType() 
+						&& v.getType().elementType().isNumeric())	) {
 			// Declare both the value and the known bit.
 			nb.addLocal(new VarDecl(LustreNamingConventions
 					.getNumericVariableValueId(v), t));
 			nb.addLocal(new VarDecl(LustreNamingConventions
-					.getNumericVariableKnownId(v), NamedType.BOOL));
+					.getNumericVariableKnownId(v), knownFlagType));
 		} else {
 			// Everything else is a simple enum, including an UNKNOWN entry
 			nb.addLocal(new VarDecl(LustreNamingConventions.getVariableId(v), t));

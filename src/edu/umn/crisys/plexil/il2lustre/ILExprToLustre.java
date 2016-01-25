@@ -295,7 +295,8 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case PREAL_SUB:
 			return binary(op.getArguments(), BinaryOp.MINUS, 
 					op.getBinaryFirst().getType());
-
+		case TO_PREAL:
+			return unary(op.getArguments(), "real", ExprType.INTEGER);
 		// ---------------- String operators (not supported)
 		case PSTR_CONCAT:
 			throw new RuntimeException("String concatenation not supported when translating to Lustre");
@@ -320,11 +321,14 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 			Expr arrayKnown = getKnownComponent(array);
 
 			// If the index is unknown... return unknown I guess?
-			// TODO: Figure out the correct semantics for this. 
-			return ite(indexKnown, 
-					tuple(new ArrayAccessExpr(arrayValue, indexValue),
-					      new ArrayAccessExpr(arrayKnown, indexValue)),
-					unknownValue);
+			// Keep in mind that whoever is getting this might be expecting
+			// a tuple. 
+			// TODO: Figure out the correct semantics for this.
+			return tuple(new ArrayAccessExpr(arrayValue, indexValue),
+					// If the index was unknown, the above value is garbage
+				      ite(indexKnown, 
+				    		  new ArrayAccessExpr(arrayKnown, indexValue),
+				    		  LustreUtil.FALSE));
 		} else {
 			// No, just the index is split.
 			//TODO: Same problem here as above. 
@@ -445,6 +449,19 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		for (PValue v : list) {
 			values.add(v.accept(this, list.getType().elementType()));
 		}
+		// For numerics, we've now got an array of tuples. We need to flip that
+		// around into a tuple of two arrays. 
+		if (LustreNamingConventions.hasValueAndKnownSplit(list.getType())) {
+			List<Expr> actualValues = new ArrayList<>();
+			List<Expr> knownValues = new ArrayList<>();
+			for (Expr e : values) {
+				actualValues.add(getValueComponent(e));
+				knownValues.add(getKnownComponent(e));
+			}
+			return tuple(new ArrayExpr(actualValues), 
+					new ArrayExpr(knownValues));
+		}
+		
 		return new ArrayExpr(values);
 	}
 

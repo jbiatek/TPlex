@@ -53,10 +53,6 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     	Optional<Expression> translatedTolerance =
     			lookup.getTolerance().map(t -> t.accept(this, ExprType.REAL));
     	
-    	if (translatedName.equals(StringValue.get("time"))) {
-    		// This is built in to Plexil, we don't need to find a declaration
-    		return LookupExpr.lookupTime(NodeToIL.TIMEPOINT_TYPE);
-    	}
     	
     	// Find the lookup declaration
     	Optional<LookupDecl> decl = context.getLookupDeclaration(lookup);
@@ -64,6 +60,9 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     		// Use it to create the lookup.
     		return new LookupExpr(decl.get(), translatedName, 
         			translatedArgs, translatedTolerance);
+    	} else if (translatedName.equals(StringValue.get("time"))) {
+    		// This is built in to Plexil, we don't need to find a declaration
+    		return LookupExpr.lookupTime(NodeToIL.TIMEPOINT_TYPE);
     	} else {
     		// Might be a lookup with a dynamic name, might be undeclared.
     		// Have we been given enough type information to guess?

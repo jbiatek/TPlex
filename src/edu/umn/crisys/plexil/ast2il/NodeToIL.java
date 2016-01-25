@@ -110,12 +110,18 @@ public class NodeToIL {
         // Internal vars for all nodes
         ilVars.put(OUTCOME, new SimpleVar(OUTCOME, myUid, ExprType.OUTCOME));
         ilVars.put(FAILURE, new SimpleVar(FAILURE, myUid, ExprType.FAILURE));
-        // Node timepoints
+        // Node timepoints. They should have the same type as "time" does,
+        // if possible. If time isn't declared, it's set by a compiler option
+        // in TIMEPOINT_TYPE.
+        ExprType timepointType = getLookupTypeInfo("time")
+        		.map(decl -> decl.getReturnValue().get().getType())
+        		.orElse(TIMEPOINT_TYPE);
+        
         for (NodeState state : NodeState.values()) {
             for (NodeTimepoint tpt : NodeTimepoint.values()) {
             	String name = "."+state+"."+tpt;
             	
-                ilVars.put(name, new SimpleVar(name, myUid, TIMEPOINT_TYPE));
+                ilVars.put(name, new SimpleVar(name, myUid, timepointType));
             }
         }
         

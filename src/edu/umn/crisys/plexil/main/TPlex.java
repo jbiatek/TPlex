@@ -441,7 +441,6 @@ public class TPlex {
 		}
 		PruneUnusedVariables.optimize(ilPlan);
 		
-		System.out.println(ilPlan.printFullPlan());
 		ILTypeChecker.typeCheck(ilPlan);
 		
 		return ilPlan;
