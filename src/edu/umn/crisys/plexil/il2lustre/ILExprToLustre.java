@@ -296,7 +296,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 			return binary(op.getArguments(), BinaryOp.MINUS, 
 					op.getBinaryFirst().getType());
 		case TO_PREAL:
-			return unary(op.getArguments(), "real", ExprType.INTEGER);
+			Expr intExpr = op.getUnaryArg().accept(this, ExprType.INTEGER);
+			return tuple(castReal(getValueComponent(intExpr)), 
+					getKnownComponent(intExpr));
 		// ---------------- String operators (not supported)
 		case PSTR_CONCAT:
 			throw new RuntimeException("String concatenation not supported when translating to Lustre");
