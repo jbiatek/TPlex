@@ -532,8 +532,8 @@ public class RegressionTest {
 						// That's what we need!
 						ilTrace.put(ILOperator.arrayIndex(v, IntegerValue.get(i)), 
 								reverseTranslate(
-										stringTrace.get(valueArrayName), 
-										stringTrace.get(knownArrayName), 
+										stringTrace.get(valIndex), 
+										stringTrace.get(knownIndex), 
 										v.getType().elementType()));
 					} else {
 						throw new RuntimeException("Looking for a numeric array index, " +
