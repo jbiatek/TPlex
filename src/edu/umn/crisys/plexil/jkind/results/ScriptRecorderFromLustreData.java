@@ -74,12 +74,14 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 		for (ILVariable cmdHandle : lastKnownCommand.keySet()) {
 			NodeUID uid = cmdHandle.getNodeUID();
 			log("Node "+uid+" is being examined.");
-			// Any node in Executing, Finishing, or Failing gets a response
-			// each macro step, because that's how we translated it.  
+			// As long as it's not INACTIVE or WAITING, Lustre could 
+			// respond to it. (Lustre isn't allowed to respond to SKIPPED or
+			// precondition-failed nodes either, but in those cases there 
+			// either won't be a command to respond to, or our "response" 
+			// should just be setting an unknown handle to unknown again.)
 			NodeState state = (NodeState) sim.eval(new GetNodeStateExpr(uid));
-			if (state == NodeState.EXECUTING 
-					|| state == NodeState.FINISHING
-					|| state == NodeState.FAILING) {
+			if (state != NodeState.INACTIVE 
+					&& state != NodeState.WAITING) {
 				// Respond to this command with whatever Lustre said.
 				FunctionCall thatNodesCall = lastKnownCommand.get(cmdHandle);
 				CommandHandleState value = readCommandHandleFromTrace(cmdHandle); 

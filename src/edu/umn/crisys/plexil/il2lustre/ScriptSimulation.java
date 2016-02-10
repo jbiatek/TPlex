@@ -178,9 +178,9 @@ public class ScriptSimulation {
 
 
 			@Override
-			public void endOfMicroStepBeforeCommit(JavaPlan plan) {
-				// Capture all values just before they flip over to the new 
-				// values. This corresponds with what Lustre does in practice,
+			public void beforeMicroStepRuns(JavaPlan plan) {
+				// Capture all values just before a new micro step begins.
+				// This corresponds with what Lustre does in practice,
 				// and more importantly it incorporates the fact that in Lustre,
 				// inputs actually appear to change "early" so that they are 
 				// visible in the next macro step.

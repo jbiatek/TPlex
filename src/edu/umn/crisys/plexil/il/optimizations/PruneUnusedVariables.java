@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -101,7 +102,12 @@ public class PruneUnusedVariables {
 	
 	private static boolean removable(Expression e) {
 		if (e instanceof ILVariable) {
-			return true;
+			// Keep outcomes, failures, and command handles. Even if no 
+			// IL components read them, a backend translation might need them
+			// to implement PLEXIL semantics correctly. 
+			return e.getType() != ExprType.OUTCOME
+					&& e.getType() != ExprType.FAILURE
+					&& e.getType() != ExprType.COMMAND_HANDLE;
 		}
 		return false;
 	}

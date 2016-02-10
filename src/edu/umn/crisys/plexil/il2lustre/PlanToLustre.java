@@ -197,11 +197,12 @@ public class PlanToLustre {
 	 * Lustre naming conventions for the IL variable. 
 	 */
 	public String addCommandHandleInputFor(ILVariable handle, String cmdName) {
-		// Actually, this is an input, not a variable that we control. We
-		// do have to make sure that it behaves properly, though. 
+		// In the Lustre translation, command handles are actually pure inputs,
+		// not variables. 
 		String theId = LustreNamingConventions.getVariableId(handle);
 		nb.addInput(new VarDecl(theId, LustreNamingConventions.PCOMMAND));
-		// It must follow PLEXIL's rules about changing mid-step:
+		// We aren't constraining it here. That is handled by the code that
+		// processes the Command Action. 
 		return theId;
 	}
 
@@ -595,6 +596,22 @@ public class PlanToLustre {
 		}
 		return new BinaryExpr(guardExpr, BinaryOp.AND, getGuardExprFor(t));
 
+	}
+	
+	public ILVariable getNodeOutcomeFor(NodeUID uid) {
+		return p.getVariables().stream()
+			.filter(v -> v.getNodeUID().equals(uid) 
+					&& v.getType().equals(ExprType.OUTCOME))
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("Outcome for "+uid+" not found!"));
+	}
+	
+	public ILVariable getFailureTypeFor(NodeUID uid) {
+		return p.getVariables().stream()
+				.filter(v -> v.getNodeUID().equals(uid) 
+						&& v.getType().equals(ExprType.FAILURE))
+				.findFirst()
+				.orElseThrow(() -> new RuntimeException("Failure for "+uid+" not found!"));
 	}
 
 }
