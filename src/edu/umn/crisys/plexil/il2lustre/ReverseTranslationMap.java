@@ -72,6 +72,13 @@ public class ReverseTranslationMap {
 		return Optional.ofNullable(lookups.get(inputId));
 	}
 	
+	public Optional<String> getIdFromLookupName(String lookupName) {
+		return lookups.entrySet().stream()
+				.filter(e -> e.getValue().equals(lookupName))
+				.findFirst()
+				.map(e -> e.getKey());
+	}
+	
 	public Optional<String> getCommandNameFromHandleId(String handleId) {
 		return Optional.ofNullable(commandHandleInputs.get(handleId));
 	}

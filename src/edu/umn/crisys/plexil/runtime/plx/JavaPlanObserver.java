@@ -12,6 +12,14 @@ public interface JavaPlanObserver {
 	}
 	
 	/**
+	 * Called just before a micro step is executed. 
+	 * @param plan
+	 */
+	public default void beforeMicroStepRuns(JavaPlan plan) {
+		
+	}
+	
+	/**
 	 * Called after PLEXIL has reached quiescence. When something changes,
 	 * return so that PLEXIL can run again, this time with the new event. 
 	 */

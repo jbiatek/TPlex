@@ -31,11 +31,18 @@ public class LustreComplianceChecker extends TestOracle {
 	}
 
 	@Override
-	public void endOfMicroStepBeforeCommit(JavaPlan plan) {
-		// Check everything when the micro step ends, but just before
-		// those changes actually become visible. This way, we will see
-		// the initial state, and since inputs change just before
-		// macro steps begin, we'll see the new input values correctly.
+	public void beforeMicroStepRuns(JavaPlan plan) {
+		// Check everything just before the next micro step begins. 
+		// This way, we will see things the same way that Lustre does. 
+		// In the Lustre translation, inputs change during the last micro step
+		// of the macro step. (Since everything always uses the pre() value,
+		// it's fine because the change isn't visible until the next step,
+		// which is the beginning of a new macro step.) 
+		
+		// By always doing our check just before the micro step runs, we see
+		// the world the same way: we won't try to read the last step of the
+		// macro step until the next one is already about to start, meaning
+		// that inputs have already been changed and those changes are visible.
 		ILSimulator sim = (ILSimulator) plan;
 		System.out.println("Checking Lustre step "+step);
 		
@@ -93,9 +100,10 @@ public class LustreComplianceChecker extends TestOracle {
 		if ( expected == null || actual == null || 
 				! expected.equals(actual)) {
 			String history = generateHistory(ilTrace.get(e));
-			errors.add("Values for "+e+" don't match: expected "+expected+", "
+			errors.add("Values for "+e+" don't match: the simulator had "
+					+expected+", "
 					+"which should be "+expectedStr
-					+" in Lustre, but instead saw "+actual
+					+" in Lustre, but the Lustre trace had "+actual
 					+ " "+history);
 		}
 	}

@@ -82,8 +82,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 					|| state == NodeState.FAILING) {
 				// Respond to this command with whatever Lustre said.
 				FunctionCall thatNodesCall = lastKnownCommand.get(cmdHandle);
-				CommandHandleState value = (CommandHandleState) readValueFromTrace(
-						LustreNamingConventions.getVariableId(cmdHandle)); 
+				CommandHandleState value = readCommandHandleFromTrace(cmdHandle); 
 				log(uid+" handle is set to "+value+" in Lustre.");
 				log("Its last known command was "+thatNodesCall);
 				if (thatNodesCall == null) {
@@ -145,6 +144,19 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 		currentStepEvents.addEvent(stateChangeEvent);
 		
 		return getEnvironment().lookupNow(stateName, args);
+	}
+	
+	private PValue readLookupFromTrace(String stateName) {
+		// Find the Lustre ID that this state is mapped to
+		String id = map.getIdFromLookupName(stateName)
+				.orElseThrow(() -> new RuntimeException("State "+stateName
+						+" not found in Lustre map data"));
+		return readValueFromTrace(id);
+	}
+	
+	private CommandHandleState readCommandHandleFromTrace(ILVariable handle) {
+		return (CommandHandleState) readValueFromTrace(
+				LustreNamingConventions.getVariableId(handle));
 	}
 	
 	private PValue readValueFromTrace(String lustreId) {

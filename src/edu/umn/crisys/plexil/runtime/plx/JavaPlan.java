@@ -77,6 +77,12 @@ public abstract class JavaPlan {
     	}
     }
     
+    public void notifyBeforeMicroStep() {
+    	for (JavaPlanObserver obs : observers) {
+    		obs.beforeMicroStepRuns(this);
+    	}
+    }
+    
     /**
      * Notify listeners that a micro step has ended. Only call this inside
      * of an implementation of doMicroStep() please.
@@ -166,6 +172,7 @@ public abstract class JavaPlan {
             
             // Do one micro step
             changeOccurred = false;
+            notifyBeforeMicroStep();
             doMicroStep();
             
             // Commit variables
