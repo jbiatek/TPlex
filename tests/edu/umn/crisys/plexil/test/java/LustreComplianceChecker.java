@@ -10,6 +10,7 @@ import jkind.results.Signal;
 import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
+import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
@@ -95,7 +96,7 @@ public class LustreComplianceChecker extends TestOracle {
 	private void checkValue(Expression e, ILSimulator sim) {
 		PValue expected = sim.eval(e);
 		PValue actual = ilTrace.get(e).get(step);
-		String expectedStr = RegressionTest.hackyILExprToLustre(expected, e.getType(), mapper);
+		String expectedStr = JKindResultUtils.hackyILExprToLustre(expected, e.getType(), mapper);
 		
 		if ( expected == null || actual == null || 
 				! expected.equals(actual)) {

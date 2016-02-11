@@ -137,8 +137,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 		
 		log("Received request for lookup "+stateName+" with args "+join(args));
 		
-		PValue lustreValue = readValueFromTrace(
-				LustreNamingConventions.getLookupId(stateName.getString()));
+		PValue lustreValue = readLookupFromTrace(stateName.getString());
 		log("Lustre says it should be "+lustreValue+".");
 		// Pretend that we always had this value all along...
 		StateChange stateChangeEvent = stateChange(lustreValue, stateName.getString(), args);
@@ -166,7 +165,22 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 		if (data == null) {
 			throw new NullPointerException("Signal for "+lustreId+" did not exist");
 		}
-		return JKindResultUtils.parseValue(data.getValue(lustreStepCounter), map);
+		PValue value = JKindResultUtils.parseValue(data.getValue(lustreStepCounter), map);
+		if (lustreId.endsWith("__value")) {
+			// Check for unknown-ness first
+			String knownId = lustreId.replaceFirst("value$", "isknown");
+			Signal<Value> knownData = lustreData.getVariable(knownId);
+			if (knownData == null) {
+				throw new NullPointerException("Signal for "+knownId+" did not exist");
+			}
+			if (knownData.getValue(lustreStepCounter).toString()
+					.equalsIgnoreCase("false")) {
+				//Nope, actually this value is not known.
+				return value.getType().getUnknown();
+			} 
+		}
+		
+		return value;
 	}
 
 	private static String join(Object[] args) {
