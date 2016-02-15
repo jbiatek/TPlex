@@ -234,6 +234,13 @@ public class TPlex {
 		out.println(usage);
 	}
 	
+	public boolean isRecognizedFile(String fileName) {
+		return  fileName.endsWith(".plx") 
+				|| fileName.endsWith(".psx")
+				|| fileName.endsWith(".lus.xml")
+				|| fileName.endsWith(".csv");
+	}
+	
 	public boolean readOptions() {
 		if (help) {
 			printUsage(System.out);
@@ -248,7 +255,7 @@ public class TPlex {
 				
 				@Override
 				public boolean accept(File dir, String name) {
-					return name.endsWith(".plx") || name.endsWith(".psx");
+					return isRecognizedFile(name);
 				}
 			})));
 		}
@@ -274,10 +281,7 @@ public class TPlex {
 				System.err.println("Error: "+file.getName()+" is not a compiled PLEXIL file.");
 				System.err.println("Use plexilc to compile it to XML first.");
 				return false;
-			} else if ( ! file.getName().endsWith(".plx") 
-					&& ! file.getName().endsWith(".psx")
-					&& ! file.getName().endsWith(".lus.xml")
-					&& ! file.getName().endsWith(".csv")) {
+			} else if ( ! isRecognizedFile(file.getName())) {
 				System.err.println("Error: File extension of "+file+" is not recognized.");
 				return false;
 			}
