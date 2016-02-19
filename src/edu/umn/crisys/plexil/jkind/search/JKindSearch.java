@@ -320,6 +320,23 @@ public class JKindSearch {
 		
 	}
 	
+	/**
+	 * Using the given LustreTrace test case, which has been run through the
+	 * simulator and therefore is in terms of integers, do two things:
+	 * 
+	 * First, simulate it again, but this time add 10 more steps where the 
+	 * inputs don't change. This allows a human to see one way that the plan
+	 * was "going". If it immediately hits a dead end, it could explain why
+	 * a property couldnt' be found.
+	 * 
+	 * Second, this method also transforms the integers back into enumerated
+	 * values, making it possible for a human to read and also making it 
+	 * runnable on the original Lustre source code. 
+	 * 
+	 * @param trace
+	 * @param lustreProgram
+	 * @return
+	 */
 	private static LustreTrace reEnumAndExtend(LustreTrace trace, Program lustreProgram) {
 		// We want to let the test case run a little more to give an idea
 		// of where it was going. Also, this will give us the full trace
@@ -328,6 +345,18 @@ public class JKindSearch {
 		return JKindResultUtils.extendTestCase(trace, lustreProgram, 10);
 	}
 
+	/**
+	 * Perform the history transformation on this Program. The returned Program
+	 * will be equivalent to the state of the Program after the given 
+	 * LustreTrace has been run.  
+	 * 
+	 * The given Program must be ready to be simulated: It cannot have 
+	 * enumerated values in it. Use the simplify() method to do this. 
+	 * 
+	 * @param simplified
+	 * @param trace
+	 * @return
+	 */
 	private static Program historify(Program simplified, LustreTrace trace) {
 		// Fill in null values
 		LustreTrace filled = FillNullValues.fill(trace, simplified, Generation.DEFAULT);
@@ -344,13 +373,22 @@ public class JKindSearch {
 		// And add history
 		Node history = CreateHistoryVisitor.node(simplified.getMainNode(), simulated);
 		
-		// History translation kills all properties, add them back in
+		// History translation kills some things, so add them back in
 		NodeBuilder nb = new NodeBuilder(history);
 		nb.addProperties(simplified.getMainNode().properties);
+		nb.addAssertions(simplified.getMainNode().assertions);
 		
 		return duplicateWithNewMainNode(simplified, nb.build());
 	}
 	
+	/**
+	 * Create a new Program that's a clone of this one, but with the given
+	 * trace properties added to it. 
+	 * @param p
+	 * @param props
+	 * @param translator
+	 * @return
+	 */
 	private static Program addProperties(Program p, Collection<TraceProperty> props,
 			PlanToLustre translator) {
 		NodeBuilder nb = new NodeBuilder(p.getMainNode());
@@ -358,6 +396,15 @@ public class JKindSearch {
 		return duplicateWithNewMainNode(p, nb.build());
 	}
 	
+	/**
+	 * Take an existing Program and clone it, swapping out the main node for
+	 * a new one (for our purpose, probably a similar node with different 
+	 * properties.)
+	 * 
+	 * @param old
+	 * @param newNode
+	 * @return
+	 */
 	private static Program duplicateWithNewMainNode(Program old, Node newNode) {
 		ProgramBuilder pb = new ProgramBuilder();
 		pb.addNode(newNode);
@@ -371,6 +418,13 @@ public class JKindSearch {
 		return pb.build();
 	}
 	
+	/**
+	 * Remove enumerated types from this Program, turning them into integers.
+	 * The simulator requires programs to be preprocessed this way. 
+	 * 
+	 * @param p
+	 * @return
+	 */
 	private static Program simplify(Program p) {
 		return new Program(RemoveEnumTypes.node(Translate.translate(p)));
 	}

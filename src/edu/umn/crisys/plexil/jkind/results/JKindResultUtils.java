@@ -383,7 +383,13 @@ public class JKindResultUtils {
 		ILSimulator sim = new ILSimulator(ilPlan, recorder);
 		sim.addObserver(recorder);
 		sim.addObserver(checker);
-		sim.runPlanToCompletion();
+		try {
+			sim.runPlanToCompletion();
+		} catch (Exception e) {
+			// Wrap with some more information
+			throw new RuntimeException("Error translating "+name
+					+" to PLEXILScript", e);
+		}
 		
 		// No exceptions means that it's all good!
 		PlexilScript theScript = recorder.convertToPlexilScript(name);
