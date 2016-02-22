@@ -13,7 +13,7 @@ import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 
 public class Node {
@@ -24,14 +24,14 @@ public class Node {
     private PlexilPlan thePlan;
     private NodeBody body = new NodeBody();
     // Node conditions:
-    private ILExpr startCondition = BooleanValue.get(true);
-    private ILExpr skipCondition = BooleanValue.get(false);
-    private ILExpr preCondition = BooleanValue.get(true);
-    private ILExpr invariantCondition = BooleanValue.get(true);
-    private ILExpr repeatCondition = BooleanValue.get(false);
-    private ILExpr postCondition = BooleanValue.get(true);
-    private Optional<ILExpr> endCondition = Optional.empty();
-    private ILExpr exitCondition = BooleanValue.get(false);
+    private PlexilExpr startCondition = BooleanValue.get(true);
+    private PlexilExpr skipCondition = BooleanValue.get(false);
+    private PlexilExpr preCondition = BooleanValue.get(true);
+    private PlexilExpr invariantCondition = BooleanValue.get(true);
+    private PlexilExpr repeatCondition = BooleanValue.get(false);
+    private PlexilExpr postCondition = BooleanValue.get(true);
+    private Optional<PlexilExpr> endCondition = Optional.empty();
+    private PlexilExpr exitCondition = BooleanValue.get(false);
     
     private int priority = Integer.MAX_VALUE;
     // Variables declared in this node
@@ -146,24 +146,24 @@ public class Node {
 
     
     // Condition getters and setters.
-    public void setStartCondition(ILExpr e) { startCondition = e; }
-    public void setSkipCondition(ILExpr e) { skipCondition = e; }
-    public void setPreCondition(ILExpr e) { preCondition = e; }
-    public void setInvariantCondition(ILExpr e) { invariantCondition = e; }
-    public void setRepeatCondition(ILExpr e) { repeatCondition = e; }
-    public void setPostCondition(ILExpr e) { postCondition = e; }
-    public void setEndCondition(ILExpr e) { endCondition = Optional.of(e); }
-    public void setExitCondition(ILExpr e) { exitCondition = e; }
+    public void setStartCondition(PlexilExpr e) { startCondition = e; }
+    public void setSkipCondition(PlexilExpr e) { skipCondition = e; }
+    public void setPreCondition(PlexilExpr e) { preCondition = e; }
+    public void setInvariantCondition(PlexilExpr e) { invariantCondition = e; }
+    public void setRepeatCondition(PlexilExpr e) { repeatCondition = e; }
+    public void setPostCondition(PlexilExpr e) { postCondition = e; }
+    public void setEndCondition(PlexilExpr e) { endCondition = Optional.of(e); }
+    public void setExitCondition(PlexilExpr e) { exitCondition = e; }
     
-    public ILExpr getRepeatCondition() { return repeatCondition; }
-    public ILExpr getStartCondition() { return startCondition; }
-    public ILExpr getSkipCondition() { return skipCondition; }
-    public ILExpr getPreCondition() { return preCondition; }
-    public ILExpr getInvariantCondition() { return invariantCondition; }
-    public ILExpr getPostCondition() { return postCondition; }
-    public ILExpr getExitCondition() { return exitCondition; }
+    public PlexilExpr getRepeatCondition() { return repeatCondition; }
+    public PlexilExpr getStartCondition() { return startCondition; }
+    public PlexilExpr getSkipCondition() { return skipCondition; }
+    public PlexilExpr getPreCondition() { return preCondition; }
+    public PlexilExpr getInvariantCondition() { return invariantCondition; }
+    public PlexilExpr getPostCondition() { return postCondition; }
+    public PlexilExpr getExitCondition() { return exitCondition; }
 
-    public Optional<ILExpr> getEndCondition() { 
+    public Optional<PlexilExpr> getEndCondition() { 
     	return endCondition; 
 	}
 

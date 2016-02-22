@@ -3,19 +3,19 @@ package edu.umn.crisys.plexil.ast.nodebody;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
 import edu.umn.crisys.util.Pair;
 
 public class UpdateBody extends NodeBody {
 
-    private List<Pair<String,ILExpr>> updates = 
-        new ArrayList<Pair<String,ILExpr>>();
+    private List<Pair<String,PlexilExpr>> updates = 
+        new ArrayList<Pair<String,PlexilExpr>>();
     
-    public void addUpdate(String name, ILExpr value) {
-        updates.add(new Pair<String, ILExpr>(name, value));
+    public void addUpdate(String name, PlexilExpr value) {
+        updates.add(new Pair<String, PlexilExpr>(name, value));
     }
     
-    public List<Pair<String, ILExpr>> getUpdates() {
+    public List<Pair<String, PlexilExpr>> getUpdates() {
         return updates;
     }
     

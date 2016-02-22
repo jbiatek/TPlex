@@ -7,12 +7,13 @@ import java.util.Optional;
 
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 public class LookupExpr extends ILExprBase {
 
-	public static LookupExpr lookupTime(ILType numericType) {
+	public static LookupExpr lookupTime(PlexilType numericType) {
 		if ( ! numericType.isNumeric()) {
 			throw new RuntimeException("Time is not "+numericType);
 		}
@@ -36,7 +37,7 @@ public class LookupExpr extends ILExprBase {
 	
 	public LookupExpr(LookupDecl typeData, ILExpr state, List<ILExpr> args,
 			Optional<ILExpr> tolerance) {
-		super(typeData.getReturnValue().get().getType());
+		super(typeData.getReturnValue().get().getType().toILType());
 	    ILTypeChecker.typeCheck(state, ILType.STRING);
 	    tolerance.ifPresent(t -> ILTypeChecker.typeCheck(t, ILType.REAL));
 	    
@@ -55,7 +56,7 @@ public class LookupExpr extends ILExprBase {
 	    	}
 	    	for (int i=0; i < args.size(); i++) {
 	    		ILTypeChecker.typeCheck(args.get(i), 
-	    				typeData.getParameters().get(i).getType());
+	    				typeData.getParameters().get(i).getType().toILType());
 	    	}
 	    }
 	    

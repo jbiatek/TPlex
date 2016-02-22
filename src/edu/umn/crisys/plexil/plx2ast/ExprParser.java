@@ -15,14 +15,23 @@ import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeIDExpression;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
 
 
@@ -31,12 +40,103 @@ public class ExprParser {
     private ExprParser() {}
     
     
-    public static ILExpr parse(StartElement start, XMLEventReader xml, ILType expectedType) {
-        ILExpr expr = methodDispatcher(start, xml);
+    public static PlexilExpr parse(StartElement start, XMLEventReader xml, PlexilType expectedType) {
+        PlexilExpr expr = methodDispatcher(start, xml);
         return expr;
     }
     
-    private static ILExpr methodDispatcher(StartElement start, XMLEventReader xml) {
+    /**
+     * Takes a guess at what PlexilType this String is trying to indicate. 
+     * @param originalName
+     * @return
+     */
+    public static PlexilType fuzzyParseType(String originalName) {
+        
+    	// Strip all symbols, make it all upper case
+        String name = originalName.replaceAll("[^A-Za-z]", "").toUpperCase();
+        
+        if (name.startsWith("BOOL")) {
+            if (name.contains("ARRAY")) {
+                return PlexilType.BOOLEAN_ARRAY;
+            } else {
+                return PlexilType.BOOLEAN;
+            }
+        } else if (name.startsWith("INT")) {
+            if (name.startsWith("INTERNAL")) {
+                return PlexilType.UNKNOWN;
+            }
+            if (name.contains("ARRAY")) {
+                return PlexilType.INTEGER_ARRAY;
+            } else {
+                return PlexilType.INTEGER;
+            }
+        } else if (name.startsWith("STR")) {
+            if (name.contains("ARRAY")) {
+                return PlexilType.STRING_ARRAY;
+            } else {
+                return PlexilType.STRING;
+            }
+        } else if (name.equals("NUMERIC")) {
+        	return PlexilType.REAL;
+        }
+        
+        // Just look for an easy match
+        for (PlexilType type : PlexilType.values()) {
+        	// Strip symbols here too
+        	String thisOnesName = type.toString().replaceAll("_", "");
+            if (thisOnesName.equalsIgnoreCase(name)) {
+                return type;
+            } 
+        }
+        
+        throw new RuntimeException("Couldn't guess what "+originalName+" is.");
+    }
+    
+    /**
+     * Take a String and parse it into a PValue. 
+     * @param values
+     * @return
+     */
+    public static PValue parseValue(PlexilType type, String value) {
+    	if (value.equals(ScriptParser.UNKNOWN_VALUE)) {
+    		// This is an unknown value
+    		return type.toILType().getUnknown();
+    	}
+    	
+        switch(type) {
+        case UNKNOWN:
+            return UnknownValue.get();
+        case BOOLEAN:
+            // (?i) means case insensitive.
+            if (value.equals("1") || value.matches("(?i)T(rue)?")) {
+                return BooleanValue.get(true);
+            } else if (value.equals("0") || value.matches("(?i)F(alse)?")) {
+                return BooleanValue.get(false);
+            }
+            return UnknownValue.get();
+        case INTEGER:
+            return IntegerValue.get(Integer.parseInt(value));
+        case REAL:
+//        case NUMERIC:
+            return RealValue.get(Double.parseDouble(value));
+        case STRING:
+            return StringValue.get(value);
+        case STATE:
+            return NodeState.valueOf(value.toUpperCase());
+        case OUTCOME:
+            return NodeOutcome.valueOf(value.toUpperCase());
+        case FAILURE:
+            return NodeFailureType.valueOf(value.toUpperCase());
+        case COMMAND_HANDLE:
+            return CommandHandleState.valueOf(value.toUpperCase());
+        default:
+        	throw new RuntimeException("Cannot parse values of "+type);
+        }
+    }
+
+
+    
+    private static PlexilExpr methodDispatcher(StartElement start, XMLEventReader xml) {
         String tag = localNameOf(start);
         if (isOperation(tag)) {
             return parseOperation(start, xml);
@@ -69,12 +169,12 @@ public class ExprParser {
         throw new RuntimeException("I have no handlers for "+tag+" tags.");
     }
 
-    public static ILExpr parse(XMLEvent start, XMLEventReader xml, ILType expectedType) {
+    public static PlexilExpr parse(XMLEvent start, XMLEventReader xml, PlexilType expectedType) {
         return parse(start.asStartElement(), xml, expectedType);
     }
 
-    private static List<ILExpr> parseMultiple(StartElement start, XMLEventReader xml, ILType expectedType) {
-        List<ILExpr> list = new ArrayList<ILExpr>();
+    private static List<PlexilExpr> parseMultiple(StartElement start, XMLEventReader xml, PlexilType expectedType) {
+        List<PlexilExpr> list = new ArrayList<PlexilExpr>();
         for (StartElement tag : allChildTagsOf(start, xml)) {
             list.add(parse(tag, xml, expectedType));
         }
@@ -99,14 +199,14 @@ public class ExprParser {
         return tag.endsWith("RHS");
     }
 
-    public static ILExpr parseRHS(StartElement start, XMLEventReader xml) {
+    public static PlexilExpr parseRHS(StartElement start, XMLEventReader xml) {
         // These are all just wrappers around expressions. 
         // Go in, get the expression, check the end tag, and move on.
-        ILType type = ILType.UNKNOWN;
+        PlexilType type = PlexilType.UNKNOWN;
         if ( ! isTagStartingWith(start, "Lookup")) {
-            type = ILType.fuzzyValueOf(localNameOf(start).replaceFirst("RHS$", ""));
+            type = fuzzyParseType(localNameOf(start).replaceFirst("RHS$", ""));
         }
-        ILExpr ret = parse(nextTag(xml), xml, type);
+        PlexilExpr ret = parse(nextTag(xml), xml, type);
         assertClosedTag(start, xml);
         return ret;
     }
@@ -118,7 +218,7 @@ public class ExprParser {
 
     public static UnresolvedVariableExpr parseRegularVariable(StartElement start, XMLEventReader xml) {
         String typeStr = localNameOf(start).replaceFirst("Variable$", "");
-        ILType type = ILType.valueOf(typeStr.toUpperCase());
+        PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
         return new UnresolvedVariableExpr(getStringContent(start, xml), type);
     }
 
@@ -136,8 +236,8 @@ public class ExprParser {
 
     public static PValue parsePValue(StartElement start, XMLEventReader xml) {
         String type = localNameOf(start).replaceAll("(Node|Value)", "");
-        ILType pType = ILType.fuzzyValueOf(type);
-        return pType.parseValue(getStringContent(start, xml));
+        PlexilType pType = fuzzyParseType(type);
+        return parseValue(pType, getStringContent(start, xml));
     }
 
 
@@ -145,8 +245,8 @@ public class ExprParser {
         return tag.equals("NodeId") || tag.equals("NodeRef");
     }
 
-    public static ILExpr parseNodeReference(StartElement start, XMLEventReader xml) {
-    	ILExpr toReturn;
+    public static PlexilExpr parseNodeReference(StartElement start, XMLEventReader xml) {
+    	PlexilExpr toReturn;
         if (localNameOf(start).equals("NodeId")) {
             toReturn = new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
@@ -166,7 +266,7 @@ public class ExprParser {
 
     public static ASTOperation parseNodeStateVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
+        PlexilExpr nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getState(nodeRef);
     }
@@ -178,7 +278,7 @@ public class ExprParser {
 
     public static ASTOperation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
+        PlexilExpr nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getOutcome(nodeRef);
     }
@@ -190,7 +290,7 @@ public class ExprParser {
 
     public static ASTOperation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
+        PlexilExpr nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getFailure(nodeRef);
     }
@@ -202,7 +302,7 @@ public class ExprParser {
 
     public static ASTOperation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
+        PlexilExpr nodeRef = parse(nextTag(xml), xml, PlexilType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getCommandHandle(nodeRef);
     }
@@ -215,7 +315,7 @@ public class ExprParser {
     public static NodeTimepointExpr parseNodeTimepoint(StartElement start, XMLEventReader xml) {
         String state = null;
         String timepoint = null;
-        ILExpr nodeId = null;
+        PlexilExpr nodeId = null;
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isNodeReference(localNameOf(e))) {
@@ -248,10 +348,10 @@ public class ExprParser {
     public static ASTOperation parseEqOrNe(StartElement start, XMLEventReader xml) {
         boolean negate = isTagStartingWith(start, "NE");
         // Slice off the "NE" or "EQ" to get the expected type.
-        ILType type = ILType.fuzzyValueOf(localNameOf(start).substring(2));
+        PlexilType type = fuzzyParseType(localNameOf(start).substring(2));
 
-        ILExpr one = parse(nextTag(xml), xml, type);
-        ILExpr two = parse(nextTag(xml), xml, type);
+        PlexilExpr one = parse(nextTag(xml), xml, type);
+        PlexilExpr two = parse(nextTag(xml), xml, type);
         assertClosedTag(start, xml);
 
         if (negate) {
@@ -268,20 +368,20 @@ public class ExprParser {
     }
 
 
-    public static ILExpr parseLookup(StartElement start, XMLEventReader xml) {
-        ILExpr name = null;
-        ILExpr tolerance = RealValue.get(0.0);
-        List<ILExpr> args = new ArrayList<ILExpr>();
+    public static PlexilExpr parseLookup(StartElement start, XMLEventReader xml) {
+        PlexilExpr name = null;
+        PlexilExpr tolerance = RealValue.get(0.0);
+        List<PlexilExpr> args = new ArrayList<PlexilExpr>();
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
-                name = parse(nextTag(xml), xml, ILType.STRING);
+                name = parse(nextTag(xml), xml, PlexilType.STRING);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Tolerance")) {
-                tolerance = parse(nextTag(xml), xml, ILType.REAL);
+                tolerance = parse(nextTag(xml), xml, PlexilType.REAL);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Arguments")) {
-                args = parseMultiple(e, xml, ILType.UNKNOWN);
+                args = parseMultiple(e, xml, PlexilType.UNKNOWN);
             } else {
                 throw new UnexpectedTagException(e);
             }
@@ -307,13 +407,13 @@ public class ExprParser {
 
     public static ASTOperation parseArrayElement(StartElement start, XMLEventReader xml) {
         UnresolvedVariableExpr array = null;
-        ILExpr index = null;
+        PlexilExpr index = null;
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
-                array = new UnresolvedVariableExpr(getStringContent(e, xml), ILType.ARRAY);
+                array = new UnresolvedVariableExpr(getStringContent(e, xml), PlexilType.ARRAY);
             } else if (isTag(e, "Index")) {
-                index = parse(nextTag(xml), xml, ILType.INTEGER);
+                index = parse(nextTag(xml), xml, PlexilType.INTEGER);
                 assertClosedTag(e, xml);
             } else {
                 throw new UnexpectedTagException(e);

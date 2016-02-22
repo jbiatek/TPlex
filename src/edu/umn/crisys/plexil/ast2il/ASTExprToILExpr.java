@@ -6,31 +6,31 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
-import edu.umn.crisys.plexil.expr.il.AliasExpr;
-import edu.umn.crisys.plexil.expr.il.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
-import edu.umn.crisys.plexil.expr.il.NamedCondition;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
-import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
-import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
-import edu.umn.crisys.plexil.runtime.values.NativeBool;
-import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
+public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
     
     private NodeToIL context;
     
@@ -38,20 +38,14 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
         this.context = context;
     }
     
-    @Override
-	public ILExpr visit(PValue v, ILType param) {
-    	// Return these as-is, the IL uses them natively.
-    	return v;
-	}
-
 	@Override
-	public ILExpr visit(ASTLookupExpr lookup, ILType expected) {
+	public ILExpr visit(ASTLookupExpr lookup, PlexilType expected) {
     	List<ILExpr> translatedArgs = lookup.getLookupArgs().stream()
-    			.map(e -> e.accept(this, ILType.UNKNOWN))
+    			.map(e -> e.accept(this, PlexilType.UNKNOWN))
     			.collect(Collectors.toList());
-    	ILExpr translatedName = lookup.getLookupName().accept(this, ILType.STRING);
+    	ILExpr translatedName = lookup.getLookupName().accept(this, PlexilType.STRING);
     	Optional<ILExpr> translatedTolerance =
-    			lookup.getTolerance().map(t -> t.accept(this, ILType.REAL));
+    			lookup.getTolerance().map(t -> t.accept(this, PlexilType.REAL));
     	
     	
     	// Find the lookup declaration
@@ -82,22 +76,22 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
 	}
 	
 	@Override
-    public ILExpr visit(UnresolvedVariableExpr expr, ILType expected) {
-        if (expr.getType() == ILType.NODEREF) {
+    public ILExpr visit(UnresolvedVariableExpr expr, PlexilType expected) {
+        if (expr.getPlexilType() == PlexilType.NODEREF) {
             throw new RuntimeException("Node references should be resolved by "
                     + "the operation that needs them, they can't be used directly");
         }
-        return context.resolveVariable(expr.getName(), expr.getType());
+        return context.resolveVariable(expr.getName(), expr.getPlexilType().toILType());
     }
 
     @Override
-	public ILExpr visit(NodeRefExpr ref, ILType expected) {
+	public ILExpr visit(NodeRefExpr ref, PlexilType expected) {
 		throw new RuntimeException("This reference should have been resolved by the operation that used it");
 	}
 
     
 
-    private NodeToIL resolveNode(ILExpr e) {
+    private NodeToIL resolveNode(PlexilExpr e) {
     	if (e instanceof UnresolvedVariableExpr) {
     		UnresolvedVariableExpr nodeName = (UnresolvedVariableExpr) e;
     		return context.resolveNode(nodeName.getName());
@@ -137,68 +131,92 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
     }
     
     @Override
-    public ILExpr visit(NodeTimepointExpr timept, ILType expected) {
+    public ILExpr visit(NodeTimepointExpr timept, PlexilType expected) {
         // This one we actually have to take apart, since it ends up as a 
         // variable in the IL.
         return resolveNode(timept.getNodeId()).getNodeTimepoint(timept.getState(), timept.getTimepoint());
     }
 
+    private static PlexilExpr getSoleArgument(PlexilExpr e) {
+    	if (e.getPlexilArguments().size() != 1) {
+    		throw new RuntimeException("Expected 1 argument for "+e
+    				+" but there were "+e.getPlexilArguments().size());
+    	}
+    	return e.getPlexilArguments().get(0);
+    }
+    
+    private static PlexilExpr getBinaryFirst(PlexilExpr e) {
+    	if (e.getPlexilArguments().size() != 2) {
+    		throw new RuntimeException("Expected 2 arguments for "+e
+    				+" but there were "+e.getPlexilArguments().size());
+    	}
+    	return e.getPlexilArguments().get(0);
+    }
+    
+    private static PlexilExpr getBinarySecond(PlexilExpr e) {
+    	if (e.getPlexilArguments().size() != 2) {
+    		throw new RuntimeException("Expected 2 arguments for "+e
+    				+" but there were "+e.getPlexilArguments().size());
+    	}
+    	return e.getPlexilArguments().get(1);
+    }
+    
     @Override
-    public ILExpr visit(ASTOperation op, ILType expected) {
+    public ILExpr visit(ASTOperation op, PlexilType expected) {
         // Some of these we need to handle specially. Specifically, the node
         // operations like .state and .command_handle.
         switch (op.getOperator()) {
         case GET_STATE:
-            return resolveNode(op.getUnaryArg()).getState();
+            return resolveNode(getSoleArgument(op)).getState();
         case GET_OUTCOME:
-            return resolveNode(op.getUnaryArg()).getOutcome();
+            return resolveNode(getSoleArgument(op)).getOutcome();
         case GET_FAILURE:
-            return resolveNode(op.getUnaryArg()).getFailure();
+            return resolveNode(getSoleArgument(op)).getFailure();
         case GET_COMMAND_HANDLE:
-            return resolveNode(op.getUnaryArg()).getCommandHandle();
+            return resolveNode(getSoleArgument(op)).getCommandHandle();
         case ARRAY_INDEX:
-        	ILExpr array = op.getBinaryFirst().accept(this, 
+        	ILExpr array = getBinaryFirst(op).accept(this, 
         			expected.isSpecificType() ? 
-        					expected.toArrayType() : ILType.UNKNOWN);
-        	ILExpr index = op.getBinarySecond().accept(this, ILType.INTEGER);
+        					expected.toArrayType() : PlexilType.UNKNOWN);
+        	ILExpr index = getBinarySecond(op).accept(this, PlexilType.INTEGER);
         	return ILOperator.arrayIndex(array, index);
         case NE:
         	// Change to not(equal)
         	ASTOperation fixed = ASTOperation.not(ASTOperation.eq(
-        			op.getBinaryFirst(), op.getBinarySecond()));
+        			getBinaryFirst(op), getBinarySecond(op)));
         	return fixed.accept(this, null);
         case ISKNOWN:
         	// The IL makes ISKNOWN a native boolean, but since this translator
         	// could be anywhere in PLEXIL land, we need to wrap it in a PBoolean. 
         	return ILOperator.WRAP_BOOLEAN.expr(
         			ILOperator.ISKNOWN_OPERATOR.expr(
-        					op.getUnaryArg().accept(this, op.getActualArgumentType())
+        					getSoleArgument(op).accept(this, op.getActualArgumentType())
         					));
         default:
         	// We need to figure out the correct type of these arguments. 
-        	ILType expectedArgType = op.getExpectedArgumentType();
-        	if (expectedArgType == ILType.UNKNOWN) {
+        	PlexilType expectedArgType = op.getExpectedArgumentType();
+        	if (expectedArgType == PlexilType.UNKNOWN) {
         		// Hmm, can we infer it from the arguments? 
-        		expectedArgType = op.getArguments().stream()
-        				.map(ILExpr::getType)
-        				.reduce(ILType::getMoreSpecific).get();
-        		if (expectedArgType == ILType.UNKNOWN) {
+        		expectedArgType = op.getPlexilArguments().stream()
+        				.map(PlexilExpr::getPlexilType)
+        				.reduce(PlexilType::getMoreSpecific).get();
+        		if (expectedArgType == PlexilType.UNKNOWN) {
         			// Hm. Well, if it's a Condition, boolean is our
         			// best guess.
-        			expectedArgType = ILType.BOOLEAN;
+        			expectedArgType = PlexilType.BOOLEAN;
         		}
         	}
         	if (expectedArgType.isNumeric()) {
         		// Let's check and see if they are all integers
-        		if (argsAreAllIntegers(op.getArguments())) {
-        			expectedArgType = ILType.INTEGER;
+        		if (argsAreAllIntegersAST(op.getPlexilArguments())) {
+        			expectedArgType = PlexilType.INTEGER;
         		} else {
         			// Nope, make them all reals
-        			expectedArgType = ILType.REAL;
+        			expectedArgType = PlexilType.REAL;
         		}
         	}
-        	final ILType finalGuess = expectedArgType;
-        	List<ILExpr> translated = op.getArguments().stream()
+        	final PlexilType finalGuess = expectedArgType;
+        	List<ILExpr> translated = op.getPlexilArguments().stream()
 					.map(e -> e.accept(this, finalGuess))
 					.collect(Collectors.toList());
 
@@ -206,15 +224,15 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
         	// things like Lookups.
         	if (expectedArgType.isNumeric()) {
         		if (argsAreAllIntegers(translated)) {
-        			expectedArgType = ILType.INTEGER;
+        			expectedArgType = PlexilType.INTEGER;
         		} else {
-        			expectedArgType = ILType.REAL;
+        			expectedArgType = PlexilType.REAL;
         		}
         	}
         	
         	// If we converted to real, there's a special method that does 
         	// that using the right operator.
-        	if (expectedArgType == ILType.REAL) {
+        	if (expectedArgType == PlexilType.REAL) {
         		translated = allIntsToReals(translated);
         	} 
         	
@@ -237,22 +255,7 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
         }
     }
     
-    private ILExpr cast(ILExpr e, ILType expectedType) {
-    	switch(expectedType) {
-    	case BOOLEAN:
-    		return ILOperator.CAST_PBOOL.expr(e);
-    	case INTEGER:
-    		return ILOperator.CAST_PINT.expr(e);
-    	case REAL:
-    		return ILOperator.CAST_PREAL.expr(e);
-    	case STRING:
-    		return ILOperator.CAST_PSTRING.expr(e);
-		default:
-			throw new RuntimeException("Shouldn't be casting to "+expectedType);
-    	}
-    }
-    
-    private ILOperator map(Operator o, ILType finalType) {
+    private ILOperator map(Operator o, PlexilType finalType) {
     	switch (o) {
     	case AND: return ILOperator.PAND;
     	case OR: return ILOperator.POR;
@@ -275,55 +278,55 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
     	case NE:
     		throw new RuntimeException("Check for NE first and separate it");
     	case GE:
-    		if (finalType == ILType.INTEGER) 
+    		if (finalType == PlexilType.INTEGER) 
     			return ILOperator.PINT_GE;
     		else return ILOperator.PREAL_GE;
     	case GT:
-    		if (finalType == ILType.INTEGER) 
+    		if (finalType == PlexilType.INTEGER) 
     			return ILOperator.PINT_GT;
     		else return ILOperator.PREAL_GT;
     	case LE:
-    		if (finalType == ILType.INTEGER) 
+    		if (finalType == PlexilType.INTEGER) 
     			return ILOperator.PINT_LE;
     		else return ILOperator.PREAL_LE;
     	case LT:
-    		if (finalType == ILType.INTEGER) 
+    		if (finalType == PlexilType.INTEGER) 
     			return ILOperator.PINT_LT;
     		else return ILOperator.PREAL_LT;
     	case ISKNOWN:
     		return ILOperator.ISKNOWN_OPERATOR;
     	case ABS:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_ABS;
     		else return ILOperator.PREAL_ABS;
     	case ADD:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_ADD;
     		else return ILOperator.PREAL_ADD;
     	case DIV:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_DIV;
     		else return ILOperator.PREAL_DIV;
     	case MAX:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_MAX;
     		else return ILOperator.PREAL_MAX;
     	case MIN:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_MIN;
     		else return ILOperator.PREAL_MIN;
     	case MOD:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_MOD;
     		else return ILOperator.PREAL_MOD;
     	case MUL:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_MUL;
     		else return ILOperator.PREAL_MUL;
     	case SQRT:
     		return ILOperator.PREAL_SQRT;
     	case SUB:
-    		if (finalType == ILType.INTEGER)
+    		if (finalType == PlexilType.INTEGER)
     			return ILOperator.PINT_SUB;
     		else return ILOperator.PREAL_SUB;
     	
@@ -345,6 +348,12 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
     	}
     }
     
+    private boolean argsAreAllIntegersAST(List<PlexilExpr> args) {
+    	return args.stream()
+    			.allMatch(e -> e.getPlexilType() == PlexilType.INTEGER
+    					|| e.getPlexilType() == PlexilType.UNKNOWN);
+    }
+    
     private boolean argsAreAllIntegers(List<ILExpr> translatedChildren) {
     	return translatedChildren.stream()
     			.allMatch(e -> e.getType() == ILType.INTEGER
@@ -358,59 +367,58 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
     			.collect(Collectors.toList());
     }
     
-    private ILExpr visitILExpr(ILExpr e) {
-    	throw new RuntimeException(e+" is already an IL-only expr, something is "
-    			+ "probably very wrong here");
-    }
+    /*
+     * The rest are very easy: they're already IL types! 
+     */
+
+	@Override
+	public ILExpr visit(BooleanValue bool, PlexilType param) {
+		return bool;
+	}
+
+	@Override
+	public ILExpr visit(IntegerValue integer, PlexilType param) {
+		return integer;
+	}
+
+	@Override
+	public ILExpr visit(RealValue real, PlexilType param) {
+		return real;
+	}
+
+	@Override
+	public ILExpr visit(StringValue string, PlexilType param) {
+		return string;
+	}
+
+	@Override
+	public ILExpr visit(UnknownValue unk, PlexilType param) {
+		return unk;
+	}
+
+	@Override
+	public ILExpr visit(PValueList<?> list, PlexilType param) {
+		return list;
+	}
+
+	@Override
+	public ILExpr visit(CommandHandleState state, PlexilType param) {
+		return state;
+	}
+
+	@Override
+	public ILExpr visit(NodeFailureType type, PlexilType param) {
+		return type;
+	}
+
+	@Override
+	public ILExpr visit(NodeOutcome outcome, PlexilType param) {
+		return outcome;
+	}
+
+	@Override
+	public ILExpr visit(NodeState state, PlexilType param) {
+		return state;
+	}
     
-	@Override
-	public ILExpr visit(NativeBool b, ILType expected) {
-		return visitILExpr(b);
-	}
-
-	@Override
-	public ILExpr visit(ILOperation op, ILType expected) {
-		return visitILExpr(op);
-	}
-
-	@Override
-	public ILExpr visit(GetNodeStateExpr state, ILType expected) {
-		return visitILExpr(state);
-	}
-
-	@Override
-	public ILExpr visit(SimpleVar var, ILType expected) {
-		return visitILExpr(var);
-	}
-
-	@Override
-	public ILExpr visit(ArrayVar array, ILType expected) {
-		return visitILExpr(array);
-	}
-
-	@Override
-	public ILExpr visit(LibraryVar lib, ILType expected) {
-		return visitILExpr(lib);
-	}
-
-	@Override
-	public ILExpr visit(NamedCondition named, ILType expected) {
-		return visitILExpr(named);
-	}
-
-	@Override
-	public ILExpr visit(AliasExpr alias, ILType expected) {
-		return visitILExpr(alias);
-	}
-
-	@Override
-	public ILExpr visit(RootAncestorExpr root, ILType expected) {
-		return visitILExpr(root);
-	}
-
-	@Override
-	public ILExpr visit(ILVariable v, ILType expected) {
-		return visitILExpr(v);
-	}
-
 }

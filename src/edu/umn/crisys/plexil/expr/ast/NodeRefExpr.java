@@ -1,10 +1,6 @@
 package edu.umn.crisys.plexil.expr.ast;
 
-import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILType;
-
-public enum NodeRefExpr implements ILExpr {
+public enum NodeRefExpr implements PlexilExpr {
 
 	PARENT,
 	SIBLING,
@@ -12,13 +8,13 @@ public enum NodeRefExpr implements ILExpr {
 	SELF;
 	
 	@Override
-	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
 	}
 
 	@Override
-	public ILType getType() {
-		return ILType.NODEREF;
+	public PlexilType getPlexilType() {
+		return PlexilType.NODEREF;
 	}
 
 	@Override
@@ -26,9 +22,5 @@ public enum NodeRefExpr implements ILExpr {
 		return toString().toLowerCase();
 	}
 
-	@Override
-	public boolean isAssignable() {
-		return false;
-	}
 
 }

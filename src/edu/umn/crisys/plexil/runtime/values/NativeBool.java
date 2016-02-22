@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.ExprVisitor;
 import edu.umn.crisys.plexil.expr.il.ILType;
 
@@ -39,6 +41,18 @@ public enum NativeBool implements PValue {
 	@Override
 	public ILType getType() {
 		return ILType.NATIVE_BOOL;
+	}
+
+	@Override
+	public PlexilType getPlexilType() {
+		// Actually, we're not legal in the PLEXIL world.
+		throw new RuntimeException("Native boolean being asked AST questions");
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
+		// Same here. 
+		throw new RuntimeException("Native boolean being asked AST questions");
 	}
 
 }

@@ -41,6 +41,7 @@ import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILType;
@@ -260,7 +261,7 @@ public class TPlex {
 			})));
 		}
 		if (forceIntTimepoints) {
-			NodeToIL.TIMEPOINT_TYPE = ILType.INTEGER;
+			NodeToIL.TIMEPOINT_TYPE = PlexilType.INTEGER;
 		}
 		
 		if (javaNoTernaryOperator) {

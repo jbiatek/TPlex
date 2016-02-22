@@ -1,10 +1,5 @@
 package edu.umn.crisys.plexil.expr.il;
 
-import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
-import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
-import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -55,23 +50,14 @@ public interface ExprVisitor<P, R> {
 	public R visit(NodeOutcome outcome, P param);
 	public R visit(NodeState state, P param);
 
-	// Lookups
-	public R visit(LookupExpr lookup, P param);
-    public R visit(ASTLookupExpr lookup, P param);
-
-    // AST expressions
-    public R visit(ASTOperation op, P param);
-    public R visit(UnresolvedVariableExpr expr, P param);
-    public R visit(NodeRefExpr ref, P param);
-    public R visit(NodeTimepointExpr timept, P param);
-
-    
     // IL expressions
     public R visit(NamedCondition named, P param);
 	public R visit(GetNodeStateExpr state, P param);
 	public R visit(AliasExpr alias, P param);
     public R visit(RootAncestorExpr root, P param);
     public R visit(ILOperation op, P param);
+    // Lookups
+    public R visit(LookupExpr lookup, P param);
     
     //ILVariables
     public R visit(ILVariable v, P param);

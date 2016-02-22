@@ -7,9 +7,9 @@ import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
@@ -362,7 +362,7 @@ public class StateMachineBuilder {
     private ILExpr startCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.START_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.START_CONDITION, 
-                    translator.toIL(astNode.getStartCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getStartCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.START_CONDITION, cond);
     }
@@ -370,7 +370,7 @@ public class StateMachineBuilder {
     private ILExpr skipCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.SKIP_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.SKIP_CONDITION, 
-                    translator.toIL(astNode.getSkipCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getSkipCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.SKIP_CONDITION, cond);
     }
@@ -378,7 +378,7 @@ public class StateMachineBuilder {
     private ILExpr preCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.PRE_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.PRE_CONDITION, 
-                    translator.toIL(astNode.getPreCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getPreCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.PRE_CONDITION, cond);
     }
@@ -386,7 +386,7 @@ public class StateMachineBuilder {
     private ILExpr invariantCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.INVARIANT_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.INVARIANT_CONDITION, 
-                    translator.toIL(astNode.getInvariantCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getInvariantCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.INVARIANT_CONDITION, cond);
     }
@@ -394,7 +394,7 @@ public class StateMachineBuilder {
     private ILExpr repeatCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.REPEAT_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.REPEAT_CONDITION, 
-                    translator.toIL(astNode.getRepeatCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getRepeatCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.REPEAT_CONDITION, cond);
     }
@@ -402,7 +402,7 @@ public class StateMachineBuilder {
     private ILExpr postCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.POST_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.POST_CONDITION, 
-                    translator.toIL(astNode.getPostCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getPostCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.POST_CONDITION, cond);
     }
@@ -418,7 +418,7 @@ public class StateMachineBuilder {
     private ILExpr exitCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.EXIT_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.EXIT_CONDITION, 
-                    translator.toIL(astNode.getExitCondition(), ILType.BOOLEAN));
+                    translator.toIL(astNode.getExitCondition(), PlexilType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.EXIT_CONDITION, cond);
     }

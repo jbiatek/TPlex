@@ -1,5 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.ExprVisitor;
 import edu.umn.crisys.plexil.expr.il.ILType;
 
@@ -153,6 +155,16 @@ public class BooleanValue implements PBoolean {
 	@Override
 	public String asString() {
 		return toString();
+	}
+
+	@Override
+	public PlexilType getPlexilType() {
+		return PlexilType.BOOLEAN;
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
+		return v.visit(this, param);
 	}
 
 }

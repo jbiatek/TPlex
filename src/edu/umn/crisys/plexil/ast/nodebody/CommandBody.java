@@ -3,31 +3,28 @@ package edu.umn.crisys.plexil.ast.nodebody;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 
 public class CommandBody extends NodeBody {
 
     // TODO: Someday... resources.
-    private Optional<ILExpr> varToAssign;
-    private ILExpr cmdName;
-    private List<ILExpr> args;
+    private Optional<PlexilExpr> varToAssign;
+    private PlexilExpr cmdName;
+    private List<PlexilExpr> args;
 
-    public CommandBody(ILExpr cmdName, List<ILExpr> args) {
+    public CommandBody(PlexilExpr cmdName, List<PlexilExpr> args) {
         this(Optional.empty(), cmdName, args);
     }
     
-    public CommandBody(ILExpr varToAssign, ILExpr cmdName, List<ILExpr> args) {
+    public CommandBody(PlexilExpr varToAssign, PlexilExpr cmdName, List<PlexilExpr> args) {
     	this(Optional.of(varToAssign), cmdName, args);
     }
 
     
-    public CommandBody(Optional<ILExpr> varToAssign, 
-    		ILExpr cmdName, List<ILExpr> args) {
-    	varToAssign.ifPresent((ILExpr var) -> {
-    		if ( ! var.isAssignable()) throw new RuntimeException(varToAssign + " is not assignable.");
-    	});
-        ILType.STRING.typeCheck(cmdName.getType());
+    public CommandBody(Optional<PlexilExpr> varToAssign, 
+    		PlexilExpr cmdName, List<PlexilExpr> args) {
+        PlexilType.STRING.typeCheck(cmdName.getPlexilType());
     	
         this.varToAssign = varToAssign;
         this.cmdName = cmdName;
@@ -37,15 +34,15 @@ public class CommandBody extends NodeBody {
     /**
      * @return the variable to store the command's result to (optional)
      */
-    public Optional<ILExpr> getVarToAssign() {
+    public Optional<PlexilExpr> getVarToAssign() {
         return varToAssign;
     }
     
-    public ILExpr getCommandName() {
+    public PlexilExpr getCommandName() {
         return cmdName;
     }
     
-    public List<ILExpr> getCommandArguments() {
+    public List<PlexilExpr> getCommandArguments() {
         return args;
     }
     

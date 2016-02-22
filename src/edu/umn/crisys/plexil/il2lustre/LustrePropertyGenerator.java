@@ -12,10 +12,8 @@ import static jkind.lustre.LustreUtil.or;
 import static jkind.lustre.LustreUtil.pre;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -25,16 +23,11 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
-import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.ILType;
-import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
-import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 
@@ -163,79 +156,6 @@ public class LustrePropertyGenerator {
 	}
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private static Set<NodeUID> nodesThisOneIsWaitingFor(OriginalHierarchy node) {
-		ILExpr start = node.getConditions().get(PlexilExprDescription.START_CONDITION);
-		Set<NodeUID> found = new HashSet<>();
-		findNodeFinishedChecks(start, found);
-		return found;
-	}
-	
-	private static void findNodeFinishedChecks(ILExpr e, Set<NodeUID> found) {
-		if (e instanceof ASTOperation) {
-			ASTOperation oper = (ASTOperation) e;
-			if (oper.getOperator() == Operator.EQ) {
-				if (oper.getArguments().contains(NodeState.FINISHED)) {
-					ILExpr other = oper.getArguments().get(0);
-					if (other.equals(NodeState.FINISHED)) {
-						// Oops
-						other = oper.getArguments().get(1);
-					}
-					
-					if (other instanceof GetNodeStateExpr) {
-						found.add(((GetNodeStateExpr) other).getNodeUid());
-					} else {
-						throw new RuntimeException("Found comparison of FINISHED to "+other);
-					}
-				}
-			}
-		}
-		for (ILExpr child : e.getArguments()) {
-			findNodeFinishedChecks(child, found);
-		}
-	}
-	
-	
-	
-	private static ILVariable failureOf(NodeUID uid, Plan ilPlan) {
-		for (ILVariable var : ilPlan.getVariables()) {
-			if (var.getName().equals(".failure")
-					&& var.getNodeUID().equals(uid)) {
-				return var;
-			}
-		}
-		throw new RuntimeException("Didn't find .failure for "+uid);
-	}
-	
-	private static Expr nodeIsExecuting(NodeUID uid, PlanToLustre p2l) {
-		return new BinaryExpr(
-				getPlexilState(uid), 
-				BinaryOp.EQUAL, 
-				p2l.toLustre(NodeState.EXECUTING, ILType.STATE));
-	}
 	
 	private static Expr equal(Expr left, Expr right) {
 		return new BinaryExpr(left, BinaryOp.EQUAL, right);

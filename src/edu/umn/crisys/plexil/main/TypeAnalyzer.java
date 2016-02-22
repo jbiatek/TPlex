@@ -28,6 +28,8 @@ import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
@@ -41,11 +43,11 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBodyVisitor<Node, Void>{
+public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements NodeBodyVisitor<Node, Void>{
 	
-    private Map<String, Optional<ILType>> lookups = new HashMap<>();
+    private Map<String, Optional<PlexilType>> lookups = new HashMap<>();
     private Map<String, List<PValue>> lookupValuesOfInterest = new HashMap<>();
-    private Map<String, Optional<ILType>> commands = new HashMap<>();
+    private Map<String, Optional<PlexilType>> commands = new HashMap<>();
     
 
 	public void printAnalysis() {
@@ -79,7 +81,7 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 			}
 			// Create a declaration based on this info
 			LookupDecl inferred = new LookupDecl(lookup);
-			ILType type = lookups.get(lookup).get();
+			PlexilType type = lookups.get(lookup).get();
 			if (type.isArrayType()) {
 				// Need one with an index
 				inferred.setReturnValue(new VariableDecl("<inferred-array>", 0, type));
@@ -93,20 +95,20 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 
     public void checkNode(Node root) {
         // Check all the conditions
-        root.getStartCondition().accept(this, ILType.BOOLEAN);
-        root.getSkipCondition().accept(this, ILType.BOOLEAN);
-        root.getPreCondition().accept(this, ILType.BOOLEAN);
-        root.getInvariantCondition().accept(this, ILType.BOOLEAN);
-        root.getRepeatCondition().accept(this, ILType.BOOLEAN);
-        root.getPostCondition().accept(this, ILType.BOOLEAN);
-        root.getEndCondition().ifPresent(c -> c.accept(this, ILType.BOOLEAN));
-        root.getExitCondition().accept(this, ILType.BOOLEAN);
+        root.getStartCondition().accept(this, PlexilType.BOOLEAN);
+        root.getSkipCondition().accept(this, PlexilType.BOOLEAN);
+        root.getPreCondition().accept(this, PlexilType.BOOLEAN);
+        root.getInvariantCondition().accept(this, PlexilType.BOOLEAN);
+        root.getRepeatCondition().accept(this, PlexilType.BOOLEAN);
+        root.getPostCondition().accept(this, PlexilType.BOOLEAN);
+        root.getEndCondition().ifPresent(c -> c.accept(this, PlexilType.BOOLEAN));
+        root.getExitCondition().accept(this, PlexilType.BOOLEAN);
         // And the body.
         root.getNodeBody().accept(this, root);
         
     }
     
-    public Map<String, Optional<ILType>> getLookupTypes() {
+    public Map<String, Optional<PlexilType>> getLookupTypes() {
     	return lookups;
     }
     
@@ -114,15 +116,15 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
     	return lookupValuesOfInterest;
     }
     
-    public Map<String, Optional<ILType>> getCommandTypes() {
+    public Map<String, Optional<PlexilType>> getCommandTypes() {
     	return commands;
     }
 
-    private static void customAdd(Map<String, Optional<ILType>> map, ILExpr key, Optional<ILType> value) {
+    private static void customAdd(Map<String, Optional<PlexilType>> map, PlexilExpr key, Optional<PlexilType> value) {
 		customAdd(map, "("+key.toString()+") (expression)", value);
     }
     
-    private static void customAdd(Map<String, Optional<ILType>> map, String key, Optional<ILType> value) {
+    private static void customAdd(Map<String, Optional<PlexilType>> map, String key, Optional<PlexilType> value) {
         if (map.containsKey(key)) {
         	if ( ! value.isPresent()) {
         		// We already have something for this, if they're telling us
@@ -137,14 +139,14 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
             	// Ah, we had seen this before, but we didn't know it had a type.
                 map.put(key, value);
                 return;
-            } else if (map.get(key).map(t -> t == ILType.INTEGER).orElse(false)
-            		&& (value.get() == ILType.REAL)) {
+            } else if (map.get(key).map(t -> t == PlexilType.INTEGER).orElse(false)
+            		&& (value.get() == PlexilType.REAL)) {
             	// Hmm, we thought this was an integer, but I guess we can't be
             	// that specific.
-                map.put(key, Optional.of(ILType.REAL));
+                map.put(key, Optional.of(PlexilType.REAL));
                 return;
-            } else if (map.get(key).map(t -> t == ILType.REAL).orElse(false) 
-            		&& (value.get() == ILType.INTEGER)) {
+            } else if (map.get(key).map(t -> t == PlexilType.REAL).orElse(false) 
+            		&& (value.get() == PlexilType.INTEGER)) {
                 return;
             } else {
             	// They didn't match, and it wasn't numeric? Bad times.
@@ -161,8 +163,8 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 
 
 	@Override
-	public Void visit(ASTLookupExpr lookup, ILType currentType) {
-		ILExpr name = lookup.getLookupName();
+	public Void visit(ASTLookupExpr lookup, PlexilType currentType) {
+		PlexilExpr name = lookup.getLookupName();
 		if ( ! (name instanceof StringValue)) {
 			customAdd(lookups, name, Optional.of(currentType));
 		} else {
@@ -173,14 +175,14 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 
 	@Override
 	public Void visitCommand(CommandBody cmd, Node n) {
-		Optional<ILType> typeToSet = Optional.empty();
+		Optional<PlexilType> typeToSet = Optional.empty();
 		cmd.getVarToAssign().ifPresent(
 				(varToAssign) -> resolveVariableType(varToAssign, n));
 		// Even if it's not there, we want to set it. Empty means that it's a command
 		// that doesn't appear to return anything.
 		
         // Get command name
-		ILExpr name = cmd.getCommandName();
+		PlexilExpr name = cmd.getCommandName();
 		if ( ! (name instanceof StringValue)) {
 			// Don't try to extract string
 			customAdd(commands, name, typeToSet);
@@ -191,68 +193,68 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 		return null;
 	}
 	
-	private static ILType resolveVariableType(ILExpr e, Node n) {
+	private static PlexilType resolveVariableType(PlexilExpr e, Node n) {
 		if (e instanceof ASTOperation) {
 			// This must be an array index. We can get the array type!
-			ILType arrayType = resolveVariableType(((ASTOperation) e)
-					.getBinaryFirst(), n);
+			PlexilType arrayType = resolveVariableType(((ASTOperation) e)
+					.getPlexilArguments().get(0), n);
 			if (arrayType.isArrayType()) {
 				return arrayType.elementType();
 			} else {
 				// Mmm, didn't work. I guess we're stuck.
-				return ILType.UNKNOWN;
+				return PlexilType.UNKNOWN;
 			}
 		} else if (e instanceof UnresolvedVariableExpr) {
 			return resolveVariableType(((UnresolvedVariableExpr) e).getName(), n);
 		} else {
 			System.err.println("Add LHS type to resolveVariableType() : "+e+" "+e.getClass());
-			return ILType.UNKNOWN;
+			return PlexilType.UNKNOWN;
 		}
 
 	}
 
-	private static ILType resolveVariableType(String name, Node n) {
+	private static PlexilType resolveVariableType(String name, Node n) {
 		if (n.containsVar(name)) {
 			return n.getVariableInfo(name).getType();
 		} else if (n.getParent().isPresent()) {
 			return resolveVariableType(name, n.getParent().get());
 		} else {
-			return ILType.UNKNOWN;
+			return PlexilType.UNKNOWN;
 		}
 	}
 
 	@Override
-	public Void visit(ASTOperation op, ILType currentType) {
+	public Void visit(ASTOperation op, PlexilType currentType) {
 		// Operators contain information about their argument types.
-		ILType argType = op.getExpectedArgumentType();
+		PlexilType argType = op.getExpectedArgumentType();
 		
 		if (argType.isNumeric()) {
 			// These are trickier. We need to know actual argument type.
-			argType = op.getArguments().stream()
-					.map(arg -> arg.getType())
-					.reduce(ILType.UNKNOWN, ILType::getMoreSpecific);
+			argType = op.getPlexilArguments().stream()
+					.map(arg -> arg.getPlexilType())
+					.reduce(PlexilType.UNKNOWN, PlexilType::getMoreSpecific);
 		}
 		
 		// If it's a NodeRef, there's no point in continuing.
-		if (argType == ILType.NODEREF) return null;
+		if (argType == PlexilType.NODEREF) return null;
 		if (op.getOperator() == Operator.ARRAY_INDEX) {
 			// Maybe they're indexing an array with a lookup? That would be stupid,
 			// but we do know this type I guess.
-			op.getBinarySecond().accept(this, ILType.INTEGER);
+			op.getPlexilArguments().get(1).accept(this, PlexilType.INTEGER);
 			return null;
 		}
 		
         // Move down, and pass along the argument type.
         String lookup = null;
         Set<PValue> constants = new HashSet<PValue>();
-        for (ILExpr arg : op.getArguments()) {
+        for (PlexilExpr arg : op.getPlexilArguments()) {
         	arg.accept(this, argType);
         	
         	if (arg instanceof ASTLookupExpr) {
         		lookup = ((ASTLookupExpr) arg).getLookupNameAsString();
         	} else if (arg instanceof PValue) {
         		// Booleans are boring, we know what those will be already.
-        		if (arg.getType() != ILType.BOOLEAN) {
+        		if (arg.getPlexilType() != PlexilType.BOOLEAN) {
         			constants.add((PValue) arg);
         		}
         	}
@@ -272,18 +274,10 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 
 	
 	@Override
-	public Void visit(NamedCondition named, ILType currentType) {
-		// Just pass through
-		named.getExpression().accept(this, currentType);
-		return null;
-	}
-
-
-	@Override
 	public Void visitAssignment(AssignmentBody assign, Node n) {
-		ILType t = assign.getLeftHandSide().getType();
+		PlexilType t = assign.getLeftHandSide().getPlexilType();
 		// It's probably not set, though. 
-		if (t == ILType.UNKNOWN) {
+		if (t == PlexilType.UNKNOWN) {
 			t = resolveVariableType(assign.getLeftHandSide(), n);
 		}
 		
@@ -307,79 +301,79 @@ public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBo
 	 */
 	
 	@Override
-	public Void visit(NodeTimepointExpr timept, ILType currentType) {
+	public Void visit(NodeTimepointExpr timept, PlexilType currentType) {
 		return null;
 	}
 
 	@Override
-	public Void visit(BooleanValue bool, ILType currentType) {
-		return null;
-	}
-
-
-	@Override
-	public Void visit(IntegerValue integer, ILType currentType) {
+	public Void visit(BooleanValue bool, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(RealValue real, ILType currentType) {
+	public Void visit(IntegerValue integer, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(StringValue string, ILType currentType) {
+	public Void visit(RealValue real, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(UnknownValue unk, ILType currentType) {
+	public Void visit(StringValue string, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(PValueList<?> list, ILType currentType) {
+	public Void visit(UnknownValue unk, PlexilType currentType) {
+		return null;
+	}
+
+
+	@Override
+	public Void visit(PValueList<?> list, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
 	public Void visit(CommandHandleState state,
-			ILType currentType) {
+			PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeFailureType type, ILType currentType) {
+	public Void visit(NodeFailureType type, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeOutcome outcome, ILType currentType) {
+	public Void visit(NodeOutcome outcome, PlexilType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeState state, ILType currentType) {
+	public Void visit(NodeState state, PlexilType currentType) {
 		return null;
 	}
 
 	@Override
-	public Void visit(UnresolvedVariableExpr expr, ILType currentType) {
+	public Void visit(UnresolvedVariableExpr expr, PlexilType currentType) {
 		// Nothing to do here
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeRefExpr ref, ILType currentType) {
+	public Void visit(NodeRefExpr ref, PlexilType currentType) {
 		// Nothing to do here
 		return null;
 	}

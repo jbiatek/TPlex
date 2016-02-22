@@ -55,6 +55,7 @@ import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -414,7 +415,7 @@ public class JKindResultUtils {
 		case "int":
 			return IntegerValue.get(Integer.parseInt(value.toString()));
 		case "bool":
-			return ILType.BOOLEAN.parseValue(value.toString());
+			return BooleanValue.get(value.toString().equalsIgnoreCase("true"));
 		case "enum":
 			return LustreNamingConventions.reverseTranslate(value.toString(), 
 					Optional.of(stringMap));

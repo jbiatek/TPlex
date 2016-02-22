@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILExprBase;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
@@ -18,27 +15,27 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  * @author jbiatek
  *
  */
-public class ASTLookupExpr extends ILExprBase {
+public class ASTLookupExpr extends PlexilExprBase {
 	
-	private ILExpr name;
-	private Optional<ILExpr> tolerance;
-	private List<ILExpr> args;
+	private PlexilExpr name;
+	private Optional<PlexilExpr> tolerance;
+	private List<PlexilExpr> args;
 	
-	public ASTLookupExpr(ILExpr name, List<ILExpr> args) {
-		this(ILType.UNKNOWN, name, args, Optional.empty());
+	public ASTLookupExpr(PlexilExpr name, List<PlexilExpr> args) {
+		this(PlexilType.UNKNOWN, name, args, Optional.empty());
 	}
 	
-	public ASTLookupExpr(ILExpr name, ILExpr tolerance, List<ILExpr> args) {
-		this(ILType.UNKNOWN, name, args, Optional.of(tolerance));
+	public ASTLookupExpr(PlexilExpr name, PlexilExpr tolerance, List<PlexilExpr> args) {
+		this(PlexilType.UNKNOWN, name, args, Optional.of(tolerance));
 	}
 	
-	public ASTLookupExpr(ILType type, String state) {
+	public ASTLookupExpr(PlexilType type, String state) {
 		this(type, StringValue.get(state), Collections.emptyList(), Optional.empty());
 	}
 	
-	public ASTLookupExpr(ILType type, ILExpr state, 
-			List<ILExpr> args,
-			Optional<ILExpr> tolerance) {
+	public ASTLookupExpr(PlexilType type, PlexilExpr state, 
+			List<PlexilExpr> args,
+			Optional<PlexilExpr> tolerance) {
 		super(type);
 	    
 	    this.name = state;
@@ -46,7 +43,7 @@ public class ASTLookupExpr extends ILExprBase {
 	    this.args = args;
 	}
 	
-	public ILExpr getLookupName() {
+	public PlexilExpr getLookupName() {
 	    return name;
 	}
 
@@ -61,7 +58,7 @@ public class ASTLookupExpr extends ILExprBase {
 		throw new RuntimeException("Tried to get non-constant lookup name: "+name);
 	}
 	
-	public Optional<ILExpr> getTolerance() {
+	public Optional<PlexilExpr> getTolerance() {
 		return tolerance;
 	}
 	
@@ -69,35 +66,20 @@ public class ASTLookupExpr extends ILExprBase {
 	 * Get the arguments, not including the Lookup name (which getArguments() does include.)
 	 * @return
 	 */
-	public List<ILExpr> getLookupArgs() {
+	public List<PlexilExpr> getLookupArgs() {
 	    return args;
 	}
 
     @Override
-    public List<ILExpr> getArguments() {
-        ArrayList<ILExpr> argList = new ArrayList<ILExpr>(args);
+    public List<PlexilExpr> getPlexilArguments() {
+        ArrayList<PlexilExpr> argList = new ArrayList<PlexilExpr>(args);
         argList.add(0, name);
         argList.add(1, tolerance.orElse(UnknownValue.get()));
         return argList;
     }
     
     @Override
-    public ASTLookupExpr getCloneWithArgs(List<ILExpr> args) {
-    	List<ILExpr> newArgs = new ArrayList<>(args);
-    	// First arg is the name.
-    	ILExpr name = newArgs.remove(0);
-    	// Second arg is the tolerance
-    	ILExpr toleranceExpr = newArgs.remove(0);
-    	// If it's UNKNOWN, we are actually a LookupNow, which has no tolerance.
-    	Optional<ILExpr> tolerance = Optional.of(toleranceExpr);
-    	if (toleranceExpr instanceof UnknownValue) {
-    		tolerance = Optional.empty();
-    	}
-    	return new ASTLookupExpr(getType(), name, args, tolerance);
-    }
-
-    @Override
-    public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
+    public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
         return visitor.visit(this, param);
     }
 
@@ -107,7 +89,7 @@ public class ASTLookupExpr extends ILExprBase {
 				t -> "LookupOnChange("+getLookupName()+", "+t)
 				.orElse("LookupNow("+getLookupName());
 	    
-	    for (ILExpr arg : args) {
+	    for (PlexilExpr arg : args) {
 	        ret += ", "+arg;
 	    }
 	    return ret+")";

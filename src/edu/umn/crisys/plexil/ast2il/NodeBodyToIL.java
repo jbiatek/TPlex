@@ -12,9 +12,10 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILType;
-import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
@@ -55,15 +56,15 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitAssignment(AssignmentBody assignment, Void p) {
-		    ILExpr lhsUntranslated = assignment.getLeftHandSide();
-		    ILType typeGuess = lhsUntranslated.getType().getMoreSpecific(
-		    		assignment.getRightHandSide().getType());
+			PlexilExpr lhsUntranslated = assignment.getLeftHandSide();
+		    PlexilType typeGuess = lhsUntranslated.getPlexilType().getMoreSpecific(
+		    		assignment.getRightHandSide().getPlexilType());
 		    ILExpr lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated,
-		    		typeGuess);
-		    ILExpr rhs = nodeToIL.toIL(assignment.getRightHandSide(), lhsExpr.getType());
+		    		typeGuess.toILType());
+		    ILExpr rhs = nodeToIL.toIL(assignment.getRightHandSide(), typeGuess);
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
-		    ILType type = lhsUntranslated.getType();
+		    ILType type = lhsExpr.getType();
 		    if (! type.isSpecificType()) {
 		    	// If it's an array element, the type info isn't stored in the
 		    	// original XML (at least, not here.) Let's try the translated
@@ -101,10 +102,12 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitCommand(CommandBody cmd, Void p) {
-		    ILExpr name = nodeToIL.toIL(cmd.getCommandName(), ILType.STRING);
+		    ILExpr name = nodeToIL.toIL(cmd.getCommandName(), PlexilType.STRING);
+		    
 		    Optional<ILExpr> returnTo = cmd.getVarToAssign().map(
-		    		lhs -> nodeToIL.resolveVariableForWriting(lhs, lhs.getType()));
-		    List<ILExpr> args = nodeToIL.toIL(cmd.getCommandArguments(), ILType.UNKNOWN);
+		    		lhs -> nodeToIL.resolveVariableForWriting(lhs, 
+		    				lhs.getPlexilType().toILType()));
+		    List<ILExpr> args = nodeToIL.toIL(cmd.getCommandArguments(), PlexilType.UNKNOWN);
 		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);
 		    
@@ -155,8 +158,9 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		public Void visitUpdate(UpdateBody update, Void p) {
 		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), 
 		    		nodeToIL.getUID().getShortName());
-		    for ( Pair<String, ILExpr> pair : update.getUpdates()) {
-		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second, ILType.UNKNOWN));
+		    for ( Pair<String, PlexilExpr> pair : update.getUpdates()) {
+		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second, 
+		        		PlexilType.UNKNOWN));
 		    }
 		    map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
 		    map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());

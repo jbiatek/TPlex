@@ -213,7 +213,7 @@ public class PlanToLustre {
 		}
 		
 		
-		ILType plexilType = lookup.getReturnValue().get().getType();
+		ILType plexilType = lookup.getReturnValue().get().getType().toILType();
 		Type type = getLustreType(plexilType);
 		if (LustreNamingConventions.hasValueAndKnownSplit(plexilType)) {
 			// This should be two inputs, the value and whether it's known

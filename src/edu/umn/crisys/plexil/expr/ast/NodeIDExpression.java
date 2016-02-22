@@ -2,8 +2,6 @@ package edu.umn.crisys.plexil.expr.ast;
 
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.il.ILType;
-
 public class NodeIDExpression extends UnresolvedVariableExpr {
     
 	private Optional<NodeRefExpr> direction;
@@ -13,7 +11,7 @@ public class NodeIDExpression extends UnresolvedVariableExpr {
 	}
 	
     public NodeIDExpression(String nodeId, Optional<NodeRefExpr> direction) {
-        super(nodeId, ILType.NODEREF);
+        super(nodeId, PlexilType.NODEREF);
         this.direction = direction;
     }
     

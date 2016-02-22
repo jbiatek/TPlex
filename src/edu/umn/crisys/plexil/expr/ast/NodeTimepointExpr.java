@@ -1,14 +1,10 @@
 package edu.umn.crisys.plexil.expr.ast;
 
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
-import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILExprBase;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 
-public class NodeTimepointExpr extends ILExprBase {
+public class NodeTimepointExpr extends PlexilExprBase {
 
     private NodeState state;
     public NodeState getState() { return state; }
@@ -16,14 +12,14 @@ public class NodeTimepointExpr extends ILExprBase {
     private NodeTimepoint point;
     public NodeTimepoint getTimepoint() { return point; }
     
-    private ILExpr nodeId;
-    public ILExpr getNodeId() { return nodeId; }
+    private PlexilExpr nodeId;
+    public PlexilExpr getNodeId() { return nodeId; }
     
-    public NodeTimepointExpr(NodeState state, NodeTimepoint timepoint, ILExpr nodeId) {
+    public NodeTimepointExpr(NodeState state, NodeTimepoint timepoint, PlexilExpr nodeId) {
     	super(NodeToIL.TIMEPOINT_TYPE);
         this.state = state;
         this.point = timepoint;
-        ILType.NODEREF.typeCheck(nodeId.getType());
+        PlexilType.NODEREF.typeCheck(nodeId.getPlexilType());
         this.nodeId = nodeId;
     }
     
@@ -39,7 +35,7 @@ public class NodeTimepointExpr extends ILExprBase {
     }
 
 	@Override
-	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
+	public <P, R> R accept(ASTExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
 	}
 }

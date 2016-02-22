@@ -20,8 +20,8 @@ import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
@@ -44,35 +44,35 @@ public class NodeParser {
                 nodeToFill.setPlexilID(getStringContent(e, xml));
             }
             else if (isTag(e, "StartCondition")) {
-                nodeToFill.setStartCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setStartCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "RepeatCondition")) {
-                nodeToFill.setRepeatCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setRepeatCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "PreCondition")) {
-                nodeToFill.setPreCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setPreCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "PostCondition")) {
-                nodeToFill.setPostCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setPostCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "InvariantCondition")) {
-                nodeToFill.setInvariantCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setInvariantCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "EndCondition")) {
-                nodeToFill.setEndCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setEndCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "ExitCondition")) {
-                nodeToFill.setExitCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setExitCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "SkipCondition")) {
-                nodeToFill.setSkipCondition(ExprParser.parse(nextTag(xml), xml, ILType.BOOLEAN));
+                nodeToFill.setSkipCondition(ExprParser.parse(nextTag(xml), xml, PlexilType.BOOLEAN));
                 assertClosedTag(e, xml);
             }
             else if (isTag(e, "Priority" )) {
@@ -129,29 +129,29 @@ public class NodeParser {
             throw new RuntimeException("Resources not implemented");
         }
         // Optional variable expression
-        Optional<ILExpr> var = Optional.empty();
+        Optional<PlexilExpr> var = Optional.empty();
         if (isTagEndingWith(child, "Variable") || 
                 localNameOf(child).equals("ArrayElement")) {
-            ILType type;
+            PlexilType type;
             if (localNameOf(child).equals("ArrayElement")) {
-                type = ILType.UNKNOWN;
+                type = PlexilType.UNKNOWN;
             } else {
-                type = ILType.fuzzyValueOf(localNameOf(child).replaceAll("Variable$", ""));
+                type = ExprParser.fuzzyParseType(localNameOf(child).replaceAll("Variable$", ""));
             }
             var = Optional.of(ExprParser.parse(child, xml, type));
             child = nextTag(xml);
         }
         // Must be a name at this point.
         assertStart("Name", child);
-        ILExpr name = ExprParser.parse(nextTag(xml), xml, ILType.STRING); 
+        PlexilExpr name = ExprParser.parse(nextTag(xml), xml, PlexilType.STRING); 
         assertClosedTag(child.asStartElement(), xml);
         
         // Finally, an optional list of variables.
-        List<ILExpr> args = new ArrayList<ILExpr>();
+        List<PlexilExpr> args = new ArrayList<PlexilExpr>();
         child = nextTag(xml);
         if (isTag(child, "Arguments")) {
             for (StartElement arg : allChildTagsOf(child.asStartElement(), xml)) {
-                args.add(ExprParser.parse(arg, xml, ILType.UNKNOWN));
+                args.add(ExprParser.parse(arg, xml, PlexilType.UNKNOWN));
             }
             // Now we should be done.
             assertClosedTag(start, xml);
@@ -167,11 +167,11 @@ public class NodeParser {
     private static NodeBody parseAssignment(StartElement start,
             XMLEventReader xml) {
         // It should be a Variable and then a TypeRHS.
-        ILExpr var;
-        ILExpr rhs;
+        PlexilExpr var;
+        PlexilExpr rhs;
         
-        var = ExprParser.parse(nextTag(xml), xml, ILType.UNKNOWN);
-        rhs = ExprParser.parse(nextTag(xml), xml, ILType.UNKNOWN);
+        var = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
+        rhs = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
         // That should be it.
         assertClosedTag(start, xml);
         return new AssignmentBody(var, rhs);
@@ -185,7 +185,7 @@ public class NodeParser {
         for (StartElement pair : allChildTagsOf(start, xml)) {
             if (isTag(pair, "Pair")) {
                 String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
-                ILExpr value = ExprParser.parse(nextTag(xml), xml, ILType.UNKNOWN);
+                PlexilExpr value = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
 
                 assertEnd("Pair", nextTag(xml));
                 update.addUpdate(name, value);
@@ -214,7 +214,7 @@ public class NodeParser {
             if (isTag(alias, "Alias")) {
                 //These contain a <NodeParameter> string, then an expression.
                 String param = getStringContent(assertStart("NodeParameter", nextTag(xml)), xml);
-                ILExpr expr = ExprParser.parse(nextTag(xml), xml, ILType.UNKNOWN);
+                PlexilExpr expr = ExprParser.parse(nextTag(xml), xml, PlexilType.UNKNOWN);
                 assertClosedTag(alias, xml);
                 
                 lib.addAlias(param, expr);
@@ -273,11 +273,11 @@ public class NodeParser {
                     +", max size is "+maxSizeStr);
         }
 
-        ILType arrayType = ILType.valueOf(type.toUpperCase()).toArrayType();
+        PlexilType arrayType = PlexilType.valueOf(type.toUpperCase()).toArrayType();
         int maxSize = Integer.parseInt(maxSizeStr);
         Optional<PValueList<PValue>> initialValue = Optional.empty();
         if (parsedInitValues != null) {
-        	initialValue = Optional.of(new PValueList<PValue>(arrayType, parsedInitValues));
+        	initialValue = Optional.of(new PValueList<PValue>(arrayType.toILType(), parsedInitValues));
         }
         return new VariableDecl(name, arrayType, Optional.of(maxSize), initialValue);
     }
@@ -307,7 +307,7 @@ public class NodeParser {
             throw new RuntimeException("Variable has name "+name+" and type "+typeStr);
         }
         // Now we have all the info
-        ILType type = ILType.valueOf(typeStr.toUpperCase());
+        PlexilType type = PlexilType.valueOf(typeStr.toUpperCase());
         return new VariableDecl(name, type, Optional.empty(), init);
     }
 

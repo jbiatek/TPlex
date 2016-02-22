@@ -19,6 +19,8 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
@@ -63,7 +65,7 @@ import edu.umn.crisys.plexil.runtime.values.PValueList;
  */
 public class NodeToIL {
     
-	public static ILType TIMEPOINT_TYPE = ILType.REAL;
+	public static PlexilType TIMEPOINT_TYPE = PlexilType.REAL;
 	
     //private static final String STATE = ".state";
     private static final String OUTCOME = ".outcome";
@@ -115,7 +117,8 @@ public class NodeToIL {
         // in TIMEPOINT_TYPE.
         ILType timepointType = getLookupTypeInfo("time")
         		.map(decl -> decl.getReturnValue().get().getType())
-        		.orElse(TIMEPOINT_TYPE);
+        		.orElse(TIMEPOINT_TYPE)
+        		.toILType();
         
         for (NodeState state : NodeState.values()) {
             for (NodeTimepoint tpt : NodeTimepoint.values()) {
@@ -128,7 +131,7 @@ public class NodeToIL {
         // Variables defined by the programmer in the node
         for (VariableDecl v : myNode.getAllVariables()) {
         	String varName = v.getName();
-            ILType type = v.getType();
+            ILType type = v.getType().toILType();
             if (type.isArrayType()) {
                 // Array variables.
                 PValueList<?> init = null;
@@ -159,7 +162,7 @@ public class NodeToIL {
             Map<String,ILExpr> aliases = new HashMap<String, ILExpr>();
             
             for (String alias : lib.getAliases()) {
-                aliases.put(alias, toIL(lib.getAlias(alias), ILType.UNKNOWN));
+                aliases.put(alias, toIL(lib.getAlias(alias), PlexilType.UNKNOWN));
             }
             
             LibraryVar libRef = new LibraryVar(
@@ -229,13 +232,13 @@ public class NodeToIL {
      * @param e
      * @return the expression, translated in this context
      */
-    ILExpr toIL(ILExpr e, ILType expectedType) {
+    ILExpr toIL(PlexilExpr e, PlexilType expectedType) {
         return e.accept(exprToIL, expectedType);
     }
     
-    List<ILExpr> toIL(List<? extends ILExpr> list, ILType expectedType) {
+    List<ILExpr> toIL(List<? extends PlexilExpr> list, PlexilType expectedType) {
         List<ILExpr> ret = new ArrayList<ILExpr>();
-        for (ILExpr e : list) {
+        for (PlexilExpr e : list) {
             ret.add(toIL(e, expectedType));
         }
         return ret;
@@ -243,21 +246,21 @@ public class NodeToIL {
     
     public void translateConditions(Map<PlexilExprDescription, ILExpr> map) {
     	map.put(PlexilExprDescription.START_CONDITION, 
-    			toIL(myNode.getStartCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getStartCondition(), PlexilType.BOOLEAN));
     	map.put(PlexilExprDescription.SKIP_CONDITION, 
-    			toIL(myNode.getSkipCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getSkipCondition(), PlexilType.BOOLEAN));
     	map.put(PlexilExprDescription.PRE_CONDITION, 
-    			toIL(myNode.getPreCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getPreCondition(), PlexilType.BOOLEAN));
     	map.put(PlexilExprDescription.INVARIANT_CONDITION, 
-    			toIL(myNode.getInvariantCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getInvariantCondition(), PlexilType.BOOLEAN));
     	map.put(PlexilExprDescription.REPEAT_CONDITION, 
-    			toIL(myNode.getRepeatCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getRepeatCondition(), PlexilType.BOOLEAN));
     	map.put(PlexilExprDescription.POST_CONDITION, 
-    			toIL(myNode.getPostCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getPostCondition(), PlexilType.BOOLEAN));
     	map.put(PlexilExprDescription.END_CONDITION, 
     			getCalculatedILEndCondition());
     	map.put(PlexilExprDescription.EXIT_CONDITION, 
-    			toIL(myNode.getExitCondition(), ILType.BOOLEAN));
+    			toIL(myNode.getExitCondition(), PlexilType.BOOLEAN));
     }
     
     public int getPriority() {
@@ -344,7 +347,7 @@ public class NodeToIL {
     }
     
     ILExpr getThisOrAncestorsExits() {
-        ILExpr myExit = name(toIL(myNode.getExitCondition(), ILType.BOOLEAN),
+        ILExpr myExit = name(toIL(myNode.getExitCondition(), PlexilType.BOOLEAN),
         		PlexilExprDescription.EXIT_CONDITION);
         ILExpr parentExit = 
         		parent.map(p -> name(p.getThisOrAncestorsExits(),
@@ -366,7 +369,7 @@ public class NodeToIL {
     }
 
     ILExpr getThisAndAncestorsInvariants() {
-        ILExpr myInv = name(toIL(myNode.getInvariantCondition(), ILType.BOOLEAN),
+        ILExpr myInv = name(toIL(myNode.getInvariantCondition(), PlexilType.BOOLEAN),
         		PlexilExprDescription.INVARIANT_CONDITION);
         ILExpr parentInv = 
         		parent.map(p -> name(p.getThisAndAncestorsInvariants(),
@@ -405,7 +408,7 @@ public class NodeToIL {
     		// default.
     		return myNode.getEndCondition()
     				.map(astEnd -> (ILExpr) ILOperator.PAND.expr(
-    							toIL(astEnd, ILType.BOOLEAN),
+    							toIL(astEnd, PlexilType.BOOLEAN),
     							createILDefaultEndCondition()
     						))
     				.orElse(createILDefaultEndCondition());
@@ -413,7 +416,7 @@ public class NodeToIL {
     		// OR together the given end condition (or "true" if not present)
     		// with the expression specified above. 
     		ILExpr givenEnd = myNode.getEndCondition()
-    				.map(e -> toIL(e, ILType.BOOLEAN))
+    				.map(e -> toIL(e, PlexilType.BOOLEAN))
     				.orElse(BooleanValue.get(true));
     		
     		return ILOperator.POR.expr(
@@ -426,7 +429,7 @@ public class NodeToIL {
     	} else {
     		// No wrapper necessary.
     		return myNode.getEndCondition()
-    				.map(e -> toIL(e, ILType.BOOLEAN))
+    				.map(e -> toIL(e, PlexilType.BOOLEAN))
     				.orElse(createILDefaultEndCondition());
     	}
     }
@@ -639,11 +642,7 @@ public class NodeToIL {
     	return new AliasExpr(name, type, writeable);
     }
     
-    public ILExpr resolveVariableForWriting(ILExpr e, ILType expectedType) {
-    	if ( ! e.isAssignable()) {
-    		throw new RuntimeException(e+" is not a valid LHS");
-    	}
-    	
+    public ILExpr resolveVariableForWriting(PlexilExpr e, ILType expectedType) {
         if (e instanceof UnresolvedVariableExpr) {
             UnresolvedVariableExpr var = (UnresolvedVariableExpr) e;
             Optional<ILExpr> expr = resolveVariableInternal(var.getName(), true);
@@ -658,8 +657,9 @@ public class NodeToIL {
             
             
             ArrayVar theArray = (ArrayVar) resolveVariableForWriting(
-            		arr.getBinaryFirst(), expectedType.toArrayType());
-            ILExpr theIndex = toIL(arr.getBinarySecond(), ILType.INTEGER);
+            		arr.getPlexilArguments().get(0), expectedType.toArrayType());
+            ILExpr theIndex = toIL(arr.getPlexilArguments().get(1), 
+            		PlexilType.INTEGER);
             switch (theArray.getType()) {
             case BOOLEAN_ARRAY:
             	return ILOperator.PBOOL_INDEX.expr(theArray, theIndex);
@@ -673,7 +673,7 @@ public class NodeToIL {
     			throw new RuntimeException("Illegal array type: "+theArray.getType());
             }
         }
-        throw new RuntimeException(e+" says it's assignable, but I don't know how to read it.");
+        throw new RuntimeException("Assigning to "+e+", but this case is missing");
     }
     
     public NodeToIL resolveNode(String plexilId) {
@@ -722,7 +722,7 @@ public class NodeToIL {
     public ILType getTypeOfLookup(String lookupName) {
     	return myNode.getPlan().getStateDeclarations().stream()
     	.filter(ld -> ld.getName().equals(lookupName))
-    	.findFirst().map(ld -> ld.getReturnValue().map(vd -> vd.getType())
+    	.findFirst().map(ld -> ld.getReturnValue().map(vd -> vd.getType().toILType())
     			.orElse(ILType.UNKNOWN))
     			.orElse(ILType.UNKNOWN);
     }

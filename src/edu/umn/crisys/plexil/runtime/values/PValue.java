@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.runtime.values;
 
 import java.util.Optional;
 
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILType;
 
@@ -10,7 +11,7 @@ import edu.umn.crisys.plexil.expr.il.ILType;
  * @author jbiatek
  *
  */
-public interface PValue extends ILExpr {
+public interface PValue extends ILExpr, PlexilExpr {
 
 	public abstract boolean isKnown();
 

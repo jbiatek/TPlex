@@ -2,34 +2,34 @@ package edu.umn.crisys.plexil.ast.globaldecl;
 
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 
 public class VariableDecl {
 
 	private String name;
-	private ILType type;
+	private PlexilType type;
 	private Optional<Integer> arraySize;
-	private Optional<? extends ILExpr> init;
+	private Optional<? extends PlexilExpr> init;
 	
-	public VariableDecl(String name, ILType type) {
+	public VariableDecl(String name, PlexilType type) {
 		this(name, type, Optional.empty(), Optional.empty());
 	}
 	
-	public VariableDecl(String name, ILType type, ILExpr init) {
+	public VariableDecl(String name, PlexilType type, PlexilExpr init) {
 		this(name, type, Optional.empty(), Optional.of(init));
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, ILType type) {
+	public VariableDecl(String arrayName, int arraySize, PlexilType type) {
 		this(arrayName, type, Optional.of(arraySize), Optional.empty());
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, ILType type, ILExpr init) {
+	public VariableDecl(String arrayName, int arraySize, PlexilType type, PlexilExpr init) {
 		this(arrayName, type, Optional.of(arraySize), Optional.of(init));
 	}
 	
-	public VariableDecl(String arrayName, final ILType type, 
-			Optional<Integer> arraySize, Optional<? extends ILExpr> init) {
+	public VariableDecl(String arrayName, final PlexilType type, 
+			Optional<Integer> arraySize, Optional<? extends PlexilExpr> init) {
 		arraySize.ifPresent((size) -> {
 			if (size < 0) { 
 				throw new RuntimeException("Array cannot have negative size: "+arraySize);
@@ -51,7 +51,7 @@ public class VariableDecl {
 		return name;
 	}
 	
-	public ILType getType() {
+	public PlexilType getType() {
 		return type;
 	}
 	
@@ -63,12 +63,12 @@ public class VariableDecl {
 		return arraySize;
 	}
 	
-	public Optional<? extends ILExpr> getInitialValue() {
+	public Optional<? extends PlexilExpr> getInitialValue() {
 		return init;
 	}
 	
 	public String toString() {
-		ILType typeToUse = type;
+		PlexilType typeToUse = type;
 		String arrayStuff = "";
 		StringBuilder initString = new StringBuilder();
 		

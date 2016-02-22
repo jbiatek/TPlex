@@ -1,49 +1,38 @@
 package edu.umn.crisys.plexil.expr.ast;
 
-import edu.umn.crisys.plexil.expr.il.AliasExpr;
-import edu.umn.crisys.plexil.expr.il.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILOperation;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
-import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.NativeBool;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
+import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
+import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public abstract class ASTExprVisitor<P, R> implements CascadingExprVisitor<P, R>{
-
-	private final R visitILExpression(ILExpr e) {
-		throw new RuntimeException("This is an IL expression: "+e);
-	}
+public abstract class ASTExprVisitor<P,R> {
 	
-	public final R visit(GetNodeStateExpr state, P param){
-		return visitILExpression(state);
-	}
-	public final R visit(AliasExpr alias, P param) {
-		return visitILExpression(alias);
-	}
-    public final R visit(RootAncestorExpr root, P param) {
-		return visitILExpression(root);
-    }
-	public final R visit(SimpleVar var, P param) {
-		return visitILExpression(var);
-	}
-	public final R visit(ArrayVar array, P param) {
-		return visitILExpression(array);
-	}
-	public final R visit(LibraryVar lib, P param) {
-		return visitILExpression(lib);
-	}
+	//PValues
+	public abstract R visit(BooleanValue bool, P param);
+	public abstract R visit(IntegerValue integer, P param);
+	public abstract R visit(RealValue real, P param);
+	public abstract R visit(StringValue string, P param);
+	public abstract R visit(UnknownValue unk, P param);
+	public abstract R visit(PValueList<?> list, P param);
+	public abstract R visit(CommandHandleState state, P param);
+	public abstract R visit(NodeFailureType type, P param);
+	public abstract R visit(NodeOutcome outcome, P param);
+	public abstract R visit(NodeState state, P param);
 
-	@Override
-	public final R visit(NativeBool b, P param) {
-		return visitILExpression(b);
-	}
 
-	@Override
-	public final R visit(ILOperation op, P param) {
-		return visitILExpression(op);
-	}
+	// AST expressions
+	public abstract R visit(ASTLookupExpr lookup, P param);
+	public abstract R visit(ASTOperation op, P param);
+	public abstract R visit(UnresolvedVariableExpr expr, P param);
+	public abstract R visit(NodeRefExpr ref, P param);
+	public abstract R visit(NodeTimepointExpr timept, P param);
 
 }

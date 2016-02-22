@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.ExprVisitor;
 import edu.umn.crisys.plexil.expr.il.ILExprBase;
 import edu.umn.crisys.plexil.expr.il.ILType;
@@ -70,6 +72,24 @@ public class PValueList<T extends PValue> extends ILExprBase implements PValue, 
 		}
 	}
 	
+	@Override
+	public PlexilType getPlexilType() {
+		// Get the AST type from the IL type.
+		switch(getType()) {
+		case ARRAY: return PlexilType.ARRAY;
+		case BOOLEAN_ARRAY: return PlexilType.BOOLEAN_ARRAY;
+		case INTEGER_ARRAY: return PlexilType.INTEGER_ARRAY;
+		case REAL_ARRAY: return PlexilType.REAL_ARRAY;
+		case STRING_ARRAY: return PlexilType.STRING_ARRAY;
+		default: throw new RuntimeException("Missing case: "+getType());
+		}
+	}
+
+	@Override
+	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
+		return v.visit(this, param);
+	}
+
 	@SuppressWarnings("unchecked")
 	private T uncheckedGetUnknown(ILType arrayType) {
 		return (T) arrayType.elementType().getUnknown();
