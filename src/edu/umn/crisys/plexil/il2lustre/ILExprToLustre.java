@@ -18,14 +18,14 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.visitors.PrettyPrintVisitor;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -42,7 +42,7 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
+public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 	
 	public static String exprToString(Expr lustre) {
 		PrettyPrintVisitor pp = new PrettyPrintVisitor();
@@ -58,14 +58,14 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 	
 	@Override
-	public Expr visit(NamedCondition named, ExprType expected) {
+	public Expr visit(NamedCondition named, ILType expected) {
 		// This means that the contents of this expression are de-inlined.
 		// We can just return the variable id. 
 		return id(LustreNamingConventions.getNamedConditionId(named));
 	}
 	
 	@Override
-	public Expr visit(LookupExpr lookup, ExprType expectedType) {
+	public Expr visit(LookupExpr lookup, ILType expectedType) {
 		if (LustreNamingConventions.hasValueAndKnownSplit(expectedType)
 				|| LustreNamingConventions.hasValueAndKnownSplit(lookup.getType())) {
 			// This value has a value part and a known part.
@@ -134,63 +134,63 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 	
 	@Override
-	public Expr visit(NativeBool b, ExprType param) {
+	public Expr visit(NativeBool b, ILType param) {
 		return b.getValue() ? LustreUtil.TRUE : LustreUtil.FALSE;
 	}
 	
 	
 	@Override
-	public Expr visit(ILOperation op, ExprType expectedType) {
+	public Expr visit(ILOperation op, ILType expectedType) {
 		switch (op.getOperator()) {
 		// ---------------- Native boolean operators
 		case AND:
-			return binary(op.getArguments(), BinaryOp.AND, ExprType.NATIVE_BOOL);
+			return binary(op.getArguments(), BinaryOp.AND, ILType.NATIVE_BOOL);
 		case OR:
-			return binary(op.getArguments(), BinaryOp.OR, ExprType.NATIVE_BOOL);
+			return binary(op.getArguments(), BinaryOp.OR, ILType.NATIVE_BOOL);
 		case NOT:
-			return LustreUtil.not(op.getUnaryArg().accept(this, ExprType.NATIVE_BOOL));
+			return LustreUtil.not(op.getUnaryArg().accept(this, ILType.NATIVE_BOOL));
 		case IS_TRUE:
-			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+			return new BinaryExpr(op.getUnaryArg().accept(this, ILType.BOOLEAN), 
 					BinaryOp.EQUAL, LustreNamingConventions.P_TRUE);
 		case IS_FALSE:
-			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+			return new BinaryExpr(op.getUnaryArg().accept(this, ILType.BOOLEAN), 
 					BinaryOp.EQUAL, LustreNamingConventions.P_FALSE);
 		case IS_NOT_TRUE:
-			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+			return new BinaryExpr(op.getUnaryArg().accept(this, ILType.BOOLEAN), 
 					BinaryOp.NOTEQUAL, LustreNamingConventions.P_TRUE);
 		case IS_NOT_FALSE:
-			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+			return new BinaryExpr(op.getUnaryArg().accept(this, ILType.BOOLEAN), 
 					BinaryOp.NOTEQUAL, LustreNamingConventions.P_FALSE);
 		case IS_UNKNOWN:
-			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+			return new BinaryExpr(op.getUnaryArg().accept(this, ILType.BOOLEAN), 
 					BinaryOp.EQUAL, LustreNamingConventions.P_UNKNOWN);
 		case IS_KNOWN:
-			return new BinaryExpr(op.getUnaryArg().accept(this, ExprType.BOOLEAN), 
+			return new BinaryExpr(op.getUnaryArg().accept(this, ILType.BOOLEAN), 
 					BinaryOp.NOTEQUAL, LustreNamingConventions.P_UNKNOWN);
 		case DIRECT_COMPARE:
-			return binary(op.getArguments(), BinaryOp.EQUAL, ExprType.UNKNOWN);
+			return binary(op.getArguments(), BinaryOp.EQUAL, ILType.UNKNOWN);
 		case WRAP_BOOLEAN:
-			return toPBoolean(op.getUnaryArg().accept(this, ExprType.BOOLEAN));
+			return toPBoolean(op.getUnaryArg().accept(this, ILType.BOOLEAN));
 		case PBOOL_INDEX:
-			return arrayIndexer(op, ExprType.BOOLEAN_ARRAY);
+			return arrayIndexer(op, ILType.BOOLEAN_ARRAY);
 		case PINT_INDEX:
-			return arrayIndexer(op, ExprType.INTEGER_ARRAY);
+			return arrayIndexer(op, ILType.INTEGER_ARRAY);
 		case PREAL_INDEX:
-			return arrayIndexer(op, ExprType.REAL_ARRAY);
+			return arrayIndexer(op, ILType.REAL_ARRAY);
 		case PSTRING_INDEX:
-			return arrayIndexer(op, ExprType.STRING_ARRAY);
+			return arrayIndexer(op, ILType.STRING_ARRAY);
 			
 		// ---------------- Plexil boolean operators
 		case PAND:
-			return binary(op.getArguments(), LustreNamingConventions.AND_OPERATOR, ExprType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.AND_OPERATOR, ILType.BOOLEAN);
 		case PNOT:
-			return unary(op.getArguments(), LustreNamingConventions.NOT_OPERATOR, ExprType.BOOLEAN);
+			return unary(op.getArguments(), LustreNamingConventions.NOT_OPERATOR, ILType.BOOLEAN);
 		case POR:
-			return binary(op.getArguments(), LustreNamingConventions.OR_OPERATOR, ExprType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.OR_OPERATOR, ILType.BOOLEAN);
 		case PXOR:
-			return binary(op.getArguments(), LustreNamingConventions.XOR_OPERATOR, ExprType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.XOR_OPERATOR, ILType.BOOLEAN);
 		case PBOOL_EQ:
-			return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ExprType.BOOLEAN);
+			return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ILType.BOOLEAN);
 		case PSTRING_EQ: 
 		case PSTATE_EQ:
 		case POUTCOME_EQ:
@@ -204,7 +204,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 			switch (op.getUnaryArg().getType()) {
 			case BOOLEAN:
 				return new BinaryExpr(
-						op.getArguments().get(0).accept(this, ExprType.BOOLEAN), 
+						op.getArguments().get(0).accept(this, ILType.BOOLEAN), 
 						BinaryOp.NOTEQUAL, 
 						LustreNamingConventions.P_UNKNOWN);
 			case OUTCOME:
@@ -246,9 +246,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		case PREAL_LT:
 			{
 				String nodeName = op.getOperator().toString().toLowerCase();
-				ExprType type = ExprType.INTEGER;
+				ILType type = ILType.INTEGER;
 				if (nodeName.startsWith("preal")) {
-					type = ExprType.REAL;
+					type = ILType.REAL;
 				}
 				Expr first = op.getBinaryFirst().accept(this, type);
 				Expr second = op.getBinarySecond().accept(this, type);
@@ -290,13 +290,13 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 			return binary(op.getArguments(), BinaryOp.MULTIPLY, 
 					op.getBinaryFirst().getType());
 		case PREAL_SQRT:
-			return unary(op.getArguments(), "sqrt", ExprType.REAL);
+			return unary(op.getArguments(), "sqrt", ILType.REAL);
 		case PINT_SUB:
 		case PREAL_SUB:
 			return binary(op.getArguments(), BinaryOp.MINUS, 
 					op.getBinaryFirst().getType());
 		case TO_PREAL:
-			Expr intExpr = op.getUnaryArg().accept(this, ExprType.INTEGER);
+			Expr intExpr = op.getUnaryArg().accept(this, ILType.INTEGER);
 			return tuple(castReal(getValueComponent(intExpr)), 
 					getKnownComponent(intExpr));
 		// ---------------- String operators (not supported)
@@ -307,9 +307,9 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		}
 	}
 	
-	private Expr arrayIndexer(ILOperation op, ExprType arrayType) {
+	private Expr arrayIndexer(ILOperation op, ILType arrayType) {
 		Expr array = op.getBinaryFirst().accept(this, arrayType);
-		Expr indexTuple = op.getBinarySecond().accept(this, ExprType.INTEGER);
+		Expr indexTuple = op.getBinarySecond().accept(this, ILType.INTEGER);
 
 		// The index is split, we need both parts of it separately.
 		Expr indexValue = getValueComponent(indexTuple);
@@ -341,7 +341,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		
 	}
 	
-	private Expr unary(List<Expression> args, String fn, ExprType argType) {
+	private Expr unary(List<ILExpr> args, String fn, ILType argType) {
 		if (args.size() != 1) {
 			throw new RuntimeException("Expected 1 arg here for "+fn);
 		}
@@ -355,7 +355,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 		}
 	}
 	
-	private Expr binary(List<Expression> args, String fn, ExprType argType) {
+	private Expr binary(List<ILExpr> args, String fn, ILType argType) {
 		if (args.size() != 2) {
 			throw new RuntimeException("Expected 2 args here for "+fn);
 		}
@@ -378,8 +378,8 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 	
 	
-	private Expr binary(List<Expression> args, BinaryOp op,
-			ExprType argType) {
+	private Expr binary(List<ILExpr> args, BinaryOp op,
+			ILType argType) {
 		if (args.size() != 2) {
 			throw new RuntimeException("Expected 2 args here for "+op);
 		}
@@ -401,7 +401,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 	
 	@Override
-	public Expr visit(BooleanValue bool, ExprType expectedType) {
+	public Expr visit(BooleanValue bool, ILType expectedType) {
 		if (bool.isTrue()) {
 			return LustreNamingConventions.P_TRUE;
 		}
@@ -412,12 +412,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(IntegerValue integer, ExprType expectedType) {
+	public Expr visit(IntegerValue integer, ILType expectedType) {
 		return tuple(new IntExpr(integer.getIntValue()), LustreUtil.TRUE);
 	}
 
 	@Override
-	public Expr visit(RealValue real, ExprType expectedType) {
+	public Expr visit(RealValue real, ILType expectedType) {
 		// Make sure to use the string constructor, since the one that takes
 		// an actual number behaves unintuitively (as noted in its JavaDoc). 
 		return tuple(new RealExpr(new BigDecimal(real.getRealValue()+"")), 
@@ -425,12 +425,12 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(StringValue string, ExprType expectedType) {
+	public Expr visit(StringValue string, ILType expectedType) {
 		return id(mapper.stringToEnum(string));
 	}
 
 	@Override
-	public Expr visit(UnknownValue unk, ExprType expectedType) {
+	public Expr visit(UnknownValue unk, ILType expectedType) {
 		switch(expectedType) {
 		case BOOLEAN:
 			return LustreNamingConventions.P_UNKNOWN;
@@ -446,7 +446,7 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(PValueList<?> list, ExprType expectedType) {
+	public Expr visit(PValueList<?> list, ILType expectedType) {
 		List<Expr> values = new ArrayList<Expr>();
 		for (PValue v : list) {
 			values.add(v.accept(this, list.getType().elementType()));
@@ -468,27 +468,27 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(CommandHandleState state, ExprType expectedType) {
+	public Expr visit(CommandHandleState state, ILType expectedType) {
 		return id(LustreNamingConventions.getEnumId(state));
 	}
 
 	@Override
-	public Expr visit(NodeFailureType type, ExprType expectedType) {
+	public Expr visit(NodeFailureType type, ILType expectedType) {
 		return id(LustreNamingConventions.getEnumId(type));
 	}
 
 	@Override
-	public Expr visit(NodeOutcome outcome, ExprType expectedType) {
+	public Expr visit(NodeOutcome outcome, ILType expectedType) {
 		return id(LustreNamingConventions.getEnumId(outcome));
 	}
 
 	@Override
-	public Expr visit(NodeState state, ExprType expectedType) {
+	public Expr visit(NodeState state, ILType expectedType) {
 		return id(LustreNamingConventions.getEnumId(state));
 	}
 
 	@Override
-	public Expr visit(ILVariable var, ExprType expectedType) {
+	public Expr visit(ILVariable var, ILType expectedType) {
 		if (LustreNamingConventions.hasValueAndKnownSplit(var)) {
 			// Numerics have a known bit that must also be there
 			return tuple(
@@ -501,22 +501,22 @@ public class ILExprToLustre extends ILExprVisitor<ExprType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(LibraryVar lib, ExprType expectedType) {
+	public Expr visit(LibraryVar lib, ILType expectedType) {
 		throw new RuntimeException("Libraries not supported yet");
 	}
 
 	@Override
-	public Expr visit(GetNodeStateExpr state, ExprType expectedType) {
+	public Expr visit(GetNodeStateExpr state, ILType expectedType) {
 		return PlanToLustre.getPlexilStateExprForNode(state.getNodeUid());
 	}
 
 	@Override
-	public Expr visit(AliasExpr alias, ExprType expectedType) {
+	public Expr visit(AliasExpr alias, ILType expectedType) {
 		throw new RuntimeException("Aliases not supported yet");
 	}
 
 	@Override
-	public Expr visit(RootAncestorExpr root, ExprType expectedType) {
+	public Expr visit(RootAncestorExpr root, ILType expectedType) {
 		throw new RuntimeException("Libraries aren't supported");
 	}
 

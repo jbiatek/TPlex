@@ -3,12 +3,12 @@ package edu.umn.crisys.plexil.il.optimizations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.Plan;
 
 public class UnknownBiasing extends ILExprModifier<Void> {
@@ -23,8 +23,8 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 		ilPlan.modifyAllGuards(new UnknownBiasing(), null);
 	}
 
-	private static Expression collect(ILOperator topOperator, 
-			ILOperator insideOperator, List<Expression> args) {
+	private static ILExpr collect(ILOperator topOperator, 
+			ILOperator insideOperator, List<ILExpr> args) {
 		return topOperator.expr(args.stream().map(arg -> insideOperator.expr(arg))
 				.collect(Collectors.toList()));
 	}
@@ -32,26 +32,26 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 
 
 	@Override
-	public Expression visit(ILOperation oper, Void param) {
+	public ILExpr visit(ILOperation oper, Void param) {
 		// Looking for PLEXIL booleans that are being biased into regular bools.
-		if (oper.getType() != ExprType.NATIVE_BOOL || 
+		if (oper.getType() != ILType.NATIVE_BOOL || 
 				oper.getArguments().size() != 1) {
 			// Nope, not applicable. 
 			return visitComposite(oper, null);
 		}
 		
 		// We can only push the bias down PLEXIL's boolean operators.
-		Expression argSomeType = oper.getUnaryArg();
+		ILExpr argSomeType = oper.getUnaryArg();
 		if ( ! (argSomeType instanceof ILOperation)) {
 			return visitComposite(oper, null);
 		}
 		ILOperation arg = (ILOperation) argSomeType;
-		if (arg.getType() != ExprType.BOOLEAN) {
+		if (arg.getType() != ILType.BOOLEAN) {
 			return visitComposite(oper, null);
 		}
 		// Okay, this is at least a PBoolean -> bool situation. 
 
-		Expression ret;
+		ILExpr ret;
 		switch(oper.getOperator()) {
 		case IS_TRUE:
 			switch (arg.getOperator()) {
@@ -98,19 +98,19 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 			}
 			break;
 		case IS_UNKNOWN:
-			Expression oneIsUnknown = collect(ILOperator.OR, ILOperator.IS_UNKNOWN, arg.getArguments());
+			ILExpr oneIsUnknown = collect(ILOperator.OR, ILOperator.IS_UNKNOWN, arg.getArguments());
 			switch (arg.getOperator()) {
 			case PAND:
 				// (a && b).isUnknown() becomes
 				// ((a.isUnknown() || b.isUnknown()) && (a.isNotFalse() && b.isNotFalse()))
-				Expression noneAreFalse = collect(ILOperator.OR, ILOperator.IS_NOT_FALSE, arg.getArguments());
+				ILExpr noneAreFalse = collect(ILOperator.OR, ILOperator.IS_NOT_FALSE, arg.getArguments());
 
 				ret = ILOperator.AND.expr(oneIsUnknown, noneAreFalse);
 				break;
 			case POR:
 				// (a || b).isUnknown() becomes 
 				// ((a.isUnknown() || b.isUnknown()) && (a.isNotTrue() && b.isNotTrue()))
-				Expression noneAreTrue = collect(ILOperator.OR, ILOperator.IS_NOT_TRUE, arg.getArguments());
+				ILExpr noneAreTrue = collect(ILOperator.OR, ILOperator.IS_NOT_TRUE, arg.getArguments());
 				ret = ILOperator.AND.expr(oneIsUnknown, noneAreTrue);
 				break;
 			case PNOT:
@@ -170,18 +170,18 @@ public class UnknownBiasing extends ILExprModifier<Void> {
 			}
 			break;
 		case IS_KNOWN:
-			Expression allAreKnown = collect(ILOperator.AND, ILOperator.IS_KNOWN, arg.getArguments());
+			ILExpr allAreKnown = collect(ILOperator.AND, ILOperator.IS_KNOWN, arg.getArguments());
 			switch (arg.getOperator()) {
 			case PAND:
 				// (a && b).isKnown() becomes 
 				// (a.isKnown() && b.isKnown()) || (a.isFalse() || b.isFalse())
-				Expression oneIsFalse = collect(ILOperator.OR, ILOperator.IS_FALSE, arg.getArguments());
+				ILExpr oneIsFalse = collect(ILOperator.OR, ILOperator.IS_FALSE, arg.getArguments());
 				ret = ILOperator.OR.expr(allAreKnown, oneIsFalse);
 				break;
 
 			case POR:
 				// (a || b).isKnown() becomes
-				Expression oneIsTrue = collect(ILOperator.OR, ILOperator.IS_TRUE, arg.getArguments());
+				ILExpr oneIsTrue = collect(ILOperator.OR, ILOperator.IS_TRUE, arg.getArguments());
 				ret = ILOperator.OR.expr(allAreKnown, oneIsTrue);
 				break;
 

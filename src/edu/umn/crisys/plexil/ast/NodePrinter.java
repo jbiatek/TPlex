@@ -8,7 +8,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.util.Pair;
@@ -158,7 +158,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
             // expression. The spec says it just has to be parenthesized.
             str.append("("+cmd.getCommandName()+") (");
         }
-        for (Expression e : cmd.getCommandArguments()) {
+        for (ILExpr e : cmd.getCommandArguments()) {
             str.append(e.toString()+", ");
         }
         if (cmd.getCommandArguments().size() != 0) {
@@ -205,7 +205,7 @@ public class NodePrinter implements NodeBodyVisitor<Void, String> {
     public String visitUpdate(UpdateBody update, Void p) {
         StringBuilder str = new StringBuilder("\n"+tab(indent+TAB));
         str.append("Update ");
-        for (Pair<String, Expression> up : update.getUpdates()) {
+        for (Pair<String, ILExpr> up : update.getUpdates()) {
             str.append(up.first +" = "+up.second +", ");
         }
         if (update.getUpdates().size() != 0) {

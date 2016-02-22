@@ -25,12 +25,12 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
@@ -64,7 +64,7 @@ public class LustrePropertyGenerator {
 				new IdExpr(LustreNamingConventions.getStateMapperId(uid)), 
 				BinaryOp.NOTEQUAL, 
 				translator.toLustre(
-						NodeState.EXECUTING, ExprType.STATE))
+						NodeState.EXECUTING, ILType.STATE))
 				);
 
 		return id(id);
@@ -119,19 +119,19 @@ public class LustrePropertyGenerator {
 		Expr checkForReset = ite(
 				// If node state is inactive
 				equal(getPlexilState(node),
-						translator.toLustre(NodeState.INACTIVE, ExprType.STATE)),
+						translator.toLustre(NodeState.INACTIVE, ILType.STATE)),
 				// then set us back to false
 				FALSE,
 				// else keep it true, indicating failure
 				TRUE
 				);
-		Expression invFailGuard = ILOperator.IS_FALSE.expr(
+		ILExpr invFailGuard = ILOperator.IS_FALSE.expr(
 				node.getConditions().get(
 						PlexilExprDescription.INVARIANT_CONDITION));
-		Expression exitGuard = ILOperator.IS_TRUE.expr(
+		ILExpr exitGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
 						PlexilExprDescription.EXIT_CONDITION));
-		Expression endGuard = ILOperator.IS_TRUE.expr(
+		ILExpr endGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
 						PlexilExprDescription.END_CONDITION));
 		
@@ -188,18 +188,18 @@ public class LustrePropertyGenerator {
 	
 	
 	private static Set<NodeUID> nodesThisOneIsWaitingFor(OriginalHierarchy node) {
-		Expression start = node.getConditions().get(PlexilExprDescription.START_CONDITION);
+		ILExpr start = node.getConditions().get(PlexilExprDescription.START_CONDITION);
 		Set<NodeUID> found = new HashSet<>();
 		findNodeFinishedChecks(start, found);
 		return found;
 	}
 	
-	private static void findNodeFinishedChecks(Expression e, Set<NodeUID> found) {
+	private static void findNodeFinishedChecks(ILExpr e, Set<NodeUID> found) {
 		if (e instanceof ASTOperation) {
 			ASTOperation oper = (ASTOperation) e;
 			if (oper.getOperator() == Operator.EQ) {
 				if (oper.getArguments().contains(NodeState.FINISHED)) {
-					Expression other = oper.getArguments().get(0);
+					ILExpr other = oper.getArguments().get(0);
 					if (other.equals(NodeState.FINISHED)) {
 						// Oops
 						other = oper.getArguments().get(1);
@@ -213,7 +213,7 @@ public class LustrePropertyGenerator {
 				}
 			}
 		}
-		for (Expression child : e.getArguments()) {
+		for (ILExpr child : e.getArguments()) {
 			findNodeFinishedChecks(child, found);
 		}
 	}
@@ -234,7 +234,7 @@ public class LustrePropertyGenerator {
 		return new BinaryExpr(
 				getPlexilState(uid), 
 				BinaryOp.EQUAL, 
-				p2l.toLustre(NodeState.EXECUTING, ExprType.STATE));
+				p2l.toLustre(NodeState.EXECUTING, ILType.STATE));
 	}
 	
 	private static Expr equal(Expr left, Expr right) {

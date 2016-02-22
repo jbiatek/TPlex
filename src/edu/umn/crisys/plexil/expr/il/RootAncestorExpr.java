@@ -1,10 +1,6 @@
 package edu.umn.crisys.plexil.expr.il;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
-
-public enum RootAncestorExpr implements Expression {
+public enum RootAncestorExpr implements ILExpr {
 
 	END,
 	EXIT,
@@ -17,8 +13,8 @@ public enum RootAncestorExpr implements Expression {
 	}
 
 	@Override
-	public ExprType getType() {
-		return this == STATE ? ExprType.STATE : ExprType.BOOLEAN;
+	public ILType getType() {
+		return this == STATE ? ILType.STATE : ILType.BOOLEAN;
 	}
 
 	@Override

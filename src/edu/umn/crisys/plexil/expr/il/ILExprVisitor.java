@@ -1,7 +1,5 @@
 package edu.umn.crisys.plexil.expr.il;
 
-import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
@@ -12,7 +10,7 @@ public abstract class ILExprVisitor<P, R>
 implements CascadingExprVisitor<P, R>
 {
 	
-	private R visitASTExpr(Expression e) {
+	private R visitASTExpr(ILExpr e) {
 		throw new RuntimeException("This is an AST expression: "+e);
 	}
 

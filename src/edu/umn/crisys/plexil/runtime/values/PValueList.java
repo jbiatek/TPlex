@@ -7,9 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExprBase;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 /**
  * <p>A List that is also a PValue. It implements the PLEXIL array semantics -- 
@@ -27,26 +27,26 @@ import edu.umn.crisys.plexil.expr.ExprType;
  * @author jbiatek
  *
  */
-public class PValueList<T extends PValue> extends ExpressionBase implements PValue, List<T>{
+public class PValueList<T extends PValue> extends ILExprBase implements PValue, List<T>{
 
 	private final T[] myValues;
 	private final T unknown;
 	
 	@SafeVarargs
-	public PValueList(ExprType type, int maxSize, T...values) {
+	public PValueList(ILType type, int maxSize, T...values) {
 		this(type, maxSize, Arrays.asList(values));
 	}
 	
 	@SafeVarargs
-	public PValueList(ExprType type, T...values) {
+	public PValueList(ILType type, T...values) {
 		this(type, values.length, Arrays.asList(values));
 	}
 	
-	public PValueList(ExprType type, List<T> values) {
+	public PValueList(ILType type, List<T> values) {
 		this(type, values.size(), values);
 	}
 	
-	public PValueList(ExprType type, int maxSize, List<T> values) {
+	public PValueList(ILType type, int maxSize, List<T> values) {
 		super(type);
 		if ( ! type.isArrayType()) {
 			throw new RuntimeException("Array needs to be an array type, not "+type);
@@ -71,7 +71,7 @@ public class PValueList<T extends PValue> extends ExpressionBase implements PVal
 	}
 	
 	@SuppressWarnings("unchecked")
-	private T uncheckedGetUnknown(ExprType arrayType) {
+	private T uncheckedGetUnknown(ILType arrayType) {
 		return (T) arrayType.elementType().getUnknown();
 	}
 	
@@ -113,7 +113,7 @@ public class PValueList<T extends PValue> extends ExpressionBase implements PVal
 	}
 
 	@Override
-	public PValue castTo(ExprType type) {
+	public PValue castTo(ILType type) {
 		this.getType().typeCheck(type);
 		return this;
 	}

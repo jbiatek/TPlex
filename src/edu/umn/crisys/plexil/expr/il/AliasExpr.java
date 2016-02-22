@@ -1,15 +1,11 @@
 package edu.umn.crisys.plexil.expr.il;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.ExprType;
-
-public class AliasExpr extends ExpressionBase {
+public class AliasExpr extends ILExprBase {
 
     private String name;
     private boolean writeable;
     
-    public AliasExpr(String name, ExprType type, boolean writeable) {
+    public AliasExpr(String name, ILType type, boolean writeable) {
     	super(type);
         this.name = name;
         this.writeable = writeable;

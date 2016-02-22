@@ -41,9 +41,9 @@ import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
@@ -260,7 +260,7 @@ public class TPlex {
 			})));
 		}
 		if (forceIntTimepoints) {
-			NodeToIL.TIMEPOINT_TYPE = ExprType.INTEGER;
+			NodeToIL.TIMEPOINT_TYPE = ILType.INTEGER;
 		}
 		
 		if (javaNoTernaryOperator) {
@@ -546,7 +546,7 @@ public class TPlex {
 			ScriptedEnvironment.DEBUG = true;
 			JavaPlan.DEBUG = true;
 			for (Entry<String, PlexilScript> scriptEntry: scripts.entrySet()) {
-				LinkedHashMap<Expression,List<PValue>> data = 
+				LinkedHashMap<ILExpr,List<PValue>> data = 
 						ScriptSimulation.simulateToCSV(
 								planToUse, scriptEntry.getValue());
 				

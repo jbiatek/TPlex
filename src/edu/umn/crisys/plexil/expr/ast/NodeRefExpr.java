@@ -1,10 +1,10 @@
 package edu.umn.crisys.plexil.expr.ast;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
-public enum NodeRefExpr implements Expression {
+public enum NodeRefExpr implements ILExpr {
 
 	PARENT,
 	SIBLING,
@@ -17,8 +17,8 @@ public enum NodeRefExpr implements Expression {
 	}
 
 	@Override
-	public ExprType getType() {
-		return ExprType.NODEREF;
+	public ILType getType() {
+		return ILType.NODEREF;
 	}
 
 	@Override

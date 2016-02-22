@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -20,18 +20,18 @@ public class Transition implements Comparable<Transition> {
 	public int priority;
 	public State start;
 	public State end;
-	public Expression guard;
+	public ILExpr guard;
 	public List<PlexilAction> actions = new LinkedList<PlexilAction>() ; 
 	
 	public Transition(String description, int priority, State start, State end, 
-			Expression... guards) {
+			ILExpr... guards) {
 	    this.description = description;
 		this.priority = priority;
 		this.start = start;
 		if (guards.length == 0) {
 			this.guard = NativeBool.TRUE;
 		} else if (guards.length == 1) {
-			if (guards[0].getType().equals(ExprType.NATIVE_BOOL)) {
+			if (guards[0].getType().equals(ILType.NATIVE_BOOL)) {
 				this.guard = guards[0];
 			} else {
 				throw new RuntimeException("Type error: Guard had type "
@@ -63,7 +63,7 @@ public class Transition implements Comparable<Transition> {
 	 * Add an additional guard. This will be ANDed to the existing guard(s).
 	 * @param newGuard
 	 */
-	public void addGuard(Expression newGuard) {
+	public void addGuard(ILExpr newGuard) {
 		this.guard = ILOperator.AND.expr(guard, newGuard);
 	}
 	

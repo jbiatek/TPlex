@@ -17,7 +17,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
@@ -130,7 +130,7 @@ public class ScriptParser {
             XMLEventReader xml) throws XMLStreamException {
         String name = attribute(cmdStart, "name");
         String typeStr = attribute(cmdStart, "type");
-        ExprType type = ExprType.fuzzyValueOf(typeStr);
+        ILType type = ILType.fuzzyValueOf(typeStr);
 
         String tagType = localNameOf(cmdStart);
         CommandEventTypes action;
@@ -139,7 +139,7 @@ public class ScriptParser {
         } else if (tagType.equals("CommandAck")) {
             action = CommandEventTypes.ACK;
             // ACKs have their type as String, but actually they're command handles
-            type = ExprType.COMMAND_HANDLE;
+            type = ILType.COMMAND_HANDLE;
         } else if (tagType.equals("CommandAbort")) {
             action = CommandEventTypes.ABORT;
         } else {
@@ -178,7 +178,7 @@ public class ScriptParser {
         // Get the name and type
         String name = attribute(start, "name");
         String typeStr = attribute(start, "type");
-        ExprType type = ExprType.fuzzyValueOf(typeStr);
+        ILType type = ILType.fuzzyValueOf(typeStr);
         
         StartElement current = xml.nextTag().asStartElement();
         
@@ -222,15 +222,15 @@ public class ScriptParser {
             paramType = attribute.getValue();
         }
         String value = getStringContent(start, xml);
-        return ExprType.fuzzyValueOf(paramType).parseValue(value);
+        return ILType.fuzzyValueOf(paramType).parseValue(value);
     }
 
-    private static PValue parseValueOrResult(XMLEvent current, XMLEventReader xml, ExprType type, String expectedTagName) throws XMLStreamException {
+    private static PValue parseValueOrResult(XMLEvent current, XMLEventReader xml, ILType type, String expectedTagName) throws XMLStreamException {
         assertStart(expectedTagName, current);
         if (type.isArrayType()) {
             // Expect a few value tags then.
             List<PValue> values = new ArrayList<PValue>();
-            ExprType elementType = type.elementType();
+            ILType elementType = type.elementType();
             
             //As long as we keep seeing our tags, keep adding values in.
             while ( isTag(current, expectedTagName) ) {

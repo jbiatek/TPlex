@@ -11,8 +11,8 @@ import jkind.lustre.Expr;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import lustre.LustreTrace;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -30,7 +30,7 @@ public class ScriptSimulation {
 	public static boolean DEBUG = false;
 
 
-	public static String toLustreCSV(LinkedHashMap<Expression,List<PValue>> data,
+	public static String toLustreCSV(LinkedHashMap<ILExpr,List<PValue>> data,
 			ReverseTranslationMap stringMap) {
 		// Check that each list of values is the same length
 		int size = data.entrySet().stream()
@@ -44,7 +44,7 @@ public class ScriptSimulation {
 		
 		// Print the headers first
 		List<String> line = new ArrayList<String>();
-		for (Expression expr : data.keySet()) {
+		for (ILExpr expr : data.keySet()) {
 			if (expr instanceof LookupExpr) {
 				// Check for a value/known split
 				if (LustreNamingConventions.hasValueAndKnownSplit(expr.getType())) {
@@ -69,7 +69,7 @@ public class ScriptSimulation {
 		ILExprToLustre exprToLustre = new ILExprToLustre(stringMap);
 		for (int i = 0; i < size; i++) {
 			line.clear();
-			for (Entry<Expression, List<PValue>> e : data.entrySet()) {
+			for (Entry<ILExpr, List<PValue>> e : data.entrySet()) {
 				List<PValue> list = e.getValue();
 				// Needs to be translated to Lustre first
 				if (LustreNamingConventions.hasValueAndKnownSplit(
@@ -145,13 +145,13 @@ public class ScriptSimulation {
 	}
 	
 
-	public static LinkedHashMap<Expression,List<PValue>> 
+	public static LinkedHashMap<ILExpr,List<PValue>> 
 	simulateToCSV(Plan ilPlan, PlexilScript astScript) {
 		JavaPlexilScript script = new JavaPlexilScript(astScript);
 		ILSimulator sim = new ILSimulator(ilPlan, script);
 
 		// LinkedHashMap guarantees iteration order, so we want that specifically
-		LinkedHashMap<Expression, List<PValue>> csv = new LinkedHashMap<>();
+		LinkedHashMap<ILExpr, List<PValue>> csv = new LinkedHashMap<>();
 		
 		// Initialize all the keys we expect to see
 		for (LookupDecl lookup : ilPlan.getStateDecls()) {
@@ -168,7 +168,7 @@ public class ScriptSimulation {
 		for (ILVariable var : ilPlan.getVariables()) {
 			if (var instanceof SimpleVar) {
 				SimpleVar simple = (SimpleVar) var;
-				if (simple.getType().equals(ExprType.COMMAND_HANDLE)) {
+				if (simple.getType().equals(ILType.COMMAND_HANDLE)) {
 					csv.put(simple,	new ArrayList<>());
 				}
 			}
@@ -188,7 +188,7 @@ public class ScriptSimulation {
 			}
 
 			private void captureState(JavaPlan plan) {
-				for ( Entry<Expression, List<PValue>> e : csv.entrySet()) {
+				for ( Entry<ILExpr, List<PValue>> e : csv.entrySet()) {
 					e.getValue().add(sim.eval(e.getKey()));
 				}
 			}

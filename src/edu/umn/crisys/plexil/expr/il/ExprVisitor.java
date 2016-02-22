@@ -1,15 +1,10 @@
-package edu.umn.crisys.plexil.expr;
+package edu.umn.crisys.plexil.expr.il;
 
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.expr.il.AliasExpr;
-import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.ILOperation;
-import edu.umn.crisys.plexil.expr.il.LookupExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -43,7 +38,7 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  */
 public interface ExprVisitor<P, R> {
 	
-	public R visit(Expression e, P param);
+	public R visit(ILExpr e, P param);
     
 	
 	//PValues

@@ -9,13 +9,13 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JOp;
 
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -188,7 +188,7 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
                     .arg(lookup.getLookupName().accept(this, cm));
 		}
         
-        for (Expression arg : lookup.getLookupArgs()) {
+        for (ILExpr arg : lookup.getLookupArgs()) {
             jlookup.arg(arg.accept(this, cm));
         }
         // If it has a type, it needs to be cast to that type, because the

@@ -12,8 +12,8 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -55,15 +55,15 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitAssignment(AssignmentBody assignment, Void p) {
-		    Expression lhsUntranslated = assignment.getLeftHandSide();
-		    ExprType typeGuess = lhsUntranslated.getType().getMoreSpecific(
+		    ILExpr lhsUntranslated = assignment.getLeftHandSide();
+		    ILType typeGuess = lhsUntranslated.getType().getMoreSpecific(
 		    		assignment.getRightHandSide().getType());
-		    Expression lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated,
+		    ILExpr lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated,
 		    		typeGuess);
-		    Expression rhs = nodeToIL.toIL(assignment.getRightHandSide(), lhsExpr.getType());
+		    ILExpr rhs = nodeToIL.toIL(assignment.getRightHandSide(), lhsExpr.getType());
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
-		    ExprType type = lhsUntranslated.getType();
+		    ILType type = lhsUntranslated.getType();
 		    if (! type.isSpecificType()) {
 		    	// If it's an array element, the type info isn't stored in the
 		    	// original XML (at least, not here.) Let's try the translated
@@ -101,10 +101,10 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 
 		@Override
 		public Void visitCommand(CommandBody cmd, Void p) {
-		    Expression name = nodeToIL.toIL(cmd.getCommandName(), ExprType.STRING);
-		    Optional<Expression> returnTo = cmd.getVarToAssign().map(
+		    ILExpr name = nodeToIL.toIL(cmd.getCommandName(), ILType.STRING);
+		    Optional<ILExpr> returnTo = cmd.getVarToAssign().map(
 		    		lhs -> nodeToIL.resolveVariableForWriting(lhs, lhs.getType()));
-		    List<Expression> args = nodeToIL.toIL(cmd.getCommandArguments(), ExprType.UNKNOWN);
+		    List<ILExpr> args = nodeToIL.toIL(cmd.getCommandArguments(), ILType.UNKNOWN);
 		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);
 		    
@@ -155,8 +155,8 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		public Void visitUpdate(UpdateBody update, Void p) {
 		    UpdateAction doUpdate = new UpdateAction(nodeToIL.getUpdateHandle(), 
 		    		nodeToIL.getUID().getShortName());
-		    for ( Pair<String, Expression> pair : update.getUpdates()) {
-		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second, ExprType.UNKNOWN));
+		    for ( Pair<String, ILExpr> pair : update.getUpdates()) {
+		        doUpdate.addUpdatePair(pair.first, nodeToIL.toIL(pair.second, ILType.UNKNOWN));
 		    }
 		    map.get(NodeState.EXECUTING).addEntryAction(doUpdate);
 		    map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());

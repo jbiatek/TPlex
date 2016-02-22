@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 public enum NodeFailureType implements PValue {
 	UNKNOWN,
@@ -23,8 +23,8 @@ public enum NodeFailureType implements PValue {
 	}
 
 	@Override
-	public ExprType getType() {
-		return ExprType.FAILURE;
+	public ILType getType() {
+		return ILType.FAILURE;
 	}
 
 	@Override

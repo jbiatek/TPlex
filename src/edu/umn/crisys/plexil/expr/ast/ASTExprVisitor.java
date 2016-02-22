@@ -1,9 +1,9 @@
 package edu.umn.crisys.plexil.expr.ast;
 
-import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
+import edu.umn.crisys.plexil.expr.il.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
@@ -13,7 +13,7 @@ import edu.umn.crisys.plexil.runtime.values.NativeBool;
 
 public abstract class ASTExprVisitor<P, R> implements CascadingExprVisitor<P, R>{
 
-	private final R visitILExpression(Expression e) {
+	private final R visitILExpression(ILExpr e) {
 		throw new RuntimeException("This is an IL expression: "+e);
 	}
 	

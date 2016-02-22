@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.expr.il.vars;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
@@ -11,11 +11,11 @@ public class ArrayVar extends ILVariable {
 	private PValueList<?> init;
 	private int size;
 	
-	public ArrayVar(String name, int size, ExprType type, NodeUID uid) {
+	public ArrayVar(String name, int size, ILType type, NodeUID uid) {
 		this(name, size, type, uid, new PValueList<PValue>(type));
 	}
 	
-	public ArrayVar(String name, int size, ExprType type, NodeUID uid, PValueList<?> init) {
+	public ArrayVar(String name, int size, ILType type, NodeUID uid, PValueList<?> init) {
 		super(name, uid, type);
 		this.size = size;
 		if ( ! getType().isArrayType()) {

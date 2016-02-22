@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.runtime.plx;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
@@ -31,10 +31,10 @@ public class SimplePArray<T extends PValue> {
 	/**
 	 * This array's type.
 	 */
-	private ExprType type;
+	private ILType type;
 
 	@SafeVarargs
-	public SimplePArray(ExprType t, int size, T...init) {
+	public SimplePArray(ILType t, int size, T...init) {
 		this.current = new PValueList<T>(t, size, init);
 		this.type = t;
 		this.maxSize = size;

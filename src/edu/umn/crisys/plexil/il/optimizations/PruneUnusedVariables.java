@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 import edu.umn.crisys.plexil.il.Plan;
@@ -33,7 +33,7 @@ public class PruneUnusedVariables {
 	 * @param ilPlan
 	 */
 	public static void optimize(Plan ilPlan) {
-	    Set<Expression> safeList = new HashSet<Expression>();
+	    Set<ILExpr> safeList = new HashSet<ILExpr>();
 	    
 	    // Save any that are being read in a guard or action
 	    // (assignment, command, or update could reference it)
@@ -100,19 +100,19 @@ public class PruneUnusedVariables {
 		}
 	}
 	
-	private static boolean removable(Expression e) {
+	private static boolean removable(ILExpr e) {
 		if (e instanceof ILVariable) {
 			// Keep outcomes, failures, and command handles. Even if no 
 			// IL components read them, a backend translation might need them
 			// to implement PLEXIL semantics correctly. 
-			return e.getType() != ExprType.OUTCOME
-					&& e.getType() != ExprType.FAILURE
-					&& e.getType() != ExprType.COMMAND_HANDLE;
+			return e.getType() != ILType.OUTCOME
+					&& e.getType() != ILType.FAILURE
+					&& e.getType() != ILType.COMMAND_HANDLE;
 		}
 		return false;
 	}
 
-	private static void scanAllExpressionsInAction(PlexilAction a, Set<Expression> safeList) {
+	private static void scanAllExpressionsInAction(PlexilAction a, Set<ILExpr> safeList) {
         if (a instanceof AssignAction) {
             saveAllVariablesInExpression(((AssignAction) a).getRHS(), safeList);
         } else if (a instanceof CommandAction) {
@@ -120,20 +120,20 @@ public class PruneUnusedVariables {
         	saveAllVariablesInExpression(((CommandAction)a).getName(), safeList);
             saveAllVariablesInExpressions(((CommandAction) a).getArgs(), safeList);
         } else if (a instanceof UpdateAction) {
-            for (Pair<String, Expression> p : ((UpdateAction) a).getUpdates()) {
+            for (Pair<String, ILExpr> p : ((UpdateAction) a).getUpdates()) {
                 saveAllVariablesInExpression(p.second, safeList);
             }
         }
 
 	}
 	
-	private static void saveAllVariablesInExpressions(List<Expression> es, Set<Expression> s) {
-	    for (Expression e : es) {
+	private static void saveAllVariablesInExpressions(List<ILExpr> es, Set<ILExpr> s) {
+	    for (ILExpr e : es) {
 	        saveAllVariablesInExpression(e, s);
 	    }
 	}
 	
-	private static void saveAllVariablesInExpression(Expression e, Set<Expression> s) {
+	private static void saveAllVariablesInExpression(ILExpr e, Set<ILExpr> s) {
 		if (e == null) {
 			return;
 		}
@@ -152,8 +152,8 @@ public class PruneUnusedVariables {
 		    }
 	        return;
 	    }
-	    for (Expression arg : e.getArguments()) {
-	    	saveAllVariablesInExpression((Expression) arg, s);
+	    for (ILExpr arg : e.getArguments()) {
+	    	saveAllVariablesInExpression((ILExpr) arg, s);
 	    }    
 	}
 

@@ -20,10 +20,10 @@ import lustre.LustreTrace;
 import org.junit.*;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.Plan;
@@ -420,7 +420,7 @@ public class RegressionTest {
 	
 	public static LustreComplianceChecker createComplianceChecker(
 			LustreTrace rawTrace, Plan ilPlan, ReverseTranslationMap mapper) {
-		final Map<Expression, List<PValue>> ilTrace = 
+		final Map<ILExpr, List<PValue>> ilTrace = 
 				JKindResultUtils.createILMapFromLustre(rawTrace, ilPlan, mapper);
 		// This isn't an IL variable, it's PLEXIL semantics encoded in Lustre. 
 		// If it's wrong, we want to know so that we can debug it, because it'll

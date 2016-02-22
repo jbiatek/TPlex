@@ -11,10 +11,10 @@ import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
 import jkind.lustre.TupleExpr;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedCondition;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
@@ -130,14 +130,14 @@ public class LustreNamingConventions {
 	}
 	
 	public static PValue reverseTranslateNumber(String valuePart, 
-			String knownPart, ExprType type) {
+			String knownPart, ILType type) {
 		if (knownPart.equals("false")) {
 			return UnknownValue.get();
 		}
-		if (type == ExprType.INTEGER) {
+		if (type == ILType.INTEGER) {
 			return IntegerValue.get(Integer.parseInt(valuePart));
 		}
-		if (type == ExprType.REAL) {
+		if (type == ILType.REAL) {
 			if (valuePart.contains("/")) {
 				// The Lustre traces sometimes contain fractions :P
 				// We need to turn it back into a double.
@@ -153,7 +153,7 @@ public class LustreNamingConventions {
 		throw new RuntimeException("Type "+type+" is not a number.");
 	}
 	
-	private static String getLookupId(Expression rawName) {
+	private static String getLookupId(ILExpr rawName) {
 		//TODO: Lookup parameters, right now only one value per lookup name
 		
 		if (rawName instanceof StringValue) {
@@ -193,14 +193,14 @@ public class LustreNamingConventions {
 		return hasValueAndKnownSplit(v.getType());
 	}
 	
-	public static boolean hasValueAndKnownSplit(ExprType type) {
-		if (type == ExprType.UNKNOWN) {
+	public static boolean hasValueAndKnownSplit(ILType type) {
+		if (type == ILType.UNKNOWN) {
 			throw new RuntimeException("Types need to be known to answer this");
 		}
-		return type == ExprType.INTEGER
-				|| type == ExprType.REAL
-				|| type == ExprType.INTEGER_ARRAY
-				|| type == ExprType.REAL_ARRAY;
+		return type == ILType.INTEGER
+				|| type == ILType.REAL
+				|| type == ILType.INTEGER_ARRAY
+				|| type == ILType.REAL_ARRAY;
 	}
 
 	public static String getVariableId(ILVariable v) {

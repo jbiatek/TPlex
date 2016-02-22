@@ -1,13 +1,13 @@
 package edu.umn.crisys.plexil.ast.nodebody;
 
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 
 public class AssignmentBody extends NodeBody {
 
-    private Expression leftHandSide;
-    private Expression rightHandSide;
+    private ILExpr leftHandSide;
+    private ILExpr rightHandSide;
     
-    public AssignmentBody(Expression leftHandSide, Expression rightHandSide) {
+    public AssignmentBody(ILExpr leftHandSide, ILExpr rightHandSide) {
     	if ( ! leftHandSide.isAssignable()) {
     		throw new RuntimeException(leftHandSide +" is not assignable.");
     	}
@@ -15,11 +15,11 @@ public class AssignmentBody extends NodeBody {
         this.rightHandSide = rightHandSide;
     }
     
-    public Expression getLeftHandSide() {
+    public ILExpr getLeftHandSide() {
         return leftHandSide;
     }
     
-    public Expression getRightHandSide() {
+    public ILExpr getRightHandSide() {
         return rightHandSide;
     }
     

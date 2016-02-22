@@ -3,8 +3,8 @@ package edu.umn.crisys.plexil.il.action;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.util.Pair;
 
@@ -12,10 +12,10 @@ public class UpdateAction implements PlexilAction {
 
     private SimpleVar handle;
     private String shortName;
-    private List<Pair<String, Expression>> updates = new LinkedList<Pair<String, Expression>>();
+    private List<Pair<String, ILExpr>> updates = new LinkedList<Pair<String, ILExpr>>();
     
     public UpdateAction(SimpleVar handle, String shortName) {
-    	ExprType.BOOLEAN.typeCheck(handle.getType());
+    	ILType.BOOLEAN.typeCheck(handle.getType());
         this.handle = handle;
         this.shortName = shortName;
     }
@@ -28,7 +28,7 @@ public class UpdateAction implements PlexilAction {
     	return shortName;
     }
     
-    public List<Pair<String, Expression>> getUpdates() {
+    public List<Pair<String, ILExpr>> getUpdates() {
         return updates;
     }
     
@@ -37,8 +37,8 @@ public class UpdateAction implements PlexilAction {
         return "Update : "+updates.toString();
     }
     
-    public void addUpdatePair(String name, Expression value) {
-        updates.add(new Pair<String, Expression>(name, value));
+    public void addUpdatePair(String name, ILExpr value) {
+        updates.add(new Pair<String, ILExpr>(name, value));
     }
 
 	@Override

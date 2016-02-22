@@ -2,34 +2,34 @@ package edu.umn.crisys.plexil.ast.globaldecl;
 
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 public class VariableDecl {
 
 	private String name;
-	private ExprType type;
+	private ILType type;
 	private Optional<Integer> arraySize;
-	private Optional<? extends Expression> init;
+	private Optional<? extends ILExpr> init;
 	
-	public VariableDecl(String name, ExprType type) {
+	public VariableDecl(String name, ILType type) {
 		this(name, type, Optional.empty(), Optional.empty());
 	}
 	
-	public VariableDecl(String name, ExprType type, Expression init) {
+	public VariableDecl(String name, ILType type, ILExpr init) {
 		this(name, type, Optional.empty(), Optional.of(init));
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, ExprType type) {
+	public VariableDecl(String arrayName, int arraySize, ILType type) {
 		this(arrayName, type, Optional.of(arraySize), Optional.empty());
 	}
 	
-	public VariableDecl(String arrayName, int arraySize, ExprType type, Expression init) {
+	public VariableDecl(String arrayName, int arraySize, ILType type, ILExpr init) {
 		this(arrayName, type, Optional.of(arraySize), Optional.of(init));
 	}
 	
-	public VariableDecl(String arrayName, final ExprType type, 
-			Optional<Integer> arraySize, Optional<? extends Expression> init) {
+	public VariableDecl(String arrayName, final ILType type, 
+			Optional<Integer> arraySize, Optional<? extends ILExpr> init) {
 		arraySize.ifPresent((size) -> {
 			if (size < 0) { 
 				throw new RuntimeException("Array cannot have negative size: "+arraySize);
@@ -51,7 +51,7 @@ public class VariableDecl {
 		return name;
 	}
 	
-	public ExprType getType() {
+	public ILType getType() {
 		return type;
 	}
 	
@@ -63,12 +63,12 @@ public class VariableDecl {
 		return arraySize;
 	}
 	
-	public Optional<? extends Expression> getInitialValue() {
+	public Optional<? extends ILExpr> getInitialValue() {
 		return init;
 	}
 	
 	public String toString() {
-		ExprType typeToUse = type;
+		ILType typeToUse = type;
 		String arrayStuff = "";
 		StringBuilder initString = new StringBuilder();
 		

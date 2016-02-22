@@ -8,10 +8,10 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -25,7 +25,7 @@ public class ILExprToJava {
 	public static boolean SHORT_CIRCUITING = true;
 	static final String TEMP_VAR_NAME = "temp";
     
-    public static JExpression toJava(Expression expr, JCodeModel cm) {
+    public static JExpression toJava(ILExpr expr, JCodeModel cm) {
         return expr.accept(new IL2Java(), cm);
     }
     
@@ -41,7 +41,7 @@ public class ILExprToJava {
         block.decl(cm.ref(PBoolean.class), TEMP_VAR_NAME);
     }
     
-    public static boolean requiresShortCircuitHack(Expression expr) {
+    public static boolean requiresShortCircuitHack(ILExpr expr) {
     	if (expr instanceof ASTOperation) {
     		ASTOperation op = (ASTOperation) expr;
     		if (op.getOperator() == Operator.AND || op.getOperator() == Operator.OR) {
@@ -50,8 +50,8 @@ public class ILExprToJava {
     	}
 
     	// Could be one hiding in here somewhere
-    	for (Expression child : expr.getArguments()) {
-    		if (requiresShortCircuitHack((Expression) child)) {
+    	for (ILExpr child : expr.getArguments()) {
+    		if (requiresShortCircuitHack((ILExpr) child)) {
     			return true;
     		}
     	}
@@ -60,8 +60,8 @@ public class ILExprToJava {
     	return false;
     }
     
-    public static JExpression plexilTypeAsJava(ExprType type, JCodeModel cm) {
-    	return cm.ref(ExprType.class).staticRef(type.toString());
+    public static JExpression plexilTypeAsJava(ILType type, JCodeModel cm) {
+    	return cm.ref(ILType.class).staticRef(type.toString());
     }
     
 	public static String getFieldName(NodeUID nodePath, String varName) {
@@ -79,7 +79,7 @@ public class ILExprToJava {
 
     
     public static JExpression PValueToJava(PValue v, JCodeModel cm) {
-        ExprType type = v.getType();
+        ILType type = v.getType();
         
         // Handle an UNKNOWN expression
         if (v.isUnknown()) {
@@ -102,10 +102,10 @@ public class ILExprToJava {
         // Is it an array?
         if (type.isArrayType()) {
         	PValueList<?> array = (PValueList<?>) v;
-        	ExprType elements = array.getType().elementType();
+        	ILType elements = array.getType().elementType();
         	// We need a PValueList<ElementType>.
         	Class<?> elementClass = PValue.class;
-        	if (elements != ExprType.UNKNOWN) {
+        	if (elements != ILType.UNKNOWN) {
         		elementClass = elements.getTypeClass();
         	}
         	JClass narrowed = cm.ref(PValueList.class).narrow(elementClass);
@@ -123,7 +123,7 @@ public class ILExprToJava {
         
         // Not unknown, an enum, or an array. Must just be a standard type.
         String nativeJava = v.toString();
-        if (v.getType() == ExprType.STRING) {
+        if (v.getType() == ILType.STRING) {
         	// We're dumping this directly, so it needs quotes.
             nativeJava = "\"" + ((PString)v).getString() + "\"";
         }

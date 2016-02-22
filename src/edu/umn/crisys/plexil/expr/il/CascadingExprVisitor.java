@@ -1,15 +1,10 @@
-package edu.umn.crisys.plexil.expr;
+package edu.umn.crisys.plexil.expr.il;
 
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
-import edu.umn.crisys.plexil.expr.il.AliasExpr;
-import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.ILOperation;
-import edu.umn.crisys.plexil.expr.il.LookupExpr;
-import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
@@ -43,7 +38,7 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  */
 public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
 	
-	public default R visit(Expression e, P param) {
+	public default R visit(ILExpr e, P param) {
 		throw new RuntimeException("This visitor does not support "
 				+e.getClass().getSimpleName());
 	}
@@ -51,7 +46,7 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
 	
 	//PValues
 	public default R visit(PValue v, P param) {
-		return visit((Expression) v, param);
+		return visit((ILExpr) v, param);
 	}
 	public default R visit(BooleanValue bool, P param) {
 		return visit((PValue)bool, param);
@@ -86,51 +81,51 @@ public interface CascadingExprVisitor<P, R> extends ExprVisitor<P,R> {
 
 	// Lookups
 	public default R visit(LookupExpr lookup, P param) {
-		return visit((Expression)lookup, param);
+		return visit((ILExpr)lookup, param);
 	}
     public default R visit(ASTLookupExpr lookup, P param) {
-		return visit((Expression)lookup, param);
+		return visit((ILExpr)lookup, param);
 	}
     public default R visit(ASTOperation op, P param) {
-		return visit((Expression)op, param);
+		return visit((ILExpr)op, param);
 	}
 
     // AST expressions
     public default R visit(UnresolvedVariableExpr expr, P param) {
-		return visit((Expression)expr, param);
+		return visit((ILExpr)expr, param);
 	}
     public default R visit(NodeRefExpr ref, P param) {
-		return visit((Expression)ref, param);
+		return visit((ILExpr)ref, param);
 	}
     public default R visit(NodeTimepointExpr timept, P param) {
-		return visit((Expression)timept, param);
+		return visit((ILExpr)timept, param);
 	}
 
     
     // IL expressions
     public default R visit(NamedCondition named, P param) {
-    	return visit((Expression) named, param);
+    	return visit((ILExpr) named, param);
     }
 	public default R visit(GetNodeStateExpr state, P param) {
-		return visit((Expression)state, param);
+		return visit((ILExpr)state, param);
 	}
 	public default R visit(AliasExpr alias, P param) {
-		return visit((Expression)alias, param);
+		return visit((ILExpr)alias, param);
 	}
     public default R visit(RootAncestorExpr root, P param) {
-		return visit((Expression)root, param);
+		return visit((ILExpr)root, param);
 	}
 	default R visit(NativeBool b, P param) {
-		return visit((Expression)b, param);
+		return visit((ILExpr)b, param);
 	}
 	default R visit(ILOperation op, P param) {
-		return visit((Expression)op, param);
+		return visit((ILExpr)op, param);
 	}
 
 
 	//ILVariables
     public default R visit(ILVariable v, P param) {
-    	return visit((Expression)v, param);
+    	return visit((ILExpr)v, param);
     }
 	public default R visit(SimpleVar var, P param) {
 		return visit((ILVariable)var, param);

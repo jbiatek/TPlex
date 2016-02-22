@@ -10,8 +10,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeIDExpression;
@@ -19,6 +17,8 @@ import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -31,12 +31,12 @@ public class ExprParser {
     private ExprParser() {}
     
     
-    public static Expression parse(StartElement start, XMLEventReader xml, ExprType expectedType) {
-        Expression expr = methodDispatcher(start, xml);
+    public static ILExpr parse(StartElement start, XMLEventReader xml, ILType expectedType) {
+        ILExpr expr = methodDispatcher(start, xml);
         return expr;
     }
     
-    private static Expression methodDispatcher(StartElement start, XMLEventReader xml) {
+    private static ILExpr methodDispatcher(StartElement start, XMLEventReader xml) {
         String tag = localNameOf(start);
         if (isOperation(tag)) {
             return parseOperation(start, xml);
@@ -69,12 +69,12 @@ public class ExprParser {
         throw new RuntimeException("I have no handlers for "+tag+" tags.");
     }
 
-    public static Expression parse(XMLEvent start, XMLEventReader xml, ExprType expectedType) {
+    public static ILExpr parse(XMLEvent start, XMLEventReader xml, ILType expectedType) {
         return parse(start.asStartElement(), xml, expectedType);
     }
 
-    private static List<Expression> parseMultiple(StartElement start, XMLEventReader xml, ExprType expectedType) {
-        List<Expression> list = new ArrayList<Expression>();
+    private static List<ILExpr> parseMultiple(StartElement start, XMLEventReader xml, ILType expectedType) {
+        List<ILExpr> list = new ArrayList<ILExpr>();
         for (StartElement tag : allChildTagsOf(start, xml)) {
             list.add(parse(tag, xml, expectedType));
         }
@@ -99,14 +99,14 @@ public class ExprParser {
         return tag.endsWith("RHS");
     }
 
-    public static Expression parseRHS(StartElement start, XMLEventReader xml) {
+    public static ILExpr parseRHS(StartElement start, XMLEventReader xml) {
         // These are all just wrappers around expressions. 
         // Go in, get the expression, check the end tag, and move on.
-        ExprType type = ExprType.UNKNOWN;
+        ILType type = ILType.UNKNOWN;
         if ( ! isTagStartingWith(start, "Lookup")) {
-            type = ExprType.fuzzyValueOf(localNameOf(start).replaceFirst("RHS$", ""));
+            type = ILType.fuzzyValueOf(localNameOf(start).replaceFirst("RHS$", ""));
         }
-        Expression ret = parse(nextTag(xml), xml, type);
+        ILExpr ret = parse(nextTag(xml), xml, type);
         assertClosedTag(start, xml);
         return ret;
     }
@@ -118,7 +118,7 @@ public class ExprParser {
 
     public static UnresolvedVariableExpr parseRegularVariable(StartElement start, XMLEventReader xml) {
         String typeStr = localNameOf(start).replaceFirst("Variable$", "");
-        ExprType type = ExprType.valueOf(typeStr.toUpperCase());
+        ILType type = ILType.valueOf(typeStr.toUpperCase());
         return new UnresolvedVariableExpr(getStringContent(start, xml), type);
     }
 
@@ -136,7 +136,7 @@ public class ExprParser {
 
     public static PValue parsePValue(StartElement start, XMLEventReader xml) {
         String type = localNameOf(start).replaceAll("(Node|Value)", "");
-        ExprType pType = ExprType.fuzzyValueOf(type);
+        ILType pType = ILType.fuzzyValueOf(type);
         return pType.parseValue(getStringContent(start, xml));
     }
 
@@ -145,8 +145,8 @@ public class ExprParser {
         return tag.equals("NodeId") || tag.equals("NodeRef");
     }
 
-    public static Expression parseNodeReference(StartElement start, XMLEventReader xml) {
-    	Expression toReturn;
+    public static ILExpr parseNodeReference(StartElement start, XMLEventReader xml) {
+    	ILExpr toReturn;
         if (localNameOf(start).equals("NodeId")) {
             toReturn = new NodeIDExpression(getStringContent(start, xml));
         } else if (localNameOf(start).equals("NodeRef")) {
@@ -166,7 +166,7 @@ public class ExprParser {
 
     public static ASTOperation parseNodeStateVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
+        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getState(nodeRef);
     }
@@ -178,7 +178,7 @@ public class ExprParser {
 
     public static ASTOperation parseNodeOutcomeVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
+        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getOutcome(nodeRef);
     }
@@ -190,7 +190,7 @@ public class ExprParser {
 
     public static ASTOperation parseNodeFailureVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
+        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getFailure(nodeRef);
     }
@@ -202,7 +202,7 @@ public class ExprParser {
 
     public static ASTOperation parseCommandHandleVar(StartElement start, XMLEventReader xml) {
         // Should be a node reference here
-        Expression nodeRef = parse(nextTag(xml), xml, ExprType.NODEREF);
+        ILExpr nodeRef = parse(nextTag(xml), xml, ILType.NODEREF);
         assertClosedTag(start, xml);
         return ASTOperation.getCommandHandle(nodeRef);
     }
@@ -215,7 +215,7 @@ public class ExprParser {
     public static NodeTimepointExpr parseNodeTimepoint(StartElement start, XMLEventReader xml) {
         String state = null;
         String timepoint = null;
-        Expression nodeId = null;
+        ILExpr nodeId = null;
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isNodeReference(localNameOf(e))) {
@@ -248,10 +248,10 @@ public class ExprParser {
     public static ASTOperation parseEqOrNe(StartElement start, XMLEventReader xml) {
         boolean negate = isTagStartingWith(start, "NE");
         // Slice off the "NE" or "EQ" to get the expected type.
-        ExprType type = ExprType.fuzzyValueOf(localNameOf(start).substring(2));
+        ILType type = ILType.fuzzyValueOf(localNameOf(start).substring(2));
 
-        Expression one = parse(nextTag(xml), xml, type);
-        Expression two = parse(nextTag(xml), xml, type);
+        ILExpr one = parse(nextTag(xml), xml, type);
+        ILExpr two = parse(nextTag(xml), xml, type);
         assertClosedTag(start, xml);
 
         if (negate) {
@@ -268,20 +268,20 @@ public class ExprParser {
     }
 
 
-    public static Expression parseLookup(StartElement start, XMLEventReader xml) {
-        Expression name = null;
-        Expression tolerance = RealValue.get(0.0);
-        List<Expression> args = new ArrayList<Expression>();
+    public static ILExpr parseLookup(StartElement start, XMLEventReader xml) {
+        ILExpr name = null;
+        ILExpr tolerance = RealValue.get(0.0);
+        List<ILExpr> args = new ArrayList<ILExpr>();
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
-                name = parse(nextTag(xml), xml, ExprType.STRING);
+                name = parse(nextTag(xml), xml, ILType.STRING);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Tolerance")) {
-                tolerance = parse(nextTag(xml), xml, ExprType.REAL);
+                tolerance = parse(nextTag(xml), xml, ILType.REAL);
                 assertClosedTag(e, xml);
             } else if (isTag(e, "Arguments")) {
-                args = parseMultiple(e, xml, ExprType.UNKNOWN);
+                args = parseMultiple(e, xml, ILType.UNKNOWN);
             } else {
                 throw new UnexpectedTagException(e);
             }
@@ -307,13 +307,13 @@ public class ExprParser {
 
     public static ASTOperation parseArrayElement(StartElement start, XMLEventReader xml) {
         UnresolvedVariableExpr array = null;
-        Expression index = null;
+        ILExpr index = null;
 
         for (StartElement e : allChildTagsOf(start, xml)) {
             if (isTag(e, "Name")) {
-                array = new UnresolvedVariableExpr(getStringContent(e, xml), ExprType.ARRAY);
+                array = new UnresolvedVariableExpr(getStringContent(e, xml), ILType.ARRAY);
             } else if (isTag(e, "Index")) {
-                index = parse(nextTag(xml), xml, ExprType.INTEGER);
+                index = parse(nextTag(xml), xml, ILType.INTEGER);
                 assertClosedTag(e, xml);
             } else {
                 throw new UnexpectedTagException(e);

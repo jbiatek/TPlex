@@ -6,10 +6,6 @@ import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
@@ -17,10 +13,14 @@ import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
 import edu.umn.crisys.plexil.expr.il.AliasExpr;
+import edu.umn.crisys.plexil.expr.il.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -30,7 +30,7 @@ import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
-public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expression> {
+public class ASTExprToILExpr implements CascadingExprVisitor<ILType, ILExpr> {
     
     private NodeToIL context;
     
@@ -39,19 +39,19 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     }
     
     @Override
-	public Expression visit(PValue v, ExprType param) {
+	public ILExpr visit(PValue v, ILType param) {
     	// Return these as-is, the IL uses them natively.
     	return v;
 	}
 
 	@Override
-	public Expression visit(ASTLookupExpr lookup, ExprType expected) {
-    	List<Expression> translatedArgs = lookup.getLookupArgs().stream()
-    			.map(e -> e.accept(this, ExprType.UNKNOWN))
+	public ILExpr visit(ASTLookupExpr lookup, ILType expected) {
+    	List<ILExpr> translatedArgs = lookup.getLookupArgs().stream()
+    			.map(e -> e.accept(this, ILType.UNKNOWN))
     			.collect(Collectors.toList());
-    	Expression translatedName = lookup.getLookupName().accept(this, ExprType.STRING);
-    	Optional<Expression> translatedTolerance =
-    			lookup.getTolerance().map(t -> t.accept(this, ExprType.REAL));
+    	ILExpr translatedName = lookup.getLookupName().accept(this, ILType.STRING);
+    	Optional<ILExpr> translatedTolerance =
+    			lookup.getTolerance().map(t -> t.accept(this, ILType.REAL));
     	
     	
     	// Find the lookup declaration
@@ -82,8 +82,8 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
 	}
 	
 	@Override
-    public Expression visit(UnresolvedVariableExpr expr, ExprType expected) {
-        if (expr.getType() == ExprType.NODEREF) {
+    public ILExpr visit(UnresolvedVariableExpr expr, ILType expected) {
+        if (expr.getType() == ILType.NODEREF) {
             throw new RuntimeException("Node references should be resolved by "
                     + "the operation that needs them, they can't be used directly");
         }
@@ -91,13 +91,13 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     }
 
     @Override
-	public Expression visit(NodeRefExpr ref, ExprType expected) {
+	public ILExpr visit(NodeRefExpr ref, ILType expected) {
 		throw new RuntimeException("This reference should have been resolved by the operation that used it");
 	}
 
     
 
-    private NodeToIL resolveNode(Expression e) {
+    private NodeToIL resolveNode(ILExpr e) {
     	if (e instanceof UnresolvedVariableExpr) {
     		UnresolvedVariableExpr nodeName = (UnresolvedVariableExpr) e;
     		return context.resolveNode(nodeName.getName());
@@ -137,14 +137,14 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     }
     
     @Override
-    public Expression visit(NodeTimepointExpr timept, ExprType expected) {
+    public ILExpr visit(NodeTimepointExpr timept, ILType expected) {
         // This one we actually have to take apart, since it ends up as a 
         // variable in the IL.
         return resolveNode(timept.getNodeId()).getNodeTimepoint(timept.getState(), timept.getTimepoint());
     }
 
     @Override
-    public Expression visit(ASTOperation op, ExprType expected) {
+    public ILExpr visit(ASTOperation op, ILType expected) {
         // Some of these we need to handle specially. Specifically, the node
         // operations like .state and .command_handle.
         switch (op.getOperator()) {
@@ -157,10 +157,10 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
         case GET_COMMAND_HANDLE:
             return resolveNode(op.getUnaryArg()).getCommandHandle();
         case ARRAY_INDEX:
-        	Expression array = op.getBinaryFirst().accept(this, 
+        	ILExpr array = op.getBinaryFirst().accept(this, 
         			expected.isSpecificType() ? 
-        					expected.toArrayType() : ExprType.UNKNOWN);
-        	Expression index = op.getBinarySecond().accept(this, ExprType.INTEGER);
+        					expected.toArrayType() : ILType.UNKNOWN);
+        	ILExpr index = op.getBinarySecond().accept(this, ILType.INTEGER);
         	return ILOperator.arrayIndex(array, index);
         case NE:
         	// Change to not(equal)
@@ -176,29 +176,29 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
         					));
         default:
         	// We need to figure out the correct type of these arguments. 
-        	ExprType expectedArgType = op.getExpectedArgumentType();
-        	if (expectedArgType == ExprType.UNKNOWN) {
+        	ILType expectedArgType = op.getExpectedArgumentType();
+        	if (expectedArgType == ILType.UNKNOWN) {
         		// Hmm, can we infer it from the arguments? 
         		expectedArgType = op.getArguments().stream()
-        				.map(Expression::getType)
-        				.reduce(ExprType::getMoreSpecific).get();
-        		if (expectedArgType == ExprType.UNKNOWN) {
+        				.map(ILExpr::getType)
+        				.reduce(ILType::getMoreSpecific).get();
+        		if (expectedArgType == ILType.UNKNOWN) {
         			// Hm. Well, if it's a Condition, boolean is our
         			// best guess.
-        			expectedArgType = ExprType.BOOLEAN;
+        			expectedArgType = ILType.BOOLEAN;
         		}
         	}
         	if (expectedArgType.isNumeric()) {
         		// Let's check and see if they are all integers
         		if (argsAreAllIntegers(op.getArguments())) {
-        			expectedArgType = ExprType.INTEGER;
+        			expectedArgType = ILType.INTEGER;
         		} else {
         			// Nope, make them all reals
-        			expectedArgType = ExprType.REAL;
+        			expectedArgType = ILType.REAL;
         		}
         	}
-        	final ExprType finalGuess = expectedArgType;
-        	List<Expression> translated = op.getArguments().stream()
+        	final ILType finalGuess = expectedArgType;
+        	List<ILExpr> translated = op.getArguments().stream()
 					.map(e -> e.accept(this, finalGuess))
 					.collect(Collectors.toList());
 
@@ -206,15 +206,15 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
         	// things like Lookups.
         	if (expectedArgType.isNumeric()) {
         		if (argsAreAllIntegers(translated)) {
-        			expectedArgType = ExprType.INTEGER;
+        			expectedArgType = ILType.INTEGER;
         		} else {
-        			expectedArgType = ExprType.REAL;
+        			expectedArgType = ILType.REAL;
         		}
         	}
         	
         	// If we converted to real, there's a special method that does 
         	// that using the right operator.
-        	if (expectedArgType == ExprType.REAL) {
+        	if (expectedArgType == ILType.REAL) {
         		translated = allIntsToReals(translated);
         	} 
         	
@@ -237,7 +237,7 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
         }
     }
     
-    private Expression cast(Expression e, ExprType expectedType) {
+    private ILExpr cast(ILExpr e, ILType expectedType) {
     	switch(expectedType) {
     	case BOOLEAN:
     		return ILOperator.CAST_PBOOL.expr(e);
@@ -252,7 +252,7 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     	}
     }
     
-    private ILOperator map(Operator o, ExprType finalType) {
+    private ILOperator map(Operator o, ILType finalType) {
     	switch (o) {
     	case AND: return ILOperator.PAND;
     	case OR: return ILOperator.POR;
@@ -275,55 +275,55 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     	case NE:
     		throw new RuntimeException("Check for NE first and separate it");
     	case GE:
-    		if (finalType == ExprType.INTEGER) 
+    		if (finalType == ILType.INTEGER) 
     			return ILOperator.PINT_GE;
     		else return ILOperator.PREAL_GE;
     	case GT:
-    		if (finalType == ExprType.INTEGER) 
+    		if (finalType == ILType.INTEGER) 
     			return ILOperator.PINT_GT;
     		else return ILOperator.PREAL_GT;
     	case LE:
-    		if (finalType == ExprType.INTEGER) 
+    		if (finalType == ILType.INTEGER) 
     			return ILOperator.PINT_LE;
     		else return ILOperator.PREAL_LE;
     	case LT:
-    		if (finalType == ExprType.INTEGER) 
+    		if (finalType == ILType.INTEGER) 
     			return ILOperator.PINT_LT;
     		else return ILOperator.PREAL_LT;
     	case ISKNOWN:
     		return ILOperator.ISKNOWN_OPERATOR;
     	case ABS:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_ABS;
     		else return ILOperator.PREAL_ABS;
     	case ADD:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_ADD;
     		else return ILOperator.PREAL_ADD;
     	case DIV:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_DIV;
     		else return ILOperator.PREAL_DIV;
     	case MAX:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_MAX;
     		else return ILOperator.PREAL_MAX;
     	case MIN:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_MIN;
     		else return ILOperator.PREAL_MIN;
     	case MOD:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_MOD;
     		else return ILOperator.PREAL_MOD;
     	case MUL:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_MUL;
     		else return ILOperator.PREAL_MUL;
     	case SQRT:
     		return ILOperator.PREAL_SQRT;
     	case SUB:
-    		if (finalType == ExprType.INTEGER)
+    		if (finalType == ILType.INTEGER)
     			return ILOperator.PINT_SUB;
     		else return ILOperator.PREAL_SUB;
     	
@@ -345,71 +345,71 @@ public class ASTExprToILExpr implements CascadingExprVisitor<ExprType, Expressio
     	}
     }
     
-    private boolean argsAreAllIntegers(List<Expression> translatedChildren) {
+    private boolean argsAreAllIntegers(List<ILExpr> translatedChildren) {
     	return translatedChildren.stream()
-    			.allMatch(e -> e.getType() == ExprType.INTEGER
-    							|| e.getType() == ExprType.UNKNOWN);
+    			.allMatch(e -> e.getType() == ILType.INTEGER
+    							|| e.getType() == ILType.UNKNOWN);
     }
     
-    private List<Expression> allIntsToReals(List<Expression> translatedChildren) {
+    private List<ILExpr> allIntsToReals(List<ILExpr> translatedChildren) {
     	return translatedChildren.stream()
-    			.map(e -> e.getType() == ExprType.INTEGER ? 
+    			.map(e -> e.getType() == ILType.INTEGER ? 
     					ILOperator.TO_PREAL.expr(e) : e)
     			.collect(Collectors.toList());
     }
     
-    private Expression visitILExpr(Expression e) {
+    private ILExpr visitILExpr(ILExpr e) {
     	throw new RuntimeException(e+" is already an IL-only expr, something is "
     			+ "probably very wrong here");
     }
     
 	@Override
-	public Expression visit(NativeBool b, ExprType expected) {
+	public ILExpr visit(NativeBool b, ILType expected) {
 		return visitILExpr(b);
 	}
 
 	@Override
-	public Expression visit(ILOperation op, ExprType expected) {
+	public ILExpr visit(ILOperation op, ILType expected) {
 		return visitILExpr(op);
 	}
 
 	@Override
-	public Expression visit(GetNodeStateExpr state, ExprType expected) {
+	public ILExpr visit(GetNodeStateExpr state, ILType expected) {
 		return visitILExpr(state);
 	}
 
 	@Override
-	public Expression visit(SimpleVar var, ExprType expected) {
+	public ILExpr visit(SimpleVar var, ILType expected) {
 		return visitILExpr(var);
 	}
 
 	@Override
-	public Expression visit(ArrayVar array, ExprType expected) {
+	public ILExpr visit(ArrayVar array, ILType expected) {
 		return visitILExpr(array);
 	}
 
 	@Override
-	public Expression visit(LibraryVar lib, ExprType expected) {
+	public ILExpr visit(LibraryVar lib, ILType expected) {
 		return visitILExpr(lib);
 	}
 
 	@Override
-	public Expression visit(NamedCondition named, ExprType expected) {
+	public ILExpr visit(NamedCondition named, ILType expected) {
 		return visitILExpr(named);
 	}
 
 	@Override
-	public Expression visit(AliasExpr alias, ExprType expected) {
+	public ILExpr visit(AliasExpr alias, ILType expected) {
 		return visitILExpr(alias);
 	}
 
 	@Override
-	public Expression visit(RootAncestorExpr root, ExprType expected) {
+	public ILExpr visit(RootAncestorExpr root, ILType expected) {
 		return visitILExpr(root);
 	}
 
 	@Override
-	public Expression visit(ILVariable v, ExprType expected) {
+	public ILExpr visit(ILVariable v, ILType expected) {
 		return visitILExpr(v);
 	}
 

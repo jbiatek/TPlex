@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILExprBase;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -27,217 +27,217 @@ import edu.umn.crisys.util.Pair;
  * @author jbiatek
  *
  */
-public class ASTOperation extends ExpressionBase {
+public class ASTOperation extends ILExprBase {
     
-    public static ExprType getArgType(String opName) {
+    public static ILType getArgType(String opName) {
         return Operator.valueOf(opName.toUpperCase()).argType;
     }
     
-    public static ASTOperation construct(String opName, Expression...args) {
+    public static ASTOperation construct(String opName, ILExpr...args) {
         return new ASTOperation(Operator.valueOf(opName.toUpperCase()), args);
     }
     
-    public static ASTOperation construct(String opName, List<Expression> args) {
+    public static ASTOperation construct(String opName, List<ILExpr> args) {
         return new ASTOperation(Operator.valueOf(opName.toUpperCase()), args);
     }
     
-    public static ASTOperation and(Expression...args) {
+    public static ASTOperation and(ILExpr...args) {
         return new ASTOperation(Operator.AND, args);
     }
     
-    public static ASTOperation and(List<Expression> args) {
+    public static ASTOperation and(List<ILExpr> args) {
         return new ASTOperation(Operator.AND, args);
     }
     
-    public static ASTOperation or(Expression...args) {
+    public static ASTOperation or(ILExpr...args) {
         return new ASTOperation(Operator.OR, args);
     }
     
-    public static ASTOperation or(List<Expression> args) {
+    public static ASTOperation or(List<ILExpr> args) {
         return new ASTOperation(Operator.OR, args);
     }
     
-    public static ASTOperation xor(Expression...args) {
+    public static ASTOperation xor(ILExpr...args) {
         return new ASTOperation(Operator.XOR, args);
     }
 
-    public static ASTOperation xor(List<Expression> args) {
+    public static ASTOperation xor(List<ILExpr> args) {
         return new ASTOperation(Operator.XOR, args);
     }
     
-    public static ASTOperation not(Expression arg) {
+    public static ASTOperation not(ILExpr arg) {
         return new ASTOperation(Operator.NOT, arg);
     }
     
-    public static ASTOperation eq(Expression one, Expression two) {
+    public static ASTOperation eq(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.EQ, one, two);
     }
     
-    public static ASTOperation ne(Expression one, Expression two) {
+    public static ASTOperation ne(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.NE, one, two);
     }
     
-    public static ASTOperation eq(Expression one, Expression two, ExprType extraInfo) {
+    public static ASTOperation eq(ILExpr one, ILExpr two, ILType extraInfo) {
         return new ASTOperation(Operator.EQ, extraInfo, one, two);
     }
     
-    public static ASTOperation ne(Expression one, Expression two, ExprType extraInfo) {
+    public static ASTOperation ne(ILExpr one, ILExpr two, ILType extraInfo) {
         return new ASTOperation(Operator.NE, extraInfo, one, two);
     }
 
     
-    public static ASTOperation ge(Expression one, Expression two) {
+    public static ASTOperation ge(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.GE, one, two);
     }
     
-    public static ASTOperation gt(Expression one, Expression two) {
+    public static ASTOperation gt(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.GT, one, two);
     }
     
-    public static ASTOperation le(Expression one, Expression two) {
+    public static ASTOperation le(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.LE, one, two);
     }
     
-    public static ASTOperation lt(Expression one, Expression two) {
+    public static ASTOperation lt(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.LT, one, two);
     }
     
-    public static ASTOperation isKnown(Expression arg) {
+    public static ASTOperation isKnown(ILExpr arg) {
         return new ASTOperation(Operator.ISKNOWN, arg);
     }
     
-    public static ASTOperation castToBoolean(Expression arg) {
+    public static ASTOperation castToBoolean(ILExpr arg) {
         return new ASTOperation(Operator.CAST_BOOL, arg);
     }
     
-    public static ASTOperation castToInteger(Expression arg) {
+    public static ASTOperation castToInteger(ILExpr arg) {
         return new ASTOperation(Operator.CAST_INT, arg);
     }
     
-    public static ASTOperation castToReal(Expression arg) {
+    public static ASTOperation castToReal(ILExpr arg) {
         return new ASTOperation(Operator.CAST_REAL, arg);
     }
     
-    public static ASTOperation castToString(Expression arg) {
+    public static ASTOperation castToString(ILExpr arg) {
         return new ASTOperation(Operator.CAST_STRING, arg);
     }
     
-    public static ASTOperation abs(Expression arg) {
+    public static ASTOperation abs(ILExpr arg) {
         return new ASTOperation(Operator.ABS, arg);
     }
     
-    public static ASTOperation add(Expression...args) {
+    public static ASTOperation add(ILExpr...args) {
         return new ASTOperation(Operator.ADD, args);
     }
 
-    public static ASTOperation add(List<Expression> args) {
+    public static ASTOperation add(List<ILExpr> args) {
         return new ASTOperation(Operator.ADD, args);
     }
     
-    public static ASTOperation div(Expression one, Expression two) {
+    public static ASTOperation div(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.DIV, one, two);
     }
     
-    public static ASTOperation max(Expression one, Expression two) {
+    public static ASTOperation max(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.MAX, one, two);
     }
     
-    public static ASTOperation min(Expression one, Expression two) {
+    public static ASTOperation min(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.MIN, one, two);
     }
     
-    public static ASTOperation mod(Expression one, Expression two) {
+    public static ASTOperation mod(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.MOD, one, two);
     }
     
-    public static ASTOperation mul(Expression...args) {
+    public static ASTOperation mul(ILExpr...args) {
         return new ASTOperation(Operator.MUL, args);
     }
 
-    public static ASTOperation mul(List<Expression> args) {
+    public static ASTOperation mul(List<ILExpr> args) {
         return new ASTOperation(Operator.MUL, args);
     }
 
-    public static ASTOperation sqrt(Expression arg) {
+    public static ASTOperation sqrt(ILExpr arg) {
         return new ASTOperation(Operator.SQRT, arg);
     }
     
-    public static ASTOperation sub(Expression one, Expression two) {
+    public static ASTOperation sub(ILExpr one, ILExpr two) {
         return new ASTOperation(Operator.SUB, one, two);
     }
     
-    public static ASTOperation concat(Expression...args) {
+    public static ASTOperation concat(ILExpr...args) {
         return new ASTOperation(Operator.CONCAT, args);
     }
     
-    public static ASTOperation concat(List<Expression> args) {
+    public static ASTOperation concat(List<ILExpr> args) {
         return new ASTOperation(Operator.CONCAT, args);
     }
     
-    public static ASTOperation getState(Expression node) {
+    public static ASTOperation getState(ILExpr node) {
         return new ASTOperation(Operator.GET_STATE, node);
     }
-    public static ASTOperation getOutcome(Expression node) {
+    public static ASTOperation getOutcome(ILExpr node) {
         return new ASTOperation(Operator.GET_OUTCOME, node);
     }
-    public static ASTOperation getFailure(Expression node) {
+    public static ASTOperation getFailure(ILExpr node) {
         return new ASTOperation(Operator.GET_FAILURE, node);
     }
-    public static ASTOperation getCommandHandle(Expression node) {
+    public static ASTOperation getCommandHandle(ILExpr node) {
         return new ASTOperation(Operator.GET_COMMAND_HANDLE, node);
     }
     
-    public static ASTOperation arrayIndex(Expression array, Expression index) {
+    public static ASTOperation arrayIndex(ILExpr array, ILExpr index) {
     	return new ASTOperation(Operator.ARRAY_INDEX, array, index);
     }
 
     public static enum Operator {
-        AND(-1, "&&", ExprType.BOOLEAN, ExprType.BOOLEAN),
-        OR(-1, "||", ExprType.BOOLEAN, ExprType.BOOLEAN),
-        XOR(-1, "XOR", ExprType.BOOLEAN, ExprType.BOOLEAN),
-        NOT(1, "!(", ExprType.BOOLEAN, ExprType.BOOLEAN),
+        AND(-1, "&&", ILType.BOOLEAN, ILType.BOOLEAN),
+        OR(-1, "||", ILType.BOOLEAN, ILType.BOOLEAN),
+        XOR(-1, "XOR", ILType.BOOLEAN, ILType.BOOLEAN),
+        NOT(1, "!(", ILType.BOOLEAN, ILType.BOOLEAN),
         
-        EQ(2, "==", ExprType.UNKNOWN, ExprType.BOOLEAN),
-        NE(2, "!=", ExprType.UNKNOWN, ExprType.BOOLEAN),
+        EQ(2, "==", ILType.UNKNOWN, ILType.BOOLEAN),
+        NE(2, "!=", ILType.UNKNOWN, ILType.BOOLEAN),
 
-        GE(2, ">=", ExprType.INTEGER, ExprType.BOOLEAN),
-        GT(2, ">", ExprType.INTEGER, ExprType.BOOLEAN),
-        LE(2, "<=", ExprType.INTEGER, ExprType.BOOLEAN),
-        LT(2, "<", ExprType.INTEGER, ExprType.BOOLEAN),
+        GE(2, ">=", ILType.INTEGER, ILType.BOOLEAN),
+        GT(2, ">", ILType.INTEGER, ILType.BOOLEAN),
+        LE(2, "<=", ILType.INTEGER, ILType.BOOLEAN),
+        LT(2, "<", ILType.INTEGER, ILType.BOOLEAN),
         
-        ISKNOWN(1, "isKnown(", ExprType.UNKNOWN, ExprType.BOOLEAN),
-        ARRAY_INDEX(2, "[]", ExprType.ARRAY, ExprType.UNKNOWN),
+        ISKNOWN(1, "isKnown(", ILType.UNKNOWN, ILType.BOOLEAN),
+        ARRAY_INDEX(2, "[]", ILType.ARRAY, ILType.UNKNOWN),
                 
         // TODO: Do we need casting?
-        CAST_BOOL(1, "(PBoolean) (", ExprType.BOOLEAN, ExprType.BOOLEAN),
-        CAST_INT(1, "(PInteger) (", ExprType.INTEGER, ExprType.INTEGER),
-        CAST_REAL(1, "(PReal) (", ExprType.INTEGER, ExprType.REAL),
-        CAST_STRING(1, "(PString) (", ExprType.STRING, ExprType.STRING),
+        CAST_BOOL(1, "(PBoolean) (", ILType.BOOLEAN, ILType.BOOLEAN),
+        CAST_INT(1, "(PInteger) (", ILType.INTEGER, ILType.INTEGER),
+        CAST_REAL(1, "(PReal) (", ILType.INTEGER, ILType.REAL),
+        CAST_STRING(1, "(PString) (", ILType.STRING, ILType.STRING),
         
-        ABS(1, "abs(", ExprType.INTEGER, ExprType.INTEGER),
-        ADD(-1, "+", ExprType.INTEGER, ExprType.INTEGER),
-        DIV(2, "/", ExprType.INTEGER, ExprType.INTEGER),
-        MAX(2, "max(", ExprType.INTEGER, ExprType.INTEGER),
-        MIN(2, "min(", ExprType.INTEGER, ExprType.INTEGER),
-        MOD(2, "%", ExprType.INTEGER, ExprType.INTEGER),
-        MUL(-1, "*", ExprType.INTEGER, ExprType.INTEGER),
-        SQRT(1, "sqrt(", ExprType.INTEGER, ExprType.INTEGER),
-        SUB(2, "-", ExprType.INTEGER, ExprType.INTEGER),
+        ABS(1, "abs(", ILType.INTEGER, ILType.INTEGER),
+        ADD(-1, "+", ILType.INTEGER, ILType.INTEGER),
+        DIV(2, "/", ILType.INTEGER, ILType.INTEGER),
+        MAX(2, "max(", ILType.INTEGER, ILType.INTEGER),
+        MIN(2, "min(", ILType.INTEGER, ILType.INTEGER),
+        MOD(2, "%", ILType.INTEGER, ILType.INTEGER),
+        MUL(-1, "*", ILType.INTEGER, ILType.INTEGER),
+        SQRT(1, "sqrt(", ILType.INTEGER, ILType.INTEGER),
+        SUB(2, "-", ILType.INTEGER, ILType.INTEGER),
         
-        CONCAT(-1, "+", ExprType.STRING, ExprType.STRING),
+        CONCAT(-1, "+", ILType.STRING, ILType.STRING),
         
-        GET_COMMAND_HANDLE(1, ".command_handle", ExprType.NODEREF, ExprType.COMMAND_HANDLE),
-        GET_STATE(1, ".state", ExprType.NODEREF, ExprType.STATE),
-        GET_OUTCOME(1, ".outcome", ExprType.NODEREF, ExprType.OUTCOME),
-        GET_FAILURE(1, ".failure", ExprType.NODEREF, ExprType.FAILURE),
+        GET_COMMAND_HANDLE(1, ".command_handle", ILType.NODEREF, ILType.COMMAND_HANDLE),
+        GET_STATE(1, ".state", ILType.NODEREF, ILType.STATE),
+        GET_OUTCOME(1, ".outcome", ILType.NODEREF, ILType.OUTCOME),
+        GET_FAILURE(1, ".failure", ILType.NODEREF, ILType.FAILURE),
         
         ;
         private int expectedArgs;
         private String symbol;
-        private ExprType argType;
-        private ExprType returnType;
+        private ILType argType;
+        private ILType returnType;
         
-        private Operator(int expectedArgs, String symbol, ExprType argType, ExprType returnType) {
+        private Operator(int expectedArgs, String symbol, ILType argType, ILType returnType) {
             this.expectedArgs = expectedArgs;
             this.symbol = symbol;
             this.argType = argType;
@@ -347,7 +347,7 @@ public class ASTOperation extends ExpressionBase {
         }
         
         
-        private String toString(List<Expression> args) {
+        private String toString(List<ILExpr> args) {
             String ret;
             String infix;
             String end;
@@ -382,10 +382,10 @@ public class ASTOperation extends ExpressionBase {
     }
     
     private Operator op;
-    private List<Expression> args;
-    private ExprType argType;
+    private List<ILExpr> args;
+    private ILType argType;
     
-    private ASTOperation(Operator op, ExprType argType, List<Expression> args) {
+    private ASTOperation(Operator op, ILType argType, List<ILExpr> args) {
     	super(op.returnType);
         this.op = op;
         this.args = args;
@@ -393,15 +393,15 @@ public class ASTOperation extends ExpressionBase {
         checkArgs();
     }
     
-    private ASTOperation(Operator op, List<Expression> args) {
+    private ASTOperation(Operator op, List<ILExpr> args) {
     	this(op, op.argType, args);
     }
     
-    private ASTOperation(Operator op, Expression... args) {
+    private ASTOperation(Operator op, ILExpr... args) {
         this(op, op.argType, Arrays.asList(args));
     }
     
-    private ASTOperation(Operator op, ExprType argType, Expression... args) {
+    private ASTOperation(Operator op, ILType argType, ILExpr... args) {
         this(op, argType, Arrays.asList(args));
     }
     
@@ -414,8 +414,8 @@ public class ASTOperation extends ExpressionBase {
         
         if (op == Operator.ARRAY_INDEX) {
         	// Bit of a special case here
-        	ExprType.ARRAY.typeCheck(args.get(0).getType());
-        	ExprType.INTEGER.typeCheck(args.get(1).getType());
+        	ILType.ARRAY.typeCheck(args.get(0).getType());
+        	ILType.INTEGER.typeCheck(args.get(1).getType());
         	return;
         }
         
@@ -423,7 +423,7 @@ public class ASTOperation extends ExpressionBase {
         // check out, though. 
         if (op != Operator.CAST_BOOL && 
         		op != Operator.CAST_STRING) {
-	        for (Expression e : args) {
+	        for (ILExpr e : args) {
 	            argType.typeCheck(e.getType());
 	        }
         }
@@ -434,13 +434,13 @@ public class ASTOperation extends ExpressionBase {
         return op;
     }
     
-    public ExprType getExpectedArgumentType() {
+    public ILType getExpectedArgumentType() {
         return argType;
     }
 
-    public ExprType getActualArgumentType() {
-    	if (argType != ExprType.UNKNOWN &&
-    			argType != ExprType.INTEGER) {
+    public ILType getActualArgumentType() {
+    	if (argType != ILType.UNKNOWN &&
+    			argType != ILType.INTEGER) {
     		return argType;
     	}
     	if (op == Operator.ARRAY_INDEX) {
@@ -449,15 +449,15 @@ public class ASTOperation extends ExpressionBase {
     	
     	// Numbers might actually be reals, and we might be able to do better
     	// than unknown. 
-    	ExprType mostSpecific = argType;
-    	for (Expression e : args) {
+    	ILType mostSpecific = argType;
+    	for (ILExpr e : args) {
     		mostSpecific = argType.getMoreSpecific(e.getType());
     	}
     	return mostSpecific;
     }
     
     @Override
-    public List<Expression> getArguments() {
+    public List<ILExpr> getArguments() {
         return args;
     }
     
@@ -473,7 +473,7 @@ public class ASTOperation extends ExpressionBase {
 		}
 		
 		List<PValue> values = new ArrayList<PValue>();
-		for (Expression arg : this.getArguments()) {
+		for (ILExpr arg : this.getArguments()) {
 			Optional<PValue> argResult = arg.eval();
 			if (argResult.isPresent()) {
 				if (shortCircuiter != null && argResult.get().equals(shortCircuiter)) {
@@ -493,14 +493,14 @@ public class ASTOperation extends ExpressionBase {
 	}
 
     
-    public Expression getSingleExpectedArgument() {
+    public ILExpr getSingleExpectedArgument() {
     	if (op.expectedArgs == 1 || args.size() == 1) {
     		return args.get(0);
     	} 
     	throw new RuntimeException("Single argument was expected");
     }
     
-    public Pair<Expression,Expression> getBinaryExpectedArguments() {
+    public Pair<ILExpr,ILExpr> getBinaryExpectedArguments() {
     	if (op.expectedArgs == 2 || args.size() == 2) {
     		return new Pair<>(args.get(0), args.get(1));
     	} 
@@ -508,7 +508,7 @@ public class ASTOperation extends ExpressionBase {
     }
 
     @Override
-    public ASTOperation getCloneWithArgs(List<Expression> args) {
+    public ASTOperation getCloneWithArgs(List<ILExpr> args) {
         return new ASTOperation(op, args);
     }
 

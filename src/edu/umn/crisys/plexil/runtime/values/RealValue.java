@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 public class RealValue implements PReal {
 	
@@ -168,8 +168,8 @@ public class RealValue implements PReal {
 	}
 
 	@Override
-	public ExprType getType() {
-		return ExprType.REAL;
+	public ILType getType() {
+		return ILType.REAL;
 	}
 	
 	@Override

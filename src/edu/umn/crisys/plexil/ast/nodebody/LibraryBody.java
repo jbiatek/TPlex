@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 
 public class LibraryBody extends NodeBody {
 
     private String nodeId;
     
     // Variable aliases 
-    private Map<String, Expression> aliases = 
-        new HashMap<String, Expression>();
+    private Map<String, ILExpr> aliases = 
+        new HashMap<String, ILExpr>();
 
     
     // private String renameNodeId; // Never seen this before
@@ -28,11 +28,11 @@ public class LibraryBody extends NodeBody {
         return aliases.containsKey(name); 
     }
 
-    public Expression getAlias(String name) {
+    public ILExpr getAlias(String name) {
         return aliases.get(name); 
     }
 
-    public void addAlias(String name, Expression expr) { 
+    public void addAlias(String name, ILExpr expr) { 
         aliases.put(name, expr); 
     }
     

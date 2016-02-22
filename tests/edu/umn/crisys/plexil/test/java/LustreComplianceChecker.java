@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import jkind.lustre.values.Value;
 import jkind.results.Signal;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
@@ -15,7 +15,7 @@ import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class LustreComplianceChecker extends TestOracle {
-	private final Map<Expression, List<PValue>> ilTrace;
+	private final Map<ILExpr, List<PValue>> ilTrace;
 	private final Signal<Value> macrostepEnded;
 	private int step = 0;
 	private List<String> errors = new ArrayList<String>();
@@ -23,7 +23,7 @@ public class LustreComplianceChecker extends TestOracle {
 	private String lastEndingReason = "";
 	private ReverseTranslationMap mapper;
 	
-	public LustreComplianceChecker(Map<Expression, List<PValue>> ilTrace,
+	public LustreComplianceChecker(Map<ILExpr, List<PValue>> ilTrace,
 			Signal<Value> macrostepEnded,
 			ReverseTranslationMap mapper) {
 		this.ilTrace = ilTrace;
@@ -74,7 +74,7 @@ public class LustreComplianceChecker extends TestOracle {
 	}
 	
 	private void checkAllExpressions(ILSimulator sim) {
-		for (Expression expr : ilTrace.keySet()) {
+		for (ILExpr expr : ilTrace.keySet()) {
 			checkValue(expr, sim);
 		}
 	}
@@ -93,7 +93,7 @@ public class LustreComplianceChecker extends TestOracle {
 		lastEndingReason = reason;
 	}
 
-	private void checkValue(Expression e, ILSimulator sim) {
+	private void checkValue(ILExpr e, ILSimulator sim) {
 		PValue expected = sim.eval(e);
 		PValue actual = ilTrace.get(e).get(step);
 		String expectedStr = JKindResultUtils.hackyILExprToLustre(expected, e.getType(), mapper);

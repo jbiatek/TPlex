@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 /**
  * Implements a known boolean value.
@@ -110,8 +110,8 @@ public class BooleanValue implements PBoolean {
 	}
 	
 	@Override
-	public ExprType getType() {
-		return ExprType.BOOLEAN;
+	public ILType getType() {
+		return ILType.BOOLEAN;
 	}
 	
 	@Override

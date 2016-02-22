@@ -10,8 +10,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
@@ -27,56 +25,56 @@ import edu.umn.crisys.plexil.runtime.values.PValueList;
 
 public enum ILOperator {
 
-    PBOOL_EQ(2, "==", ExprType.BOOLEAN, ExprType.BOOLEAN) {
+    PBOOL_EQ(2, "==", ILType.BOOLEAN, ILType.BOOLEAN) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pbool(a).equalTo(pbool(b)));
 		}
     },
-    PINT_EQ(2, "==", ExprType.INTEGER, ExprType.BOOLEAN){
+    PINT_EQ(2, "==", ILType.INTEGER, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).equalTo(pint(b)));
 		}
     },
-    PREAL_EQ(2, "==", ExprType.REAL, ExprType.BOOLEAN){
+    PREAL_EQ(2, "==", ILType.REAL, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).equalTo(preal(b)));
 		}
     },
-    PSTRING_EQ(2, "==", ExprType.STRING, ExprType.BOOLEAN){
+    PSTRING_EQ(2, "==", ILType.STRING, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pstring(a).equalTo(pstring(b)));
 		}
     },
-    PSTATE_EQ(2, "==", ExprType.STATE, ExprType.BOOLEAN){
+    PSTATE_EQ(2, "==", ILType.STATE, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pstate(a).equalTo(pstate(b)));
 		}
     },
-    POUTCOME_EQ(2, "==", ExprType.OUTCOME, ExprType.BOOLEAN){
+    POUTCOME_EQ(2, "==", ILType.OUTCOME, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> poutcome(a).equalTo(poutcome(b)));
 		}
     },
-    PFAILURE_EQ(2, "==", ExprType.FAILURE, ExprType.BOOLEAN){
+    PFAILURE_EQ(2, "==", ILType.FAILURE, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pfailure(a).equalTo(pfailure(b)));
 		}
     },
-    PHANDLE_EQ(2, "==", ExprType.COMMAND_HANDLE, ExprType.BOOLEAN) {
+    PHANDLE_EQ(2, "==", ILType.COMMAND_HANDLE, ILType.BOOLEAN) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		return Optional.of((a,b) -> phandle(a).equalTo(phandle(b)));
     	}
     },
     
-    PAND(2, "&&", ExprType.BOOLEAN, ExprType.BOOLEAN) {
+    PAND(2, "&&", ILType.BOOLEAN, ILType.BOOLEAN) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pbool(a).and(pbool(b)));
@@ -86,7 +84,7 @@ public enum ILOperator {
 			return Optional.of(BooleanValue.get(false));
 		}
     },
-    POR(2, "||", ExprType.BOOLEAN, ExprType.BOOLEAN) {
+    POR(2, "||", ILType.BOOLEAN, ILType.BOOLEAN) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pbool(a).or(pbool(b)));
@@ -96,200 +94,200 @@ public enum ILOperator {
 			return Optional.of(BooleanValue.get(true));
 		}
     },
-    PXOR(2, "XOR", ExprType.BOOLEAN, ExprType.BOOLEAN) {
+    PXOR(2, "XOR", ILType.BOOLEAN, ILType.BOOLEAN) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pbool(a).xor(pbool(b)));
 		}
     },
-    PNOT(1, "!(", ExprType.BOOLEAN, ExprType.BOOLEAN) {
+    PNOT(1, "!(", ILType.BOOLEAN, ILType.BOOLEAN) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> pbool(v).not());
 		}
     },
     
-    PINT_GE(2, ">=", ExprType.INTEGER, ExprType.BOOLEAN){
+    PINT_GE(2, ">=", ILType.INTEGER, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).ge(pint(b)));
 		}
     },
-    PINT_GT(2, ">", ExprType.INTEGER, ExprType.BOOLEAN){
+    PINT_GT(2, ">", ILType.INTEGER, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).gt(pint(b)));
 		}
     },
-    PINT_LE(2, "<=", ExprType.INTEGER, ExprType.BOOLEAN){
+    PINT_LE(2, "<=", ILType.INTEGER, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).le(pint(b)));
 		}
     },
-    PINT_LT(2, "<", ExprType.INTEGER, ExprType.BOOLEAN){
+    PINT_LT(2, "<", ILType.INTEGER, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).lt(pint(b)));
 		}
     },
 
-    PREAL_GE(2, ">=", ExprType.REAL, ExprType.BOOLEAN){
+    PREAL_GE(2, ">=", ILType.REAL, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).ge(preal(b)));
 		}
     },
-    PREAL_GT(2, ">", ExprType.REAL, ExprType.BOOLEAN){
+    PREAL_GT(2, ">", ILType.REAL, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).gt(preal(b)));
 		}
     },
-    PREAL_LE(2, "<=", ExprType.REAL, ExprType.BOOLEAN){
+    PREAL_LE(2, "<=", ILType.REAL, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).le(preal(b)));
 		}
     },
-    PREAL_LT(2, "<", ExprType.REAL, ExprType.BOOLEAN){
+    PREAL_LT(2, "<", ILType.REAL, ILType.BOOLEAN){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).lt(preal(b)));
 		}
     },
 
-    PINT_ABS(1, "abs(", ExprType.INTEGER, ExprType.INTEGER) {
+    PINT_ABS(1, "abs(", ILType.INTEGER, ILType.INTEGER) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> pint(v).abs());
 		}
     },
-    PINT_ADD(2, "+", ExprType.INTEGER, ExprType.INTEGER) {
+    PINT_ADD(2, "+", ILType.INTEGER, ILType.INTEGER) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).add(pint(b)));
 		}
     },
-    PINT_DIV(2, "/", ExprType.INTEGER, ExprType.INTEGER) {
+    PINT_DIV(2, "/", ILType.INTEGER, ILType.INTEGER) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).div(pint(b)));
 		}
     },
-    PINT_MAX(2, "max(", ExprType.INTEGER, ExprType.INTEGER) {
+    PINT_MAX(2, "max(", ILType.INTEGER, ILType.INTEGER) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).max(pint(b)));
 		}
     },
-    PINT_MIN(2, "min(", ExprType.INTEGER, ExprType.INTEGER){
+    PINT_MIN(2, "min(", ILType.INTEGER, ILType.INTEGER){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).min(pint(b)));
 		}
     },
-    PINT_MOD(2, "%", ExprType.INTEGER, ExprType.INTEGER){
+    PINT_MOD(2, "%", ILType.INTEGER, ILType.INTEGER){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).mod(pint(b)));
 		}
     },
-    PINT_MUL(2, "*", ExprType.INTEGER, ExprType.INTEGER) {
+    PINT_MUL(2, "*", ILType.INTEGER, ILType.INTEGER) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).mul(pint(b)));
 		}
     },
-    PINT_SUB(2, "-", ExprType.INTEGER, ExprType.INTEGER) {
+    PINT_SUB(2, "-", ILType.INTEGER, ILType.INTEGER) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pint(a).sub(pint(b)));
 		}
     },
     
-    PREAL_ABS(1, "abs(", ExprType.REAL, ExprType.REAL) {
+    PREAL_ABS(1, "abs(", ILType.REAL, ILType.REAL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> preal(v).abs());
 		}
     },
-    PREAL_ADD(2, "+", ExprType.REAL, ExprType.REAL){
+    PREAL_ADD(2, "+", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).add(preal(b)));
 		}
     },
-    PREAL_DIV(2, "/", ExprType.REAL, ExprType.REAL){
+    PREAL_DIV(2, "/", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).div(preal(b)));
 		}
     },
-    PREAL_MAX(2, "max(", ExprType.REAL, ExprType.REAL){
+    PREAL_MAX(2, "max(", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).max(preal(b)));
 		}
     },
-    PREAL_MIN(2, "min(", ExprType.REAL, ExprType.REAL){
+    PREAL_MIN(2, "min(", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).min(preal(b)));
 		}
     },
-    PREAL_MOD(2, "%", ExprType.REAL, ExprType.REAL){
+    PREAL_MOD(2, "%", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).mod(preal(b)));
 		}
     },
-    PREAL_MUL(2, "*", ExprType.REAL, ExprType.REAL){
+    PREAL_MUL(2, "*", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).mul(preal(b)));
 		}
     },
-    PREAL_SQRT(1, "sqrt(", ExprType.REAL, ExprType.REAL) {
+    PREAL_SQRT(1, "sqrt(", ILType.REAL, ILType.REAL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> preal(v).sqrt());
 		}
     },
-    PREAL_SUB(2, "-", ExprType.REAL, ExprType.REAL){
+    PREAL_SUB(2, "-", ILType.REAL, ILType.REAL){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> preal(a).sub(preal(b)));
 		}
     },
     
-    PCEIL(1, "ceil(", ExprType.REAL, ExprType.INTEGER),
-    PFLOOR(1, "floor(", ExprType.REAL, ExprType.INTEGER),
-    PROUND(1, "round(", ExprType.REAL, ExprType.INTEGER),
-    PTRUNC(1, "trunc(", ExprType.REAL, ExprType.INTEGER),
-    PREAL_TO_PINT(1, "real_to_int(", ExprType.REAL, ExprType.INTEGER) {
+    PCEIL(1, "ceil(", ILType.REAL, ILType.INTEGER),
+    PFLOOR(1, "floor(", ILType.REAL, ILType.INTEGER),
+    PROUND(1, "round(", ILType.REAL, ILType.INTEGER),
+    PTRUNC(1, "trunc(", ILType.REAL, ILType.INTEGER),
+    PREAL_TO_PINT(1, "real_to_int(", ILType.REAL, ILType.INTEGER) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> preal(v).castToInteger());
 		}
     },
     
-    TO_PREAL(1, "real(", ExprType.INTEGER, ExprType.REAL) {
+    TO_PREAL(1, "real(", ILType.INTEGER, ILType.REAL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> pint(v).castToReal());
 		}
     },
     
-    PSTR_CONCAT(2, "+", ExprType.STRING, ExprType.STRING){
+    PSTR_CONCAT(2, "+", ILType.STRING, ILType.STRING){
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of((a,b) -> pstring(a).concat(pstring(b)));
 		}
     },    
     
-    PBOOL_INDEX(2, "[]", asList(ExprType.BOOLEAN_ARRAY, 
-    		ExprType.INTEGER), ExprType.BOOLEAN) {
+    PBOOL_INDEX(2, "[]", asList(ILType.BOOLEAN_ARRAY, 
+    		ILType.INTEGER), ILType.BOOLEAN) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		return Optional.of((arr, i) ->
@@ -297,8 +295,8 @@ public enum ILOperator {
     				);
     	}
     },
-    PINT_INDEX(2, "[]", asList(ExprType.INTEGER_ARRAY, 
-    		ExprType.INTEGER), ExprType.INTEGER) {
+    PINT_INDEX(2, "[]", asList(ILType.INTEGER_ARRAY, 
+    		ILType.INTEGER), ILType.INTEGER) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		return Optional.of((arr, i) ->
@@ -306,8 +304,8 @@ public enum ILOperator {
     				);
     	}
     },
-    PREAL_INDEX(2, "[]", asList(ExprType.REAL_ARRAY, 
-    		ExprType.INTEGER), ExprType.REAL) {
+    PREAL_INDEX(2, "[]", asList(ILType.REAL_ARRAY, 
+    		ILType.INTEGER), ILType.REAL) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		return Optional.of((arr, i) ->
@@ -315,8 +313,8 @@ public enum ILOperator {
     				);
     	}
     },
-    PSTRING_INDEX(2, "[]", asList(ExprType.STRING_ARRAY, 
-    		ExprType.INTEGER), ExprType.STRING) {
+    PSTRING_INDEX(2, "[]", asList(ILType.STRING_ARRAY, 
+    		ILType.INTEGER), ILType.STRING) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		return Optional.of((arr, i) ->
@@ -325,7 +323,7 @@ public enum ILOperator {
     	}
     },
     
-    ISKNOWN_OPERATOR(1, "isKnown(", ExprType.UNKNOWN, ExprType.NATIVE_BOOL){
+    ISKNOWN_OPERATOR(1, "isKnown(", ILType.UNKNOWN, ILType.NATIVE_BOOL){
     	@Override
     	public Optional<Function<PValue, PValue>> getUnaryEval() {
     		return Optional.of(
@@ -333,32 +331,32 @@ public enum ILOperator {
     				);
     	}
     },
-    CAST_PBOOL(1, "(PBoolean) (", ExprType.UNKNOWN, ExprType.BOOLEAN) {
+    CAST_PBOOL(1, "(PBoolean) (", ILType.UNKNOWN, ILType.BOOLEAN) {
     	@Override
     	public Optional<Function<PValue, PValue>> getUnaryEval() {
     		return Optional.of((v) -> pbool(v));
     	}
     },
-    CAST_PINT(1, "(PInteger) (", ExprType.UNKNOWN, ExprType.INTEGER){
+    CAST_PINT(1, "(PInteger) (", ILType.UNKNOWN, ILType.INTEGER){
     	@Override
     	public Optional<Function<PValue, PValue>> getUnaryEval() {
     		return Optional.of((v) -> pint(v));
     	}
     },
-    CAST_PREAL(1, "(PReal) (", ExprType.UNKNOWN, ExprType.REAL){
+    CAST_PREAL(1, "(PReal) (", ILType.UNKNOWN, ILType.REAL){
     	@Override
     	public Optional<Function<PValue, PValue>> getUnaryEval() {
     		return Optional.of((v) -> preal(v));
     	}
     },
-    CAST_PSTRING(1, "(PString) (", ExprType.UNKNOWN, ExprType.STRING){
+    CAST_PSTRING(1, "(PString) (", ILType.UNKNOWN, ILType.STRING){
     	@Override
     	public Optional<Function<PValue, PValue>> getUnaryEval() {
     		return Optional.of((v) -> pstring(v));
     	}
     },
     
-	AND(2, "and", ExprType.NATIVE_BOOL, ExprType.NATIVE_BOOL) {
+	AND(2, "and", ILType.NATIVE_BOOL, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of(
@@ -370,7 +368,7 @@ public enum ILOperator {
 			return Optional.of(NativeBool.FALSE);
 		}
     },
-	OR(2, "or", ExprType.NATIVE_BOOL, ExprType.NATIVE_BOOL) {
+	OR(2, "or", ILType.NATIVE_BOOL, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<BinaryOperator<PValue>> getBinaryEval() {
 			return Optional.of(
@@ -382,20 +380,20 @@ public enum ILOperator {
 			return Optional.of(NativeBool.TRUE);
 		}
     },
-	NOT(1, "not", ExprType.NATIVE_BOOL, ExprType.NATIVE_BOOL) {
+	NOT(1, "not", ILType.NATIVE_BOOL, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap( ! bool(v)));
 		}
     },
-	EQ(2, "eq", ExprType.NATIVE_BOOL, ExprType.NATIVE_BOOL) {
+	EQ(2, "eq", ILType.NATIVE_BOOL, ILType.NATIVE_BOOL) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		return Optional.of((a,b) -> NativeBool.wrap(
     				bool(a) == bool(b)));
     	}
     },
-	DIRECT_COMPARE(2, "eq", ExprType.UNKNOWN, ExprType.NATIVE_BOOL) {
+	DIRECT_COMPARE(2, "eq", ILType.UNKNOWN, ILType.NATIVE_BOOL) {
     	@Override
     	public Optional<BinaryOperator<PValue>> getBinaryEval() {
     		// This operator directly compares 2 PValues with a native operation
@@ -404,43 +402,43 @@ public enum ILOperator {
     	}
     },
 	
-	IS_TRUE(1, ".isTrue()", ExprType.BOOLEAN, ExprType.NATIVE_BOOL) {
+	IS_TRUE(1, ".isTrue()", ILType.BOOLEAN, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap(pbool(v).isTrue()));
 		}
     },
-	IS_FALSE(1, ".isFalse()", ExprType.BOOLEAN, ExprType.NATIVE_BOOL) {
+	IS_FALSE(1, ".isFalse()", ILType.BOOLEAN, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap(pbool(v).isFalse()));
 		}
     },
-	IS_UNKNOWN(1, ".isUnknown()", ExprType.BOOLEAN, ExprType.NATIVE_BOOL) {
+	IS_UNKNOWN(1, ".isUnknown()", ILType.BOOLEAN, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap(pbool(v).isUnknown()));
 		}
     },
-	IS_NOT_TRUE(1, ".isNotTrue()", ExprType.BOOLEAN, ExprType.NATIVE_BOOL) {
+	IS_NOT_TRUE(1, ".isNotTrue()", ILType.BOOLEAN, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap(pbool(v).isNotTrue()));
 		}
     },
-	IS_NOT_FALSE(1, ".isNotFalse()", ExprType.BOOLEAN, ExprType.NATIVE_BOOL) {
+	IS_NOT_FALSE(1, ".isNotFalse()", ILType.BOOLEAN, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap(pbool(v).isNotFalse()));
 		}
     },
-	IS_KNOWN(1, ".isKnown()", ExprType.BOOLEAN, ExprType.NATIVE_BOOL) {
+	IS_KNOWN(1, ".isKnown()", ILType.BOOLEAN, ILType.NATIVE_BOOL) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
 			return Optional.of(v -> NativeBool.wrap(pbool(v).isKnown()));
 		}
     },
-	WRAP_BOOLEAN(1, "pboolean(", ExprType.NATIVE_BOOL, ExprType.BOOLEAN) {
+	WRAP_BOOLEAN(1, "pboolean(", ILType.NATIVE_BOOL, ILType.BOOLEAN) {
     	@Override
     	public Optional<Function<PValue,PValue>> getUnaryEval() {
     		return Optional.of(v -> BooleanValue.get(bool(v)));
@@ -451,8 +449,8 @@ public enum ILOperator {
 	
 	private int argSize;
 	private String symbol;
-	private List<ExprType> argTypes;
-	private ExprType returnType;
+	private List<ILType> argTypes;
+	private ILType returnType;
     
 	private static <T> List<T> repeatList(T item, int times) {
 		List<T> list = new ArrayList<>();
@@ -471,8 +469,8 @@ public enum ILOperator {
 	 * @param returnType The type returned by this operator. 
 	 */
 	private ILOperator(int args, String symbol, 
-    		ExprType argType, 
-    		ExprType returnType) {
+    		ILType argType, 
+    		ILType returnType) {
 		this(args, symbol, repeatList(argType, args), returnType);
     }
 	
@@ -485,8 +483,8 @@ public enum ILOperator {
 	 * @param returnType The type returned by this operator. 
 	 */
     private ILOperator(int args, String symbol, 
-    		List<ExprType> argTypes, 
-    		ExprType returnType) {
+    		List<ILType> argTypes, 
+    		ILType returnType) {
     	this.argSize = args;
     	this.symbol = symbol;
     	this.argTypes = argTypes;
@@ -502,7 +500,7 @@ public enum ILOperator {
     	
     }
     
-    public static ILOperation arrayIndex(Expression array, Expression index) {
+    public static ILOperation arrayIndex(ILExpr array, ILExpr index) {
     	switch (array.getType()) {
 		case BOOLEAN_ARRAY:
 			return ILOperator.PBOOL_INDEX.expr(array, index);
@@ -517,11 +515,11 @@ public enum ILOperator {
 		}
     }
     
-    public ILOperation expr(Expression...args) {
+    public ILOperation expr(ILExpr...args) {
     	return expr(Arrays.asList(args));
     }
     
-    public ILOperation expr(List<Expression> args) {
+    public ILOperation expr(List<ILExpr> args) {
     	if (argSize == 2 && args.size() > 2) {
     		// We know what they meant, reduce it for them. 
     		return (ILOperation) args.stream().reduce(
@@ -531,7 +529,7 @@ public enum ILOperator {
     	return new ILOperation(this, args);
     }
     
-    public ExprType getReturnType() {
+    public ILType getReturnType() {
     	return returnType;
     }
     
@@ -544,7 +542,7 @@ public enum ILOperator {
      * 
      * @return
      */
-    public List<ExprType> getArgumentTypeList() {
+    public List<ILType> getArgumentTypeList() {
     	return argTypes;
     }
     
@@ -579,13 +577,13 @@ public enum ILOperator {
 				|| this == PSTRING_INDEX;
 	}
 	
-	public Optional<PValue> eval(List<Expression> args) {
+	public Optional<PValue> eval(List<ILExpr> args) {
 		if (args.isEmpty()) {
 			throw new RuntimeException("No args passed to "+this);
 		}
 		
 		List<Optional<PValue>> eval = args.stream()
-				.map(Expression::eval)
+				.map(ILExpr::eval)
 				.collect(Collectors.toList());
 		
 		if (getShortCircuitValue().isPresent()) {

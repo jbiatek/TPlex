@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr;
+package edu.umn.crisys.plexil.expr.il;
 
 /**
  * Base class for Expressions. Extend this if possible, because it helps to
@@ -7,16 +7,16 @@ package edu.umn.crisys.plexil.expr;
  * @author jbiatek
  *
  */
-public abstract class ExpressionBase implements Expression {
+public abstract class ILExprBase implements ILExpr {
 
-	private ExprType type;
+	private ILType type;
 	
-	public ExpressionBase(ExprType type) {
+	public ILExprBase(ILType type) {
 		this.type = type;
 	}
 	
 	@Override
-	public final ExprType getType() {
+	public final ILType getType() {
 		return type;
 	}
 

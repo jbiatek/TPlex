@@ -41,10 +41,10 @@ import lustre.LustreTrace;
 import simulation.LustreSimulator;
 import types.ResolvedTypeTable;
 import values.ValueToString;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.Plan;
@@ -414,7 +414,7 @@ public class JKindResultUtils {
 		case "int":
 			return IntegerValue.get(Integer.parseInt(value.toString()));
 		case "bool":
-			return ExprType.BOOLEAN.parseValue(value.toString());
+			return ILType.BOOLEAN.parseValue(value.toString());
 		case "enum":
 			return LustreNamingConventions.reverseTranslate(value.toString(), 
 					Optional.of(stringMap));
@@ -432,7 +432,7 @@ public class JKindResultUtils {
 							stringMapForLus, ilPlan)));
 	}
 	
-	public static Map<Expression, List<PValue>> createILMapFromLustre(
+	public static Map<ILExpr, List<PValue>> createILMapFromLustre(
 			LustreTrace rawTrace, Plan ilPlan, ReverseTranslationMap mapper) {
 		// Put the trace in terms of variable names
 		Map<String, Signal<Value>> stringTrace = new HashMap<>();
@@ -440,7 +440,7 @@ public class JKindResultUtils {
 				name -> stringTrace.put(name, rawTrace.getVariable(name)));
 		
 		// Now, for each IL expression we're interested in, find it in Lustre. 
-		final Map<Expression, List<PValue>> ilTrace = new HashMap<>();
+		final Map<ILExpr, List<PValue>> ilTrace = new HashMap<>();
 		// States aren't stored as variables, so those first
 		ilPlan.getMachines().forEach(nsm -> 
 				nsm.getNodeIds().forEach(uid -> 
@@ -463,9 +463,9 @@ public class JKindResultUtils {
 	 * @param ilTrace
 	 * @param mapper
 	 */
-	private static void attachILExprToLustreVar(Expression e, 
+	private static void attachILExprToLustreVar(ILExpr e, 
 			Map<String, Signal<Value>> stringTrace,
-			Map<Expression, List<PValue>> ilTrace,
+			Map<ILExpr, List<PValue>> ilTrace,
 			ReverseTranslationMap mapper) {
 		if (e instanceof ILVariable
 				&& LustreNamingConventions.hasValueAndKnownSplit((ILVariable) e)) {
@@ -547,7 +547,7 @@ public class JKindResultUtils {
 	private static List<PValue> reverseTranslate(
 			Signal<Value> valueSignal,
 			Signal<Value> knownSignal,
-			ExprType type) {
+			ILType type) {
 		List<PValue> filled = new ArrayList<>();
 		
 		for (int i = 0; i < valueSignal.getValues().size(); i++) {
@@ -567,7 +567,7 @@ public class JKindResultUtils {
 	
 	
 	private static List<PValue> reverseTranslate(Signal<Value> signal, 
-			ExprType type,
+			ILType type,
 			ReverseTranslationMap map) {
 		if (LustreNamingConventions.hasValueAndKnownSplit(type)) {
 			throw new RuntimeException("This needs to be split: "+type);
@@ -589,7 +589,7 @@ public class JKindResultUtils {
 		return filled;
 	}
 
-	public static String hackyILExprToLustre(Expression e, ExprType type, ReverseTranslationMap mapper) {
+	public static String hackyILExprToLustre(ILExpr e, ILType type, ReverseTranslationMap mapper) {
 		if (e instanceof ILVariable) {
 			return LustreNamingConventions.getVariableId((ILVariable) e);
 		} else if (e instanceof GetNodeStateExpr) {

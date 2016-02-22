@@ -14,10 +14,10 @@ import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
@@ -56,7 +56,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	public void navigate(Plan p) {
 		// Initialize variables
 		for (ILVariable v : p.getVariables()) {
-			if (v.getType() == ExprType.COMMAND_HANDLE) {
+			if (v.getType() == ILType.COMMAND_HANDLE) {
 				// These are inputs, not really variables, so skip them.
 				continue;
 			} else if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
@@ -172,7 +172,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		if (assign.getLHS() instanceof SimpleVar) {
 			SimpleVar v = (SimpleVar) assign.getLHS();
 			
-			if (v.getType() == ExprType.COMMAND_HANDLE) {
+			if (v.getType() == ILType.COMMAND_HANDLE) {
 				// A special case here: command handles are inputs, not 
 				// variables. All their assignments and such are handled 
 				// elsewhere.
@@ -222,24 +222,24 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		// initial state of the plan and by resetting. 
 		NodeUID node = cmd.getHandle().getNodeUID();
 		
-		Expression inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
-		Expression waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
+		ILExpr inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
+		ILExpr waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
 		// If the node was SKIPPED, it must have gone directly from WAITING to
 		// FINISHED, with the command not being issued. Therefore, it should 
 		// be UNKNOWN too.
-		Expression skipped = ILOperator.DIRECT_COMPARE.expr(
+		ILExpr skipped = ILOperator.DIRECT_COMPARE.expr(
 				NodeOutcome.SKIPPED, 
 				translator.getNodeOutcomeFor(node));
 		// This is also true if the pre-condition failed.
-		Expression preFail = ILOperator.DIRECT_COMPARE.expr(
+		ILExpr preFail = ILOperator.DIRECT_COMPARE.expr(
 				NodeFailureType.PRE_CONDITION_FAILED,
 				translator.getFailureTypeFor(node));
-		Expression handleShouldBeUntouchedIL = ILOperator.OR.expr(
+		ILExpr handleShouldBeUntouchedIL = ILOperator.OR.expr(
 				inactive, waiting, skipped, preFail);
 		
 		Expr handleShouldBeUntouched = translator.toLustre(handleShouldBeUntouchedIL);
 		Expr cmdUnknown = translator.toLustre(CommandHandleState.UNKNOWN, 
-				ExprType.COMMAND_HANDLE);
+				ILType.COMMAND_HANDLE);
 		
 		// When it should be untouched, the only valid value is UNKNOWN.
 		translator.addAssertion(

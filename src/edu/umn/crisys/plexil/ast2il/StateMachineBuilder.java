@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -37,7 +37,7 @@ public class StateMachineBuilder {
 	private NodeToIL translator;
 	private Node astNode;
     private Map<PlexilExprDescription, NamedCondition> ilExprCache = new HashMap<>();
-	private Map<PlexilExprDescription, Expression> nativeExprCache = new HashMap<>();
+	private Map<PlexilExprDescription, ILExpr> nativeExprCache = new HashMap<>();
 	    
 	
 	public StateMachineBuilder(NodeToIL translator, Node node) {
@@ -73,7 +73,7 @@ public class StateMachineBuilder {
         {
             // All of these are the same, just different guards
             int priority = 0;
-            for (Expression g : new Expression[]{ 
+            for (ILExpr g : new ILExpr[]{ 
                     ancestorExitsDisjoined(ILOperator.IS_TRUE),
                     exitCondition(ILOperator.IS_TRUE),
                     ancestorInvariantsConjoined(ILOperator.IS_FALSE),
@@ -159,7 +159,7 @@ public class StateMachineBuilder {
         } 
     }
     
-    public void addFinishingTransitions(Expression finishGuard, NodeStateMachine nsm, Map<NodeState,State> map) {
+    public void addFinishingTransitions(ILExpr finishGuard, NodeStateMachine nsm, Map<NodeState,State> map) {
         nsm.addTransition(checkAncestorExit(map, 1, NodeState.FINISHING, NodeState.FAILING));
         nsm.addTransition(checkExit(map, 2, NodeState.FINISHING, NodeState.FAILING));
         nsm.addTransition(checkAncestorInvariant(map, 3, NodeState.FINISHING, NodeState.FAILING));
@@ -178,17 +178,17 @@ public class StateMachineBuilder {
         
         // There are additional guards that have to be met for some nodes:
         if (astNode.isCommandNode()) {
-        	Expression abortComplete = abortComplete();
+        	ILExpr abortComplete = abortComplete();
             parentExited.addGuard(abortComplete);
             parentFailed.addGuard(abortComplete);
             myFault.addGuard(abortComplete);
         } else if (astNode.isUpdateNode()) {
-        	Expression updateComplete = ILOperator.IS_TRUE.expr(translator.getUpdateHandle());
+        	ILExpr updateComplete = ILOperator.IS_TRUE.expr(translator.getUpdateHandle());
             parentExited.addGuard(updateComplete);
             parentFailed.addGuard(updateComplete);
             myFault.addGuard(updateComplete);
         } else if (astNode.isListNode() || astNode.isLibraryNode()) {
-        	Expression childrenWaitingOrFinished = allChildrenWaitingOrFinished();
+        	ILExpr childrenWaitingOrFinished = allChildrenWaitingOrFinished();
             parentExited.addGuard(childrenWaitingOrFinished);
             parentFailed.addGuard(childrenWaitingOrFinished);
             myFault.addGuard(childrenWaitingOrFinished);
@@ -225,14 +225,14 @@ public class StateMachineBuilder {
      * Support methods for creating the IL state machine ----------------------
      */
     
-    private Expression lookupTime() {
+    private ILExpr lookupTime() {
     	return translator.toIL(new ASTLookupExpr(NodeToIL.TIMEPOINT_TYPE, TIME), 
     			NodeToIL.TIMEPOINT_TYPE);
     }
     
     private Transition makeTransition(Map<NodeState,State> map, int priority, 
             NodeState start, NodeState end,
-            Expression...guards) {
+            ILExpr...guards) {
         String desc = translator.getUID() +" : "+start+" ("+priority+") -> "+end;
         Transition t = new Transition(desc, priority, map.get(start), map.get(end), guards);
         
@@ -247,7 +247,7 @@ public class StateMachineBuilder {
         return t;
     }
     
-    private Expression makeGuard(PlexilExprDescription d, ILOperator cond) {
+    private ILExpr makeGuard(PlexilExprDescription d, ILOperator cond) {
         if ( ! ilExprCache.containsKey(d)) {
             throw new RuntimeException("Expression was not ready: "+d);
         }
@@ -341,7 +341,7 @@ public class StateMachineBuilder {
      * @param end
      * @return both post-condition check transitions.
      */
-    private Pair<Transition,Transition> checkPost(Expression guard, 
+    private Pair<Transition,Transition> checkPost(ILExpr guard, 
             Map<NodeState,State> map, int priority, 
             NodeState start, NodeState end) {
         Transition success = makeTransition(map, priority, start, end, guard, postCondition(ILOperator.IS_TRUE));
@@ -355,59 +355,59 @@ public class StateMachineBuilder {
      * All the various guards that are used in the diagrams ------------------
      */
     
-    private void cacheNamedExpression(PlexilExprDescription desc, Expression ilExpr) {
+    private void cacheNamedExpression(PlexilExprDescription desc, ILExpr ilExpr) {
     	ilExprCache.put(desc, new NamedCondition(ilExpr, translator.getUID(), desc));
     }
     
-    private Expression startCondition(ILOperator cond) {
+    private ILExpr startCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.START_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.START_CONDITION, 
-                    translator.toIL(astNode.getStartCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getStartCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.START_CONDITION, cond);
     }
     
-    private Expression skipCondition(ILOperator cond) {
+    private ILExpr skipCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.SKIP_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.SKIP_CONDITION, 
-                    translator.toIL(astNode.getSkipCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getSkipCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.SKIP_CONDITION, cond);
     }
     
-    private Expression preCondition(ILOperator cond) {
+    private ILExpr preCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.PRE_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.PRE_CONDITION, 
-                    translator.toIL(astNode.getPreCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getPreCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.PRE_CONDITION, cond);
     }
     
-    private Expression invariantCondition(ILOperator cond) {
+    private ILExpr invariantCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.INVARIANT_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.INVARIANT_CONDITION, 
-                    translator.toIL(astNode.getInvariantCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getInvariantCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.INVARIANT_CONDITION, cond);
     }
     
-    private Expression repeatCondition(ILOperator cond) {
+    private ILExpr repeatCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.REPEAT_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.REPEAT_CONDITION, 
-                    translator.toIL(astNode.getRepeatCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getRepeatCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.REPEAT_CONDITION, cond);
     }
     
-    private Expression postCondition(ILOperator cond) {
+    private ILExpr postCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.POST_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.POST_CONDITION, 
-                    translator.toIL(astNode.getPostCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getPostCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.POST_CONDITION, cond);
     }
     
-    private Expression endCondition(ILOperator cond) {
+    private ILExpr endCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.END_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.END_CONDITION, 
             		translator.getCalculatedILEndCondition());
@@ -415,15 +415,15 @@ public class StateMachineBuilder {
         return makeGuard(PlexilExprDescription.END_CONDITION, cond);
     }
     
-    private Expression exitCondition(ILOperator cond) {
+    private ILExpr exitCondition(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.EXIT_CONDITION)) {
             cacheNamedExpression(PlexilExprDescription.EXIT_CONDITION, 
-                    translator.toIL(astNode.getExitCondition(), ExprType.BOOLEAN));
+                    translator.toIL(astNode.getExitCondition(), ILType.BOOLEAN));
         }
         return makeGuard(PlexilExprDescription.EXIT_CONDITION, cond);
     }
     
-    private Expression ancestorEndsDisjoined(ILOperator cond) {
+    private ILExpr ancestorEndsDisjoined(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED)) {
         	cacheNamedExpression(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED, 
                 	translator.getParent().map(NodeToIL::getThisOrAncestorsEnds)
@@ -432,7 +432,7 @@ public class StateMachineBuilder {
         return makeGuard(PlexilExprDescription.ANCESTOR_ENDS_DISJOINED, cond);
     }
     
-    private Expression ancestorExitsDisjoined(ILOperator cond) {
+    private ILExpr ancestorExitsDisjoined(ILOperator cond) {
         if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED)) {
         	cacheNamedExpression(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED, 
         			translator.getParent().map(NodeToIL::getThisOrAncestorsExits)
@@ -441,7 +441,7 @@ public class StateMachineBuilder {
         return makeGuard(PlexilExprDescription.ANCESTOR_EXITS_DISJOINED, cond);
     }
     
-    private Expression ancestorInvariantsConjoined(ILOperator cond) {
+    private ILExpr ancestorInvariantsConjoined(ILOperator cond) {
     	if ( ! ilExprCache.containsKey(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED)) {
     		cacheNamedExpression(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED, 
     				translator.getParent().map(NodeToIL::getThisAndAncestorsInvariants)
@@ -450,31 +450,31 @@ public class StateMachineBuilder {
     	return makeGuard(PlexilExprDescription.ANCESTOR_INVARIANTS_CONJOINED, cond);
     }
 
-    private Expression parentIsFinished() {
+    private ILExpr parentIsFinished() {
         return getParentIsInState(NodeState.FINISHED, PlexilExprDescription.PARENT_FINISHED);
     }
 
-    private Expression parentIsExecuting() {
+    private ILExpr parentIsExecuting() {
         return getParentIsInState(NodeState.EXECUTING, PlexilExprDescription.PARENT_EXECUTING);
     }
 
-    private Expression parentIsWaiting() {
+    private ILExpr parentIsWaiting() {
         return getParentIsInState(NodeState.WAITING, PlexilExprDescription.PARENT_WAITING);
     }
 
-    private Expression getParentIsInState(NodeState state, PlexilExprDescription d) {
+    private ILExpr getParentIsInState(NodeState state, PlexilExprDescription d) {
         if ( ! nativeExprCache.containsKey(d) ) {
         	nativeExprCache.put(d, 
         			ILOperator.DIRECT_COMPARE.expr(state, 
         					translator.getParent().map(
-        							(parent) -> (Expression)parent.getState())
+        							(parent) -> (ILExpr)parent.getState())
         					.orElse(RootAncestorExpr.STATE)
         			));
         }
         return nativeExprCache.get(d);
     }
 
-    private Expression failureTypeIsParentFailed() {
+    private ILExpr failureTypeIsParentFailed() {
         if ( ! nativeExprCache.containsKey(PlexilExprDescription.FAILURE_IS_PARENT_FAIL)) {
         	nativeExprCache.put(
         			PlexilExprDescription.FAILURE_IS_PARENT_FAIL,
@@ -486,7 +486,7 @@ public class StateMachineBuilder {
         return nativeExprCache.get(PlexilExprDescription.FAILURE_IS_PARENT_FAIL);
     }
 
-    private Expression failureTypeIsParentExited() {
+    private ILExpr failureTypeIsParentExited() {
         if ( ! nativeExprCache.containsKey(PlexilExprDescription.FAILURE_IS_PARENT_EXIT)) {
         	nativeExprCache.put(PlexilExprDescription.FAILURE_IS_PARENT_EXIT,
         			ILOperator.DIRECT_COMPARE.expr(
@@ -498,11 +498,11 @@ public class StateMachineBuilder {
     }
     
     
-    private Expression commandHandleIsKnown() {
+    private ILExpr commandHandleIsKnown() {
     	return ILOperator.ISKNOWN_OPERATOR.expr(translator.getCommandHandle());
     }
 
-    private Expression allChildrenWaitingOrFinished() {
+    private ILExpr allChildrenWaitingOrFinished() {
     	if ( ! nativeExprCache.containsKey(PlexilExprDescription.ALL_CHILDREN_WAITING_OR_FINISHED)) {
     		if (translator.hasLibraryHandle()) {
     			// Treat it as the child
@@ -518,7 +518,7 @@ public class StateMachineBuilder {
     					);
     		} else {
     			// Just a regular list node with children. 
-    			List<Expression> clauses = new ArrayList<Expression>();
+    			List<ILExpr> clauses = new ArrayList<ILExpr>();
     			for (NodeToIL child : translator.getChildren()) {
     				clauses.add(
     						ILOperator.OR.expr(
@@ -527,7 +527,7 @@ public class StateMachineBuilder {
     								)
     						);
     			}
-    			Expression all = clauses.size() == 1 ? clauses.get(0) : ILOperator.AND.expr(clauses);
+    			ILExpr all = clauses.size() == 1 ? clauses.get(0) : ILOperator.AND.expr(clauses);
     			nativeExprCache.put(PlexilExprDescription.ALL_CHILDREN_WAITING_OR_FINISHED,
     					all);
     		}
@@ -535,7 +535,7 @@ public class StateMachineBuilder {
     	return nativeExprCache.get(PlexilExprDescription.ALL_CHILDREN_WAITING_OR_FINISHED);
     }
     
-    private Expression abortComplete() {
+    private ILExpr abortComplete() {
     	return ILOperator.DIRECT_COMPARE.expr(
     			translator.getCommandHandle(), 
     			CommandHandleState.COMMAND_ABORTED);

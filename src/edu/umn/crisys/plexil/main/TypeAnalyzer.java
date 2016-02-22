@@ -19,13 +19,13 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.ast.NodeRefExpr;
 import edu.umn.crisys.plexil.expr.ast.NodeTimepointExpr;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
@@ -41,11 +41,11 @@ import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements NodeBodyVisitor<Node, Void>{
+public class TypeAnalyzer extends ASTExprVisitor<ILType, Void> implements NodeBodyVisitor<Node, Void>{
 	
-    private Map<String, Optional<ExprType>> lookups = new HashMap<>();
+    private Map<String, Optional<ILType>> lookups = new HashMap<>();
     private Map<String, List<PValue>> lookupValuesOfInterest = new HashMap<>();
-    private Map<String, Optional<ExprType>> commands = new HashMap<>();
+    private Map<String, Optional<ILType>> commands = new HashMap<>();
     
 
 	public void printAnalysis() {
@@ -79,7 +79,7 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 			}
 			// Create a declaration based on this info
 			LookupDecl inferred = new LookupDecl(lookup);
-			ExprType type = lookups.get(lookup).get();
+			ILType type = lookups.get(lookup).get();
 			if (type.isArrayType()) {
 				// Need one with an index
 				inferred.setReturnValue(new VariableDecl("<inferred-array>", 0, type));
@@ -93,20 +93,20 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 
     public void checkNode(Node root) {
         // Check all the conditions
-        root.getStartCondition().accept(this, ExprType.BOOLEAN);
-        root.getSkipCondition().accept(this, ExprType.BOOLEAN);
-        root.getPreCondition().accept(this, ExprType.BOOLEAN);
-        root.getInvariantCondition().accept(this, ExprType.BOOLEAN);
-        root.getRepeatCondition().accept(this, ExprType.BOOLEAN);
-        root.getPostCondition().accept(this, ExprType.BOOLEAN);
-        root.getEndCondition().ifPresent(c -> c.accept(this, ExprType.BOOLEAN));
-        root.getExitCondition().accept(this, ExprType.BOOLEAN);
+        root.getStartCondition().accept(this, ILType.BOOLEAN);
+        root.getSkipCondition().accept(this, ILType.BOOLEAN);
+        root.getPreCondition().accept(this, ILType.BOOLEAN);
+        root.getInvariantCondition().accept(this, ILType.BOOLEAN);
+        root.getRepeatCondition().accept(this, ILType.BOOLEAN);
+        root.getPostCondition().accept(this, ILType.BOOLEAN);
+        root.getEndCondition().ifPresent(c -> c.accept(this, ILType.BOOLEAN));
+        root.getExitCondition().accept(this, ILType.BOOLEAN);
         // And the body.
         root.getNodeBody().accept(this, root);
         
     }
     
-    public Map<String, Optional<ExprType>> getLookupTypes() {
+    public Map<String, Optional<ILType>> getLookupTypes() {
     	return lookups;
     }
     
@@ -114,15 +114,15 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
     	return lookupValuesOfInterest;
     }
     
-    public Map<String, Optional<ExprType>> getCommandTypes() {
+    public Map<String, Optional<ILType>> getCommandTypes() {
     	return commands;
     }
 
-    private static void customAdd(Map<String, Optional<ExprType>> map, Expression key, Optional<ExprType> value) {
+    private static void customAdd(Map<String, Optional<ILType>> map, ILExpr key, Optional<ILType> value) {
 		customAdd(map, "("+key.toString()+") (expression)", value);
     }
     
-    private static void customAdd(Map<String, Optional<ExprType>> map, String key, Optional<ExprType> value) {
+    private static void customAdd(Map<String, Optional<ILType>> map, String key, Optional<ILType> value) {
         if (map.containsKey(key)) {
         	if ( ! value.isPresent()) {
         		// We already have something for this, if they're telling us
@@ -137,14 +137,14 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
             	// Ah, we had seen this before, but we didn't know it had a type.
                 map.put(key, value);
                 return;
-            } else if (map.get(key).map(t -> t == ExprType.INTEGER).orElse(false)
-            		&& (value.get() == ExprType.REAL)) {
+            } else if (map.get(key).map(t -> t == ILType.INTEGER).orElse(false)
+            		&& (value.get() == ILType.REAL)) {
             	// Hmm, we thought this was an integer, but I guess we can't be
             	// that specific.
-                map.put(key, Optional.of(ExprType.REAL));
+                map.put(key, Optional.of(ILType.REAL));
                 return;
-            } else if (map.get(key).map(t -> t == ExprType.REAL).orElse(false) 
-            		&& (value.get() == ExprType.INTEGER)) {
+            } else if (map.get(key).map(t -> t == ILType.REAL).orElse(false) 
+            		&& (value.get() == ILType.INTEGER)) {
                 return;
             } else {
             	// They didn't match, and it wasn't numeric? Bad times.
@@ -161,8 +161,8 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 
 
 	@Override
-	public Void visit(ASTLookupExpr lookup, ExprType currentType) {
-		Expression name = lookup.getLookupName();
+	public Void visit(ASTLookupExpr lookup, ILType currentType) {
+		ILExpr name = lookup.getLookupName();
 		if ( ! (name instanceof StringValue)) {
 			customAdd(lookups, name, Optional.of(currentType));
 		} else {
@@ -173,14 +173,14 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 
 	@Override
 	public Void visitCommand(CommandBody cmd, Node n) {
-		Optional<ExprType> typeToSet = Optional.empty();
+		Optional<ILType> typeToSet = Optional.empty();
 		cmd.getVarToAssign().ifPresent(
 				(varToAssign) -> resolveVariableType(varToAssign, n));
 		// Even if it's not there, we want to set it. Empty means that it's a command
 		// that doesn't appear to return anything.
 		
         // Get command name
-		Expression name = cmd.getCommandName();
+		ILExpr name = cmd.getCommandName();
 		if ( ! (name instanceof StringValue)) {
 			// Don't try to extract string
 			customAdd(commands, name, typeToSet);
@@ -191,68 +191,68 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 		return null;
 	}
 	
-	private static ExprType resolveVariableType(Expression e, Node n) {
+	private static ILType resolveVariableType(ILExpr e, Node n) {
 		if (e instanceof ASTOperation) {
 			// This must be an array index. We can get the array type!
-			ExprType arrayType = resolveVariableType(((ASTOperation) e)
+			ILType arrayType = resolveVariableType(((ASTOperation) e)
 					.getBinaryFirst(), n);
 			if (arrayType.isArrayType()) {
 				return arrayType.elementType();
 			} else {
 				// Mmm, didn't work. I guess we're stuck.
-				return ExprType.UNKNOWN;
+				return ILType.UNKNOWN;
 			}
 		} else if (e instanceof UnresolvedVariableExpr) {
 			return resolveVariableType(((UnresolvedVariableExpr) e).getName(), n);
 		} else {
 			System.err.println("Add LHS type to resolveVariableType() : "+e+" "+e.getClass());
-			return ExprType.UNKNOWN;
+			return ILType.UNKNOWN;
 		}
 
 	}
 
-	private static ExprType resolveVariableType(String name, Node n) {
+	private static ILType resolveVariableType(String name, Node n) {
 		if (n.containsVar(name)) {
 			return n.getVariableInfo(name).getType();
 		} else if (n.getParent().isPresent()) {
 			return resolveVariableType(name, n.getParent().get());
 		} else {
-			return ExprType.UNKNOWN;
+			return ILType.UNKNOWN;
 		}
 	}
 
 	@Override
-	public Void visit(ASTOperation op, ExprType currentType) {
+	public Void visit(ASTOperation op, ILType currentType) {
 		// Operators contain information about their argument types.
-		ExprType argType = op.getExpectedArgumentType();
+		ILType argType = op.getExpectedArgumentType();
 		
 		if (argType.isNumeric()) {
 			// These are trickier. We need to know actual argument type.
 			argType = op.getArguments().stream()
 					.map(arg -> arg.getType())
-					.reduce(ExprType.UNKNOWN, ExprType::getMoreSpecific);
+					.reduce(ILType.UNKNOWN, ILType::getMoreSpecific);
 		}
 		
 		// If it's a NodeRef, there's no point in continuing.
-		if (argType == ExprType.NODEREF) return null;
+		if (argType == ILType.NODEREF) return null;
 		if (op.getOperator() == Operator.ARRAY_INDEX) {
 			// Maybe they're indexing an array with a lookup? That would be stupid,
 			// but we do know this type I guess.
-			op.getBinarySecond().accept(this, ExprType.INTEGER);
+			op.getBinarySecond().accept(this, ILType.INTEGER);
 			return null;
 		}
 		
         // Move down, and pass along the argument type.
         String lookup = null;
         Set<PValue> constants = new HashSet<PValue>();
-        for (Expression arg : op.getArguments()) {
+        for (ILExpr arg : op.getArguments()) {
         	arg.accept(this, argType);
         	
         	if (arg instanceof ASTLookupExpr) {
         		lookup = ((ASTLookupExpr) arg).getLookupNameAsString();
         	} else if (arg instanceof PValue) {
         		// Booleans are boring, we know what those will be already.
-        		if (arg.getType() != ExprType.BOOLEAN) {
+        		if (arg.getType() != ILType.BOOLEAN) {
         			constants.add((PValue) arg);
         		}
         	}
@@ -272,7 +272,7 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 
 	
 	@Override
-	public Void visit(NamedCondition named, ExprType currentType) {
+	public Void visit(NamedCondition named, ILType currentType) {
 		// Just pass through
 		named.getExpression().accept(this, currentType);
 		return null;
@@ -281,9 +281,9 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 
 	@Override
 	public Void visitAssignment(AssignmentBody assign, Node n) {
-		ExprType t = assign.getLeftHandSide().getType();
+		ILType t = assign.getLeftHandSide().getType();
 		// It's probably not set, though. 
-		if (t == ExprType.UNKNOWN) {
+		if (t == ILType.UNKNOWN) {
 			t = resolveVariableType(assign.getLeftHandSide(), n);
 		}
 		
@@ -307,79 +307,79 @@ public class TypeAnalyzer extends ASTExprVisitor<ExprType, Void> implements Node
 	 */
 	
 	@Override
-	public Void visit(NodeTimepointExpr timept, ExprType currentType) {
+	public Void visit(NodeTimepointExpr timept, ILType currentType) {
 		return null;
 	}
 
 	@Override
-	public Void visit(BooleanValue bool, ExprType currentType) {
-		return null;
-	}
-
-
-	@Override
-	public Void visit(IntegerValue integer, ExprType currentType) {
+	public Void visit(BooleanValue bool, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(RealValue real, ExprType currentType) {
+	public Void visit(IntegerValue integer, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(StringValue string, ExprType currentType) {
+	public Void visit(RealValue real, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(UnknownValue unk, ExprType currentType) {
+	public Void visit(StringValue string, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(PValueList<?> list, ExprType currentType) {
+	public Void visit(UnknownValue unk, ILType currentType) {
+		return null;
+	}
+
+
+	@Override
+	public Void visit(PValueList<?> list, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
 	public Void visit(CommandHandleState state,
-			ExprType currentType) {
+			ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeFailureType type, ExprType currentType) {
+	public Void visit(NodeFailureType type, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeOutcome outcome, ExprType currentType) {
+	public Void visit(NodeOutcome outcome, ILType currentType) {
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeState state, ExprType currentType) {
+	public Void visit(NodeState state, ILType currentType) {
 		return null;
 	}
 
 	@Override
-	public Void visit(UnresolvedVariableExpr expr, ExprType currentType) {
+	public Void visit(UnresolvedVariableExpr expr, ILType currentType) {
 		// Nothing to do here
 		return null;
 	}
 
 
 	@Override
-	public Void visit(NodeRefExpr ref, ExprType currentType) {
+	public Void visit(NodeRefExpr ref, ILType currentType) {
 		// Nothing to do here
 		return null;
 	}

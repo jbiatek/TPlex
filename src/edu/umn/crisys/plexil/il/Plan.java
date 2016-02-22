@@ -15,8 +15,8 @@ import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
-import edu.umn.crisys.plexil.expr.Expression;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
@@ -144,11 +144,11 @@ public class Plan {
 		return planName;
 	}
 
-	public Expression getRootNodeOutcome() {
+	public ILExpr getRootNodeOutcome() {
 		return rootOutcome;
 	}
 
-	public Expression getRootNodeState() {
+	public ILExpr getRootNodeState() {
 		return rootState;
 	}
 

@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr;
+package edu.umn.crisys.plexil.expr.il;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 
-public enum ExprType {
+public enum ILType {
 
 	NATIVE_BOOL     (Optional.empty()),
     BOOLEAN			(Optional.of(UnknownValue.get())),
@@ -43,7 +43,7 @@ public enum ExprType {
 
     private final Optional<PValue> unknown;
 
-    private ExprType(Optional<PValue>unknown) {
+    private ILType(Optional<PValue>unknown) {
         this.unknown = unknown;
     }
 
@@ -89,7 +89,7 @@ public enum ExprType {
      * has to be an exact match. 
      * @param other
      */
-    public void typeCheck(ExprType other) {
+    public void typeCheck(ILType other) {
         // Plexil has a lot of unknown types, like lookups, so we'll be 
         // permissive. Ideally, we might require lookups to have declared
         // types (this is now built in to the spec). 
@@ -115,7 +115,7 @@ public enum ExprType {
     	return /*this != NUMERIC && */this != UNKNOWN &&  this != ARRAY;
     }
     
-    public ExprType getMoreSpecific(ExprType other) {
+    public ILType getMoreSpecific(ILType other) {
     	if (this.isSpecificType() && !other.isSpecificType()) {
     		this.typeCheck(other);
     		return this;
@@ -142,7 +142,7 @@ public enum ExprType {
      * @param originalName
      * @return
      */
-    public static ExprType fuzzyValueOf(String originalName) {
+    public static ILType fuzzyValueOf(String originalName) {
         
     	// Strip all symbols, make it all upper case
         String name = originalName.replaceAll("[^A-Za-z]", "").toUpperCase();
@@ -173,7 +173,7 @@ public enum ExprType {
         }
         
         // Just look for an easy match
-        for (ExprType type : values()) {
+        for (ILType type : values()) {
         	// Strip symbols here too
         	String thisOnesName = type.toString().replaceAll("_", "");
             if (thisOnesName.equalsIgnoreCase(name)) {
@@ -264,7 +264,7 @@ public enum ExprType {
      * Get the array type that contains this type as elements.
      * @return
      */
-    public ExprType toArrayType() {
+    public ILType toArrayType() {
         switch (this) {
         case BOOLEAN:
             return BOOLEAN_ARRAY;
@@ -283,7 +283,7 @@ public enum ExprType {
      * For array types, get the element type.
      * @return
      */
-    public ExprType elementType() {
+    public ILType elementType() {
         switch (this) {
         case BOOLEAN_ARRAY:
             return BOOLEAN;

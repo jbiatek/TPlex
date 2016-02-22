@@ -1,22 +1,22 @@
 package edu.umn.crisys.plexil.expr.il.vars;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.ILTypeChecker;
-import edu.umn.crisys.plexil.expr.ExprType;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 
 public class SimpleVar extends ILVariable {
 	
-	private Expression init;
+	private ILExpr init;
 
-	public SimpleVar(String name, NodeUID uid, ExprType type) {
-		this(name, uid, type, (Expression) null);
+	public SimpleVar(String name, NodeUID uid, ILType type) {
+		this(name, uid, type, (ILExpr) null);
 	}
 	
-	public SimpleVar(String name, NodeUID uid, ExprType type, Expression init) {
+	public SimpleVar(String name, NodeUID uid, ILType type, ILExpr init) {
 		super(name, uid, type);
 		ILTypeChecker.checkTypeIsLegalInIL(type);
 		if (init == null) {
@@ -32,7 +32,7 @@ public class SimpleVar extends ILVariable {
 		ILTypeChecker.typeCheck(this.init, type);
 	}
 	
-	public Expression getInitialValue() {
+	public ILExpr getInitialValue() {
 		return init;
 	}
 

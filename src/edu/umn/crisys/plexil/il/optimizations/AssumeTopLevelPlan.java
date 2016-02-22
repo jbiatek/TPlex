@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.il.optimizations;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.RootAncestorExpr;
 import edu.umn.crisys.plexil.il.Plan;
@@ -37,7 +37,7 @@ public class AssumeTopLevelPlan extends ILExprModifier<Void> {
 	}
 
 	@Override
-	public Expression visit(RootAncestorExpr root, Void param) {
+	public ILExpr visit(RootAncestorExpr root, Void param) {
 		switch (root) {
 		case STATE:
 			// Plexil root states are always EXECUTING.

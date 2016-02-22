@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILExprBase;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
@@ -18,27 +18,27 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  * @author jbiatek
  *
  */
-public class ASTLookupExpr extends ExpressionBase {
+public class ASTLookupExpr extends ILExprBase {
 	
-	private Expression name;
-	private Optional<Expression> tolerance;
-	private List<Expression> args;
+	private ILExpr name;
+	private Optional<ILExpr> tolerance;
+	private List<ILExpr> args;
 	
-	public ASTLookupExpr(Expression name, List<Expression> args) {
-		this(ExprType.UNKNOWN, name, args, Optional.empty());
+	public ASTLookupExpr(ILExpr name, List<ILExpr> args) {
+		this(ILType.UNKNOWN, name, args, Optional.empty());
 	}
 	
-	public ASTLookupExpr(Expression name, Expression tolerance, List<Expression> args) {
-		this(ExprType.UNKNOWN, name, args, Optional.of(tolerance));
+	public ASTLookupExpr(ILExpr name, ILExpr tolerance, List<ILExpr> args) {
+		this(ILType.UNKNOWN, name, args, Optional.of(tolerance));
 	}
 	
-	public ASTLookupExpr(ExprType type, String state) {
+	public ASTLookupExpr(ILType type, String state) {
 		this(type, StringValue.get(state), Collections.emptyList(), Optional.empty());
 	}
 	
-	public ASTLookupExpr(ExprType type, Expression state, 
-			List<Expression> args,
-			Optional<Expression> tolerance) {
+	public ASTLookupExpr(ILType type, ILExpr state, 
+			List<ILExpr> args,
+			Optional<ILExpr> tolerance) {
 		super(type);
 	    
 	    this.name = state;
@@ -46,7 +46,7 @@ public class ASTLookupExpr extends ExpressionBase {
 	    this.args = args;
 	}
 	
-	public Expression getLookupName() {
+	public ILExpr getLookupName() {
 	    return name;
 	}
 
@@ -61,7 +61,7 @@ public class ASTLookupExpr extends ExpressionBase {
 		throw new RuntimeException("Tried to get non-constant lookup name: "+name);
 	}
 	
-	public Optional<Expression> getTolerance() {
+	public Optional<ILExpr> getTolerance() {
 		return tolerance;
 	}
 	
@@ -69,27 +69,27 @@ public class ASTLookupExpr extends ExpressionBase {
 	 * Get the arguments, not including the Lookup name (which getArguments() does include.)
 	 * @return
 	 */
-	public List<Expression> getLookupArgs() {
+	public List<ILExpr> getLookupArgs() {
 	    return args;
 	}
 
     @Override
-    public List<Expression> getArguments() {
-        ArrayList<Expression> argList = new ArrayList<Expression>(args);
+    public List<ILExpr> getArguments() {
+        ArrayList<ILExpr> argList = new ArrayList<ILExpr>(args);
         argList.add(0, name);
         argList.add(1, tolerance.orElse(UnknownValue.get()));
         return argList;
     }
     
     @Override
-    public ASTLookupExpr getCloneWithArgs(List<Expression> args) {
-    	List<Expression> newArgs = new ArrayList<>(args);
+    public ASTLookupExpr getCloneWithArgs(List<ILExpr> args) {
+    	List<ILExpr> newArgs = new ArrayList<>(args);
     	// First arg is the name.
-    	Expression name = newArgs.remove(0);
+    	ILExpr name = newArgs.remove(0);
     	// Second arg is the tolerance
-    	Expression toleranceExpr = newArgs.remove(0);
+    	ILExpr toleranceExpr = newArgs.remove(0);
     	// If it's UNKNOWN, we are actually a LookupNow, which has no tolerance.
-    	Optional<Expression> tolerance = Optional.of(toleranceExpr);
+    	Optional<ILExpr> tolerance = Optional.of(toleranceExpr);
     	if (toleranceExpr instanceof UnknownValue) {
     		tolerance = Optional.empty();
     	}
@@ -107,7 +107,7 @@ public class ASTLookupExpr extends ExpressionBase {
 				t -> "LookupOnChange("+getLookupName()+", "+t)
 				.orElse("LookupNow("+getLookupName());
 	    
-	    for (Expression arg : args) {
+	    for (ILExpr arg : args) {
 	        ret += ", "+arg;
 	    }
 	    return ret+")";

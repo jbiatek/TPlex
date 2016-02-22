@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.CascadingExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.CascadingExprVisitor;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
@@ -56,21 +56,21 @@ public class ILSimulator extends JavaPlan {
 	public static boolean LIMIT_TO_LUSTRE_FUNCTIONALITY = false;
 
 	private Plan ilPlan;
-	private Map<Expression, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
-	private Map<Expression, SimplePArray<PValue>> arrayVars = new HashMap<>();
+	private Map<ILExpr, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
+	private Map<ILExpr, SimplePArray<PValue>> arrayVars = new HashMap<>();
 	private Map<NodeStateMachine, SimpleCurrentNext<Integer>> states = new HashMap<>();
 	
 	private ILExprModifier<Void> myResolver = new ILExprModifier<Void>() {
 
 		@Override
-		public Expression visit(Expression e, Void param) {
+		public ILExpr visit(ILExpr e, Void param) {
 			return e.getCloneWithArgs(e.getArguments().stream()
 					.map(arg -> arg.accept(this))
 					.collect(Collectors.toList()));
 		}
 		
 		@Override
-		public Expression visit(LookupExpr lookup, Void param) {
+		public ILExpr visit(LookupExpr lookup, Void param) {
 			PValue[] args = new PValue[]{};
 			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
 				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
@@ -90,7 +90,7 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public Expression visit(RootAncestorExpr root, Void param) {
+		public ILExpr visit(RootAncestorExpr root, Void param) {
 			switch (root) {
 			case END:
 				return getInterface().evalAncestorEnd();
@@ -106,17 +106,17 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public Expression visit(SimpleVar var, Void param) {
+		public ILExpr visit(SimpleVar var, Void param) {
 			return simpleVars.get(var).getCurrent();
 		}
 
 		@Override
-		public Expression visit(ArrayVar array, Void param) {
+		public ILExpr visit(ArrayVar array, Void param) {
 			return arrayVars.get(array).getCurrent();
 		}
 
 		@Override
-		public Expression visit(GetNodeStateExpr state, Void param) {
+		public ILExpr visit(GetNodeStateExpr state, Void param) {
 			return getCurrentStateOf(state.getNodeUid());
 		}
 		
@@ -176,12 +176,12 @@ public class ILSimulator extends JavaPlan {
 		}
 	}
 	
-	public PValue eval(Expression e) {
+	public PValue eval(ILExpr e) {
 		return e.accept(myResolver).eval()
 				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
 	}
 	
-	private boolean evalNative(Expression e) {
+	private boolean evalNative(ILExpr e) {
 		return ((NativeBool) eval(e)).getValue();
 	}
 	
@@ -228,7 +228,7 @@ public class ILSimulator extends JavaPlan {
 			@Override
 			public Void visitCommand(CommandAction cmd, Void param) {
 				SimpleCurrentNext<PValue> cmdHandleVar =  simpleVars.get(cmd.getHandle());
-				Optional<Expression> maybeLhs = cmd.getPossibleLeftHandSide();
+				Optional<ILExpr> maybeLhs = cmd.getPossibleLeftHandSide();
 				// Wrap this command up in something that the external world 
 				// can use to interact with it. 
 

@@ -26,9 +26,9 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILOperator;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
@@ -74,7 +74,7 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 				new IdExpr(LustreNamingConventions.getStateMapperId(uid)), 
 				BinaryOp.EQUAL, 
 				translator.toLustre(
-						NodeState.EXECUTING, ExprType.STATE));
+						NodeState.EXECUTING, ILType.STATE));
 
 	}
 
@@ -90,19 +90,19 @@ public class NodeExecutesNoParentFailProperty extends TraceProperty {
 		Expr checkForReset = ite(
 				// If node state is inactive
 				equal(getPlexilState(node),
-						translator.toLustre(NodeState.INACTIVE, ExprType.STATE)),
+						translator.toLustre(NodeState.INACTIVE, ILType.STATE)),
 				// then set us back to false
 				FALSE,
 				// else keep it true, indicating failure
 				TRUE
 				);
-		Expression invFailGuard = ILOperator.IS_FALSE.expr(
+		ILExpr invFailGuard = ILOperator.IS_FALSE.expr(
 				node.getConditions().get(
 						PlexilExprDescription.INVARIANT_CONDITION));
-		Expression exitGuard = ILOperator.IS_TRUE.expr(
+		ILExpr exitGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
 						PlexilExprDescription.EXIT_CONDITION));
-		Expression endGuard = ILOperator.IS_TRUE.expr(
+		ILExpr endGuard = ILOperator.IS_TRUE.expr(
 				node.getConditions().get(
 						PlexilExprDescription.END_CONDITION));
 		

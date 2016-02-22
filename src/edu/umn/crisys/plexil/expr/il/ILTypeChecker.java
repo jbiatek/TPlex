@@ -2,9 +2,6 @@ package edu.umn.crisys.plexil.expr.il;
 
 import java.util.List;
 
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.NamedCondition;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
@@ -26,17 +23,17 @@ import edu.umn.crisys.plexil.runtime.values.UnknownValue;
  * 
  * @author jbiatek
  */
-public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILActionVisitor<Void, Void>{
+public class ILTypeChecker extends ILExprVisitor<ILType, Void> implements ILActionVisitor<Void, Void>{
 
 	private static final ILTypeChecker SINGLETON = new ILTypeChecker();
 	
 	public static void typeCheck(Plan p) {
 		p.getVariables().forEach(v -> checkTypeIsLegalInIL(v.getType()));
-		p.visitAllGuards(SINGLETON, ExprType.NATIVE_BOOL);
+		p.visitAllGuards(SINGLETON, ILType.NATIVE_BOOL);
 		p.visitAllActions(SINGLETON, null);
 	}
 	
-	public static void ensureExpressionContainsLegalTypes(Expression e) {
+	public static void ensureExpressionContainsLegalTypes(ILExpr e) {
 		// Recursively check that types are legal. 
 		if (e instanceof UnknownValue) {
 			// Oh, wait, that's fine.
@@ -52,13 +49,13 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 			.forEach(ILTypeChecker::ensureExpressionContainsLegalTypes);
 	}
 	
-	public static void typeCheck(Expression e, ExprType expected) {
+	public static void typeCheck(ILExpr e, ILType expected) {
 		e.accept(SINGLETON, expected);
 	}
 	
 	private ILTypeChecker() {}
 	
-	private static void basicCheck(Expression e, ExprType expected) {
+	private static void basicCheck(ILExpr e, ILType expected) {
 		checkTypeIsLegalInIL(expected);
 		if (e.getType() != expected) {
 			// Nope, wrong.
@@ -66,27 +63,27 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 		}
 	}
 	
-	public static void checkTypeIsLegalInIL(ExprType type) {
-		if (type == ExprType.NATIVE_BOOL
-				|| type == ExprType.BOOLEAN
-				|| type == ExprType.INTEGER
-				|| type == ExprType.REAL
-				|| type == ExprType.STRING
-				|| type == ExprType.STATE
-				|| type == ExprType.OUTCOME
-				|| type == ExprType.FAILURE
-				|| type == ExprType.COMMAND_HANDLE
-				|| type == ExprType.BOOLEAN_ARRAY
-				|| type == ExprType.INTEGER_ARRAY
-				|| type == ExprType.REAL_ARRAY
-				|| type == ExprType.STRING_ARRAY) {
+	public static void checkTypeIsLegalInIL(ILType type) {
+		if (type == ILType.NATIVE_BOOL
+				|| type == ILType.BOOLEAN
+				|| type == ILType.INTEGER
+				|| type == ILType.REAL
+				|| type == ILType.STRING
+				|| type == ILType.STATE
+				|| type == ILType.OUTCOME
+				|| type == ILType.FAILURE
+				|| type == ILType.COMMAND_HANDLE
+				|| type == ILType.BOOLEAN_ARRAY
+				|| type == ILType.INTEGER_ARRAY
+				|| type == ILType.REAL_ARRAY
+				|| type == ILType.STRING_ARRAY) {
 			return;
 		}
 		throw new RuntimeException("Type "+type+" is not generally legal in IL!");
 	}
 	
 	@Override
-	public Void visit(Expression e, ExprType expected) {
+	public Void visit(ILExpr e, ILType expected) {
 		basicCheck(e, expected);
 		if (e.getArguments().isEmpty()) {
 			// Looks good, nothing more to check.
@@ -99,19 +96,19 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 	}
 	
 	@Override
-	public Void visit(UnknownValue unk, ExprType expected) {
+	public Void visit(UnknownValue unk, ILType expected) {
 		// UnknownValue represents a few different types.
-		if (expected == ExprType.BOOLEAN 
-				|| expected == ExprType.INTEGER
-				|| expected == ExprType.REAL
-				|| expected == ExprType.STRING) {
+		if (expected == ILType.BOOLEAN 
+				|| expected == ILType.INTEGER
+				|| expected == ILType.REAL
+				|| expected == ILType.STRING) {
 			return null;
 		}
 		throw new RuntimeException("Type "+expected+" is not acceptable for UnknownValue");
 	}
 
 	@Override
-	public Void visit(PValueList<?> list, ExprType expected) {
+	public Void visit(PValueList<?> list, ILType expected) {
 		basicCheck(list, expected);
 		// No arguments, but let's check its elements too just to be sure.
 		for (PValue element : list) {
@@ -121,11 +118,11 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 	}
 
 	@Override
-	public Void visit(ILOperation op, ExprType expected) {
+	public Void visit(ILOperation op, ILType expected) {
 		basicCheck(op, expected);
 		
-		List<ExprType> types = op.getOperator().getArgumentTypeList();
-		List<Expression> args = op.getArguments();
+		List<ILType> types = op.getOperator().getArgumentTypeList();
+		List<ILExpr> args = op.getArguments();
 		if (types.size() != args.size()) {
 			throw new RuntimeException("Type size and arg size mismatch: "
 					+types.size()+" versus "+args.size()
@@ -133,7 +130,7 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 		}
 		
 		for (int i=0; i < types.size(); i++) {
-			if (types.get(i) == ExprType.UNKNOWN) {
+			if (types.get(i) == ILType.UNKNOWN) {
 				// This must be a cast. Obviously, this will just have to be
 				// checked at runtime. 
 				continue;
@@ -144,13 +141,13 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 	}
 
 	@Override
-	public Void visit(LookupExpr lookup, ExprType expected) {
+	public Void visit(LookupExpr lookup, ILType expected) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Void visit(NamedCondition named, ExprType expected) {
+	public Void visit(NamedCondition named, ILType expected) {
 		// This is just a wrapper, treat it as if it isn't there
 		return named.getUnaryArg().accept(this, expected);
 	}
@@ -179,7 +176,7 @@ public class ILTypeChecker extends ILExprVisitor<ExprType, Void> implements ILAc
 
 	@Override
 	public Void visitCommand(CommandAction cmd, Void param) {
-		typeCheck(cmd.getHandle(), ExprType.COMMAND_HANDLE);
+		typeCheck(cmd.getHandle(), ILType.COMMAND_HANDLE);
 		cmd.getPossibleLeftHandSide().ifPresent(
 				lhs -> checkTypeIsLegalInIL(lhs.getType()));
 		return null;

@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr;
+package edu.umn.crisys.plexil.expr.il;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,13 +8,13 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
-public class NamedCondition extends ExpressionBase {
+public class NamedCondition extends ILExprBase {
 
 	private NodeUID uid;
 	private PlexilExprDescription description;
-	private Expression theExpr;
+	private ILExpr theExpr;
 	
-	public NamedCondition(Expression e, NodeUID uid, 
+	public NamedCondition(ILExpr e, NodeUID uid, 
 			PlexilExprDescription desc) {
 		super(e.getType());
 		this.theExpr = e;
@@ -30,7 +30,7 @@ public class NamedCondition extends ExpressionBase {
 		return description;
 	}
 
-	public Expression getExpression() {
+	public ILExpr getExpression() {
 		return theExpr;
 	}
 
@@ -45,12 +45,12 @@ public class NamedCondition extends ExpressionBase {
 	}
 
 	@Override
-	public List<Expression> getArguments() {
+	public List<ILExpr> getArguments() {
 		return Arrays.asList(theExpr);
 	}
 
 	@Override
-	public Expression getCloneWithArgs(List<Expression> args) {
+	public ILExpr getCloneWithArgs(List<ILExpr> args) {
 		return new NamedCondition(args.get(0), uid, description);
 	}
 

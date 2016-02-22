@@ -5,16 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
-public class ILOperation extends ExpressionBase {
-	private List<Expression> args;
+public class ILOperation extends ILExprBase {
+	private List<ILExpr> args;
 	private ILOperator op;
 
-	public ILOperation(ILOperator op, List<Expression> args) {
+	public ILOperation(ILOperator op, List<ILExpr> args) {
 		super(op.getReturnType());
 		this.args = Collections.unmodifiableList(args);
 		this.op = op;
@@ -30,7 +27,7 @@ public class ILOperation extends ExpressionBase {
 	}
 
 	@Override
-	public List<Expression> getArguments() {
+	public List<ILExpr> getArguments() {
 		return args;
 	}
 	
@@ -39,7 +36,7 @@ public class ILOperation extends ExpressionBase {
 	}
 
 	@Override
-	public Expression getCloneWithArgs(List<Expression> newArgs) {
+	public ILExpr getCloneWithArgs(List<ILExpr> newArgs) {
 		return new ILOperation(op, newArgs);
 	}
 	

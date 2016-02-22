@@ -2,22 +2,22 @@ package edu.umn.crisys.plexil.expr.il.vars;
 
 import java.util.Map;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.NodeUID;
 
 public class LibraryVar extends ILVariable {
 	
-    private Expression libNodeState;
-    private Expression libAndAncestorsInvariants;
-    private Expression libOrAncestorsEnds;
-    private Expression libOrAncestorsExits;
-    private Map<String,Expression> aliases;
+    private ILExpr libNodeState;
+    private ILExpr libAndAncestorsInvariants;
+    private ILExpr libOrAncestorsEnds;
+    private ILExpr libOrAncestorsExits;
+    private Map<String,ILExpr> aliases;
 
-	public LibraryVar(String libID, NodeUID uid, Expression libNodeState,
-            Map<String,Expression> aliases) {
-		super(libID, uid, ExprType.STATE);
+	public LibraryVar(String libID, NodeUID uid, ILExpr libNodeState,
+            Map<String,ILExpr> aliases) {
+		super(libID, uid, ILType.STATE);
 		this.libNodeState = libNodeState;
 		this.aliases = aliases;
 	}
@@ -26,35 +26,35 @@ public class LibraryVar extends ILVariable {
      * These have to be set after the reference is created, because they
      * very well could require a reference to *us*.  
      */
-    public void setLibAndAncestorsInvariants(Expression libAndAncestorsInvariants) {
+    public void setLibAndAncestorsInvariants(ILExpr libAndAncestorsInvariants) {
         this.libAndAncestorsInvariants = libAndAncestorsInvariants;
     }
     
-    public void setLibOrAncestorsEnds(Expression libOrAncestorsEnds) {
+    public void setLibOrAncestorsEnds(ILExpr libOrAncestorsEnds) {
         this.libOrAncestorsEnds = libOrAncestorsEnds;
     }
     
-    public void setLibOrAncestorsExits(Expression libOrAncestorsExits) {
+    public void setLibOrAncestorsExits(ILExpr libOrAncestorsExits) {
         this.libOrAncestorsExits = libOrAncestorsExits;
     }
 
-    public Expression getLibraryNodeState() {
+    public ILExpr getLibraryNodeState() {
     	return libNodeState;
     }
     
-    public Expression getLibAndAncestorsInvariants() {
+    public ILExpr getLibAndAncestorsInvariants() {
     	return libAndAncestorsInvariants;
     }
     
-    public Expression getLibOrAncestorsEnds() {
+    public ILExpr getLibOrAncestorsEnds() {
     	return libOrAncestorsEnds;
     }
     
-    public Expression getLibOrAncestorsExits() {
+    public ILExpr getLibOrAncestorsExits() {
     	return libOrAncestorsExits;
     }
     
-    public Map<String, Expression> getAliases() {
+    public Map<String, ILExpr> getAliases() {
     	return aliases;
     }
     

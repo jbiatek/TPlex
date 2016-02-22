@@ -2,21 +2,21 @@ package edu.umn.crisys.plexil.runtime.values;
 
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 /**
  * The interface defining what all PlexilValues can do.
  * @author jbiatek
  *
  */
-public interface PValue extends Expression {
+public interface PValue extends ILExpr {
 
 	public abstract boolean isKnown();
 
 	public abstract boolean isUnknown();
 
-	public abstract ExprType getType();
+	public abstract ILType getType();
 
 	public default Optional<PValue> eval() {
 		return Optional.of(this);
@@ -56,7 +56,7 @@ public interface PValue extends Expression {
 	 * @return an object that can be safely cast, or an exception if it can't
 	 * be done.
 	 */
-	default public PValue castTo(ExprType type)  {
+	default public PValue castTo(ILType type)  {
 		if (this.getType() == type) {
 			return this;
 		} else if (this.isUnknown()) {

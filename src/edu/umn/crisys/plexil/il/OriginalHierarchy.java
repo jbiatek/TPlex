@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
 
@@ -28,8 +28,8 @@ public class OriginalHierarchy {
 
 	private NodeUID uid;
 	private Optional<OriginalHierarchy> parent;
-	private Map<String, Expression> variables = new HashMap<>();
-	private Map<PlexilExprDescription, Expression> conditions = new HashMap<>();
+	private Map<String, ILExpr> variables = new HashMap<>();
+	private Map<PlexilExprDescription, ILExpr> conditions = new HashMap<>();
 	private List<OriginalHierarchy> children = new ArrayList<>();
 	private Optional<LibraryVar> libraryChild = Optional.empty();
 	
@@ -78,7 +78,7 @@ public class OriginalHierarchy {
 	public void removeDeletedVariables(Plan p) {
 		Set<String> deleteThese = new HashSet<>();
 		for (String varName : variables.keySet()) {
-			Expression storedExpr = variables.get(varName);
+			ILExpr storedExpr = variables.get(varName);
 			if (storedExpr instanceof ILVariable) {
 				// Is it still there? 
 				if ( ! p.getVariables().contains(storedExpr)) {
@@ -99,11 +99,11 @@ public class OriginalHierarchy {
 	 * 
 	 * @return
 	 */
-	public Map<String, Expression> getVariables() {
+	public Map<String, ILExpr> getVariables() {
 		return variables;
 	}
 	
-	public Map<PlexilExprDescription, Expression> getConditions() {
+	public Map<PlexilExprDescription, ILExpr> getConditions() {
 		return conditions;
 	}
 	

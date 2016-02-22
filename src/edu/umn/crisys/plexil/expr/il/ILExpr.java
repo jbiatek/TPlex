@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr;
+package edu.umn.crisys.plexil.expr.il;
 
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Optional;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
-public interface Expression {
+public interface ILExpr {
     
     public <P,R> R accept(ExprVisitor<P,R> visitor, P param);
     
@@ -15,13 +15,13 @@ public interface Expression {
     	return this.accept(visitor, null);
     }
     
-    public ExprType getType();
+    public ILType getType();
     
     /**
      * Get all arguments to this expression. 
      * @return
      */
-    public default List<Expression> getArguments() {
+    public default List<ILExpr> getArguments() {
     	return Collections.emptyList();
     }
     
@@ -31,7 +31,7 @@ public interface Expression {
      * 
      * @return
      */
-    public default Expression getUnaryArg() {
+    public default ILExpr getUnaryArg() {
     	if (getArguments().size() != 1) {
     		throw new RuntimeException("Expression is not unary: "+this);
     	}
@@ -44,7 +44,7 @@ public interface Expression {
      * you are wrong. 
      * @return
      */
-    public default Expression getBinaryFirst() {
+    public default ILExpr getBinaryFirst() {
     	if (getArguments().size() != 2) {
     		throw new RuntimeException("Expression is not binary: "+this);
     	}
@@ -57,7 +57,7 @@ public interface Expression {
      * you are wrong. 
      * @return
      */
-    public default Expression getBinarySecond() {
+    public default ILExpr getBinarySecond() {
     	if (getArguments().size() != 2) {
     		throw new RuntimeException("Expression is not binary: "+this);
     	}
@@ -72,7 +72,7 @@ public interface Expression {
      * @param args The new arguments to the expression
      * @return An expression of the same type but with these arguments instead.
      */
-    public default Expression getCloneWithArgs(List<Expression> args) {
+    public default ILExpr getCloneWithArgs(List<ILExpr> args) {
     	if (args.size() != 0) {
     		throw new RuntimeException("Tried to clone "+this+" with args");
     	}

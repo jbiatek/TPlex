@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.Expression;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILOperation;
 import edu.umn.crisys.plexil.il.Plan;
@@ -25,7 +25,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 	}
 
 	@Override
-	public Expression visit(Expression e, Void param) {
+	public ILExpr visit(ILExpr e, Void param) {
 		Optional<PValue> eval = e.eval();
 		if (eval.isPresent()) {
 			return eval.get();
@@ -48,7 +48,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 //	}
 
 	@Override
-	public Expression visit(ILOperation op, Void param) {
+	public ILExpr visit(ILOperation op, Void param) {
 		Optional<PValue> eval = op.eval();
 		if (eval.isPresent()) {
 			// This whole thing is constant! 
@@ -72,7 +72,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 		}
 		
 		// Remove identity expressions if found. 
-		List<Expression> newArgs = op.getArguments().stream()
+		List<ILExpr> newArgs = op.getArguments().stream()
 				.filter((arg) -> {
 					Optional<PValue> argEval = arg.eval();
 					if (argEval.isPresent()) {

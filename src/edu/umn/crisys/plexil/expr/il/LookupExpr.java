@@ -5,18 +5,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.ExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
-public class LookupExpr extends ExpressionBase {
+public class LookupExpr extends ILExprBase {
 
-	public static LookupExpr lookupTime(ExprType numericType) {
+	public static LookupExpr lookupTime(ILType numericType) {
 		if ( ! numericType.isNumeric()) {
 			throw new RuntimeException("Time is not "+numericType);
 		}
@@ -25,24 +21,24 @@ public class LookupExpr extends ExpressionBase {
 		return new LookupExpr(timeDeclaration, StringValue.get("time"));
 	}
 	
-	private Expression name;
-	private Optional<Expression> tolerance;
-	private List<Expression> args;
+	private ILExpr name;
+	private Optional<ILExpr> tolerance;
+	private List<ILExpr> args;
 	private LookupDecl typeData;
 	
-	public LookupExpr(LookupDecl typeData, Expression name) {
+	public LookupExpr(LookupDecl typeData, ILExpr name) {
 		this(typeData, name, Collections.emptyList());
 	}
 
-	public LookupExpr(LookupDecl typeData, Expression state, List<Expression> args) {
+	public LookupExpr(LookupDecl typeData, ILExpr state, List<ILExpr> args) {
 		this(typeData, state, args, Optional.empty());
 	}
 	
-	public LookupExpr(LookupDecl typeData, Expression state, List<Expression> args,
-			Optional<Expression> tolerance) {
+	public LookupExpr(LookupDecl typeData, ILExpr state, List<ILExpr> args,
+			Optional<ILExpr> tolerance) {
 		super(typeData.getReturnValue().get().getType());
-	    ILTypeChecker.typeCheck(state, ExprType.STRING);
-	    tolerance.ifPresent(t -> ILTypeChecker.typeCheck(t, ExprType.REAL));
+	    ILTypeChecker.typeCheck(state, ILType.STRING);
+	    tolerance.ifPresent(t -> ILTypeChecker.typeCheck(t, ILType.REAL));
 	    
 	    if (typeData.getParameters().isEmpty()) {
 	    	// This is either supposed to have 0 arguments, or it's got
@@ -70,7 +66,7 @@ public class LookupExpr extends ExpressionBase {
 	}
 	
 
-	public Expression getLookupName() {
+	public ILExpr getLookupName() {
 	    return name;
 	}
 
@@ -85,7 +81,7 @@ public class LookupExpr extends ExpressionBase {
 		throw new RuntimeException("Tried to get non-constant lookup name: "+name);
 	}
 	
-	public Optional<Expression> getTolerance() {
+	public Optional<ILExpr> getTolerance() {
 		return tolerance;
 	}
 	
@@ -93,27 +89,27 @@ public class LookupExpr extends ExpressionBase {
 	 * Get the arguments, not including the Lookup name (which getArguments() does include.)
 	 * @return
 	 */
-	public List<Expression> getLookupArgs() {
+	public List<ILExpr> getLookupArgs() {
 	    return args;
 	}
 
     @Override
-    public List<Expression> getArguments() {
-        ArrayList<Expression> argList = new ArrayList<Expression>(args);
+    public List<ILExpr> getArguments() {
+        ArrayList<ILExpr> argList = new ArrayList<ILExpr>(args);
         argList.add(0, name);
         argList.add(1, tolerance.orElse(UnknownValue.get()));
         return argList;
     }
     
     @Override
-    public LookupExpr getCloneWithArgs(List<Expression> args) {
-    	List<Expression> newArgs = new ArrayList<>(args);
+    public LookupExpr getCloneWithArgs(List<ILExpr> args) {
+    	List<ILExpr> newArgs = new ArrayList<>(args);
     	// First arg is the name.
-    	Expression name = newArgs.remove(0);
+    	ILExpr name = newArgs.remove(0);
     	// Second arg is the tolerance
-    	Expression toleranceExpr = newArgs.remove(0);
+    	ILExpr toleranceExpr = newArgs.remove(0);
     	// If it's UNKNOWN, we are actually a LookupNow, which has no tolerance.
-    	Optional<Expression> tolerance = Optional.of(toleranceExpr);
+    	Optional<ILExpr> tolerance = Optional.of(toleranceExpr);
     	if (toleranceExpr instanceof UnknownValue) {
     		tolerance = Optional.empty();
     	}
@@ -131,7 +127,7 @@ public class LookupExpr extends ExpressionBase {
 				t -> "LookupOnChange("+getLookupName()+", "+t)
 				.orElse("LookupNow("+getLookupName());
 	    
-	    for (Expression arg : args) {
+	    for (ILExpr arg : args) {
 	        ret += ", "+arg;
 	    }
 	    return ret+")";

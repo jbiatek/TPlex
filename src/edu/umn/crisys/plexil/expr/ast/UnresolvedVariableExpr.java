@@ -1,19 +1,19 @@
 package edu.umn.crisys.plexil.expr.ast;
 
-import edu.umn.crisys.plexil.expr.ExprVisitor;
-import edu.umn.crisys.plexil.expr.ExpressionBase;
-import edu.umn.crisys.plexil.expr.ExprType;
+import edu.umn.crisys.plexil.expr.il.ExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILExprBase;
+import edu.umn.crisys.plexil.expr.il.ILType;
 
 /**
  * An expression representing a variable reference. This is basically just the
  * name of a variable, it isn't linked to a specific node yet. You'll have to
  * resolve the variable from the node that is referring to it. 
  */
-public class UnresolvedVariableExpr extends ExpressionBase {
+public class UnresolvedVariableExpr extends ILExprBase {
 
     private String varName;
     
-    public UnresolvedVariableExpr(String varName, ExprType type) {
+    public UnresolvedVariableExpr(String varName, ILType type) {
     	super(type);
         this.varName= varName;
     }

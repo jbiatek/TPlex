@@ -31,10 +31,10 @@ import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
-import edu.umn.crisys.plexil.expr.Expression;
-import edu.umn.crisys.plexil.expr.ExprType;
-import edu.umn.crisys.plexil.expr.NamedCondition;
+import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -137,16 +137,16 @@ public class PlanToLustre {
 		nb.addOutput(new VarDecl("outcome", LustreNamingConventions.POUTCOME));
 		nb.addEquation(new Equation(new IdExpr("outcome"), 
 				new BinaryExpr(
-						toLustre(NodeOutcome.UNKNOWN, ExprType.OUTCOME),
+						toLustre(NodeOutcome.UNKNOWN, ILType.OUTCOME),
 						BinaryOp.ARROW,
-						toLustre(p.getRootNodeOutcome(), ExprType.OUTCOME))));
+						toLustre(p.getRootNodeOutcome(), ILType.OUTCOME))));
 		
 		nb.addOutput(new VarDecl("state", LustreNamingConventions.PSTATE));
 		nb.addEquation(new Equation(new IdExpr("state"),
 				new BinaryExpr(
-						toLustre(NodeState.INACTIVE, ExprType.STATE),
+						toLustre(NodeState.INACTIVE, ILType.STATE),
 						BinaryOp.ARROW,
-						toLustre(p.getRootNodeState(), ExprType.STATE))));
+						toLustre(p.getRootNodeState(), ILType.STATE))));
 		
 		pb.addNode(nb.build());
 		
@@ -166,7 +166,7 @@ public class PlanToLustre {
 		p.modifyAllGuards(new ILExprModifier<Void>() {
 
 			@Override
-			public Expression visit(NamedCondition named, Void param) {
+			public ILExpr visit(NamedCondition named, Void param) {
 				if (alreadyDone.contains(named)) {
 					return named;
 				}
@@ -176,7 +176,7 @@ public class PlanToLustre {
 				nb.addLocal(new VarDecl(id, LustreNamingConventions.PBOOLEAN));
 				// Translate the equation
 				nb.addEquation(new Equation(new IdExpr(id), 
-						toLustre(named.getExpression(), ExprType.BOOLEAN)));
+						toLustre(named.getExpression(), ILType.BOOLEAN)));
 				// Don't repeat for this one again
 				alreadyDone.add(named);
 				// We don't actually want to change the IL expression though. 
@@ -213,7 +213,7 @@ public class PlanToLustre {
 		}
 		
 		
-		ExprType plexilType = lookup.getReturnValue().get().getType();
+		ILType plexilType = lookup.getReturnValue().get().getType();
 		Type type = getLustreType(plexilType);
 		if (LustreNamingConventions.hasValueAndKnownSplit(plexilType)) {
 			// This should be two inputs, the value and whether it's known
@@ -264,12 +264,12 @@ public class PlanToLustre {
 
 	}
 	
-	public Expr toLustre(Expression e, ExprType expectedType) {
+	public Expr toLustre(ILExpr e, ILType expectedType) {
 		return e.accept(ilToLustre, expectedType);
 	}
 	
-	public Expr toLustre(Expression e) {
-		return e.accept(ilToLustre, ExprType.NATIVE_BOOL);
+	public Expr toLustre(ILExpr e) {
+		return e.accept(ilToLustre, ILType.NATIVE_BOOL);
 	}
 	
 	public ReverseTranslationMap getTranslationMap() {
@@ -388,7 +388,7 @@ public class PlanToLustre {
 		pb.addType(new TypeDef(et.id, et));
 	}
 	
-	private static Type getLustreType(ExprType t) {
+	private static Type getLustreType(ILType t) {
 		switch (t) {
 		case BOOLEAN:
 			return LustreNamingConventions.PBOOLEAN;
@@ -418,7 +418,7 @@ public class PlanToLustre {
 		}
 	}
 	
-	private static Type getLustreType(ExprType arrayType, int size) {
+	private static Type getLustreType(ILType arrayType, int size) {
 		return new ArrayType(getLustreType(arrayType.elementType()), size);
 	}
 	
@@ -436,7 +436,7 @@ public class PlanToLustre {
 			t = getLustreType(v.getType());
 		}
 		
-		if (v.getType() == ExprType.COMMAND_HANDLE) {
+		if (v.getType() == ILType.COMMAND_HANDLE) {
 			// Really, this is an input. We need the command's information 
 			// too, so the Command action is responsible for telling us to
 			// add this variable. 
@@ -476,14 +476,14 @@ public class PlanToLustre {
 		for (NodeUID uid : nsm.getNodeIds()) {
 			VarDecl mapper = new VarDecl(LustreNamingConventions.getStateMapperId(uid), 
 					LustreNamingConventions.PSTATE);
-			Expr map = ilToLustre.visit(NodeState.INACTIVE, ExprType.STATE);
+			Expr map = ilToLustre.visit(NodeState.INACTIVE, ILType.STATE);
 			for (State s : nsm.getStates()) {
 				map = new IfThenElseExpr(
 						// if the real state variable is this one
 						new BinaryExpr(getStateExpr(nsm), BinaryOp.EQUAL, 
 								new IntExpr(s.getIndex())),
 						// then return the tag
-						toLustre(s.tags.get(uid), ExprType.STATE),
+						toLustre(s.tags.get(uid), ILType.STATE),
 						// else, the rest
 						map);
 			}
@@ -601,7 +601,7 @@ public class PlanToLustre {
 	public ILVariable getNodeOutcomeFor(NodeUID uid) {
 		return p.getVariables().stream()
 			.filter(v -> v.getNodeUID().equals(uid) 
-					&& v.getType().equals(ExprType.OUTCOME))
+					&& v.getType().equals(ILType.OUTCOME))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("Outcome for "+uid+" not found!"));
 	}
@@ -609,7 +609,7 @@ public class PlanToLustre {
 	public ILVariable getFailureTypeFor(NodeUID uid) {
 		return p.getVariables().stream()
 				.filter(v -> v.getNodeUID().equals(uid) 
-						&& v.getType().equals(ExprType.FAILURE))
+						&& v.getType().equals(ILType.FAILURE))
 				.findFirst()
 				.orElseThrow(() -> new RuntimeException("Failure for "+uid+" not found!"));
 	}
