@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
@@ -342,7 +343,12 @@ public class TPlex {
 							JKindResultUtils.extractTraces(results, 
 									JKindResultUtils.parseProgram(simLustreFile)), 
 							getStringMapForXml(f), 
-							quickParsePlan(compliancePlexilProgram));
+							quickParsePlan(compliancePlexilProgram))
+							.entrySet().stream()
+							.filter(e -> e.getValue().isPresent())
+							.collect(Collectors.toMap(
+									e -> e.getKey(), 
+									e -> e.getValue().get()));
 					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
 					lustreResultsTranslated.putAll(parsedScripts);
 				} catch (Exception e) {
@@ -374,7 +380,12 @@ public class TPlex {
 							JKindResultUtils.translateToScripts(
 									namedTraces, 
 									getStringMapForLus(simLustreFile),
-									quickParsePlan(compliancePlexilProgram));
+									quickParsePlan(compliancePlexilProgram))
+							.entrySet().stream()
+							.filter(e -> e.getValue().isPresent())
+							.collect(Collectors.toMap(
+									e -> e.getKey(), 
+									e -> e.getValue().get()));
 					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
 					lustreResultsTranslated.putAll(parsedScripts);
 				} catch (Exception e) {

@@ -370,7 +370,7 @@ public class JKindResultUtils {
 		return cex;
 	}
 	
-	public static PlexilScript translateToScript(String name, LustreTrace trace,
+	public static Optional<PlexilScript> translateToScript(String name, LustreTrace trace,
 			ReverseTranslationMap map, Plan ilPlan) {
 		
 		JavaPlan.DEBUG = true;
@@ -388,13 +388,15 @@ public class JKindResultUtils {
 			sim.runPlanToCompletion();
 		} catch (Exception e) {
 			// Wrap with some more information
-			throw new RuntimeException("Error translating "+name
-					+" to PLEXILScript", e);
+			System.err.println("Error translating "+name
+					+" to PLEXILScript:");
+			e.printStackTrace();
+			return Optional.empty();
 		}
 		
 		// No exceptions means that it's all good!
 		PlexilScript theScript = recorder.convertToPlexilScript(name);
-		return theScript;
+		return Optional.of(theScript);
 		
 	}
 	private static String getType(Value v) {
@@ -425,7 +427,7 @@ public class JKindResultUtils {
 	}
 
 
-	public static Map<LustreTrace, PlexilScript> translateToScripts(Map<String, LustreTrace> namedTraces,
+	public static Map<LustreTrace, Optional<PlexilScript>> translateToScripts(Map<String, LustreTrace> namedTraces,
 			ReverseTranslationMap stringMapForLus, Plan ilPlan) {
 		return namedTraces.entrySet().stream()
 			.collect(Collectors.toMap(e -> e.getValue(), 
