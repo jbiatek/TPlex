@@ -373,10 +373,9 @@ public class JKindSearch {
 		// And add history
 		Node history = CreateHistoryVisitor.node(simplified.getMainNode(), simulated);
 		
-		// History translation kills some things, so add them back in
+		// History transformation removes properties, so add them back
 		NodeBuilder nb = new NodeBuilder(history);
 		nb.addProperties(simplified.getMainNode().properties);
-		nb.addAssertions(simplified.getMainNode().assertions);
 		
 		return duplicateWithNewMainNode(simplified, nb.build());
 	}
