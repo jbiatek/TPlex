@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILOperator;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILOperator;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 

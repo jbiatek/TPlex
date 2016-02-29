@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
-import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
+import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
+import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;

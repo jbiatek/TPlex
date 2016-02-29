@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr.il;
+package edu.umn.crisys.plexil.il.expr;
 
 public class AliasExpr extends ILExprBase {
 

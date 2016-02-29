@@ -3,9 +3,9 @@ package edu.umn.crisys.plexil.il.action;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILType;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILType;
+import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
 import edu.umn.crisys.util.Pair;
 
 public class UpdateAction implements PlexilAction {

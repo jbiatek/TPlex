@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.runtime.psx.symbolic;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;

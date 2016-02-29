@@ -3,9 +3,9 @@ package edu.umn.crisys.plexil.il.action;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILType;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILType;
+import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 

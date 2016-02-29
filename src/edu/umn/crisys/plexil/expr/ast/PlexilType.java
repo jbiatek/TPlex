@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.expr.ast;
 
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.il.expr.ILType;
 
 public enum PlexilType {
 

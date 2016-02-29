@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr.il;
+package edu.umn.crisys.plexil.il.expr;
 
 /**
  * Base class for Expressions. Extend this if possible, because it helps to

@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.il.action;
 
-import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.expr.vars.LibraryVar;
 
 public class RunLibraryNodeAction implements PlexilAction {
     

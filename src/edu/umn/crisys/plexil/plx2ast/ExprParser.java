@@ -19,7 +19,7 @@ import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
 import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.ast.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;

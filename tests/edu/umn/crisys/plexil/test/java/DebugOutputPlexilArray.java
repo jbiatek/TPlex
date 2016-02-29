@@ -5,8 +5,8 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.PlexilType;
-import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;

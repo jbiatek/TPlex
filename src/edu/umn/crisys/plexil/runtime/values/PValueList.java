@@ -9,9 +9,9 @@ import java.util.ListIterator;
 
 import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.PlexilType;
-import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILExprBase;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExprBase;
+import edu.umn.crisys.plexil.il.expr.ILType;
 
 /**
  * <p>A List that is also a PValue. It implements the PLEXIL array semantics -- 

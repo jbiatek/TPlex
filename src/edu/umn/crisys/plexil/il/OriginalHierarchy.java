@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
-import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
+import edu.umn.crisys.plexil.il.expr.vars.LibraryVar;
 
 /**
  * Stores information from the original PLEXIL hierarchy. This can be used to

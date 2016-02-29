@@ -2,8 +2,8 @@ package edu.umn.crisys.plexil.runtime.values;
 
 import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
 import edu.umn.crisys.plexil.expr.ast.PlexilType;
-import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILType;
+import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILType;
 
 public class UnknownValue implements PBoolean, PInteger, PReal, PString {
 

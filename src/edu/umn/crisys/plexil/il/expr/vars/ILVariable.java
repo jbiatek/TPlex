@@ -1,8 +1,8 @@
-package edu.umn.crisys.plexil.expr.il.vars;
+package edu.umn.crisys.plexil.il.expr.vars;
 
-import edu.umn.crisys.plexil.expr.il.ILExprBase;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.expr.ILExprBase;
+import edu.umn.crisys.plexil.il.expr.ILType;
 
 public abstract class ILVariable extends ILExprBase {
 	

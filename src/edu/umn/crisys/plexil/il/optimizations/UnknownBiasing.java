@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
-import edu.umn.crisys.plexil.expr.il.ILExprModifier;
-import edu.umn.crisys.plexil.expr.il.ILOperation;
-import edu.umn.crisys.plexil.expr.il.ILOperator;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprModifier;
+import edu.umn.crisys.plexil.il.expr.ILOperation;
+import edu.umn.crisys.plexil.il.expr.ILOperator;
+import edu.umn.crisys.plexil.il.expr.ILType;
 
 public class UnknownBiasing extends ILExprModifier<Void> {
 

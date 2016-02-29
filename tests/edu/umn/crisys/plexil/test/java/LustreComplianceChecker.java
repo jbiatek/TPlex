@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import jkind.lustre.values.Value;
 import jkind.results.Signal;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;

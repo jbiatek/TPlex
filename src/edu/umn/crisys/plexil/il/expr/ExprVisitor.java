@@ -1,9 +1,9 @@
-package edu.umn.crisys.plexil.expr.il;
+package edu.umn.crisys.plexil.il.expr;
 
-import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
-import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
-import edu.umn.crisys.plexil.expr.il.vars.LibraryVar;
-import edu.umn.crisys.plexil.expr.il.vars.SimpleVar;
+import edu.umn.crisys.plexil.il.expr.vars.ArrayVar;
+import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
+import edu.umn.crisys.plexil.il.expr.vars.LibraryVar;
+import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;

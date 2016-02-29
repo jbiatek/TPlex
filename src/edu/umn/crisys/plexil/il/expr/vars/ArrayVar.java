@@ -1,8 +1,8 @@
-package edu.umn.crisys.plexil.expr.il.vars;
+package edu.umn.crisys.plexil.il.expr.vars;
 
-import edu.umn.crisys.plexil.expr.il.ExprVisitor;
-import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.il.NodeUID;
+import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 
