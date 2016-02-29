@@ -208,55 +208,8 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		// We just get "results" back from the environment. To do that, we
 		// need the handle to be an input, not a regular variable. 
 		
-		String inputName = translator.addCommandHandleInputFor(cmd.getHandle(), 
+		translator.addCommandHandleInputFor(cmd.getHandle(), 
 				cmd.getNameAsConstantString());
-		Expr inputId = id(inputName);
-
-		// But this input needs to have restrictions. In addition to the general
-		// PLEXIL rule that inputs can't change mid-macrostep, we also want
-		// to make sure that it appears to reset, and that it doesn't do weird
-		// things like change before the command is even issued.
-		
-		// First, we'll handle resets. In INACTIVE and WAITING, the only valid
-		// value is UNKNOWN. The only way to get to those two states is the 
-		// initial state of the plan and by resetting. 
-		NodeUID node = cmd.getHandle().getNodeUID();
-		
-		ILExpr inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
-		ILExpr waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
-		// If the node was SKIPPED, it must have gone directly from WAITING to
-		// FINISHED, with the command not being issued. Therefore, it should 
-		// be UNKNOWN too.
-		ILExpr skipped = ILOperator.DIRECT_COMPARE.expr(
-				NodeOutcome.SKIPPED, 
-				translator.getNodeOutcomeFor(node));
-		// This is also true if the pre-condition failed.
-		ILExpr preFail = ILOperator.DIRECT_COMPARE.expr(
-				NodeFailureType.PRE_CONDITION_FAILED,
-				translator.getFailureTypeFor(node));
-		ILExpr handleShouldBeUntouchedIL = ILOperator.OR.expr(
-				inactive, waiting, skipped, preFail);
-		
-		Expr handleShouldBeUntouched = translator.toLustre(handleShouldBeUntouchedIL);
-		Expr cmdUnknown = translator.toLustre(CommandHandleState.UNKNOWN, 
-				ILType.COMMAND_HANDLE);
-		
-		// When it should be untouched, the only valid value is UNKNOWN.
-		translator.addAssertion(
-				implies(handleShouldBeUntouched, 
-						new BinaryExpr(inputId, BinaryOp.EQUAL, cmdUnknown)));
-		
-		
-		// In the other states, it is only allowed to change if the macro
-		// step has ended.
-		// (No, we can't just use the "regular" rule -- this variable changes
-		// mid macro step when it resets, since that's not an input.)
-		translator.addAssertion(
-				arrow(LustreUtil.TRUE, 
-				implies(and(not(handleShouldBeUntouched), 
-						    not(LustreNamingConventions.MACRO_STEP_ENDED)),
-				new BinaryExpr(inputId, BinaryOp.EQUAL, pre(inputId)))));
-		
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
 			System.err.println("WARNING: Variable assignments from commands not supported yet!");

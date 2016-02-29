@@ -48,17 +48,17 @@ public class ScriptSimulation {
 			if (expr instanceof LookupExpr) {
 				// Check for a value/known split
 				if (LustreNamingConventions.hasValueAndKnownSplit(expr.getType())) {
-					line.add(LustreNamingConventions.getLookupIdValuePart(((LookupExpr) expr)));
-					line.add(LustreNamingConventions.getLookupIdKnownPart(((LookupExpr) expr)));
+					line.add(LustreNamingConventions.getRawLookupIdValuePart(((LookupExpr) expr)));
+					line.add(LustreNamingConventions.getRawLookupIdKnownPart(((LookupExpr) expr)));
 				} else {
 					// Get the raw input name
-					line.add(LustreNamingConventions.getLookupId(
+					line.add(LustreNamingConventions.getRawLookupId(
 							((LookupExpr) expr)));
 				}
 			} else if (expr instanceof ILVariable) {
 				// These should be command handles
 				line.add(LustreNamingConventions
-						.getVariableId((ILVariable) expr));
+						.getRawCommandHandleId((ILVariable) expr));
 			}
 		}
 		// Print that first line

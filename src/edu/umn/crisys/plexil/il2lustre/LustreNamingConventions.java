@@ -11,7 +11,6 @@ import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
 import jkind.lustre.TupleExpr;
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.LookupExpr;
 import edu.umn.crisys.plexil.expr.il.NamedCondition;
@@ -153,18 +152,6 @@ public class LustreNamingConventions {
 		throw new RuntimeException("Type "+type+" is not a number.");
 	}
 	
-	private static String getLookupId(ILExpr rawName) {
-		//TODO: Lookup parameters, right now only one value per lookup name
-		
-		if (rawName instanceof StringValue) {
-			StringValue name = (StringValue) rawName;
-			return getLookupId(name.asString());
-		}
-		// I don't think we're ever going to be able to support non-constant
-		// lookup names in Lustre.
-		throw new RuntimeException(rawName+" is dynamic.");
-	}
-	
 	public static String getLookupId(LookupExpr lookupExpr) {
 		return getLookupId(lookupExpr.getLookupNameAsString());
 	}
@@ -189,6 +176,30 @@ public class LustreNamingConventions {
 		return NameUtils.clean("Lookup/"+lookupName+".isknown");
 	}
 	
+	public static String getRawLookupId(LookupExpr lookupExpr) {
+		return getRawLookupId(lookupExpr.getLookupNameAsString());
+	}
+	
+	public static String getRawLookupIdValuePart(LookupExpr lookupExpr) {
+		return getRawLookupIdValuePart(lookupExpr.getLookupNameAsString());
+	}
+	
+	public static String getRawLookupIdKnownPart(LookupExpr lookupExpr) {
+		return getRawLookupIdKnownPart(lookupExpr.getLookupNameAsString());
+	}
+	
+	public static String getRawLookupId(String lookupName) {
+		return "raw__"+getLookupId(lookupName);
+	}
+	
+	public static String getRawLookupIdValuePart(String lookupName) {
+		return "raw__"+getLookupIdValuePart(lookupName);
+	}
+	
+	public static String getRawLookupIdKnownPart(String lookupName) {
+		return "raw__"+getLookupIdKnownPart(lookupName);
+	}
+	
 	public static boolean hasValueAndKnownSplit(ILVariable v) {
 		return hasValueAndKnownSplit(v.getType());
 	}
@@ -209,6 +220,13 @@ public class LustreNamingConventions {
 					+ "component and a 'known' component: "+v);
 		}
 		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
+	}
+	
+	public static String getRawCommandHandleId(ILVariable v) {
+		if (v.getType() != ILType.COMMAND_HANDLE) {
+			throw new RuntimeException(v+" is a "+v.getType()+", not a command handle");
+		}
+		return "raw__"+getVariableId(v);
 	}
 	
 	public static jkind.lustre.Expr getNumericValue(ILVariable v) {

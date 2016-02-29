@@ -31,8 +31,10 @@ import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
+import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
+import edu.umn.crisys.plexil.expr.il.ILOperator;
 import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.NamedCondition;
 import edu.umn.crisys.plexil.expr.il.vars.ArrayVar;
@@ -42,6 +44,8 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 
@@ -189,21 +193,69 @@ public class PlanToLustre {
 	}
 
 	/**
-	 * Adds an input to the NodeBuilder for this command handle. It will not
-	 * be constrained, so make sure to restrict it correctly. 
+	 * Add this command handle as a Lustre input. A constrained version will
+	 * be created with the proper name as given by LustreNamingConventions.getVariableId(),
+	 * which should be used in any normal circumstance. 
 	 * 
-	 * @param handle The actual Plexil handle (for naming purposes)
-	 * @return the Lustre ID for the new input, which conforms to the
-	 * Lustre naming conventions for the IL variable. 
+	 * @param handle The actual IL representation of the handle
+	 * @return the raw, unconstrained input ID. 
 	 */
 	public String addCommandHandleInputFor(ILVariable handle, String cmdName) {
 		// In the Lustre translation, command handles are actually pure inputs,
 		// not variables. 
-		String theId = LustreNamingConventions.getVariableId(handle);
-		nb.addInput(new VarDecl(theId, LustreNamingConventions.PCOMMAND));
-		// We aren't constraining it here. That is handled by the code that
-		// processes the Command Action. 
-		return theId;
+		String rawIdName = LustreNamingConventions.getRawCommandHandleId(handle);
+		nb.addInput(new VarDecl(rawIdName, LustreNamingConventions.PCOMMAND));
+		Expr rawId = id(rawIdName);
+		
+		String constrainedIdName = LustreNamingConventions.getVariableId(handle);
+		nb.addLocal(new VarDecl(constrainedIdName, LustreNamingConventions.PCOMMAND));
+
+		// But this input needs to have restrictions. In addition to the general
+		// PLEXIL rule that inputs can't change mid-macrostep, we also want
+		// to make sure that it appears to reset, and that it doesn't do weird
+		// things like change before the command is even issued.
+		
+		// First, we'll handle resets. In INACTIVE and WAITING, the only valid
+		// value is UNKNOWN. The only way to get to those two states is the 
+		// initial state of the plan and by resetting. 
+		NodeUID node = handle.getNodeUID();
+		
+		ILExpr inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
+		ILExpr waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
+		// If the node was SKIPPED, it must have gone directly from WAITING to
+		// FINISHED, with the command not being issued. Therefore, it should 
+		// be UNKNOWN too.
+		ILExpr skipped = ILOperator.DIRECT_COMPARE.expr(
+				NodeOutcome.SKIPPED, 
+				getNodeOutcomeFor(node));
+		// This is also true if the pre-condition failed.
+		ILExpr preFail = ILOperator.DIRECT_COMPARE.expr(
+				NodeFailureType.PRE_CONDITION_FAILED,
+				getFailureTypeFor(node));
+		ILExpr handleShouldBeUntouchedIL = ILOperator.OR.expr(
+				inactive, waiting, skipped, preFail);
+		
+		Expr handleShouldBeUntouched = toLustre(handleShouldBeUntouchedIL);
+		Expr cmdUnknown = toLustre(CommandHandleState.UNKNOWN, 
+				ILType.COMMAND_HANDLE);
+		
+		// Build these guards into an equation. 
+		Equation e = new Equation(id(constrainedIdName), 
+				// Starts out UNKNOWN,
+				arrow(cmdUnknown,
+				// First and foremost, regardless of the macro step state, if
+				// it's untouched it must be UNKNOWN.
+				ite(handleShouldBeUntouched, cmdUnknown,
+						// Otherwise, if it's the macrostep end, take a new raw
+						// value, if not stay the same. 
+						ite(isCurrentlyEndOfMacroStep(),
+								rawId,
+								pre(id(constrainedIdName))))));
+		nb.addEquation(e);
+		
+		reverseMap.addCommandHandleMapping(rawIdName, cmdName);
+		 
+		return rawIdName;
 	}
 
 	private void addLookupToNode(LookupDecl lookup) {
@@ -212,56 +264,57 @@ public class PlanToLustre {
 					+ "supported in Lustre translation: "+lookup.getName());
 		}
 		
+		ILType ilType = lookup.getReturnValue().get().getType().toILType();
+		Type type = getLustreType(ilType);
+		String lookupName = lookup.getName();
 		
-		ILType plexilType = lookup.getReturnValue().get().getType().toILType();
-		Type type = getLustreType(plexilType);
-		if (LustreNamingConventions.hasValueAndKnownSplit(plexilType)) {
-			// This should be two inputs, the value and whether it's known
-			String valueId = LustreNamingConventions.getLookupIdValuePart(lookup.getName());
-			String knownId = LustreNamingConventions.getLookupIdKnownPart(lookup.getName());
+		if (LustreNamingConventions.hasValueAndKnownSplit(ilType)) {
+			String constrainedValue = LustreNamingConventions.getLookupIdValuePart(lookupName);
+			String rawValue = LustreNamingConventions.getRawLookupIdValuePart(lookupName);
+			String constrainedKnown = LustreNamingConventions.getLookupIdKnownPart(lookupName);
+			String rawKnown = LustreNamingConventions.getRawLookupIdKnownPart(lookupName);
 			
-			nb.addInput(new VarDecl(valueId, type));
-			nb.addInput(new VarDecl(knownId, NamedType.BOOL));
+			// The raw values will be inputs. The constrained values will be
+			// equations that enforce PLEXIL semantics. (Lustre asserts caused
+			// us a bunch of problems, JKind uses them but slices
+			// out their values when returning test cases). 
+			nb.addInput(new VarDecl(rawValue, type));
+			nb.addInput(new VarDecl(rawKnown, NamedType.BOOL));
+			nb.addLocal(new VarDecl(constrainedValue, type));
+			nb.addLocal(new VarDecl(constrainedKnown, NamedType.BOOL));
 			
-			// As an input, it must follow PLEXIL rules:
-			restrictInputVariableToMacroSteps(id(valueId));
-			restrictInputVariableToMacroSteps(id(knownId));
+			
+			// It is only allowed to change between macro steps. Otherwise,
+			// lookups are completely unconstrained. 
+			PlexilEquationBuilder builderValue = new PlexilEquationBuilder(constrainedValue, id(rawValue));
+			builderValue.addAssignmentBetweenMacro(LustreUtil.TRUE, id(rawValue));
+			nb.addEquation(builderValue.buildEquation());
+			
+			PlexilEquationBuilder builderKnown = new PlexilEquationBuilder(constrainedKnown, id(rawKnown));
+			builderKnown.addAssignmentBetweenMacro(LustreUtil.TRUE, id(rawKnown));
+			nb.addEquation(builderKnown.buildEquation());
 			
 			// Write this down for reverse mapping later
-			reverseMap.addLookupMapping(valueId, lookup.getName());
-			
+			reverseMap.addLookupMapping(rawValue, lookup.getName());
+
 		} else {
-			String lookupId = LustreNamingConventions.getLookupId(lookup.getName());
+			String constrained = LustreNamingConventions.getLookupId(lookupName);
+			String raw = LustreNamingConventions.getRawLookupId(lookupName);
 
-			nb.addInput(new VarDecl(lookupId, type));
-			// As an input, it must follow PLEXIL rules:
-			restrictInputVariableToMacroSteps(id(lookupId));
+			// The raw value will be an input. The constrained value will be
+			// an equation that enforces PLEXIL semantics. 
+			nb.addInput(new VarDecl(raw, type));
+			nb.addLocal(new VarDecl(constrained, type));
+			
+			// It is only allowed to change between macro steps. Otherwise,
+			// lookups are completely unconstrained. 
+			PlexilEquationBuilder peb = new PlexilEquationBuilder(constrained, id(raw));
+			peb.addAssignmentBetweenMacro(LustreUtil.TRUE, id(raw));
+			nb.addEquation(peb.buildEquation());
 			
 			// Write this down for reverse mapping later
-			reverseMap.addLookupMapping(lookupId, lookup.getName());
+			reverseMap.addLookupMapping(raw, lookup.getName());
 		}
-		
-		
-	}
-	
-	/**
-	 * Add an assertion to the Lustre plan. The given boolean expression will
-	 * be guaranteed to always hold true in all test cases generated. 
-	 * @param e
-	 */
-	void addAssertion(Expr e) {
-		nb.addAssertion(e);
-	}
-	
-	void restrictInputVariableToMacroSteps(IdExpr theVariable) {
-		// PLEXIL requires that an input only change when the macro step ends.
-		// In other words, if the macro step isn't over, then the current
-		// lookup value must equal the previous one. 
-		nb.addAssertion(
-				arrow(LustreUtil.TRUE, 
-				implies(not(LustreNamingConventions.MACRO_STEP_ENDED),
-						equal(theVariable, pre(theVariable)))));
-
 	}
 	
 	public Expr toLustre(ILExpr e, ILType expectedType) {

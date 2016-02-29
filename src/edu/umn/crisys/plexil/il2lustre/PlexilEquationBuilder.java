@@ -10,6 +10,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 
@@ -132,16 +133,22 @@ public class PlexilEquationBuilder {
 		
 	}
 
-	private Expr buildIfElseChain(List<Pair<Expr, Expr>> guarded,
+	private static Expr buildIfElseChain(List<Pair<Expr, Expr>> guarded,
 			Expr last) {
 		// Start with the unconditional one
 		Expr ret = last;
 		// Go backwards, adding conditions (that way, the first one added
 		// is toward the front)
 		for (int i = guarded.size()-1; i >= 0; i--) {
-			ret = new IfThenElseExpr(guarded.get(i).first, 
-					guarded.get(i).second, 
-					ret);
+			if (guarded.get(i).first == LustreUtil.TRUE) {
+				// Well, everything that we just did can be thrown out. This
+				// one is unconditional too.
+				ret = guarded.get(i).second;
+			} else {
+				ret = new IfThenElseExpr(guarded.get(i).first, 
+						guarded.get(i).second, 
+						ret);
+			}
 		}
 		return ret; 
 	}
