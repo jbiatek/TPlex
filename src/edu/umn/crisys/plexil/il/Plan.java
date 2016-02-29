@@ -11,12 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;

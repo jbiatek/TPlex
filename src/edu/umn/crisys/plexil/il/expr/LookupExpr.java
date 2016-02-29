@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 

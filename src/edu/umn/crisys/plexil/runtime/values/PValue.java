@@ -2,7 +2,7 @@ package edu.umn.crisys.plexil.runtime.values;
 
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILType;
 

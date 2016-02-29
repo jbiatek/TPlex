@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr.ast;
+package edu.umn.crisys.plexil.ast.expr;
 
 import java.util.Optional;
 

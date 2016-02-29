@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
+import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ILExprBase;
 import edu.umn.crisys.plexil.il.expr.ILType;

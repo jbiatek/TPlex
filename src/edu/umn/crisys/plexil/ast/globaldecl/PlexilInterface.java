@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 
 public class PlexilInterface {
 

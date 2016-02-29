@@ -8,8 +8,8 @@ import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
 import edu.umn.crisys.plexil.NameUtils;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation;
-import edu.umn.crisys.plexil.expr.ast.ASTOperation.Operator;
+import edu.umn.crisys.plexil.ast.expr.ASTOperation;
+import edu.umn.crisys.plexil.ast.expr.ASTOperation.Operator;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILType;

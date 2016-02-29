@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
 import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
@@ -12,8 +14,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;

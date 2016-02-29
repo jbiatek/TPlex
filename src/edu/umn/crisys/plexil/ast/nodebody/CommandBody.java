@@ -3,8 +3,8 @@ package edu.umn.crisys.plexil.ast.nodebody;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 
 public class CommandBody extends NodeBody {
 

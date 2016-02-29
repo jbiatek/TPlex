@@ -1,4 +1,4 @@
-package edu.umn.crisys.plexil.expr.ast;
+package edu.umn.crisys.plexil.ast.expr;
 
 /**
  * An expression representing a variable reference. This is basically just the

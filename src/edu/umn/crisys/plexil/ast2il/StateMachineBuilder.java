@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umn.crisys.plexil.ast.Node;
-import edu.umn.crisys.plexil.expr.ast.ASTLookupExpr;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
+import edu.umn.crisys.plexil.ast.expr.ASTLookupExpr;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CompositeAction;

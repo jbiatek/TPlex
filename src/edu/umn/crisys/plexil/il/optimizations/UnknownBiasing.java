@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.il.optimizations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.umn.crisys.plexil.expr.ast.ASTOperation;
+import edu.umn.crisys.plexil.ast.expr.ASTOperation;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;

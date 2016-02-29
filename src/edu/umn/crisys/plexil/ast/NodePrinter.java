@@ -1,5 +1,6 @@
 package edu.umn.crisys.plexil.ast;
 
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
 import edu.umn.crisys.plexil.ast.nodebody.CommandBody;
@@ -8,7 +9,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.util.Pair;

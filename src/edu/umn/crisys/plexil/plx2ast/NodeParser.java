@@ -12,6 +12,8 @@ import javax.xml.stream.events.XMLEvent;
 
 import edu.umn.crisys.plexil.ast.Node;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
@@ -20,8 +22,6 @@ import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.util.xml.UnexpectedTagException;

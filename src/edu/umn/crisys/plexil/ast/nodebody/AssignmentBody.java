@@ -1,6 +1,6 @@
 package edu.umn.crisys.plexil.ast.nodebody;
 
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
 
 public class AssignmentBody extends NodeBody {
 

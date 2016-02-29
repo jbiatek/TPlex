@@ -3,8 +3,8 @@ package edu.umn.crisys.plexil.test.java;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.umn.crisys.plexil.expr.ast.ASTExprVisitor;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
+import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;

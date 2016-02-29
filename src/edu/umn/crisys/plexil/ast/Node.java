@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.ast.nodebody.AssignmentBody;
@@ -13,7 +14,6 @@ import edu.umn.crisys.plexil.ast.nodebody.LibraryBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.expr.ast.PlexilExpr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 
 public class Node {

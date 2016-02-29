@@ -39,10 +39,10 @@ import com.sun.codemodel.JPackage;
 
 import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
+import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
 import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
-import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
