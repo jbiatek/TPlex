@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.util.NameUtils;
 
 public class ReverseTranslationMap {
 

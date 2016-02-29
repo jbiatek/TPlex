@@ -7,7 +7,6 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JInvocation;
 
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.expr.ASTOperation;
 import edu.umn.crisys.plexil.ast.expr.ASTOperation.Operator;
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -19,6 +18,7 @@ import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.util.NameUtils;
 
 public class ILExprToJava {
 

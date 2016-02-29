@@ -9,7 +9,6 @@ import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -23,6 +22,7 @@ import edu.umn.crisys.plexil.script.ast.ScriptEventVisitor;
 import edu.umn.crisys.plexil.script.ast.Simultaneous;
 import edu.umn.crisys.plexil.script.ast.StateChange;
 import edu.umn.crisys.plexil.script.ast.UpdateAck;
+import edu.umn.crisys.util.NameUtils;
 
 public class ScriptToJava implements ScriptEventVisitor<JCodeModel, JExpression> {
 	

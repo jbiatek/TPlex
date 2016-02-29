@@ -18,7 +18,6 @@ import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JSwitch;
 
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
@@ -29,6 +28,7 @@ import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.SimpleCurrentNext;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.util.NameUtils;
 
 public class StateMachineToJava {
 

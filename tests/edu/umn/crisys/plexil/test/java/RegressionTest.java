@@ -19,7 +19,6 @@ import lustre.LustreTrace;
 
 import org.junit.*;
 
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
@@ -40,6 +39,7 @@ import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
+import edu.umn.crisys.util.NameUtils;
 
 
 /**

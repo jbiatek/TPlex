@@ -37,7 +37,6 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
 
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
@@ -76,6 +75,7 @@ import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 import edu.umn.crisys.plexil.test.java.RegressionTest;
+import edu.umn.crisys.util.NameUtils;
 
 public class TPlex {
 	

@@ -10,7 +10,6 @@ import java.util.Optional;
 import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
 import jkind.lustre.TupleExpr;
-import edu.umn.crisys.plexil.NameUtils;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.LookupExpr;
@@ -28,6 +27,7 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.util.NameUtils;
 
 public class LustreNamingConventions {
 	public static final String P_TRUE_ID = "p_true";

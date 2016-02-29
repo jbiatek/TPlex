@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.umn.crisys.plexil.NameUtils;
+import edu.umn.crisys.util.NameUtils;
 
 public class NodeUID {
     
