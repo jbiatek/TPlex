@@ -59,6 +59,7 @@ import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.Event;
 import edu.umn.crisys.plexil.script.ast.FunctionCall;
@@ -406,8 +407,10 @@ public class JKindResultUtils {
 			return "int";
 		} else if (v instanceof jkind.lustre.values.EnumValue) {
 			return "enum";
+		} else if (v instanceof jkind.lustre.values.RealValue) {
+			return "real";
 		} else {
-			throw new RuntimeException("Don't know type of "+v);
+			throw new RuntimeException("Don't know type of "+v.getClass());
 		}
 	}
 	
@@ -416,6 +419,8 @@ public class JKindResultUtils {
 		switch(getType(value)) {
 		case "int":
 			return IntegerValue.get(Integer.parseInt(value.toString()));
+		case "real":
+			return RealValue.get(Double.parseDouble(value.toString()));
 		case "bool":
 			return BooleanValue.get(value.toString().equalsIgnoreCase("true"));
 		case "enum":

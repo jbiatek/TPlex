@@ -18,6 +18,12 @@ public class ReverseTranslationMap {
 	private Map<String,String> lookups = new HashMap<>();
 	private Map<String,String> commandHandleInputs = new HashMap<>();
 	
+	public ReverseTranslationMap() {
+		// Add in the empty string to start.
+		allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, 
+				StringValue.get(""));
+	}
+	
 	public String stringToEnum(PString v) {
 		if (v.isUnknown()) {
 			expectUnknownString = true;
@@ -25,7 +31,6 @@ public class ReverseTranslationMap {
 		}
 		StringValue knownString = (StringValue) v;
 		if (knownString.getString().equals("")) {
-			allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, knownString);
 			return LustreNamingConventions.EMPTY_STRING;
 		}
 

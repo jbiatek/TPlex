@@ -15,10 +15,13 @@ import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
+import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.expr.ast.PlexilType;
 import edu.umn.crisys.plexil.expr.il.GetNodeStateExpr;
 import edu.umn.crisys.plexil.expr.il.ILExpr;
 import edu.umn.crisys.plexil.expr.il.ILExprModifier;
 import edu.umn.crisys.plexil.expr.il.ILExprVisitor;
+import edu.umn.crisys.plexil.expr.il.ILType;
 import edu.umn.crisys.plexil.expr.il.vars.ILVariable;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
@@ -91,6 +94,16 @@ public class Plan {
 
 	public void setStateDecls(List<LookupDecl> stateDecls) {
 		this.stateDecls = stateDecls;
+	}
+	
+	public void setTimeIfNotPresent(PlexilType type) {
+		if (stateDecls.stream()
+				.anyMatch(d -> d.getName().equals("time"))) {
+			return;
+		}
+		LookupDecl time = new LookupDecl("time");
+		time.setReturnValue(new VariableDecl("<timetype>", type));
+		stateDecls.add(time);
 	}
 
 	public List<CommandDecl> getCommandDecls() {

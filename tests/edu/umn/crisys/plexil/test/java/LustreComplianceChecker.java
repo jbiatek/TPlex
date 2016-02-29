@@ -28,6 +28,9 @@ public class LustreComplianceChecker extends TestOracle {
 			ReverseTranslationMap mapper) {
 		this.ilTrace = ilTrace;
 		this.macrostepEnded = macrostepEnded;
+		if (macrostepEnded == null) {
+			throw new RuntimeException("No macrostep data given");
+		}
 		this.mapper = mapper;
 	}
 
@@ -55,6 +58,10 @@ public class LustreComplianceChecker extends TestOracle {
 	}
 	
 	private void checkMacroStepBoundary() {
+		if (step >= macrostepEnded.getValues().size()) {
+			return;
+		}
+		
 		boolean lustreMacroStepEnd = macrostepEnded.getValue(step)
 				.toString().equalsIgnoreCase("true");
 		if (macroStepShouldBeEnding) {
@@ -94,6 +101,10 @@ public class LustreComplianceChecker extends TestOracle {
 	}
 
 	private void checkValue(ILExpr e, ILSimulator sim) {
+		if (step >= ilTrace.get(e).size()) {
+			return;
+		}
+		
 		PValue expected = sim.eval(e);
 		PValue actual = ilTrace.get(e).get(step);
 		String expectedStr = JKindResultUtils.hackyILExprToLustre(expected, e.getType(), mapper);

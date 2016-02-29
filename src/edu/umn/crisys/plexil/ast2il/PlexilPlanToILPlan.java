@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.ast2il;
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 
 public class PlexilPlanToILPlan {
 
@@ -12,6 +13,7 @@ public class PlexilPlanToILPlan {
         Plan ilPlan = new Plan(p.getName());
         ilPlan.setCommandDecls(p.getCommandDeclarations());
         ilPlan.setStateDecls(p.getStateDeclarations());
+        ilPlan.setTimeIfNotPresent(NodeToIL.TIMEPOINT_TYPE);
         ilPlan.setLibraryDecls(p.getLibraryDeclarations());
         NodeToIL rootTranslator = new NodeToIL(p.getRootNode());
         rootTranslator.translate(ilPlan);

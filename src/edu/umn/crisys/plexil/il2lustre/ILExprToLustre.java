@@ -207,6 +207,7 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 						op.getArguments().get(0).accept(this, ILType.BOOLEAN), 
 						BinaryOp.NOTEQUAL, 
 						LustreNamingConventions.P_UNKNOWN);
+			case STRING:
 			case OUTCOME:
 			case FAILURE:
 			case COMMAND_HANDLE:
