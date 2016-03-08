@@ -52,7 +52,9 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 	}
 	
 	@Override
-	public void endOfMacroStep(JavaPlan plan) {
+	public void beforeMicroStepRuns(JavaPlan plan) {
+		// Don't check anything after we run out of Lustre data, since there's
+		// nothing to check against. 
 		if (stop()) return;
 		
 		// We're running in a simulation, right? 
@@ -165,7 +167,11 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 		if (data == null) {
 			throw new NullPointerException("Signal for "+lustreId+" did not exist");
 		}
-		PValue value = JKindResultUtils.parseValue(data.getValue(lustreStepCounter), map);
+		// Don't go off the end of the trace. If we do, just keep repeating
+		// the last step over and over again. 
+		int step = Math.min(lustreStepCounter, lustreData.getLength()-1);
+		
+		PValue value = JKindResultUtils.parseValue(data.getValue(step), map);
 		if (lustreId.endsWith("__value")) {
 			// Check for unknown-ness first
 			String knownId = lustreId.replaceFirst("value$", "isknown");
@@ -173,7 +179,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 			if (knownData == null) {
 				throw new NullPointerException("Signal for "+knownId+" did not exist");
 			}
-			if (knownData.getValue(lustreStepCounter).toString()
+			if (knownData.getValue(step).toString()
 					.equalsIgnoreCase("false")) {
 				//Nope, actually this value is not known.
 				return value.getType().getUnknown();

@@ -183,8 +183,7 @@ public abstract class JavaPlan {
             // Check for a timeout
             counter++;
             if (counter > QUIESCENCE_TIMEOUT) {
-                throw new RuntimeException("Quiesence took more than "+
-                        QUIESCENCE_TIMEOUT+" microsteps, timed out");
+                throw new QuiescenceLimitExceeded(QUIESCENCE_TIMEOUT);
             }
         }
         // Debug message for end of macrostep

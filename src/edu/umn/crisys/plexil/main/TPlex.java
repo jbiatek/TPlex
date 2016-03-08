@@ -535,6 +535,8 @@ public class TPlex {
 				// Probably needs to return results at some point, or be
 				// told where to put them. 
 				JKindSearch searcher = new JKindSearch(p2l, new File(outputDir, "jkind-traces"));
+				//searcher.addNodeExecutesNoParentFailObligations();
+				searcher.addTransitionCoverageObligations();
 				searcher.go(JKindSettings.createBMCOnly(
 						Integer.MAX_VALUE, lustreIncrementalDepth));
 			}

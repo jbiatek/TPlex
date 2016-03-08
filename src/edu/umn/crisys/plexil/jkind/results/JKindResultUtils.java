@@ -53,6 +53,7 @@ import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.QuiescenceLimitExceeded;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -387,6 +388,11 @@ public class JKindResultUtils {
 		sim.addObserver(checker);
 		try {
 			sim.runPlanToCompletion();
+		} catch (QuiescenceLimitExceeded q) {
+			// This is a problem with their plan, not us. At least, it passed
+			// compliance the whole time as far as we knew. 
+			
+			// As such, they'll probably want this test. Do nothing. 
 		} catch (Exception e) {
 			// Wrap with some more information
 			System.err.println("Error translating "+name
@@ -401,7 +407,9 @@ public class JKindResultUtils {
 		
 	}
 	private static String getType(Value v) {
-		if (v instanceof jkind.lustre.values.BooleanValue) {
+		if (v == null) {
+			throw new NullPointerException("Null value has no type");
+		} else if (v instanceof jkind.lustre.values.BooleanValue) {
 			return "bool";
 		} else if (v instanceof jkind.lustre.values.IntegerValue) {
 			return "int";

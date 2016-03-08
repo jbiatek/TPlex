@@ -59,17 +59,28 @@ public class JKindSearch {
 		go(JKindSettings.createBMCOnly(Integer.MAX_VALUE, 20));
 	}
 	
-	public void go(JKindSettings settings) {
-		// TODO This is just a test method.
-		jkind = settings;
-		
+	public void addNodeExecutesNoParentFailObligations() {
 		System.out.println("Adding goals to execute each node with no failures");
 		// Try to execute each node, but not the root
 		translator.getILPlan().getOriginalHierarchy().getChildren().stream()
 			.forEach(child -> child.streamEntireHierarchy()
 					.forEach(node -> addGoal(
 							new NodeExecutesNoParentFailProperty(node))));
-
+	}
+	
+	public void addTransitionCoverageObligations() {
+		translator.getILPlan().getMachines()
+			.forEach(nsm -> {
+				nsm.getTransitions().forEach(t -> {
+					addGoal(new SpecificTransitionProperty(t, nsm));
+				});
+			});
+	}
+	
+	public void go(JKindSettings settings) {
+		// TODO This is just a test method.
+		jkind = settings;
+		
 		// Prepare the work queue
 		workQueue = new ForkJoinPool();
 		
@@ -282,44 +293,6 @@ public class JKindSearch {
 
 	
 
-	private void search(JKindTestRun run) {
-		System.out.println("Current progress: ");
-		System.out.println("Have found "+allTraces.size()+" total traces.");
-		System.out.println("There are "+unmetGoals.size()+" goals remaining.");
-		System.out.println("Next JKind execution run starting...");
-		
-		
-		ExecutorService pool = Executors.newWorkStealingPool();
-		
-		// Search anything that uses the empty prefix 
-		pool.execute(() -> searchAllNoPrefix(run));
-		
-		// Do a run for each prefix that we're trying to extend.
-		/*
-		run.getAllPrefixes().stream()
-		.forEach(prefix -> pool.execute(() -> 
-			searchPrefix(prefix, run.getPropertiesForPrefix(prefix))));
-		*/
-		run.getSortedByMostProperties(16)
-			.forEach(entry -> {
-				System.out.println("Going to extend trace "+entry.getKey()
-					+" toward "+entry.getValue().size()+" goals.");
-				pool.execute(() -> 
-					searchPrefix(entry.getKey(), entry.getValue()));
-			});
-		
-		
-		// Wait for them all to be done
-		pool.shutdown();
-		try {
-			while ( ! pool.awaitTermination(3, TimeUnit.MINUTES)) {};
-		} catch (InterruptedException e) {
-			pool.shutdownNow();
-			throw new RuntimeException(e);
-		}
-		
-	}
-	
 	/**
 	 * Using the given LustreTrace test case, which has been run through the
 	 * simulator and therefore is in terms of integers, do two things:
