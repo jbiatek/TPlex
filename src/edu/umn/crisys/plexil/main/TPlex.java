@@ -10,12 +10,14 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -76,6 +78,7 @@ import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 import edu.umn.crisys.plexil.test.java.RegressionTest;
 import edu.umn.crisys.util.NameUtils;
+import edu.umn.crisys.util.Pair;
 
 public class TPlex {
 	
@@ -85,6 +88,12 @@ public class TPlex {
 
 	@Parameter(names = "--output-dir", description = "The directory to output files to. For Java, this is where the package will be placed.")
 	public File outputDir = new File("./");
+	
+	@Parameter(names = "--generate", description = "Generate test cases "
+			+ "instead of translating anything. Pass in PLEXIL plan(s) and "
+			+ "test cases will be placed in --output-dir. The original Lustre "
+			+ "traces will be placed in output-dir/jkind-traces for debug purposes. ")
+	public boolean generate = false;
 	
 	@Parameter(description="FILE1.{plx|psx} [FILE2.{plx|psx} ...]", variableArity = true)
 	public List<File> files = new ArrayList<>();
@@ -98,8 +107,14 @@ public class TPlex {
 			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'plexil' can be used to turn a .plx file in to a more readable .ple file.")
 	public OutputLanguage outputLanguage = OutputLanguage.NONE;
 	
-	@Parameter(names = "--static-libs", description="When translating libraries, first try to go through all the specified PLX files. If the correct ID is found, the library is included statically.")
+	@Parameter(names = "--static-libs", description="Instead of leaving library "
+			+ "resolution until runtime, search --library-dir for the correct "
+			+ "node ID. If found, it is included statically.")
 	public boolean staticLibraries = false;
+	
+	@Parameter(names="--library-dir", description="The directory to look in "
+			+ "for libraries.")
+	public File libraryDir = new File("./");
 	
 	@Parameter(names = "--no-optimizations", description="Disable all optimizations.")
 	public boolean skipAllOptimizations = false;
@@ -178,6 +193,7 @@ public class TPlex {
 
 	//Variables to use during translation
 	public Map<String, PlexilPlan> asts = new HashMap<>();
+	public Map<File, PlexilPlan> libPath = new HashMap<>();
 	public Map<String, PlexilScript> scripts = new HashMap<>();
 	public Map<String, Plan> ilPlans = new HashMap<>();
 	public Map<String, ReverseTranslationMap> lustreTranslationMap = new HashMap<>();
@@ -424,13 +440,31 @@ public class TPlex {
 			ta.inferTypeDeclarations(plan);
 		}
 		
+		Set<PlexilPlan> libraryPath = Collections.emptySet();
 		if (!skipAllOptimizations && staticLibraries) {
-			StaticLibIncluder.optimize(toIl, new HashSet<>(asts.values()));
+			// Do an AST parse of all PLEXIL files in libraryPath.
+			parseLibraries();
+			libraryPath = new HashSet<>(libPath.values());
 		}
 		
-		Plan ret =  PlexilPlanToILPlan.translate(plan);
+		Plan ret =  PlexilPlanToILPlan.translate(plan, libraryPath);
 		ILTypeChecker.typeCheck(ret);
 		return ret;
+	}
+	
+	private void parseLibraries() {
+		if (libPath.isEmpty()) {
+			libPath = Arrays.stream(libraryDir.listFiles(
+					(dir, name) -> name.endsWith(".plx")))
+				.map(plxFile -> {
+					try {
+						return new Pair<>(plxFile, PlxParser.parseFile(plxFile));
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+		}
 	}
 
 	public boolean optimizeIL() {

@@ -211,13 +211,7 @@ public class NodeToIL {
      * of doing it dynamically at runtime. 
      */
     public void convertLibraryToList(Node library) {
-    	if ( ! library.getPlexilID().equals(getLibraryHandle().getLibraryPlexilID())) {
-    		throw new RuntimeException(
-    				"Statically including the wrong library? The given one is "
-    						+library.getPlexilID()+" but the library node looks for "
-    						+getLibraryHandle().getLibraryPlexilID());
-    	}
-    	// Okay, we are about to throw out the Library body, so steal their 
+    	// Okay, we are about to throw out the Library body, so steal its 
     	// aliases first. 
     	aliases = getLibraryHandle().getAliases();
     	ilVars.remove(LIBRARY_HANDLE);

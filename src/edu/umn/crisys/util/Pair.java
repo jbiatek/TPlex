@@ -35,6 +35,14 @@ public class Pair<T1, T2> {
 	    return "("+first+", "+second+")";
 	}
 	
+	public T1 getFirst() {
+		return first;
+	}
+	
+	public T2 getSecond() {
+		return second;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) return false;

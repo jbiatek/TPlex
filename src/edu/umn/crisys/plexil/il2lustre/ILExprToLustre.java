@@ -503,7 +503,8 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 
 	@Override
 	public Expr visit(LibraryVar lib, ILType expectedType) {
-		throw new RuntimeException("Libraries not supported yet");
+		throw new RuntimeException("Libraries not supported yet: library node's ID is "
+				+lib.getLibraryPlexilID());
 	}
 
 	@Override

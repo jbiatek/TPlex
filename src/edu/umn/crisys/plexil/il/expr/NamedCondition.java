@@ -36,7 +36,12 @@ public class NamedCondition extends ILExprBase {
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
-		return visitor.visit(this, param);
+		try { 
+			return visitor.visit(this, param);
+		} catch (Exception e) {
+			throw new RuntimeException("Exception occured while visiting "+
+					getDescription()+", "+asString(), e);
+		}
 	}
 
 	@Override

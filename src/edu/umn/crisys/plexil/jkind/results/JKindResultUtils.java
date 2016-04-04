@@ -393,6 +393,9 @@ public class JKindResultUtils {
 			// compliance the whole time as far as we knew. 
 			
 			// As such, they'll probably want this test. Do nothing. 
+			System.err.println("Quiescence timed out for this test, but I'm"
+					+ " giving you the test case since it might be a problem"
+					+ " with the plan");
 		} catch (Exception e) {
 			// Wrap with some more information
 			System.err.println("Error translating "+name

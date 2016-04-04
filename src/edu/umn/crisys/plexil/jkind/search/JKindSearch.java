@@ -119,7 +119,7 @@ public class JKindSearch {
 		unmetGoals.add(p);
 	}
 	
-	public JKindTestRun generateMonolithicSearchStep() {
+	synchronized public JKindTestRun generateMonolithicSearchStep() {
 		JKindTestRun ret = new JKindTestRun();
 		// Ask each property to find something to do
 		unmetGoals.forEach(unmetProperty -> {

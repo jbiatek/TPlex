@@ -158,8 +158,11 @@ public class PlxParser {
     	// First is supposed to be the name.
     	String name = getStringContent(assertStart("Name", nextTag(xml)), xml);
 
-    	// Then an interface.
-    	PlexilInterface iface = NodeParser.parseInterface(assertStart("Interface", nextTag(xml)), xml);
+    	// Then an optional interface.
+    	PlexilInterface iface = new PlexilInterface();
+    	if (nextTagIsStartOf("Interface", xml)) {
+    		iface = NodeParser.parseInterface(nextTag(xml).asStartElement(), xml);
+    	}
     	
     	// That's all!
     	assertClosedTag(start, xml);
