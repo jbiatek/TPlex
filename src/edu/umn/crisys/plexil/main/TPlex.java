@@ -345,70 +345,18 @@ public class TPlex {
 					System.err.println("XML Parsing error: "+e.getMessage());
 					return false;
 				} 
-			} else if (f.getName().endsWith(".lus.xml")) {
-				if (simLustreFile == null) {
-					System.err.println("Error: A Lustre program must be supplied. Use --sim-lustre-file.");
-					return false;
-				}
-				if (compliancePlexilProgram == null) {
-					System.err.println("Error: A PLEXIL plx file must be supplied for compliance testing. Use --compliance-plx.");
-				}
+			} else if (f.getName().endsWith(".lus.xml")
+						|| f.getName().endsWith(".csv")) {
 				try {
-					JKindResult results = JKindResultUtils.parseJKindFile(f);
-					Map<LustreTrace, PlexilScript> parsedScripts = JKindResultUtils.translateToScripts(
-							JKindResultUtils.extractTraces(results, 
-									JKindResultUtils.parseProgram(simLustreFile)), 
-							getStringMapForXml(f), 
-							quickParsePlan(compliancePlexilProgram))
-							.entrySet().stream()
-							.filter(e -> e.getValue().isPresent())
-							.collect(Collectors.toMap(
-									e -> e.getKey(), 
-									e -> e.getValue().get()));
-					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
-					lustreResultsTranslated.putAll(parsedScripts);
-				} catch (Exception e) {
-					System.err.println("Error parsing JKind XML: ");
+					return processLustreTestCasesIn(f);
+				} catch (IOException e) {
+					System.err.println("Error reading test cases in "+f.getName()+":");
 					e.printStackTrace();
 					return false;
 				}
-			} else if (f.getName().endsWith(".csv")) {
-				if (simLustreFile == null) {
-					System.err.println("Error: A Lustre program must be supplied. Use --sim-lustre-file.");
-					return false;
-				}
-				if (compliancePlexilProgram == null) {
-					System.err.println("Error: A PLEXIL plx file must be supplied for compliance testing. Use --compliance-plx.");
-				}
-				try {
-					List<LustreTrace> traces = JKindResultUtils.simulateCSV(
-							simLustreFile, 
-							getMainNodeFromFile(simLustreFile), 
-							f);
-					System.out.println("Simulated "+traces.size()+" test cases from "+f);
-					// They all need names
-					String baseName = f.getName().replaceAll("\\.csv$", "");
-					Map<String,LustreTrace> namedTraces = new HashMap<>();
-					for (int i = 0; i < traces.size(); i++) {
-						namedTraces.put(baseName+"_"+i, traces.get(i));
-					}
-					Map<LustreTrace, PlexilScript> parsedScripts = 
-							JKindResultUtils.translateToScripts(
-									namedTraces, 
-									getStringMapForLus(simLustreFile),
-									quickParsePlan(compliancePlexilProgram))
-							.entrySet().stream()
-							.filter(e -> e.getValue().isPresent())
-							.collect(Collectors.toMap(
-									e -> e.getKey(), 
-									e -> e.getValue().get()));
-					System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
-					lustreResultsTranslated.putAll(parsedScripts);
-				} catch (Exception e) {
-					System.err.println("Error parsing Lustre input CSV: ");
-					e.printStackTrace();
-					return false;
-				}
+			} else {
+				System.err.println("Error: No handler for filetype of "+f.getName());
+				return false;
 			}
 		}
 		// Now we can map file names to root node IDs. Since file names become 
@@ -422,6 +370,59 @@ public class TPlex {
 		return true;
 	}
 
+	private boolean processLustreTestCasesIn(File f) throws IOException {
+		if (simLustreFile == null) {
+			System.err.println("Error: A Lustre program must be supplied. Use --sim-lustre-file.");
+			return false;
+		}
+		Program simLustre = JKindResultUtils.parseProgram(simLustreFile);
+		if (compliancePlexilProgram == null) {
+			System.err.println("Error: A PLEXIL plx file must be supplied for compliance testing. Use --compliance-plx.");
+		}
+		
+		Map<String,LustreTrace> namedTraces;
+		ReverseTranslationMap stringMap = getStringMapForLus(simLustreFile);
+		if (f.getName().endsWith(".csv")) {
+			List<LustreTrace> traces;
+			try { 
+				 traces = JKindResultUtils.simulateCSV(
+						simLustreFile, 
+						getMainNodeFromFile(simLustreFile), 
+						f); 
+			} catch (Exception e) {
+				System.err.println("Error parsing Lustre input CSV: ");
+				e.printStackTrace();
+				return false;
+			}
+			// They all need names too though
+			String baseName = f.getName().replaceAll("\\.csv$", "");
+			namedTraces = new HashMap<>();
+			for (int i = 0; i < traces.size(); i++) {
+				namedTraces.put(baseName+"_"+i, traces.get(i));
+			}
+		} else if (f.getName().endsWith(".lus.xml")) {
+			JKindResult results = JKindResultUtils.parseJKindFile(f);
+			namedTraces = JKindResultUtils.extractTraces(results, simLustre);
+		} else {
+			System.err.println("Not a CSV nor a JKind XML file: "+f.getName());
+			return false;
+		}
+		Map<LustreTrace, PlexilScript> parsedScripts = 
+				JKindResultUtils.translateToScripts(
+						namedTraces, 
+						stringMap,
+						quickParsePlan(compliancePlexilProgram))
+				.entrySet().stream()
+				.filter(e -> e.getValue().isPresent())
+				.collect(Collectors.toMap(
+						e -> e.getKey(), 
+						e -> e.getValue().get()));
+		System.out.println("Created "+parsedScripts.size()+" scripts from "+f);
+		lustreResultsTranslated.putAll(parsedScripts);
+		return true;
+	} 
+
+	
 	public boolean translateToIL() {
 		for (String filename : asts.keySet()) {
 			ilPlans.put(filename, translateToIL(asts.get(filename)));
@@ -430,8 +431,6 @@ public class TPlex {
 	}
 	
 	public Plan translateToIL(PlexilPlan plan) {
-		NodeToIL toIl = new NodeToIL(plan.getRootNode());
-
 		if (inferTypes) {
 			// Find lookups and commands without global declarations and
 			// try to figure them out from context. 
