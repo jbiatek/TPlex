@@ -4,11 +4,8 @@ import java.util.Collections;
 import java.util.Set;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
-import edu.umn.crisys.plexil.ast.globaldecl.CommandDecl;
-import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 
 public class PlexilPlanToILPlan {
 

@@ -457,6 +457,7 @@ public class TPlex {
 					(dir, name) -> name.endsWith(".plx")))
 				.map(plxFile -> {
 					try {
+						System.out.println("Adding to libPath: "+plxFile.getName());
 						return new Pair<>(plxFile, PlxParser.parseFile(plxFile));
 					} catch (Exception e) {
 						throw new RuntimeException(e);
@@ -511,7 +512,7 @@ public class TPlex {
 		return true;
 	}
 	
-	private boolean printString(String filename, String outString) {
+	private boolean printStringToFile(String filename, String outString) {
 		File output = new File(outputDir, filename);
 		try {
 			FileWriter fw = new FileWriter(output);
@@ -540,12 +541,12 @@ public class TPlex {
 		}
 		boolean scriptSuccess =  asts.entrySet().stream()
 			.peek(entry -> System.out.println(entry.getKey()))
-			.map(e -> printString(e.getKey()+".ple",e.getValue().getFullPrintout()))
+			.map(e -> printStringToFile(e.getKey()+".ple",e.getValue().getFullPrintout()))
 			.allMatch(success -> success);
 		
 		return scriptSuccess;
 	}
-
+	
 	private boolean generateLustre() {
 		for (Entry<String, Plan> entry : ilPlans.entrySet()) {
 			Plan p = entry.getValue();
@@ -553,14 +554,14 @@ public class TPlex {
 			
 			PlanToLustre p2l = new PlanToLustre(p);
 			
-			if (! printString(p.getPlanName()+".lus", 
+			if (! printStringToFile(p.getPlanName()+".lus", 
 					p2l.toLustreAsString(lustreObligation))) {
 				return false;
 			}
 			
 			ReverseTranslationMap map = p2l.getTranslationMap();
 			lustreTranslationMap.put(entry.getKey(), map);
-			if (! printString(p.getPlanName()+".strings.txt",
+			if (! printStringToFile(p.getPlanName()+".strings.txt",
 					new Gson().toJson(map))) {
 				return false;
 			}
@@ -600,7 +601,7 @@ public class TPlex {
 				String csv = ScriptSimulation.toLustreCSV(data, 
 						lustreTranslationMap.get(lustreSimulateScriptsAgainst));
 
-				if ( ! printString(
+				if ( ! printStringToFile(
 						lustreSimulateScriptsAgainst+"__"+scriptEntry.getKey()+".csv",
 						csv)) {
 					return false;
@@ -717,6 +718,13 @@ public class TPlex {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} 
+	}
+	
+	private Program quickParseToLustre(File plx) {
+		Plan il = quickParsePlan(plx);
+		HackOutArrayAssignments.hack(il);
+		PlanToLustre toLustre = new PlanToLustre(il);
+		return toLustre.toLustre();
 	}
 	
 	private void doComplianceTesting() throws Exception {

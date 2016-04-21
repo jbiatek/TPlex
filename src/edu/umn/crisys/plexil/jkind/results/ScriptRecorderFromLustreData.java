@@ -37,6 +37,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 	private ReverseTranslationMap map;
 	
 	private int lustreStepCounter = 0;
+	private boolean firstStepAlreadyStarted = false;
 	private Set<FunctionCall> lookupsAlreadyRespondedTo = new HashSet<>();
 	private Map<ILVariable,FunctionCall> lastKnownCommand = new HashMap<>();
 	private Simultaneous currentStepEvents = new Simultaneous();
@@ -52,10 +53,14 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 	}
 	
 	@Override
-	public void beforeMicroStepRuns(JavaPlan plan) {
+	public void beforeMacroStepRuns(JavaPlan plan) {
 		// Don't check anything after we run out of Lustre data, since there's
 		// nothing to check against. 
 		if (stop()) return;
+		if ( ! firstStepAlreadyStarted) {
+			firstStepAlreadyStarted = true;
+			return;
+		}
 		
 		// We're running in a simulation, right? 
 		if ( ! (plan instanceof ILSimulator)) {

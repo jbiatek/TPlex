@@ -19,6 +19,10 @@ public interface JavaPlanObserver {
 		
 	}
 	
+	public default void beforeMacroStepRuns(JavaPlan plan) {
+		
+	}
+	
 	/**
 	 * Called after PLEXIL has reached quiescence. When something changes,
 	 * return so that PLEXIL can run again, this time with the new event. 

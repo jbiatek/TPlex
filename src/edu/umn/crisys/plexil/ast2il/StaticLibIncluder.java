@@ -46,6 +46,8 @@ public class StaticLibIncluder {
     			}
     		}
     	}
+    	// Re-shorten node UIDs
+    	rootTranslator.getUID().shortenUniqueNames();
 	}
 	
 	/**
@@ -71,14 +73,21 @@ public class StaticLibIncluder {
 		Set<PlexilPlan> ret = new HashSet<>();
 		if (root.hasLibraryHandle()) {
 			// If we've got one to put here, let's do it.
+			String lookingFor = root.getLibraryHandle().getLibraryPlexilID(); 
+			boolean found = false;
 			for (PlexilPlan lib : libs) {
 				String rootID = lib.getRootNode().getPlexilID().orElse("<empty>");
-				if (root.getLibraryHandle().getLibraryPlexilID().equals(rootID)) {
+				if (lookingFor.equals(rootID)) {
 					// Success!
 					root.convertLibraryToList(lib.getRootNode());
 					ret.add(lib);
+					found = true;
 					break;
 				}
+			}
+			if ( ! found) {
+				System.err.println("Warning: Tried to statically include "+
+						lookingFor +" but it wasn't found in lib path.");
 			}
 		}
 		// Library or not, traverse down the tree. 

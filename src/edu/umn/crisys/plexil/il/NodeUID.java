@@ -84,21 +84,11 @@ public class NodeUID {
     }
     
     private static void shorten(NodeUID node, Map<String, NodeUID> taken) {
-    	String desired = getDesired(node, 0);
+    	String desired = getLongerName(node, 0);
     	if (taken.containsKey(desired)) {
     		// Fight! 
     		NodeUID other = taken.remove(desired);
-    		String myNewName = desired;
-    		String otherNewName = desired;
-    		int numParents = 1;
-    		while (myNewName.equals(otherNewName)) {
-    			myNewName = getDesired(node, numParents);
-    			otherNewName = getDesired(other, numParents);
-    			numParents++;
-    		}
-    		// Eventually they must be different. 
-    		taken.put(myNewName, node);
-    		taken.put(otherNewName, other);
+    		findNewUniqueNamesFor(node, other, taken);
     	} else {
     		// No fight necessary.
     		taken.put(desired, node);
@@ -107,7 +97,53 @@ public class NodeUID {
     	node.childNames.forEach((uid) -> shorten(uid, taken));
 	}
     
-    private static String getDesired(NodeUID name, int numParents) {
+    private static void findNewUniqueNamesFor(NodeUID one, NodeUID two, Map<String, NodeUID> taken) {
+		String oneNewName = one.shortName;
+		String twoNewName = two.shortName;
+		int numParents = 1;
+		
+		// First, let's try the first ancestor that differs between them.
+		// This is guaranteed to find a difference eventually. 
+		while (oneNewName.equals(twoNewName)) {
+			oneNewName = getNameWithAncestor(one, numParents);
+			twoNewName = getNameWithAncestor(two, numParents);
+			numParents++;
+		}
+		// Before we add them, are there any conflicts?
+		if ( ! taken.containsKey(oneNewName) && ! taken.containsKey(twoNewName)) {
+			// Nope. We are all done.
+			taken.put(oneNewName, one);
+			taken.put(twoNewName, two);
+			return;
+		}
+		
+		// Well, that didn't work. This time, as we add ancestors, we'll keep
+		// the names. That's guaranteed to eventually find a unique name. 
+		numParents = 1;
+		while (oneNewName.equals(twoNewName) || taken.containsKey(oneNewName)
+				|| taken.containsKey(twoNewName)) {
+			oneNewName = getLongerName(one, numParents);
+			twoNewName = getLongerName(two, numParents);
+			numParents++;
+		}
+		// Found unique names, all done.
+		taken.put(oneNewName, one);
+		taken.put(twoNewName, two);
+    }
+    
+    private Optional<NodeUID> findAncestor(int numLevels) {
+    	if (numLevels == 0) return Optional.of(this);
+    	return parent.map(p -> p.findAncestor(numLevels-1))
+				.orElse(Optional.empty());
+    }
+    
+    private static String getNameWithAncestor(NodeUID name, int ancestor) {
+    	return NameUtils.clean(
+    			name.findAncestor(ancestor).get().shortName+"___"+name.shortName
+    			);
+    }
+    
+    private static String getLongerName(NodeUID name, int numParents) {
     	String unclean = name.shortName;
     	Optional<NodeUID> parent = name.parent;
     	

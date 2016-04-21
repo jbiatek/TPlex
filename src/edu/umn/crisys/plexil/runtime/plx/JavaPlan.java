@@ -83,6 +83,13 @@ public abstract class JavaPlan {
     	}
     }
     
+    public void notifyBeforeMacroStep() {
+    	for (JavaPlanObserver obs : observers) {
+    		obs.beforeMacroStepRuns(this);
+    	}
+    }
+
+    
     /**
      * Notify listeners that a micro step has ended. Only call this inside
      * of an implementation of doMicroStep() please.
@@ -166,6 +173,7 @@ public abstract class JavaPlan {
         changeOccurred = true;
         endMacroStep = false;
         // Begin macro and micro step
+        notifyBeforeMacroStep();
         while (changeOccurred && ! endMacroStep) { 
             if (DEBUG)
                 System.out.println("----------------------- "+counter);
