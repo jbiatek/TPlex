@@ -139,7 +139,7 @@ public class LustreComplianceChecker extends TestOracle {
 	
 	private String generateHistory(List<PValue> v) {
 		int start = Math.max(0, step-2);
-		int end = step + 3;
+		int end = Math.min(step + 3, v.size()-1);
 		
 		String history = "(history: ";
 		for (int i = start; i < end; i++) {

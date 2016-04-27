@@ -47,6 +47,7 @@ import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
+import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.util.NameUtils;
 
 public class PlanToLustre {
@@ -90,6 +91,12 @@ public class PlanToLustre {
 
 	public Program toLustre() {
 		return toLustre(Obligation.NONE);
+	}
+	
+	public void addGenericStrings(int numStrings) {
+		for (int i=0; i < numStrings; i++) {
+			toLustre(StringValue.get("String"+i));
+		}
 	}
 	
 	public Program toLustre(Obligation obilgations) {
@@ -295,7 +302,7 @@ public class PlanToLustre {
 			nb.addEquation(builderKnown.buildEquation());
 			
 			// Write this down for reverse mapping later
-			reverseMap.addLookupMapping(rawValue, lookup.getName());
+			reverseMap.addLookupMapping(constrainedValue, lookup.getName());
 
 		} else {
 			String constrained = LustreNamingConventions.getLookupId(lookupName);
@@ -313,7 +320,7 @@ public class PlanToLustre {
 			nb.addEquation(peb.buildEquation());
 			
 			// Write this down for reverse mapping later
-			reverseMap.addLookupMapping(raw, lookup.getName());
+			reverseMap.addLookupMapping(constrained, lookup.getName());
 		}
 	}
 	

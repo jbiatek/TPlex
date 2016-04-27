@@ -53,6 +53,12 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 	}
 	
 	@Override
+	public void endOfMacroStep(JavaPlan plan) {
+		// This is where a JavaPlexilScript applies its events. We are not 
+		// doing that, so override this with nothing. 
+	}
+	
+	@Override
 	public void beforeMacroStepRuns(JavaPlan plan) {
 		// Don't check anything after we run out of Lustre data, since there's
 		// nothing to check against. 
@@ -163,18 +169,32 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 	}
 	
 	private CommandHandleState readCommandHandleFromTrace(ILVariable handle) {
+		// When we read command handles, we actually want the CURRENT value,
+		// since we are between macro steps and making a change.
+		// However, we do need to make sure we don't go off the end of the
+		// trace.
+		int step = Math.min(lustreStepCounter, lustreData.getLength()-1);
 		return (CommandHandleState) readValueFromTrace(
-				LustreNamingConventions.getVariableId(handle));
+				LustreNamingConventions.getVariableId(handle), step);
 	}
 	
 	private PValue readValueFromTrace(String lustreId) {
+		// Identify which step to read the data from. 
+		int step = lustreStepCounter;
+		// But we need to make sure we don't fall off the ends:
+		step = Math.max(step, 0);
+		// By doing it this way, we ensure that the environment just stops
+		// changing once we've run out of data in the trace. 
+		step = Math.min(step, lustreData.getLength()-1);
+
+		return readValueFromTrace(lustreId, step);
+	}
+	
+	private PValue readValueFromTrace(String lustreId, int step) {
 		Signal<Value> data = lustreData.getVariable(lustreId);
 		if (data == null) {
 			throw new NullPointerException("Signal for "+lustreId+" did not exist");
 		}
-		// Don't go off the end of the trace. If we do, just keep repeating
-		// the last step over and over again. 
-		int step = Math.min(lustreStepCounter, lustreData.getLength()-1);
 		
 		PValue value = JKindResultUtils.parseValue(data.getValue(step), map);
 		if (lustreId.endsWith("__value")) {

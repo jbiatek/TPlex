@@ -151,7 +151,7 @@ public class NodeUID {
     		if (parent.isPresent()) {
     			unclean = parent.get().shortName + "/" + unclean;
     			parent = parent.get().parent;
-    		} else {
+    		} else { 
     			break;
     		}
     	}

@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,31 +22,21 @@ import java.util.stream.Collectors;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import jkind.api.results.JKindResult;
-import jkind.lustre.Program;
-import jkind.results.Counterexample;
-import lustre.LustreTrace;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.google.gson.Gson;
-import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JPackage;
 
 import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast2il.NodeToIL;
 import edu.umn.crisys.plexil.ast2il.PlexilPlanToILPlan;
-import edu.umn.crisys.plexil.ast2il.StaticLibIncluder;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
-import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.ILTypeChecker;
 import edu.umn.crisys.plexil.il.optimizations.AssumeTopLevelPlan;
 import edu.umn.crisys.plexil.il.optimizations.ConstantPropagation;
@@ -69,6 +58,7 @@ import edu.umn.crisys.plexil.jkind.search.JKindSearch;
 import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.StateCoverageMeasurer;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -79,6 +69,9 @@ import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 import edu.umn.crisys.plexil.test.java.RegressionTest;
 import edu.umn.crisys.util.NameUtils;
 import edu.umn.crisys.util.Pair;
+import jkind.api.results.JKindResult;
+import jkind.lustre.Program;
+import lustre.LustreTrace;
 
 public class TPlex {
 	
@@ -135,6 +128,9 @@ public class TPlex {
 	@Parameter(names = "--print-type-info", description="After any translating, print an analysis of Lookup and Command types.")
 	public boolean analyzeTypes = false;
 	
+	@Parameter(names = "--print-coverage", description="Print a report about coverage. Must pass in 1 .plx and at least 1 .psx as input files.")
+	public boolean printCoverage = false;
+	
 	@Parameter(names = "--print-reachable-states", description="After any translating, print an analysis of reachable PLEXIL states.")
 	public boolean reachableStates = false;
 	
@@ -161,6 +157,11 @@ public class TPlex {
 	@Parameter(names = "--lustre-obligations", description = 
 			"Generate test generation properties to cover Plexil states.")
 	public PlanToLustre.Obligation lustreObligation = Obligation.NONE;
+	
+	@Parameter(names = "--lustre-generic-strings", description = 
+			"Add the given number of strings to the Lustre string enum. These"
+			+ " will probably just be things like \"1\", \"2\", \"3\", etc.")
+	public int lustreGenericStringsToAdd = 0;
 	
 	@Parameter(names = {"--sim-lus-file", "--sim-lustre-file"}, description = 
 			"Specify a Lustre file to be used when simulation is required. "
@@ -553,6 +554,7 @@ public class TPlex {
 			HackOutArrayAssignments.hack(p);
 			
 			PlanToLustre p2l = new PlanToLustre(p);
+			p2l.addGenericStrings(lustreGenericStringsToAdd);
 			
 			if (! printStringToFile(p.getPlanName()+".lus", 
 					p2l.toLustreAsString(lustreObligation))) {
@@ -569,8 +571,8 @@ public class TPlex {
 				// Probably needs to return results at some point, or be
 				// told where to put them. 
 				JKindSearch searcher = new JKindSearch(p2l, new File(outputDir, "jkind-traces"));
-				//searcher.addNodeExecutesNoParentFailObligations();
-				searcher.addTransitionCoverageObligations();
+				searcher.addNodeExecutesNoParentFailObligations();
+				//searcher.addTransitionCoverageObligations();
 				searcher.go(JKindSettings.createBMCOnly(
 						Integer.MAX_VALUE, lustreIncrementalDepth));
 			}
@@ -684,6 +686,24 @@ public class TPlex {
 			System.out.println("Info from all plans:");
 			all.printAnalysis();
 		}
+		
+		if (printCoverage) {
+			if (ilPlans.size() != 1 || scripts.isEmpty()) {
+				System.out.println("Coverage report requires exactly 1 plan, and at least 1 script. ");
+			} else {
+				Plan thePlan = ilPlans.entrySet().stream()
+						.findFirst().get().getValue();
+				System.out.println("Simulating "+thePlan.getPlanName()+" to measure coverage...");
+				StateCoverageMeasurer observer = new StateCoverageMeasurer();
+				for (PlexilScript script : scripts.values()) {
+					ILSimulator sim = new ILSimulator(thePlan, new JavaPlexilScript(script));
+					sim.addObserver(observer);
+					sim.runPlanToCompletion();
+				}
+				observer.printData();
+			}
+		}
+		
 		
 		if (reachableStates) {
 			for (Entry<String, Plan> entry: ilPlans.entrySet()) {
