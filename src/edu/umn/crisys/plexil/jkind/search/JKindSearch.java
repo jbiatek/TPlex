@@ -38,7 +38,8 @@ public class JKindSearch {
 	private PlanToLustre translator;
 	private Set<TraceProperty> requestedGoals = new HashSet<>();
 	private Set<TraceProperty> unmetGoals = new HashSet<>();
-	private Set<IncrementalTrace> allTraces = new HashSet<>();
+	private Set<IncrementalTrace> chosenTraces = new HashSet<>();
+	private Set<IncrementalTrace> redundantTraces = new HashSet<>();
 	private Set<TraceProperty> nonPrefixAlreadyRun = new HashSet<>();
 	private JKindSettings jkind;
 	
@@ -178,7 +179,7 @@ public class JKindSearch {
 		fromScratch.forEach(ret::add);
 		
 		// What traces haven't we been tried against already? 
-		Set<IncrementalTrace> tracesToTry = allTraces.stream()
+		Set<IncrementalTrace> tracesToTry = chosenTraces.stream()
 			.filter(trace -> trace.propertyHasntBeenTriedYet(unmetProperty))
 			.collect(Collectors.toSet());
 		
@@ -208,13 +209,28 @@ public class JKindSearch {
 	}
 
 	private synchronized void fileSuccess(IncrementalTrace foundTrace, LustreTrace reEnumedTrace) {
-		allTraces.add(foundTrace);
-		writeTraceToFile(foundTrace, reEnumedTrace);
+		boolean newGoalWasFound = unmetGoals.stream()
+			.anyMatch(unmet -> foundTrace.getProperties().contains(unmet));
+		if (newGoalWasFound) {
+			chosenTraces.add(foundTrace);
+			writeTraceToFile(foundTrace, reEnumedTrace);
+		} else { 
+			redundantTraces.add(foundTrace);
+		}
+		// Anything that this found is no longer unmet.
 		unmetGoals.removeAll(foundTrace.getProperties());
+		
+		// Tell the parent trace (if any) that we have tried these goals.
 		if (foundTrace.getPrefix().isPresent()) {
 			foundTrace.getPrefix().get().addAsSuccess(foundTrace);
 		} else {
 			nonPrefixAlreadyRun.addAll(foundTrace.getProperties());
+		}
+		
+		// Now that all the bookkeeping is done, if this was a new thing
+		// try to extend it.
+		if (newGoalWasFound) {
+			addToWorkQueue(foundTrace);
 		}
 	}
 	
@@ -276,7 +292,6 @@ public class JKindSearch {
 						foundTrace.getFullTrace(), lustreProgram);
 				fileSuccess(foundTrace, reEnumed);
 				found++;
-				addToWorkQueue(foundTrace);
 			} else {
 				// Can't get this one. Don't try this combination again.
 				fileFailure(prefix, prop);
@@ -287,7 +302,7 @@ public class JKindSearch {
 				+prefix.map(t -> "prefix "+t).orElse("run with no prefix"));
 		System.out.println("Found "+found+" new traces, didn't find "+notFound+".");
 		System.out.println("Current progress: ");
-		System.out.println("Have found "+allTraces.size()+" total traces.");
+		System.out.println("Have found "+chosenTraces.size()+" total traces.");
 		System.out.println("There are "+unmetGoals.size()+" goals remaining.");
 	}
 

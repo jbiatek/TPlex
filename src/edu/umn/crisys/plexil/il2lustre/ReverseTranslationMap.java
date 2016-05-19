@@ -14,7 +14,7 @@ import edu.umn.crisys.util.NameUtils;
 public class ReverseTranslationMap {
 
 	private Map<String,StringValue> allExpectedStrings = new HashMap<>();
-	private boolean expectUnknownString = false;
+	private boolean expectUnknownString = true;
 	private Map<String,String> lookups = new HashMap<>();
 	private Map<String,String> commandHandleInputs = new HashMap<>();
 	
@@ -22,6 +22,8 @@ public class ReverseTranslationMap {
 		// Add in the empty string to start.
 		allExpectedStrings.put(LustreNamingConventions.EMPTY_STRING, 
 				StringValue.get(""));
+		// And always expect the unknown string. 
+		// It was dumb to ever not expect it.
 	}
 	
 	public String stringToEnum(PString v) {

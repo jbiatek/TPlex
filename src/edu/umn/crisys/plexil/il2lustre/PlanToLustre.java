@@ -130,6 +130,9 @@ public class PlanToLustre {
 			EnumType planStrings = new EnumType(LustreNamingConventions.STRING_ENUM_NAME, 
 				new ArrayList<String>(allExpectedStrings));
 			addEnumType(pb, planStrings);
+			// Now that we have the full enum type, we need to create the 
+			// equality operator. 
+			pb.addNode(createPEqualNode(ILType.STRING, planStrings));
 		}
 		
 		switch(obilgations) {
@@ -336,8 +339,9 @@ public class PlanToLustre {
 		return reverseMap;
 	}
 	
-	private static ProgramBuilder getProgramWithPlexilTypes() {
+	private ProgramBuilder getProgramWithPlexilTypes() {
 		ProgramBuilder pb = new ProgramBuilder();
+		// Declare all the special types that we have.
 		addEnumType(pb, LustreNamingConventions.PBOOLEAN);
 		addEnumType(pb, LustreNamingConventions.PSTATE);
 		addEnumType(pb, LustreNamingConventions.PCOMMAND);
@@ -382,17 +386,6 @@ public class PlanToLustre {
 						id("p_unknown")))));
 		pb.addNode(p_not.build());
 		
-		NodeBuilder p_eq_bool = new NodeBuilder(LustreNamingConventions.EQ_BOOL_OPERATOR);
-		p_eq_bool.addInput(new VarDecl("first", LustreNamingConventions.PBOOLEAN));
-		p_eq_bool.addInput(new VarDecl("second", LustreNamingConventions.PBOOLEAN));
-		p_eq_bool.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
-		p_eq_bool.addEquation(new Equation(new IdExpr("result"), 
-				ite(or(equal(id("first"), id("p_unknown")), 
-                       equal(id("second"), id("p_unknown"))), id("p_unknown"),
-                   ite(equal(id("first"), id("second")), id("p_true"), id("p_false")))));
-		pb.addNode(p_eq_bool.build());
-		
-
 		NodeBuilder to_pboolean = new NodeBuilder(LustreNamingConventions.TO_PBOOLEAN_OPERATOR);
 		to_pboolean.addInput(new VarDecl("value", NamedType.BOOL));
 		to_pboolean.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
@@ -412,17 +405,31 @@ public class PlanToLustre {
 			pb.addNode(numericComparator("pint_"+e.getKey(), e.getValue(), NamedType.INT));
 			pb.addNode(numericComparator("preal_"+e.getKey(), e.getValue(), NamedType.REAL));
 		}
-		
-		// Since tuples aren't really first-class citizens, we unfortunately
-		// can't declare nodes that take tuples and therefore can't have 
-		// those operations as nodes. Instead, they're basically inlined. 
-		// Expressions use the value component and the known component 
-		// separately. We do, however, need to implement a few "native"
-		// operations. 
-		
-		
+		// Equality operations for enums that have unknowns
+		pb.addNode(createPEqualNode(ILType.BOOLEAN, LustreNamingConventions.PBOOLEAN));
+		pb.addNode(createPEqualNode(ILType.OUTCOME, LustreNamingConventions.POUTCOME));
+		pb.addNode(createPEqualNode(ILType.FAILURE, LustreNamingConventions.PFAILURE));
+		pb.addNode(createPEqualNode(ILType.COMMAND_HANDLE, LustreNamingConventions.PCOMMAND));
+		// Strings are also in this category, but we don't know what the strings
+		// are yet. When the string enum is added to the plan, then we can 
+		// create the p_eq node for them. 
 		
 		return pb;
+	}
+	
+	private jkind.lustre.Node createPEqualNode(ILType ilType, EnumType lustreType) {
+		Expr unknown = toLustre(ilType.getUnknown(), ilType);
+		
+		NodeBuilder eqOperator = new NodeBuilder(LustreNamingConventions
+				.getEqualityOperatorName(lustreType));
+		eqOperator.addInput(new VarDecl("first", lustreType));
+		eqOperator.addInput(new VarDecl("second", lustreType));
+		eqOperator.addOutput(new VarDecl("result", LustreNamingConventions.PBOOLEAN));
+		eqOperator.addEquation(new Equation(new IdExpr("result"), 
+				ite(or(equal(id("first"), unknown), 
+                       equal(id("second"), unknown)), LustreNamingConventions.P_UNKNOWN,
+                   ite(equal(id("first"), id("second")), id("p_true"), id("p_false")))));
+		return eqOperator.build();
 	}
 	
 	private static jkind.lustre.Node numericComparator(String name, BinaryOp op, Type t) {

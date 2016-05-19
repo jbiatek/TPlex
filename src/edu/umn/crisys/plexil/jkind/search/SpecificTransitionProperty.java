@@ -8,9 +8,15 @@ import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.util.NameUtils;
 import edu.umn.crisys.util.Util;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
+import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
+import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 
@@ -28,10 +34,14 @@ public class SpecificTransitionProperty extends TraceProperty {
 	public void addProperty(NodeBuilder node, PlanToLustre translator) {
 		// Our property is actually something that the translator supports 
 		// directly. 
+		Expr theGuard = translator.getGuardForThisSpecificTransition(
+				myTransition, myStateMachine);
+		
+		// Create it in Lustre.
 		node.addLocal(new VarDecl(getPropertyId(), NamedType.BOOL));
 		node.addEquation(new Equation(new IdExpr(getPropertyId()), 
-				translator.getGuardForThisSpecificTransition(
-						myTransition, myStateMachine)));
+				new BinaryExpr(LustreUtil.TRUE, BinaryOp.ARROW, 
+						new UnaryExpr(UnaryOp.NOT, theGuard))));
 		node.addProperty(getPropertyId());
 	}
 

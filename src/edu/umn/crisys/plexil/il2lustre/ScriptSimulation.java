@@ -21,6 +21,7 @@ import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
+import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
@@ -173,6 +174,10 @@ public class ScriptSimulation {
 				}
 			}
 		}
+		
+		// Tell the script to handle built-in PLEXIL commands like print and
+		// pprint:
+		ScriptedEnvironment.HANDLE_PLEXIL_PRINT_COMMANDS = true;
 		
 		sim.addObserver(new JavaPlanObserver() {
 

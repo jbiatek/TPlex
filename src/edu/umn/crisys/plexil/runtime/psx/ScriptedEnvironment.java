@@ -29,6 +29,7 @@ import edu.umn.crisys.util.Pair;
 public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Object, Void> {
 	
 	public static boolean DEBUG = false;
+	public static boolean HANDLE_PLEXIL_PRINT_COMMANDS = false;
 
 	private Map<FunctionCall, PValue> lookup = new HashMap<FunctionCall, PValue>();
 	private List<Pair<CommandHandler,FunctionCall>> commandQueue = 
@@ -141,11 +142,12 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 			PValue... args) {
 		Pair<CommandHandler,FunctionCall> e = new Pair<CommandHandler, FunctionCall>(caller, 
 				new FunctionCall(name.getString(), args));
-		// Handle utility commands right away
-		// (See PLEXIL's TestExternalInterface.cc, they do it the same way:
-		// immediately acknowledge with SUCCESS, and don't add it to the queue)
-        if (e.second.getName().equals("print")
-                || e.second.getName().equals("pprint")) {
+        if (HANDLE_PLEXIL_PRINT_COMMANDS &&
+        		(e.second.getName().equals("print")
+                || e.second.getName().equals("pprint"))) {
+        	// Handle utility commands right away
+        	// (See PLEXIL's TestExternalInterface.cc, they do it the same way:
+        	// immediately acknowledge with SUCCESS, and don't add it to the queue)
             e.first.setCommandHandle(CommandHandleState.COMMAND_SUCCESS);
         } else {
             commandQueue.add(e);

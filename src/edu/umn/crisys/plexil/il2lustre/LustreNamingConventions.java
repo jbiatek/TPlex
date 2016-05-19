@@ -73,7 +73,6 @@ public class LustreNamingConventions {
 	public static final String AND_OPERATOR = "p_and";
 	public static final String OR_OPERATOR = "p_or";
 	public static final String NOT_OPERATOR = "p_not";
-	public static final String EQ_BOOL_OPERATOR = "p_eq_boolean";
 	public static final String TO_PBOOLEAN_OPERATOR = "to_pboolean";
 	public static final String XOR_OPERATOR = "p_xor";
 
@@ -91,6 +90,14 @@ public class LustreNamingConventions {
 					+"_"+value.name().toLowerCase();
 		}
 		return value.name().toLowerCase();
+	}
+	
+	public static String getEqualityOperatorName(EnumType lustreType) {
+		return getEqualityOperatorName(lustreType.id);
+	}
+	
+	public static String getEqualityOperatorName(String lustreTypeName) {
+		return "p_eq_"+lustreTypeName;
 	}
 
 	public static PValue reverseTranslate(String enumValue, 

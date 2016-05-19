@@ -190,15 +190,28 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 		case PXOR:
 			return binary(op.getArguments(), LustreNamingConventions.XOR_OPERATOR, ILType.BOOLEAN);
 		case PBOOL_EQ:
-			return binary(op.getArguments(), LustreNamingConventions.EQ_BOOL_OPERATOR, ILType.BOOLEAN);
+			return binary(op.getArguments(), 
+					LustreNamingConventions.getEqualityOperatorName(
+							LustreNamingConventions.PBOOLEAN), ILType.BOOLEAN);
 		case PSTRING_EQ: 
+			return binary(op.getArguments(),
+					LustreNamingConventions.getEqualityOperatorName(
+							LustreNamingConventions.STRING_ENUM_NAME), ILType.STRING);
 		case PSTATE_EQ:
+			// States can't be unknown, we can just compare them. 
+			return toPBoolean(binary(op.getArguments(), BinaryOp.EQUAL, ILType.STATE));
 		case POUTCOME_EQ:
+			return binary(op.getArguments(), 
+					LustreNamingConventions.getEqualityOperatorName(
+							LustreNamingConventions.POUTCOME), ILType.OUTCOME);
 		case PFAILURE_EQ:
+			return binary(op.getArguments(), 
+					LustreNamingConventions.getEqualityOperatorName(
+							LustreNamingConventions.PFAILURE), ILType.FAILURE);
 		case PHANDLE_EQ:
-			// TODO: This is wrong, it doesn't handle unknowns correctly at all
-				return toPBoolean(binary(op.getArguments(), BinaryOp.EQUAL, 
-						op.getBinaryFirst().getType()));
+			return binary(op.getArguments(), 
+					LustreNamingConventions.getEqualityOperatorName(
+							LustreNamingConventions.PCOMMAND), ILType.COMMAND_HANDLE);
 		case ISKNOWN_OPERATOR:
 			// note: this operator returns a *native* bool
 			switch (op.getUnaryArg().getType()) {

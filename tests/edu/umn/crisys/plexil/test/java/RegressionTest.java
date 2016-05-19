@@ -450,6 +450,7 @@ public class RegressionTest {
 	
 	public static void runTest(JavaPlan root, ExternalWorld world,
 			TestOracle oracle) {
+		ScriptedEnvironment.HANDLE_PLEXIL_PRINT_COMMANDS = true;
 		root.addObserver(oracle);
 		root.runPlanToCompletion();
 	}

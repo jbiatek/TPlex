@@ -50,7 +50,6 @@ import edu.umn.crisys.plexil.il2java.PlanToJava;
 import edu.umn.crisys.plexil.il2java.StateMachineToJava;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
-import edu.umn.crisys.plexil.il2lustre.PlanToLustre.Obligation;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
@@ -154,9 +153,13 @@ public class TPlex {
 
 	
 	//Lustre-specific options
-	@Parameter(names = "--lustre-obligations", description = 
-			"Generate test generation properties to cover Plexil states.")
-	public PlanToLustre.Obligation lustreObligation = Obligation.NONE;
+//	@Parameter(names = "--lustre-obligations", description = 
+//			"Generate test generation properties to cover Plexil states.")
+//	public PlanToLustre.Obligation lustreObligation = Obligation.NONE;
+	
+	@Parameter(names = "--lustre-search-goal", description = 
+			"Specify goals for Lustre incremental search.")
+	public CoverageCriteria lustreSearchGoal = CoverageCriteria.EXECUTION;
 	
 	@Parameter(names = "--lustre-generic-strings", description = 
 			"Add the given number of strings to the Lustre string enum. These"
@@ -216,6 +219,10 @@ public class TPlex {
 			return super.toString().toLowerCase();
 		}
 		
+	}
+	
+	public static enum CoverageCriteria {
+		EXECUTION, TRANSITION;
 	}
 	
 	
@@ -288,7 +295,6 @@ public class TPlex {
 		if (javaNoDebugStatements) {
 			StateMachineToJava.DEBUG_STATEMENTS = false;
 		}
-		
 		
 		// Check our list of all files
 		for (File file : files) {
@@ -557,7 +563,7 @@ public class TPlex {
 			p2l.addGenericStrings(lustreGenericStringsToAdd);
 			
 			if (! printStringToFile(p.getPlanName()+".lus", 
-					p2l.toLustreAsString(lustreObligation))) {
+					p2l.toLustreAsString())) {
 				return false;
 			}
 			
@@ -571,8 +577,12 @@ public class TPlex {
 				// Probably needs to return results at some point, or be
 				// told where to put them. 
 				JKindSearch searcher = new JKindSearch(p2l, new File(outputDir, "jkind-traces"));
-				searcher.addNodeExecutesNoParentFailObligations();
-				//searcher.addTransitionCoverageObligations();
+				if (lustreSearchGoal == CoverageCriteria.TRANSITION) {
+					searcher.addTransitionCoverageObligations();
+				} else {
+					searcher.addNodeExecutesNoParentFailObligations();					
+				}
+				
 				searcher.go(JKindSettings.createBMCOnly(
 						Integer.MAX_VALUE, lustreIncrementalDepth));
 			}
