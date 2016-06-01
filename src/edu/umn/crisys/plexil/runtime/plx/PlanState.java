@@ -101,16 +101,24 @@ public class PlanState {
     			PlanState child = parseLogFile(in, line, node);
     			node.addChild(child);
     		} else if (line.startsWith("State:")) {
+    			// State also now has the start time in parentheses after it.
+    			String mangledState = extractSimple(line);
+    			String correctState = mangledState.replaceFirst(" \\(.*\\)$", "");
+    			String startTime = mangledState.replaceFirst(".*\\(", "")
+    			                               .replaceFirst("\\)$", "");
+    			
     			if (DEBUG)
-    				System.out.println(nodeName+" in state "+extractValue(line));
+    				System.out.println(nodeName+" in state "+correctState);
     			node.addVariable(".state", NodeState.valueOf(
-    					extractValue(line)));
+    					correctState));
+    			node.addVariable("."+correctState+".START", 
+    					RealValue.get(Double.parseDouble(startTime)));
     			
     		} else if (line.startsWith("Outcome:")) {
     			if (DEBUG)
-    				System.out.println(nodeName+" outcome is "+extractValue(line));
+    				System.out.println(nodeName+" outcome is "+extractSimple(line));
     			node.addVariable(".outcome", NodeOutcome.valueOf(
-    					extractValue(line)));
+    					extractSimple(line)));
     		} else if (line.startsWith("Command handle:")) {
     			if (DEBUG)
     				System.out.println(nodeName+" command handle: "+extractValue(line));
@@ -118,16 +126,17 @@ public class PlanState {
     					CommandHandleState.valueOf(extractValue(line)));
     		} else if (line.startsWith("Failure type:")) {
     		    if (DEBUG)
-                    System.out.println(nodeName+" failure type: "+extractValue(line));
+                    System.out.println(nodeName+" failure type: "+extractSimple(line));
                 node.addVariable(".failure", 
-                        NodeFailureType.valueOf(extractValue(line)));
+                        NodeFailureType.valueOf(extractSimple(line)));
     		}
     		
-    		else {
+    		else if (line.matches(".*?: \\(Variable .*")) {
     			// This is possibly a variable.
     			PValue value = null;
     			String valStr = extractValue(line);
-    			if (line.endsWith("boolean)")) {
+    			
+    			if (line.contains("Boolean")) {
     				if (valStr.equals("1")) {
     					value = BooleanValue.get(true);
     				} else if (valStr.equals("0")) {
@@ -135,35 +144,38 @@ public class PlanState {
     				} else {
     					value = UnknownValue.get();
     				}
-    			} else if (line.endsWith("real)")) {
+    			} else if (line.contains("Real")) {
     				if (valStr.equals("UNKNOWN")) {
     					value = UnknownValue.get();
     				} else {
     					value = RealValue.get(Double.parseDouble(valStr));
     				}
-    			} else if (line.endsWith("int)")) {
+    			} else if (line.contains("Integer")) {
     				if (valStr.equals("UNKNOWN")) {
     					value = UnknownValue.get();
     				} else {
     					value = IntegerValue.get(Integer.parseInt(valStr));
     				}
-    			} else if (line.endsWith("string)")) {
+    			} else if (line.contains("String")) {
     				if (valStr.equals("UNKNOWN")) {
     					value = UnknownValue.get();
     				} else {
     					value = StringValue.get(valStr);
     				}
-    			} else if (line.endsWith("array)")) {
+    			} else if (line.endsWith("String")) {
     			    value = new DebugOutputPlexilArray(valStr);
-    			} else {
-    			    System.out.println("Warning: I don't think this is a variable: "+line);
-    			}
-    			
+    			} 
+
     			String varName = line.replaceAll(":.*", "");
     			if (DEBUG)
     				System.out.println("Variable "+nodeName+"."+varName+" is "+value);
     			node.addVariable(varName, value);
     			
+    		} else if ( ! line.matches(".*?Condition: .*")){
+    			// Conditions get output too, but they're nigh unreadable in the
+    			// exec's format. Besides, if a condition is wrong, we'll find
+    			// out when a variable goes wrong. 
+    			System.out.println("Warning: I don't think this is a variable: "+line);
     		}
 
 	        line = in.readLine();
@@ -178,9 +190,14 @@ public class PlanState {
 		return node;
     }
     
+    private static String extractSimple(String line) {
+    	return line.replaceFirst(".*: ", "");
+    }
+    
     private static String extractValue(String line) {
     	return line.replaceAll(".*\\(.*\\]\\(", "")
-    				.replaceAll("\\):.*\\).*", "");
+    				.replaceAll("\\):.*\\).*", "")
+    				.replaceAll("\\)\\)$", "");
     }
 
     /**

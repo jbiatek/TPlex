@@ -1,38 +1,42 @@
 package edu.umn.crisys.plexil.jkind.search;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import jkind.SolverOption;
-import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.Node;
-import jkind.lustre.Program;
-import jkind.lustre.builders.NodeBuilder;
-import jkind.lustre.builders.ProgramBuilder;
-import jkind.translation.RemoveEnumTypes;
-import jkind.translation.Translate;
-import lustre.LustreTrace;
-import simulation.LustreSimulator;
-import testsuite.FillNullValues;
 import concatenation.CreateHistoryVisitor;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.util.Util;
 import enums.Generation;
 import enums.Simulation;
+import jkind.SolverOption;
+import jkind.analysis.StaticAnalyzer;
+import jkind.lustre.Node;
+import jkind.lustre.Program;
+import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.builders.ProgramBuilder;
+import jkind.lustre.values.Value;
+import jkind.translation.RemoveEnumTypes;
+import jkind.translation.Translate;
+import lustre.LustreTrace;
+import simulation.LustreSimulator;
+import testsuite.FillNullValues;
 
-public class JKindSearch {
+/**
+ * Class for performing incremental search with JKind. Use the provided 
+ * abstract methods to do something with the tests that are generated, like
+ * write them to a file or do a compliance test on them. 
+ * @author jbiatek
+ *
+ */
+public abstract class JKindSearch {
 
 	private Program lustreProgram;
 	private PlanToLustre translator;
@@ -43,19 +47,49 @@ public class JKindSearch {
 	private Set<TraceProperty> nonPrefixAlreadyRun = new HashSet<>();
 	private JKindSettings jkind;
 	
+	private boolean doIncrementalSearch = true;
 	private ForkJoinPool workQueue;
 	
-	private int fileNameCounter = 0;
-	private File outDir;
 	
-	public JKindSearch(PlanToLustre translator, File outputDir) {
+	public JKindSearch(PlanToLustre translator) {
 		this.translator = translator;
-		outDir = outputDir;
 		System.out.println("Re-translating to Lustre");
 		this.lustreProgram = translator.toLustre();
 		StaticAnalyzer.check(lustreProgram, SolverOption.Z3);
 	}
 	
+	
+	
+	public Set<TraceProperty> getRequestedGoals() {
+		return requestedGoals;
+	}
+
+
+
+	public Set<TraceProperty> getUnmetGoals() {
+		return unmetGoals;
+	}
+
+
+
+	public Set<IncrementalTrace> getChosenTraces() {
+		return chosenTraces;
+	}
+
+
+
+	public Set<IncrementalTrace> getRedundantTraces() {
+		return redundantTraces;
+	}
+
+
+
+	public Set<TraceProperty> getNonPrefixAlreadyRun() {
+		return nonPrefixAlreadyRun;
+	}
+
+
+
 	public void go() {
 		go(JKindSettings.createBMCOnly(Integer.MAX_VALUE, 20));
 	}
@@ -78,6 +112,21 @@ public class JKindSearch {
 			});
 	}
 	
+	private void queueSearchForOnePropAtATime(JKindTestRun run) {
+		if ( ! run.getPropertiesWithoutPrefix().isEmpty()) {
+			for (TraceProperty p : run.getPropertiesWithoutPrefix()) {
+				workQueue.execute(() -> {
+					Program init = simplify(addProperties(lustreProgram, 
+							Arrays.asList(p), translator));
+					StaticAnalyzer.check(init, SolverOption.Z3);
+					Map<String, LustreTrace> result = jkind.execute(init, System.out);
+					fileResults(Optional.empty(), result, Arrays.asList(p));				
+				});
+			}
+		}
+	}
+
+	
 	public void go(JKindSettings settings) {
 		// TODO This is just a test method.
 		jkind = settings;
@@ -88,6 +137,7 @@ public class JKindSearch {
 		// We want to just run the initial goals in this thread, it'll spin off
 		// new threads. 
 		workerThread(generateMonolithicSearchStep());
+		
 		System.out.println("Main thread now sleeping until work queue empties.");
 		// We can now wait until the work queue is emptied
 		boolean keepGoing = true;
@@ -130,29 +180,8 @@ public class JKindSearch {
 		return ret;
 	}
 	
-	synchronized private void writeTraceToFile(IncrementalTrace trace, LustreTrace reEnumed) {
-		outDir.mkdir();
-		String props = trace.getProperties().stream()
-				.map(TraceProperty::toString)
-				.map(str -> str.replaceAll("[<>]", ""))
-				.map(str -> str.replace(' ', '_'))
-				.collect(Collectors.joining("."));
-
-		FileWriter fw = null;
-		try { 
-			File out = new File(outDir, "trace"+fileNameCounter+"-"+props+"-hash-"
-					+trace.hashCode()+".csv");
-			fileNameCounter++;
-			fw = new FileWriter(out);
-			fw.write(reEnumed.toString());
-			fw.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} 
-
-	}
 	
-	synchronized private void addToWorkQueue(IncrementalTrace trace) {
+	synchronized private void addTestCaseExtensionToQueue(IncrementalTrace trace) {
 		JKindTestRun testRun = new JKindTestRun();
 		// Do any properties see stuff to do for this trace?
 		unmetGoals.forEach(goal -> {
@@ -208,14 +237,15 @@ public class JKindSearch {
 		}*/
 	}
 
-	private synchronized void fileSuccess(IncrementalTrace foundTrace, LustreTrace reEnumedTrace) {
+	private synchronized void fileSuccess(IncrementalTrace foundTrace, LustreTrace extendedTrace) {
 		boolean newGoalWasFound = unmetGoals.stream()
 			.anyMatch(unmet -> foundTrace.getProperties().contains(unmet));
 		if (newGoalWasFound) {
 			chosenTraces.add(foundTrace);
-			writeTraceToFile(foundTrace, reEnumedTrace);
+			newGoalFound(foundTrace, extendedTrace);
 		} else { 
 			redundantTraces.add(foundTrace);
+			redundantGoalFound(foundTrace, extendedTrace);
 		}
 		// Anything that this found is no longer unmet.
 		unmetGoals.removeAll(foundTrace.getProperties());
@@ -229,10 +259,16 @@ public class JKindSearch {
 		
 		// Now that all the bookkeeping is done, if this was a new thing
 		// try to extend it.
-		if (newGoalWasFound) {
-			addToWorkQueue(foundTrace);
+		if (newGoalWasFound && doIncrementalSearch) {
+			addTestCaseExtensionToQueue(foundTrace);
 		}
 	}
+	
+	public abstract void newGoalFound(IncrementalTrace foundTrace, LustreTrace extendedTrace);
+	
+	public abstract void redundantGoalFound(IncrementalTrace foundTrace, LustreTrace extendedTrace);
+	
+	public abstract void noTestFound(Optional<IncrementalTrace> prefix, TraceProperty property);
 	
 	private synchronized void fileFailure(Optional<IncrementalTrace> prefix, TraceProperty prop) {
 		if (prefix.isPresent()) {
@@ -240,6 +276,7 @@ public class JKindSearch {
 		} else {
 			nonPrefixAlreadyRun.add(prop);
 		}
+		noTestFound(prefix, prop);
 	}
 	
 	
@@ -274,10 +311,40 @@ public class JKindSearch {
 		fileResults(Optional.of(prefix), result, propertiesToTry);
 	}
 	
+	private void printNullValueReport(String name, LustreTrace trace) {
+		if (trace == null) {
+			return;
+		}
+		System.out.println("Here's the null value report for "+name+":");
+		
+		int nullValues = 0;
+		int finalStepNullValues = 0;
+		int total = 0;
+		for (String var : trace.getVariableNames()) {
+			for (int i=0; i < trace.getLength(); i++) {
+				Value value = trace.getVariable(var).getValue(i);
+				total++;
+				if (value == null) {
+					nullValues++;
+					if (i + 1 == trace.getLength()) {
+						finalStepNullValues++;
+					}
+				}
+			}
+		}
+		System.out.println(nullValues+"/"+total+" values were null. ");
+		System.out.println(finalStepNullValues+"/"+trace.getVariableNames().size()
+				+" values were null in the final step.");
+	}
+	
 	private void fileResults(Optional<IncrementalTrace> prefix, 
 			Map<String,LustreTrace> result, Collection<TraceProperty> attemptedProps) {
 		int found = 0;
 		int notFound = 0;
+		
+		for (Entry<String, LustreTrace> e : result.entrySet()) {
+			printNullValueReport(e.getKey(), e.getValue());
+		}
 		
 		for (TraceProperty prop : attemptedProps) {
 			// Did we get this one? 
@@ -351,7 +418,7 @@ public class JKindSearch {
 		LustreSimulator sim = new LustreSimulator(simplified);
 		LustreTrace simulated;
 		try { 
-			simulated = sim.simulate(filled, Simulation.COMPLETE);
+			simulated = sim.simulate(filled, Simulation.COMPLETE, sim.getAllVars());
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(simplified);

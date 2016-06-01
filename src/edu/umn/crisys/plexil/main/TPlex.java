@@ -55,6 +55,7 @@ import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.jkind.search.JKindSearch;
 import edu.umn.crisys.plexil.jkind.search.JKindSettings;
+import edu.umn.crisys.plexil.jkind.search.TPlexTestGenerator;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.StateCoverageMeasurer;
@@ -576,7 +577,7 @@ public class TPlex {
 			if (lustreIncrementalSearch) {
 				// Probably needs to return results at some point, or be
 				// told where to put them. 
-				JKindSearch searcher = new JKindSearch(p2l, new File(outputDir, "jkind-traces"));
+				TPlexTestGenerator searcher = new TPlexTestGenerator(p2l, new File(outputDir, "jkind-traces"));
 				if (lustreSearchGoal == CoverageCriteria.TRANSITION) {
 					searcher.addTransitionCoverageObligations();
 				} else {
