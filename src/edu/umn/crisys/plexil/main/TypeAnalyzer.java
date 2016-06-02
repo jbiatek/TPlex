@@ -79,6 +79,11 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 					.anyMatch(d -> d.getName().equals(lookup))) {
 				continue;
 			}
+			if (lookup.equals("time")) {
+				// Don't try to infer this, there's already a mechanism for
+				// deciding how to handle time.
+				continue;
+			}
 			// Create a declaration based on this info
 			LookupDecl inferred = new LookupDecl(lookup);
 			PlexilType type = lookups.get(lookup).get();

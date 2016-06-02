@@ -206,22 +206,13 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
         			expectedArgType = PlexilType.BOOLEAN;
         		}
         	}
-        	if (expectedArgType.isNumeric()) {
-        		// Let's check and see if they are all integers
-        		if (argsAreAllIntegersAST(op.getPlexilArguments())) {
-        			expectedArgType = PlexilType.INTEGER;
-        		} else {
-        			// Nope, make them all reals
-        			expectedArgType = PlexilType.REAL;
-        		}
-        	}
         	final PlexilType finalGuess = expectedArgType;
         	List<ILExpr> translated = op.getPlexilArguments().stream()
 					.map(e -> e.accept(this, finalGuess))
 					.collect(Collectors.toList());
 
-        	// The translation to IL might have discovered more type data for
-        	// things like Lookups.
+        	// That's our arguments translated. We might have learned more
+        	// translating them. 
         	if (expectedArgType.isNumeric()) {
         		if (argsAreAllIntegers(translated)) {
         			expectedArgType = PlexilType.INTEGER;
@@ -348,16 +339,9 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
     	}
     }
     
-    private boolean argsAreAllIntegersAST(List<PlexilExpr> args) {
-    	return args.stream()
-    			.allMatch(e -> e.getPlexilType() == PlexilType.INTEGER
-    					|| e.getPlexilType() == PlexilType.UNKNOWN);
-    }
-    
     private boolean argsAreAllIntegers(List<ILExpr> translatedChildren) {
     	return translatedChildren.stream()
-    			.allMatch(e -> e.getType() == ILType.INTEGER
-    							|| e.getType() == ILType.UNKNOWN);
+    			.allMatch(e -> e.getType() == ILType.INTEGER);
     }
     
     private List<ILExpr> allIntsToReals(List<ILExpr> translatedChildren) {

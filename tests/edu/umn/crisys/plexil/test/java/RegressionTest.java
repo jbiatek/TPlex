@@ -62,7 +62,7 @@ import edu.umn.crisys.util.NameUtils;
 public class RegressionTest {
 	
 	public static final File TESTING_DIRECTORY = new File("tests");
-	public static final File RESOURCES = new File("tests/edu/umn/crisys/plexil/test/resources/");
+	public static final File RESOURCES = new File("tests/edu/umn/crisys/plexil/test/plxfiles/");
 	public static final File ORACLE_LOGS = new File("tests/generated/oracle");
 	public static final File LUSTRE_FILES = new File("tests/generated/lustre");
 	public static final String TPLEX_OUTPUT_PACKAGE = "generated.java";
@@ -81,20 +81,14 @@ public class RegressionTest {
 		}
 	}	
 	
-	private static TestSuite simple_drive_r = new TestSuite("simple-drive", 
+	private static TestSuite simple_drive_r = new TestSuite("SimpleDriveRegressionTest", 
             new String[] {"single-drive", "double-drive"}, new String[]{});
-	
-	private static TestSuite increment1 = new TestSuite("Increment-test",
-			new String[] {}, new String[]{"Increment"});
-	
-	private static TestSuite increment2 = new TestSuite("Increment-test2",
-			new String[] {}, new String[]{"Increment"});
 	
 	/**
 	 * Complex tests that were specified by hand
 	 */
 	private static final TestSuite[] MANUAL_TESTS = new TestSuite[] {
-		simple_drive_r, increment1, increment2
+		simple_drive_r
 	};
 	
 	/**
@@ -104,19 +98,18 @@ public class RegressionTest {
 	    "CruiseControl", "DriveToSchool", "DriveToTarget", "SafeDrive", "SimpleDrive",
 	    "array1", "array3", "array4", "array8", "command1", "command2", "command3",
 	    "command4", "command5", "long_command", "uncle_command", "repeat2", 
-	    "repeat5", "repeat7", "repeat8", "atomic-assignment", "boolean1", 
-	    "change-lookup-test"
+	    "repeat5", "repeat7", "repeat8", "AtomicAssignment", "boolean1", 
+	    "ChangeLookupTest"
 	};
 
 	/**
 	 * Tests that don't have a script at all
 	 */
 	private static final String[] EMPTY_SCRIPT_TESTS = new String[] {
-	    "AncestorReferenceTest", "assign-failure-with-conflict", 
-	    "assign-to-parent-exit", "assign-to-parent-invariant", 
-	    "array2", "array5", "array6", "array9", "failure-type1", "failure-type2",
-	    "failure-type3", "failure-type4", "array-in-loop", "Increment-test",
-	    "Increment-test2", "repeat1", "repeat3", "repeat4"
+	    "AncestorReferenceTest", "AssignFailureWithConflict", 
+	    "AssignToParentExit", "AssignToParentInvariant", 
+	    "array2", "array5", "array6", "array9", "FailureType1", "FailureType2",
+	    "FailureType3", "FailureType4", "ArrayInLoop", "repeat1", "repeat3", "repeat4"
 	};
 	
 	private static TestSuite produceSameNameTest(String name) {
@@ -219,18 +212,18 @@ public class RegressionTest {
 	
 	@Test @Ignore
     public void assign_failure_with_conflict() throws Exception {
-        runSingleTestJava("assign-failure-with-conflict", "empty");
+        runSingleTestJava("AssignFailureWithConflict", "empty");
     }
 	
 	@Test
     public void assign_to_parent() throws Exception {
-        runSingleTestJava("assign-to-parent-exit", "empty");
-        runSingleTestJava("assign-to-parent-invariant", "empty");
+        runSingleTestJava("AssignToParentExit", "empty");
+        runSingleTestJava("AssignToParentInvariant", "empty");
     }
 	
 	@Test
     public void atomic_assignment() throws Exception {
-        runSingleTestJava("atomic-assignment", "atomic-assignment");
+        runSingleTestJava("AtomicAssignment", "AtomicAssignment");
     }
 	
 	public void boolean1() throws Exception {
@@ -238,7 +231,7 @@ public class RegressionTest {
 	}
 
 	public void change_lookup_test() throws Exception {
-        runSingleTestJava("change-lookup-test", "change-lookup-test");
+        runSingleTestJava("ChangeLookupTest", "ChangeLookupTest");
     }
 	
     @Test
@@ -253,7 +246,7 @@ public class RegressionTest {
 	
 	@Test
 	public void arrayTests() throws Exception {
-	    runSingleTestJava("array-in-loop", "empty");
+	    runSingleTestJava("ArrayInLoop", "empty");
 	    runSingleTestJava("array1", "array1");
 	    runSingleTestJava("array2", "empty");
 	    runSingleTestJava("array3", "array3");
@@ -287,27 +280,33 @@ public class RegressionTest {
 	
 	@Test
 	public void failureTypeTests() throws Exception {
-	    runSingleTestJava("failure-type1", "empty");
-        runSingleTestJava("failure-type2", "empty");
-        runSingleTestJava("failure-type3", "empty");
-        runSingleTestJava("failure-type4", "empty");
+	    runSingleTestJava("FailureType1", "empty");
+        runSingleTestJava("FailureType2", "empty");
+        runSingleTestJava("FailureType3", "empty");
+        runSingleTestJava("FailureType4", "empty");
 
 	}
 	
-	@Test
-	public void incrementTests() throws Exception {
-	    runTestSuite(increment1);
-	    runTestSuite(increment2);
-	}
-	
+//	public static List<PlanState> parseLogFile(String planName, String scriptName) throws Exception{
+//		return parseLogFile(
+//		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
+//	}
+
 	public static List<PlanState> parseLogFile(String planName, String scriptName) throws Exception{
-		return parseLogFile(
-		        new File(ORACLE_LOGS, planName+"___"+scriptName+".log"));
+		File plan = new File(RESOURCES, planName+".plx");
+		Optional<File> script = Optional.empty();
+		if (! scriptName.equals("empty")) {
+			script = Optional.of(new File(RESOURCES, scriptName+".psx"));
+		}
+		File libDir = RESOURCES;
+		return generateOracle(plan, script, Optional.of(libDir));
 	}
+
 	
-	public static List<PlanState> parseLogFile(File logFile) throws Exception {
+	public static List<PlanState> generateOracle(File plan, Optional<File> script, Optional<File> libDir) 
+	throws Exception {
 		List<PlanState> oracles = new ArrayList<PlanState>();
-		BufferedReader in = new BufferedReader(new FileReader(logFile));
+		BufferedReader in = OfficialPlexilExecutive.generateLogFor(plan, script, libDir);
 		PlanState state = PlanState.parseLogFile(in);
 		while (state != null) {
 			if (PlanState.DEBUG) 
@@ -316,7 +315,21 @@ public class RegressionTest {
 			state = PlanState.parseLogFile(in);
 		}
 		return oracles;
+
 	}
+	
+//	public static List<PlanState> parseLogFile(File logFile) throws Exception {
+//		List<PlanState> oracles = new ArrayList<PlanState>();
+//		BufferedReader in = new BufferedReader(new FileReader(logFile));
+//		PlanState state = PlanState.parseLogFile(in);
+//		while (state != null) {
+//			if (PlanState.DEBUG) 
+//				System.out.println("*******************************");
+//			oracles.add(state);
+//			state = PlanState.parseLogFile(in);
+//		}
+//		return oracles;
+//	}
 	
 	public static Plan getPlanAsIL(String name) {
 		TPlex tplex = new TPlex();
