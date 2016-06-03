@@ -1,4 +1,7 @@
 (plexil-plan
+ (declarations 
+  (state-declaration "foo" (return "integer"))
+ )
  (assignment-node "lookup1"
   (variables (integer "x"))
   (start-condition (is-known (lookup-now "foo")))
