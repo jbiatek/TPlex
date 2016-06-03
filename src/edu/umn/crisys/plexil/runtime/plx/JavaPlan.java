@@ -132,7 +132,8 @@ public abstract class JavaPlan {
     	}
     	int steps = 0;
     	notifyBeforeExecution();
-        while ( ! world.stop() && getRootNodeState() != NodeState.FINISHED) {
+    	// Always run at least 1 macro step
+        do {
         	if (DEBUG) {
         		System.out.println("***************************** Macro step "+(steps+1));
         	}
@@ -141,7 +142,8 @@ public abstract class JavaPlan {
             if (maxMacroSteps > 0 && steps >= maxMacroSteps) {
             	break;
             }
-        }
+        } while ( ! world.stop() && getRootNodeState() != NodeState.FINISHED);
+        
         notifyPlanEnded();
         return steps;
 

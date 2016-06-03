@@ -19,12 +19,28 @@ public class CompileRegressionTest {
 	 */
 	public static void main(String[] args) throws Exception {
 		// Compile tests:
+		/*/
+		buildTestLustre(getSuiteByName("boolean1"),
+				RegressionTest.RESOURCES,
+				RegressionTest.LUSTRE_FILES);
+		//*/
+		
 		for (TestSuite suite : RegressionTest.getAllValidTestSuites()) {
 		    buildTestJava(suite, RegressionTest.RESOURCES, RegressionTest.TESTING_DIRECTORY);
 		}
 		for (TestSuite suite : RegressionTest.getLustreTestSuites()) {
 			buildTestLustre(suite, RegressionTest.RESOURCES, RegressionTest.LUSTRE_FILES);
 		}
+		//*/
+	}
+	
+	private static TestSuite getSuiteByName(String name) {
+		return RegressionTest.getAllValidTestSuites()
+				.stream()
+				.filter(t -> t.planFile.equals(name))
+				.findFirst()
+				.orElseThrow(() -> new RuntimeException("Test plan "+name+" not found"));
+
 	}
 	
 	private static void buildTestGeneric(TPlex preconfigured, TestSuite suite,
