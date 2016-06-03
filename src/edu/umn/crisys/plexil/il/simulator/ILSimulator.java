@@ -185,6 +185,61 @@ public class ILSimulator extends JavaPlan {
 		return ((NativeBool) eval(e)).getValue();
 	}
 	
+	/**
+	 * Perform an assignment inside the IL. This method finds the correct 
+	 * variable for the LHS expression and assigns it the value of the right
+	 * hand side. This method can handle SimpleVars, ArrayVars, and array
+	 * assignments. It does not handle assigning to aliases yet. 
+	 * 
+	 * If told to commit immediately, it will. If not, it will be queued to be
+	 * committed at the end of this micro step. 
+	 * 
+	 * @param lhs
+	 * @param rhs
+	 * @param commitImmediately
+	 * @return
+	 */
+	private void setNext(ILExpr lhs, ILExpr rhs, boolean commitImmediately) {
+		// Find this variable and make the assignment
+		if (lhs instanceof SimpleVar) {
+			simpleVars.get(lhs).setNext(eval(rhs));
+			if (commitImmediately) {
+				simpleVars.get(lhs).commit();
+			} else {
+				commitAfterMicroStep(simpleVars.get(lhs));
+			}
+		} else if (lhs instanceof ArrayVar) {
+			arrayVars.get(lhs).arrayAssign(eval(rhs));
+			if (commitImmediately) {
+				arrayVars.get(lhs).commit();
+			} else {
+				commitAfterMicroStep(arrayVars.get(lhs));
+			}
+		} else if (lhs instanceof ILOperation) {
+			// This will be an array index of some sort.
+			ILOperation arrayIndex = (ILOperation) lhs;
+			if (arrayIndex.getOperator() != ILOperator.PBOOL_INDEX
+					&& arrayIndex.getOperator() != ILOperator.PINT_INDEX
+					&& arrayIndex.getOperator() != ILOperator.PREAL_INDEX
+					&& arrayIndex.getOperator() != ILOperator.PSTRING_INDEX) {
+				throw new RuntimeException("Assigning to "+arrayIndex+" not supported");
+			}
+			arrayVars.get(arrayIndex.getBinaryFirst())
+				.indexAssign(
+					asInt(eval(arrayIndex.getBinarySecond())), 
+					eval(rhs));
+			if (commitImmediately) {
+				arrayVars.get(arrayIndex.getBinaryFirst())
+					.commit();
+			} else {
+				commitAfterMicroStep(arrayVars.get(arrayIndex.getBinaryFirst()));
+			}
+		} else {
+			throw new RuntimeException("Handle "+lhs.getClass()+" here");
+		}
+	}
+
+	
 	private void exec(PlexilAction a) {
 		a.accept(new ILActionVisitor<Void, Void>() {
 
@@ -193,35 +248,11 @@ public class ILSimulator extends JavaPlan {
 				// No need, we just run all nodes every time
 				return null;
 			}
+			
 
 			@Override
 			public Void visitAssign(AssignAction assign, Void param) {
-				// Find this variable and make the assignment
-				if (assign.getLHS() instanceof SimpleVar) {
-					simpleVars.get(assign.getLHS()).setNext(
-							eval(assign.getRHS()));
-					commitAfterMicroStep(simpleVars.get(assign.getLHS()));
-				} else if (assign.getLHS() instanceof ArrayVar) {
-					arrayVars.get(assign.getLHS()).arrayAssign(
-							eval(assign.getRHS()));
-					commitAfterMicroStep(arrayVars.get(assign.getLHS()));
-				} else if (assign.getLHS() instanceof ILOperation) {
-					// This will be an array index of some sort.
-					ILOperation arrayIndex = (ILOperation) assign.getLHS();
-					if (arrayIndex.getOperator() != ILOperator.PBOOL_INDEX
-							&& arrayIndex.getOperator() != ILOperator.PINT_INDEX
-							&& arrayIndex.getOperator() != ILOperator.PREAL_INDEX
-							&& arrayIndex.getOperator() != ILOperator.PSTRING_INDEX) {
-						throw new RuntimeException("Assigning to "+arrayIndex+" not supported");
-					}
-					arrayVars.get(arrayIndex.getBinaryFirst())
-						.indexAssign(
-							asInt(eval(arrayIndex.getBinarySecond())), 
-							eval(assign.getRHS()));
-					commitAfterMicroStep(arrayVars.get(arrayIndex.getBinaryFirst()));
-				} else {
-					throw new RuntimeException("Handle "+assign.getLHS().getClass()+" here");
-				}
+				setNext(assign.getLHS(), assign.getRHS(), false);
 				return null;
 			}
 
@@ -243,15 +274,12 @@ public class ILSimulator extends JavaPlan {
 
 					@Override
 					public void commandReturns(PValue value) {
-						if (maybeLhs.isPresent()) {
-							// Just assuming it's a simple var :P
-							simpleVars.get(maybeLhs.get()).setNext(value);
-							// Commit it now, we're between steps
-							simpleVars.get(maybeLhs.get()).commit();;
-						} else {
-							throw new RuntimeException("Tried to return to a Command "
-									+ "node that doesn't have an assignment.");
-						}
+						ILExpr lhs = maybeLhs.orElseThrow(() -> new RuntimeException(
+								"Environment is trying to have "+cmd+" return"
+							+ " a value, but no left-hand side is present."));
+						// Assign it and commit immediately, since we should 
+						// be between macro steps. 
+						setNext(lhs, value, true);
 					}
 				};
 				PString commandName = asString(eval(cmd.getName()));

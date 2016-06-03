@@ -22,9 +22,7 @@ public class ArrayVar extends ILVariable {
 			throw new RuntimeException("Array var must have array type, not "+type);
 		}
 		if (init == null) {
-			// Just use an empty array, since it'll get filled with UNKNOWNs
-			// by default that way. 
-			this.init = new PValueList<PValue>(type);
+			this.init = new PValueList<PValue>(type, size);
 		} else {
 			this.init = init;
 		}

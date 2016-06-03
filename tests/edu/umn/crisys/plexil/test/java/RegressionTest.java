@@ -212,7 +212,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("lookup1");
+		doSingleTest("array3");
 	}
 	
 	@Test
@@ -342,6 +342,7 @@ public class RegressionTest {
 		// Read the plan
 		TPlex tplex = new TPlex();
 		tplex.staticLibraries = true;
+		tplex.inferTypes = true;
 		// Set library path. We're going to take advantage of the fact that
 		// we're not using the command line and do some work for TPlex. Namely,
 		// we need to only include the libs, if any.

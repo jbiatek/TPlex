@@ -277,7 +277,11 @@ public class NodeParser {
         int maxSize = Integer.parseInt(maxSizeStr);
         Optional<PValueList<PValue>> initialValue = Optional.empty();
         if (parsedInitValues != null) {
-        	initialValue = Optional.of(new PValueList<PValue>(arrayType.toILType(), parsedInitValues));
+        	initialValue = Optional.of(
+        			new PValueList<PValue>(
+        					arrayType.toILType(), 
+        					maxSize, 
+        					parsedInitValues));
         }
         return new VariableDecl(name, arrayType, Optional.of(maxSize), initialValue);
     }
