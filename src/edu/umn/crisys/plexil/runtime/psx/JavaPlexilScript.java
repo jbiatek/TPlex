@@ -116,13 +116,16 @@ public class JavaPlexilScript implements ExternalWorld {
 	public void endOfMacroStep(JavaPlan plan) {
 		if ( ! outOfEvents() ) {
 			env.applyEvent(events.get(eventCounter));
-			eventCounter++;
 		}
+		// Keep counting even after we are done, we want to be able to tell the
+		// plan to keep going for one more step so it can see the final effects
+		eventCounter++;
 	}
 	
 	@Override
 	public boolean stop() {
-		return outOfEvents();
+		// Go until we are out of events, then do one more
+		return eventsRemaining() <= -1;
 	}
 	
 	public int eventsRemaining() {
@@ -130,7 +133,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 	
 	public boolean outOfEvents() {
-		return eventsRemaining() == 0;
+		return eventsRemaining() <= 0;
 	}
 
 	@Override
