@@ -9,19 +9,29 @@ initial-state {
 }
 
 script {
+  // Drive executes
   state time () = 1.0 : real;
+  // Drive starts wrapping up
   command-success Drive (1 : int);
+  // TakePic executes
   command-success TakePicture ();
-  state time () = 2.0 : real;  
+  // Counter increments
+  state time () = 2.0 : real;
+  // Print command executes (will automatically succeed)
+  simultaneous {}
+  // The whole thing starts over, and Drive executes
   command-success Drive (1 : int);
   command-success TakePicture ();
   state time () = 3.0 : real;  
+  simultaneous {}
   command-success Drive (1 : int);
   command-success TakePicture ();
   state time () = 4.0 : real;  
+  simultaneous {}
   command-success Drive (1 : int);
   command-success TakePicture ();
   state time () = 5.0 : real;  
+  simultaneous {}
   command-success Drive (1 : int);
   command-success TakePicture ();
   state time () = 6.0 : real;  

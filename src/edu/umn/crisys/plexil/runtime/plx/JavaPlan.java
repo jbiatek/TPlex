@@ -133,6 +133,9 @@ public abstract class JavaPlan {
     	int steps = 0;
     	notifyBeforeExecution();
         while ( ! world.stop() && getRootNodeState() != NodeState.FINISHED) {
+        	if (DEBUG) {
+        		System.out.println("***************************** Macro step "+(steps+1));
+        	}
             doMacroStep();
             steps++;
             if (maxMacroSteps > 0 && steps >= maxMacroSteps) {
@@ -165,10 +168,6 @@ public abstract class JavaPlan {
     }
     
     public int doMacroStepCount() {
-    	if (DEBUG) {
-    		System.out.println("***************************** New macro step");
-    	}
-    	
         int counter = 0;
         changeOccurred = true;
         endMacroStep = false;

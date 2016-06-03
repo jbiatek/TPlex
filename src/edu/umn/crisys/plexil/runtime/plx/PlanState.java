@@ -103,7 +103,7 @@ public class PlanState {
     			// value is because no one should be reading it. Also, more
     			// importantly, the executive doesn't always give the correct
     			// value for inactive variables, so we need to ignore it.
-
+    			continue;
     		} else if (line.startsWith("State:")) {
     			// State also now has the start time in parentheses after it.
     			String mangledState = extractSimple(line);
