@@ -89,17 +89,21 @@ public class PlanState {
         }
 
     	
-        //System.out.println("Entering node "+name.replace("{", ""));
-    	
-        String line = in.readLine();
-		// Delete leading whitespace
-		line = line.replaceAll("^\\s*", "");
-    	
-        while (!line.equals("}")){
+        String line;
+        // Read in a line, strip out all whitespace, and then make sure it 
+        // isn't the end of this node. 
+        while (! (line = in.readLine().replaceAll("^\\s*", "")).equals("}") ){
     		if (line.endsWith("{")) {
     			// This is the start of a new node, one of our children.
     			PlanState child = parseLogFile(in, line, node);
     			node.addChild(child);
+    		} else if (line.contains("[i]")) {
+    			// This means that the variable or condition is "inactive"
+    			// inside the PLEXIL executive. It shouldn't matter what this
+    			// value is because no one should be reading it. Also, more
+    			// importantly, the executive doesn't always give the correct
+    			// value for inactive variables, so we need to ignore it.
+
     		} else if (line.startsWith("State:")) {
     			// State also now has the start time in parentheses after it.
     			String mangledState = extractSimple(line);
@@ -178,10 +182,6 @@ public class PlanState {
     			System.out.println("Warning: I don't think this is a variable: "+line);
     		}
 
-	        line = in.readLine();
-			// Delete leading whitespace
-			line = line.replaceAll("^\\s*", "");
-    		
         }
 
     		
