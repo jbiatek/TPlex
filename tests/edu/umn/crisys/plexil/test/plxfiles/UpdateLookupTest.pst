@@ -2,7 +2,7 @@
 // update-lookup-test
 
 initial-state {
-  state someValue () = 42 : real;
+  state someValue () = 42 : int;
 }
 
 script {
