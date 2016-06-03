@@ -650,7 +650,7 @@ public class NodeToIL {
             // We'll have to resolve the array in writing mode as well. 
             
             
-            ArrayVar theArray = (ArrayVar) resolveVariableForWriting(
+            ILExpr theArray = resolveVariableForWriting(
             		arr.getPlexilArguments().get(0), expectedType.toArrayType());
             ILExpr theIndex = toIL(arr.getPlexilArguments().get(1), 
             		PlexilType.INTEGER);

@@ -19,7 +19,7 @@ public class CompileRegressionTest {
 	 */
 	public static void main(String[] args) throws Exception {
 		// Compile tests:
-		for (TestSuite suite : RegressionTest.getJavaTestSuites()) {
+		for (TestSuite suite : RegressionTest.getAllValidTestSuites()) {
 		    buildTestJava(suite, RegressionTest.RESOURCES, RegressionTest.TESTING_DIRECTORY);
 		}
 		for (TestSuite suite : RegressionTest.getLustreTestSuites()) {

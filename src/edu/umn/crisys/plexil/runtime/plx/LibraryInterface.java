@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.runtime.plx;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
+import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 
@@ -11,6 +12,11 @@ public class LibraryInterface {
     public void performAssignment(String varName, PValue value, int priority) {
         throw new RuntimeException("Empty interface");
     }
+    
+    public void performAssignment(String arrayName, PInteger index, PValue value, int priority) {
+        throw new RuntimeException("Empty interface");
+    }
+
     
     public PValue getValue(String varName) {
         throw new RuntimeException("Empty interface");

@@ -325,23 +325,21 @@ public class NodeParser {
                 assertStart("In", inOrOut);
             }
             // Either way, it contains some number of DeclareVariable/Array. 
-            // But Arrays aren't officially supported, so don't bother.
             for (StartElement declare : allChildTagsOf(inOrOut, xml)) {
 
+            	VariableDecl info;
                 if (isTag(declare, "DeclareArray")) {
-                    throw new RuntimeException("Arrays are not supported as "
-                            +"Interface variables, according to the Plexil Reference.");
+                	info = parseDeclareArray(declare, xml);
                 }
                 else if (isTag(declare, "DeclareVariable")) {
-                    VariableDecl info = parseDeclareVariable(declare, xml);
-
-                    if (writeable) {
-                        iface.addInOutVariable(info.getName(), info.getType());
-                    } else {
-                        iface.addInVariable(info.getName(), info.getType());
-                    }
+                    info = parseDeclareVariable(declare, xml);
                 } else {
                     throw new UnexpectedTagException(declare, "DeclareVariable");
+                }
+                if (writeable) {
+                    iface.addInOutVariable(info.getName(), info.getType());
+                } else {
+                    iface.addInVariable(info.getName(), info.getType());
                 }
             }
         }

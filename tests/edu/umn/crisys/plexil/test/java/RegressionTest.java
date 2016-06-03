@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import jkind.lustre.values.Value;
@@ -19,6 +20,7 @@ import lustre.LustreTrace;
 
 import org.junit.*;
 
+import edu.umn.crisys.plexil.ast.PlexilPlan;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
@@ -32,6 +34,7 @@ import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
+import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
@@ -123,17 +126,45 @@ public class RegressionTest {
 	/**
 	 * @return all of the TestSuites in the regression test suite for Java.
 	 */
-	public static List<TestSuite> getJavaTestSuites() {
+	public static List<TestSuite> getAllValidTestSuites() {
 		List<TestSuite> ret = new ArrayList<RegressionTest.TestSuite>();
 		ret.addAll(Arrays.asList(MANUAL_TESTS));
 		
-		for (String name : RegressionTest.SAME_NAME_TESTS) {
-			ret.add(produceSameNameTest(name));
-		}
-
-		for (String name : EMPTY_SCRIPT_TESTS) {
+		for (String name : OfficialNASARegressionTests.EMPTY_SCRIPT_TESTS) {
+			if (OfficialNASARegressionTests.BLACKLIST.contains(name)) {
+				continue;
+			}
 			ret.add(produceEmptyScriptTest(name));
 		}
+		for (String name : OfficialNASARegressionTests.EMPTY_SCRIPT_VALID_TESTS) {
+			if (OfficialNASARegressionTests.BLACKLIST.contains(name)) {
+				continue;
+			}
+			ret.add(produceEmptyScriptTest(name));
+		}
+		for (Entry<String, Set<String>> e : OfficialNASARegressionTests.SAME_NAME_LIBRARY_TESTS.entrySet()) {
+			if (OfficialNASARegressionTests.BLACKLIST.contains(e.getKey())) {
+				continue;
+			}
+			ret.add(new TestSuite(e.getKey(), new String[]{e.getKey()}, 
+					e.getValue().toArray(new String[]{})));
+		}
+		for (Entry<String, Set<String>> e : OfficialNASARegressionTests.EMPTY_SCRIPT_LIBRARY_TESTS.entrySet()) {
+			if (OfficialNASARegressionTests.BLACKLIST.contains(e.getKey())) {
+				continue;
+			}
+			ret.add(new TestSuite(e.getKey(), new String[]{}, 
+					e.getValue().toArray(new String[]{})));
+		}
+		for (String name : OfficialNASARegressionTests.SAME_NAME_SCRIPT_TESTS) {
+			if (OfficialNASARegressionTests.BLACKLIST.contains(name)) {
+				continue;
+			}
+			ret.add(produceSameNameTest(name));
+		}
+		ret.add(new TestSuite("SimpleDriveRegressionTest", 
+				OfficialNASARegressionTests.SIMPLE_DRIVE_SCRIPTS.toArray(new String[]{}),
+				new String[]{}));
 		
 		return ret;
 	}
@@ -168,124 +199,49 @@ public class RegressionTest {
 		PlanState.DEBUG = false;
 		ScriptedEnvironment.DEBUG = false;
 	}
-	
-	@Test
-	public void CruiseControl() throws Exception {
-		runSingleTestJava("CruiseControl", "CruiseControl");
-		runSingleTestLustre("CruiseControl", "CruiseControl");
 
+	public void doSingleTest(String planName) throws Exception {
+		runTestSuiteIL(
+				getAllValidTestSuites().stream()
+					.filter(suite -> suite.planFile.equals(planName))
+					.findAny()
+					.orElseThrow(() -> new RuntimeException(
+							planName+" not found in list of tests!")));
+		
 	}
 	
 	@Test
-	public void DriveToSchool() throws Exception {
-		runSingleTestJava("DriveToSchool", "DriveToSchool");
-		runSingleTestLustre("DriveToSchool", "DriveToSchool");
+	public void testSomethingSpecific() throws Exception {
+		doSingleTest("lookup1");
 	}
 	
 	@Test
-	public void DriveToTarget() throws Exception {
-		runSingleTestJava("DriveToTarget", "DriveToTarget");
-		runSingleTestLustre("DriveToTarget", "DriveToTarget");
-
-	}
-	
-	@Test
-	public void SafeDrive() throws Exception {
-		runSingleTestJava("SafeDrive", "SafeDrive");
-		runSingleTestLustre("SafeDrive", "SafeDrive");
-	}
-	
-	@Test
-	public void SimpleDrive() throws Exception {
-		runSingleTestJava("SimpleDrive", "SimpleDrive");
-	}
-	
-	@Test
-	public void simple_drive() throws Exception {
-	    runTestSuite(simple_drive_r);
+	public void testIL() throws Exception {
+		for (TestSuite suite : getAllValidTestSuites()) {
+			for (String script : suite.planScripts) {
+				runSingleTestILSimulator(suite.planFile, script, suite.libs);
+			}
+		}
 	}
 
 	@Test
-	public void AncestorReferenceTest() throws Exception {
-	    runSingleTestJava("AncestorReferenceTest", "empty");
-	}
-	
-	@Test @Ignore
-    public void assign_failure_with_conflict() throws Exception {
-        runSingleTestJava("AssignFailureWithConflict", "empty");
-    }
-	
-	@Test
-    public void assign_to_parent() throws Exception {
-        runSingleTestJava("AssignToParentExit", "empty");
-        runSingleTestJava("AssignToParentInvariant", "empty");
-    }
-	
-	@Test
-    public void atomic_assignment() throws Exception {
-        runSingleTestJava("AtomicAssignment", "AtomicAssignment");
-    }
-	
-	public void boolean1() throws Exception {
-	    runSingleTestJava("boolean1", "boolean1");
+	public void testJava() throws Exception {
+		for (TestSuite java : getAllValidTestSuites()) {
+			for (String script : java.planScripts) {
+				runSingleTestJava(java.planFile, script);
+			}
+		}
 	}
 
-	public void change_lookup_test() throws Exception {
-        runSingleTestJava("ChangeLookupTest", "ChangeLookupTest");
-    }
-	
-    @Test
-	public void long_command() throws Exception {
-	    runSingleTestJava("long_command", "long_command");
-	}
-	
 	@Test
-	public void uncle_command() throws Exception {
-	    runSingleTestJava("uncle_command", "uncle_command");
+	public void testLustre() throws Exception {
+		for (TestSuite java : getLustreTestSuites()) {
+			for (String script : java.planScripts) {
+				runSingleTestLustre(java.planFile, script);
+			}
+		}
 	}
-	
-	@Test
-	public void arrayTests() throws Exception {
-	    runSingleTestJava("ArrayInLoop", "empty");
-	    runSingleTestJava("array1", "array1");
-	    runSingleTestJava("array2", "empty");
-	    runSingleTestJava("array3", "array3");
-	    runSingleTestJava("array4", "array4");
-	    runSingleTestJava("array5", "empty");
-	    runSingleTestJava("array6", "empty");
-	    runSingleTestJava("array8", "array8");
-	    runSingleTestJava("array9", "empty");
-	}
-	
-	   
-    @Test
-    public void repeatTests() throws Exception {
-        runSingleTestJava("repeat1", "empty");
-        runSingleTestJava("repeat2", "repeat2");
-        runSingleTestJava("repeat3", "empty");
-        runSingleTestJava("repeat4", "empty");
-        runSingleTestJava("repeat5", "repeat5");
-        runSingleTestJava("repeat7", "repeat7");
-        runSingleTestJava("repeat8", "repeat8");
-    }
-	
-	@Test
-	public void commandTests() throws Exception {
-	    runSingleTestJava("command1", "command1");
-	    runSingleTestJava("command2", "command2");
-	    runSingleTestJava("command3", "command3");
-	    runSingleTestJava("command4", "command4");
-	    runSingleTestJava("command5", "command5");
-	}
-	
-	@Test
-	public void failureTypeTests() throws Exception {
-	    runSingleTestJava("FailureType1", "empty");
-        runSingleTestJava("FailureType2", "empty");
-        runSingleTestJava("FailureType3", "empty");
-        runSingleTestJava("FailureType4", "empty");
 
-	}
 	
 //	public static List<PlanState> parseLogFile(String planName, String scriptName) throws Exception{
 //		return parseLogFile(
@@ -371,6 +327,33 @@ public class RegressionTest {
 		Class<?> main = Class.forName(TPLEX_OUTPUT_PACKAGE+"."+NameUtils.clean(planName));
 		return (JavaPlan) main.getConstructor(ExternalWorld.class).newInstance(world);
 	}
+	
+	public static void runSingleTestILSimulator(String planName, String scriptName, String[] libs) throws Exception {
+		List<PlanState> expected = parseLogFile(planName, scriptName);
+		
+		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
+
+		
+        System.out.println("Running "+planName+" with script "+scriptName);
+        
+//		root.fullReset();
+		// Get the script
+		JavaPlexilScript world = getScript(scriptName);
+		// Read the plan
+		TPlex tplex = new TPlex();
+		tplex.staticLibraries = true;
+		// Set library path. We're going to take advantage of the fact that
+		// we're not using the command line and do some work for TPlex. Namely,
+		// we need to only include the libs, if any.
+		for (String library : libs) {
+			File libFile = new File(RESOURCES, library+".plx");
+			tplex.libPath.put(libFile, PlxParser.parseFile(libFile));
+		}
+		Plan ilPlan = tplex.quickParsePlan(new File(RESOURCES, planName+".plx"));
+		
+		runTest(new ILSimulator(ilPlan, world), world, expected);
+	}
+
 	
 	public static void runSingleTestJava(String planName, String scriptName) throws Exception {
 		List<PlanState> expected = parseLogFile(planName, scriptName);
@@ -474,7 +457,13 @@ public class RegressionTest {
 
 	}
 	
-	public static void runTestSuite(TestSuite suite) throws Exception {
+	public static void runTestSuiteIL(TestSuite suite) throws Exception {
+	    for (String script : suite.planScripts) {
+	        runSingleTestILSimulator(suite.planFile, script, suite.libs);
+	    }
+	}
+	
+	public static void runTestSuiteJava(TestSuite suite) throws Exception {
 	    for (String script : suite.planScripts) {
 	        runSingleTestJava(suite.planFile, script);
 	    }

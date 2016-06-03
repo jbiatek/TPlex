@@ -14,6 +14,7 @@ public enum PlexilType {
 	COMMAND_HANDLE,
 	NODEREF,
 	UNKNOWN,
+	NUMERIC,
 	ARRAY,
 	BOOLEAN_ARRAY,
 	INTEGER_ARRAY,
@@ -111,11 +112,11 @@ public enum PlexilType {
      * @return true if this is a numeric type of some sort.
      */
     public boolean isNumeric() {
-        return this == INTEGER || this == REAL;// || this == NUMERIC;
+        return this == INTEGER || this == REAL || this == NUMERIC;
     }
 	
     public boolean isSpecificType() {
-    	return /*this != NUMERIC && */this != UNKNOWN &&  this != ARRAY;
+    	return this != NUMERIC && this != UNKNOWN &&  this != ARRAY;
     }
 
     /**
@@ -151,10 +152,8 @@ public enum PlexilType {
     
     public PlexilType getMoreSpecific(PlexilType other) {
     	if (this.isSpecificType() && !other.isSpecificType()) {
-    		this.typeCheck(other);
     		return this;
     	} else if (other.isSpecificType() && !this.isSpecificType()) {
-    		other.typeCheck(this);
     		return other;
     	} else if (other == UNKNOWN) {
     		return this;

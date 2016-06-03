@@ -1,7 +1,9 @@
 package edu.umn.crisys.plexil.test.java;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -103,18 +105,30 @@ public class OfficialNASARegressionTests {
 				"AssignToParentInvariant", "AssignToParentExit",
 				"InactiveAncestorInvariantTest", "NonLocalExit"));
 	}
-
+	
+	
 	/**
-	 * These are only defined as "Tests of library calls". 
-	 * 
-	 * However, the test script just runs it the same as the "empty script tests". 
-	 * There doesn't appear to be any special treatment. FYI, the plan here
-	 * uses "LibraryNodeWithArray.plx" as its library node. 
+	 * This category isn't found in the PLEXIL test scripts, but it should
+	 * be there. These are scripts that include libraries. The map points
+	 * the main plan to the libraries it uses. 
 	 */
-	public static final Set<String> LIBRARY_TESTS = new HashSet<>();
+	public static final Map<String,Set<String>> EMPTY_SCRIPT_LIBRARY_TESTS = new HashMap<>();
 	static {
-		LIBRARY_TESTS.add("LibraryCallWithArray");
+		EMPTY_SCRIPT_LIBRARY_TESTS.put("LibraryCallWithArray", 
+				new HashSet<>(Arrays.asList("LibraryNodeWithArray")));
 	}
+	
+	/**
+	 * This category isn't found in the PLEXIL test scripts, but it should
+	 * be there. These are scripts that include libraries. The map points
+	 * the main plan to the libraries it uses. 
+	 */
+	public static final Map<String,Set<String>> SAME_NAME_LIBRARY_TESTS = new HashMap<>();
+	static {
+		SAME_NAME_LIBRARY_TESTS.put("AssignmentMain", 
+				new HashSet<>(Arrays.asList("DoValue", "GetValue")));
+	}
+
 
 	/**
 	 * These are all defined as:
@@ -156,8 +170,10 @@ public class OfficialNASARegressionTests {
 				"TestEndCondition", 
 				"TestTimepoint", 
 				"UpdateLookupTest", 
-				"UpdateTest", 
-				"AssignmentMain"));
+				"UpdateTest"
+				// "AssignmentMain" is in this list, but it actually uses
+				// libraries, so I moved it. 
+				));
 	}
 
 	/**
@@ -195,6 +211,34 @@ public class OfficialNASARegressionTests {
 	static {
 		SIMPLE_DRIVE_SCRIPTS.add("single-drive");
 		SIMPLE_DRIVE_SCRIPTS.add("double-drive");
+	}
+	
+	/**
+	 * These are tests that simply don't work for various reasons.
+	 */
+	public static final Set<String> BLACKLIST = new HashSet<>();
+	static {
+		// According to the comment in this file, it's supposed to be invalid?
+		// It certainly looks invalid. But the executive actually takes it and 
+		// runs it anyway? I don't understand. Go away. 
+		BLACKLIST.add("interface1");
+
+		// This legitimately seems to have an error in it, with a noderef
+		// to "Three_Min_Timer" which is very clearly not there. It does
+		// specifiy a direction of "self", which might mean that it's supposed
+		// to ignore the name? If so, that's dumb. Deal with this later.
+		BLACKLIST.add("TestTimepoint");
+		
+		// This one depends on implementing command aborts. 
+		BLACKLIST.add("SiteSurveyWithEOF");
+		
+		// This one depends on being able to pass entire arrays through
+		// library node calls. I added AST support for doing this, and it
+		// goes into the IL with no errors, but that's all.
+		BLACKLIST.add("LibraryCallWithArray");
+		
+		// We don't support resource arbitration at all.
+		BLACKLIST.addAll(RESOURCE_ARBITRATION_TESTS);
 	}
 
 }

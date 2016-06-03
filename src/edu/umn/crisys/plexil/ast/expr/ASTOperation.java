@@ -182,29 +182,29 @@ public class ASTOperation extends PlexilExprBase {
         EQ(2, "==", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
         NE(2, "!=", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
 
-        GE(2, ">=", PlexilType.INTEGER, PlexilType.BOOLEAN),
-        GT(2, ">", PlexilType.INTEGER, PlexilType.BOOLEAN),
-        LE(2, "<=", PlexilType.INTEGER, PlexilType.BOOLEAN),
-        LT(2, "<", PlexilType.INTEGER, PlexilType.BOOLEAN),
+        GE(2, ">=", PlexilType.NUMERIC, PlexilType.BOOLEAN),
+        GT(2, ">", PlexilType.NUMERIC, PlexilType.BOOLEAN),
+        LE(2, "<=", PlexilType.NUMERIC, PlexilType.BOOLEAN),
+        LT(2, "<", PlexilType.NUMERIC, PlexilType.BOOLEAN),
         
         ISKNOWN(1, "isKnown(", PlexilType.UNKNOWN, PlexilType.BOOLEAN),
         ARRAY_INDEX(2, "[]", PlexilType.ARRAY, PlexilType.UNKNOWN),
                 
         // TODO: Do we need casting?
         CAST_BOOL(1, "(PBoolean) (", PlexilType.BOOLEAN, PlexilType.BOOLEAN),
-        CAST_INT(1, "(PInteger) (", PlexilType.INTEGER, PlexilType.INTEGER),
-        CAST_REAL(1, "(PReal) (", PlexilType.INTEGER, PlexilType.REAL),
+        CAST_INT(1, "(PInteger) (", PlexilType.NUMERIC, PlexilType.INTEGER),
+        CAST_REAL(1, "(PReal) (", PlexilType.NUMERIC, PlexilType.REAL),
         CAST_STRING(1, "(PString) (", PlexilType.STRING, PlexilType.STRING),
         
-        ABS(1, "abs(", PlexilType.INTEGER, PlexilType.INTEGER),
-        ADD(-1, "+", PlexilType.INTEGER, PlexilType.INTEGER),
-        DIV(2, "/", PlexilType.INTEGER, PlexilType.INTEGER),
-        MAX(2, "max(", PlexilType.INTEGER, PlexilType.INTEGER),
-        MIN(2, "min(", PlexilType.INTEGER, PlexilType.INTEGER),
-        MOD(2, "%", PlexilType.INTEGER, PlexilType.INTEGER),
-        MUL(-1, "*", PlexilType.INTEGER, PlexilType.INTEGER),
-        SQRT(1, "sqrt(", PlexilType.INTEGER, PlexilType.INTEGER),
-        SUB(2, "-", PlexilType.INTEGER, PlexilType.INTEGER),
+        ABS(1, "abs(", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        ADD(-1, "+", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        DIV(2, "/", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        MAX(2, "max(", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        MIN(2, "min(", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        MOD(2, "%", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        MUL(-1, "*", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        SQRT(1, "sqrt(", PlexilType.NUMERIC, PlexilType.NUMERIC),
+        SUB(2, "-", PlexilType.NUMERIC, PlexilType.NUMERIC),
         
         CONCAT(-1, "+", PlexilType.STRING, PlexilType.STRING),
         
@@ -318,16 +318,14 @@ public class ASTOperation extends PlexilExprBase {
     }
 
     public PlexilType getActualArgumentType() {
-    	if (argType != PlexilType.UNKNOWN &&
-    			argType != PlexilType.INTEGER) {
+    	if (argType.isSpecificType()) {
     		return argType;
     	}
     	if (op == Operator.ARRAY_INDEX) {
     		return args.get(0).getPlexilType().elementType();
     	}
     	
-    	// Numbers might actually be reals, and we might be able to do better
-    	// than unknown. 
+    	// Our args might have more specific type information.  
     	PlexilType mostSpecific = argType;
     	for (PlexilExpr e : args) {
     		mostSpecific = argType.getMoreSpecific(e.getPlexilType());

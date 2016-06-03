@@ -28,6 +28,7 @@ import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.runtime.values.UnknownValue;
@@ -77,7 +78,7 @@ public class ExprParser {
                 return PlexilType.STRING;
             }
         } else if (name.equals("NUMERIC")) {
-        	return PlexilType.REAL;
+        	return PlexilType.NUMERIC;
         }
         
         // Just look for an easy match
@@ -228,6 +229,7 @@ public class ExprParser {
         || tag.equals("IntegerValue")
         || tag.equals("RealValue")
         || tag.equals("StringValue") 
+        || tag.equals("ArrayValue")
         || tag.equals("NodeStateValue") 
         || tag.equals("NodeOutcomeValue") 
         || tag.equals("NodeFailureValue") 
@@ -235,6 +237,14 @@ public class ExprParser {
     }
 
     public static PValue parsePValue(StartElement start, XMLEventReader xml) {
+    	if (localNameOf(start).equals("ArrayValue")) {
+    		PlexilType elementType = fuzzyParseType(attribute(start, "Type"));
+    		List<PValue> elements = new ArrayList<>();
+    		for (StartElement elementTag : allChildTagsOf(start, xml)) {
+    			elements.add(parsePValue(elementTag, xml));
+    		}
+    		return new PValueList<PValue>(elementType.toILType().toArrayType(), elements);
+    	}
         String type = localNameOf(start).replaceAll("(Node|Value)", "");
         PlexilType pType = fuzzyParseType(type);
         return parseValue(pType, getStringContent(start, xml));

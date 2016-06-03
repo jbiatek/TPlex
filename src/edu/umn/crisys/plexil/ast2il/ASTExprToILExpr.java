@@ -194,17 +194,10 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
         					));
         default:
         	// We need to figure out the correct type of these arguments. 
-        	PlexilType expectedArgType = op.getExpectedArgumentType();
+        	PlexilType expectedArgType = op.getActualArgumentType();
         	if (expectedArgType == PlexilType.UNKNOWN) {
-        		// Hmm, can we infer it from the arguments? 
-        		expectedArgType = op.getPlexilArguments().stream()
-        				.map(PlexilExpr::getPlexilType)
-        				.reduce(PlexilType::getMoreSpecific).get();
-        		if (expectedArgType == PlexilType.UNKNOWN) {
-        			// Hm. Well, if it's a Condition, boolean is our
-        			// best guess.
-        			expectedArgType = PlexilType.BOOLEAN;
-        		}
+        		// If it's a condition, our best guess is boolean? 
+    			expectedArgType = PlexilType.BOOLEAN;
         	}
         	final PlexilType finalGuess = expectedArgType;
         	List<ILExpr> translated = op.getPlexilArguments().stream()
@@ -214,15 +207,14 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
         	// That's our arguments translated. We might have learned more
         	// translating them. 
         	if (expectedArgType.isNumeric()) {
-        		if (argsAreAllIntegers(translated)) {
+        		if (noArgsAreReals(translated)) {
         			expectedArgType = PlexilType.INTEGER;
         		} else {
         			expectedArgType = PlexilType.REAL;
         		}
         	}
         	
-        	// If we converted to real, there's a special method that does 
-        	// that using the right operator.
+        	// If there are reals, we need to promote any integers in here 
         	if (expectedArgType == PlexilType.REAL) {
         		translated = allIntsToReals(translated);
         	} 
@@ -339,9 +331,9 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
     	}
     }
     
-    private boolean argsAreAllIntegers(List<ILExpr> translatedChildren) {
+    private boolean noArgsAreReals(List<ILExpr> translatedChildren) {
     	return translatedChildren.stream()
-    			.allMatch(e -> e.getType() == ILType.INTEGER);
+    			.allMatch(e -> e.getType() != ILType.REAL);
     }
     
     private List<ILExpr> allIntsToReals(List<ILExpr> translatedChildren) {

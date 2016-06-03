@@ -71,13 +71,34 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 			} else if (lhs instanceof ILOperation) {
 				// Must be an index of an array. 
 				ILOperation arrayIndex = (ILOperation) lhs;
-				ArrayVar array = (ArrayVar) arrayIndex.getBinaryFirst();
+				ILExpr theArray = arrayIndex.getBinaryFirst();
 				ILExpr index = (ILExpr) arrayIndex.getBinarySecond();
+
+				if (theArray instanceof ArrayVar) {
+					ArrayVar localArray = (ArrayVar) arrayIndex.getBinaryFirst();
+					
+					block.invoke(JExpr.ref(ILExprToJava.getFieldName(localArray)), "indexAssign")
+						.arg(ILExprToJava.toJava(index, cm)).arg(rhs);
+					return Optional.of(localArray);
+				} else if (theArray instanceof AliasExpr) {
+					AliasExpr alias = (AliasExpr) theArray;
+					// Pass this through the interface for assignment.
+			        block.add( JExpr.invoke("getInterface").invoke("performAssignment")
+			        		.arg(alias.getName())
+			        		.arg(ILExprToJava.toJava(index, cm))
+			        		.arg(rhs)
+			        		.arg(JExpr.lit(0)));
+		
+			        // No variable to return, so return empty.
+			        return Optional.empty();
+
+					
+				} else {
+					throw new RuntimeException("Can't handle "+theArray.getClass()+" here,"
+							+ " trying to assign to it with an array index.");
+				}
 				
-				block.invoke(JExpr.ref(ILExprToJava.getFieldName(array)), "indexAssign")
-					.arg(ILExprToJava.toJava(index, cm)).arg(rhs);
 				
-				return Optional.of(array);
 			} else if (lhs instanceof AliasExpr) {
 				AliasExpr alias = (AliasExpr) lhs;
 				// Pass this through the interface for assignment.
