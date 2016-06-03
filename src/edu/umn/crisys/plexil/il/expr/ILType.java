@@ -113,7 +113,7 @@ public enum ILType {
      */
     public void strictTypeCheck(ILType other) {
     	if (this == ILType.UNKNOWN) {
-    		throw new RuntimeException("Type faileure: The left hand type was UNKNOWN");
+    		throw new RuntimeException("Type failure: The left hand type was UNKNOWN");
     	}
     	if (other == ILType.UNKNOWN) {
     		throw new RuntimeException("Type failure: The right hand type was UNKNOWN");

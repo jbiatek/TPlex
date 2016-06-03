@@ -36,9 +36,6 @@ public class CompileRegressionTest {
 		for (String scriptName : suite.planScripts) {
 			preconfigured.files.add(new File(resources, scriptName+".psx"));
 		}
-		for (String libName : suite.libs) {
-			preconfigured.files.add(new File(resources, libName+".plx"));
-		}
 
 		try {
 			if ( ! preconfigured.execute()) {
@@ -55,6 +52,10 @@ public class CompileRegressionTest {
 		preconfigured.outputLanguage = OutputLanguage.JAVA;
 		preconfigured.javaPackage = RegressionTest.TPLEX_OUTPUT_PACKAGE;
 
+		for (String libName : suite.libs) {
+			preconfigured.files.add(new File(resources, libName+".plx"));
+		}
+		
 		buildTestGeneric(preconfigured, suite, resources, outputDir);
 	}
 	
@@ -62,9 +63,10 @@ public class CompileRegressionTest {
 		TPlex preconfigured = new TPlex();
 		preconfigured.outputLanguage = OutputLanguage.LUSTRE;
 		preconfigured.lustreSimulateScriptsAgainst = suite.planFile;
+		preconfigured.staticLibraries = true;
 		
-		if (suite.libs.length > 0) {
-			throw new RuntimeException("Libraries not supported in Lustre testing yet");
+		for (String libName : suite.libs) {
+			preconfigured.addToLibraryPath(new File(resources, libName+".plx"));
 		}
 		
 		buildTestGeneric(preconfigured, suite, resources, outputDir);

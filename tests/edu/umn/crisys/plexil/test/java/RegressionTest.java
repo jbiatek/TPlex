@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import jkind.lustre.values.Value;
 import jkind.results.Signal;
@@ -173,13 +174,19 @@ public class RegressionTest {
 	 * @return all of the TestSuites for Lustre regression testing. 
 	 */
 	public static List<TestSuite> getLustreTestSuites() {
-		// Preeeeety limited for now. 
+		return getAllValidTestSuites().stream()
+				.filter(ts -> ! OfficialNASARegressionTests.LUSTRE_BLACKLIST
+							.contains(ts.planFile))
+				.collect(Collectors.toList());
+		
+		
+		/*Preeeeety limited for now. 
 		return Arrays.asList(
 				produceSameNameTest("DriveToSchool"),
 				produceSameNameTest("DriveToTarget"),
 				produceSameNameTest("CruiseControl"),
 				//produceSameNameTest("SimpleDrive"),
-				produceSameNameTest("SafeDrive"));
+				produceSameNameTest("SafeDrive")); */
 	}
 	
 	
@@ -212,7 +219,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("array4");
+		doSingleTest("UpdateLookupTest");
 	}
 	
 	@Test
@@ -235,9 +242,9 @@ public class RegressionTest {
 
 	@Test
 	public void testLustre() throws Exception {
-		for (TestSuite java : getLustreTestSuites()) {
-			for (String script : java.planScripts) {
-				runSingleTestLustre(java.planFile, script);
+		for (TestSuite lustre : getLustreTestSuites()) {
+			for (String script : lustre.planScripts) {
+				runSingleTestLustre(lustre.planFile, script, lustre.libs);
 			}
 		}
 	}
@@ -287,23 +294,6 @@ public class RegressionTest {
 //		return oracles;
 //	}
 	
-	public static Plan getPlanAsIL(String name) {
-		TPlex tplex = new TPlex();
-		
-		tplex.files.add(new File(RegressionTest.RESOURCES, name+".plx"));
-		tplex.outputLanguage = TPlex.OutputLanguage.NONE;
-		
-		tplex.execute();
-		
-		if (tplex.ilPlans.size() != 1) {
-			throw new RuntimeException("Which one do I want? ");
-		}
-		
-		for ( Entry<String, Plan> entry : tplex.ilPlans.entrySet()) {
-			return entry.getValue();
-		}
-		throw new RuntimeException("this is unreachable");
-	}
 
 	public static JavaPlexilScript getScript(String scriptName) throws ReflectiveOperationException {
 		if (scriptName.equals("empty")) {
@@ -340,19 +330,21 @@ public class RegressionTest {
 		// Get the script
 		JavaPlexilScript world = getScript(scriptName);
 		// Read the plan
+		Plan ilPlan = getSimulatablePlan(planName, libs);
+		
+		ILSimulator theSim = new ILSimulator(ilPlan, world);
+		runTest(theSim, world, expected);
+	}
+	
+	private static Plan getSimulatablePlan(String planName, String[] libs) {
 		TPlex tplex = new TPlex();
 		tplex.staticLibraries = true;
 		tplex.inferTypes = true;
-		// Set library path. We're going to take advantage of the fact that
-		// we're not using the command line and do some work for TPlex. Namely,
-		// we need to only include the libs, if any.
 		for (String library : libs) {
 			File libFile = new File(RESOURCES, library+".plx");
-			tplex.libPath.put(libFile, PlxParser.parseFile(libFile));
+			tplex.addToLibraryPath(libFile);
 		}
-		Plan ilPlan = tplex.quickParsePlan(new File(RESOURCES, planName+".plx"));
-		
-		runTest(new ILSimulator(ilPlan, world), world, expected);
+		return tplex.quickParsePlan(new File(RESOURCES, planName+".plx"));
 	}
 
 	
@@ -373,23 +365,18 @@ public class RegressionTest {
 		runTest(root, world, expected);
 	}
 	
-	public static void runSingleTestLustre(String planName, String scriptName) throws Exception {
+	public static void runSingleTestLustre(String planName, String scriptName, String[] libs) throws Exception {
 		// We're actually going to use the IL simulator to test the Lustre code. 
 		// So first, make sure that the simulator matches the executive logs.
-		JavaPlexilScript script = getScript(scriptName);
-		Plan ilPlan = getPlanAsIL(planName);
-		List<PlanState> expected = parseLogFile(planName, scriptName);
-		ILSimulator sim = new ILSimulator(ilPlan, script);
-		runTest(sim, script, expected);
-
-		// Okey dokey, if we got to here, our IL plan conforms to the oracle.
-		// Now we compare the IL plan to the Lustre plan. 
-		// Reset everything so we can start again
-		script.reset();
+		runSingleTestILSimulator(planName, scriptName, libs);
 		
+		// Alright, the simulator runs this with no problems, so we can use it.
+		JavaPlexilScript script = getScript(scriptName);
+		Plan ilPlan = getSimulatablePlan(planName, libs);
+		
+		// And grab the Lustre stuff
 		File lustreFile = new File(LUSTRE_FILES, planName+".lus");
 		File csvFile = new File(LUSTRE_FILES, planName+"__"+scriptName+".csv");
-		
 		LustreTrace trace = getLustreTraceData(lustreFile, planName, csvFile);
 		ReverseTranslationMap mapper = TPlex.getStringMapForLus(lustreFile);
 		

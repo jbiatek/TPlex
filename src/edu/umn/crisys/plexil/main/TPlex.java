@@ -268,6 +268,18 @@ public class TPlex {
 				|| fileName.endsWith(".csv");
 	}
 	
+	/**
+	 * Add a single file to the library path. 
+	 * @param f
+	 */
+	public void addToLibraryPath(File f) {
+		try {
+			libPath.put(f, PlxParser.parseFile(f));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public boolean readOptions() {
 		if (help) {
 			printUsage(System.out);

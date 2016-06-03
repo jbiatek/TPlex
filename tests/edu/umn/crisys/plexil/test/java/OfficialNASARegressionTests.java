@@ -240,5 +240,36 @@ public class OfficialNASARegressionTests {
 		// We don't support resource arbitration at all.
 		BLACKLIST.addAll(RESOURCE_ARBITRATION_TESTS);
 	}
+	
+	/**
+	 * These are tests that don't work in Lustre for various reasons.
+	 */
+	public static final Set<String> LUSTRE_BLACKLIST = new HashSet<>();
+	static {
+		// Anything that doesn't work in the IL certainly won't in Lustre.
+		LUSTRE_BLACKLIST.addAll(BLACKLIST);
+		
+		// Parameterized lookups aren't supported yet.
+		LUSTRE_BLACKLIST.add("SimpleDrive");
+		LUSTRE_BLACKLIST.add("SimpleDriveRegressionTest");
+		
+		// Array assignments aren't supported yet.
+		LUSTRE_BLACKLIST.add("AssignmentFailureTest");
+		LUSTRE_BLACKLIST.add("ArrayAssignmentWithFailure");
+		LUSTRE_BLACKLIST.add("ArrayInLoop");
+		LUSTRE_BLACKLIST.add("array4");
+		LUSTRE_BLACKLIST.add("array5");
+		
+		// String concatenation is probably never going to be supported.
+		LUSTRE_BLACKLIST.add("concat1");
+		LUSTRE_BLACKLIST.add("concat2");
+		
+		
+		// Same for dynamic command names and lookups.
+		LUSTRE_BLACKLIST.add("command1");
+		LUSTRE_BLACKLIST.add("command2");
+		LUSTRE_BLACKLIST.add("command4");
+		LUSTRE_BLACKLIST.add("lookup2");
+	}
 
 }

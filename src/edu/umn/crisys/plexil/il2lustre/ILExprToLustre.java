@@ -378,7 +378,7 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 			Expr firstValue = getValueComponent(first);
 			Expr firstKnown = getKnownComponent(first);
 			Expr secondValue = getValueComponent(second);
-			Expr secondKnown = getValueComponent(secondValue);
+			Expr secondKnown = getValueComponent(second);
 			
 			return tuple(new NodeCallExpr(fn, firstValue, secondValue), 
 					and(firstKnown, secondKnown));
