@@ -60,6 +60,10 @@ public class ILSimulator extends JavaPlan {
 	private Map<ILExpr, SimplePArray<PValue>> arrayVars = new HashMap<>();
 	private Map<NodeStateMachine, SimpleCurrentNext<Integer>> states = new HashMap<>();
 	
+	/**
+	 * This visitor goes through an expression replacing variables and inputs
+	 * with their current values. 
+	 */
 	private ILExprModifier<Void> myResolver = new ILExprModifier<Void>() {
 
 		@Override
@@ -202,13 +206,21 @@ public class ILSimulator extends JavaPlan {
 	private void setNext(ILExpr lhs, ILExpr rhs, boolean commitImmediately) {
 		// Find this variable and make the assignment
 		if (lhs instanceof SimpleVar) {
-			simpleVars.get(lhs).setNext(eval(rhs));
+			SimpleVar varInfo = (SimpleVar) lhs;
+			PValue rightValue = eval(rhs);
+			varInfo.getType().strictTypeCheck(rightValue);
+			
+			simpleVars.get(lhs).setNext(rightValue);
 			if (commitImmediately) {
 				simpleVars.get(lhs).commit();
 			} else {
 				commitAfterMicroStep(simpleVars.get(lhs));
 			}
 		} else if (lhs instanceof ArrayVar) {
+			ArrayVar varInfo = (ArrayVar) lhs;
+			PValue rightValue = eval(rhs);
+			varInfo.getType().strictTypeCheck(rightValue);
+			
 			arrayVars.get(lhs).arrayAssign(eval(rhs));
 			if (commitImmediately) {
 				arrayVars.get(lhs).commit();
@@ -224,10 +236,14 @@ public class ILSimulator extends JavaPlan {
 					&& arrayIndex.getOperator() != ILOperator.PSTRING_INDEX) {
 				throw new RuntimeException("Assigning to "+arrayIndex+" not supported");
 			}
+			PInteger index = asInt(eval(arrayIndex.getBinarySecond()));
+			PValue value = eval(rhs);
+			
+			// Ensure that this value fits in arrays of this type.
+			arrayIndex.getType().strictTypeCheck(value);
+			
 			arrayVars.get(arrayIndex.getBinaryFirst())
-				.indexAssign(
-					asInt(eval(arrayIndex.getBinarySecond())), 
-					eval(rhs));
+				.indexAssign(index, value);
 			if (commitImmediately) {
 				arrayVars.get(arrayIndex.getBinaryFirst())
 					.commit();
@@ -328,9 +344,8 @@ public class ILSimulator extends JavaPlan {
 
 					@Override
 					public void acknowledgeUpdate() {
-						simpleVars.get(update.getHandle()).setNext(BooleanValue.get(true));
 						// Commit this immediately since we're between steps
-						simpleVars.get(update.getHandle()).commit();
+						setNext(update.getHandle(), BooleanValue.get(true), true);
 					}
 
 					@Override

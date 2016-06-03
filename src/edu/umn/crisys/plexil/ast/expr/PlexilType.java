@@ -43,16 +43,22 @@ public enum PlexilType {
         }
     }
     
+    public boolean isLegalInIL() {
+    	return this != NODEREF && this.isSpecificType();
+    }
+    
+    public ILType toILTypeIfPossible() {
+    	if (isLegalInIL()) return toILType(); else return ILType.UNKNOWN;
+    }
+    
     public ILType toILType() {
     	switch(this) {
-		case ARRAY: return ILType.ARRAY;
 		case BOOLEAN: return ILType.BOOLEAN;
 		case BOOLEAN_ARRAY: return ILType.BOOLEAN_ARRAY;
 		case COMMAND_HANDLE: return ILType.COMMAND_HANDLE;
 		case FAILURE: return ILType.FAILURE;
 		case INTEGER: return ILType.INTEGER;
 		case INTEGER_ARRAY: return ILType.INTEGER_ARRAY;
-		case NODEREF: return ILType.NODEREF;
 		case OUTCOME: return ILType.OUTCOME;
 		case REAL: return ILType.REAL;
 		case REAL_ARRAY: return ILType.REAL_ARRAY;
@@ -61,7 +67,7 @@ public enum PlexilType {
 		case STRING_ARRAY: return ILType.STRING_ARRAY;
 		case UNKNOWN: return ILType.UNKNOWN;
 		default:
-			throw new RuntimeException("Missing case: "+this);
+			throw new RuntimeException("Not allowed in IL: "+this);
     	}
     }
     

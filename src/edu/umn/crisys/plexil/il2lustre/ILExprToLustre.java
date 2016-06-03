@@ -216,10 +216,6 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 			// note: this operator returns a *native* bool
 			switch (op.getUnaryArg().getType()) {
 			case BOOLEAN:
-				return new BinaryExpr(
-						op.getArguments().get(0).accept(this, ILType.BOOLEAN), 
-						BinaryOp.NOTEQUAL, 
-						LustreNamingConventions.P_UNKNOWN);
 			case STRING:
 			case OUTCOME:
 			case FAILURE:
@@ -230,14 +226,15 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 						BinaryOp.NOTEQUAL,
 						op.getUnaryArg().getType().getUnknown()
 							.accept(this, op.getUnaryArg().getType()));
-			case ARRAY:
+			case INTEGER: 
+				return getKnownComponent(op.getUnaryArg().accept(this, ILType.INTEGER));
+			case REAL:
+				return getKnownComponent(op.getUnaryArg().accept(this, ILType.REAL));
 			case BOOLEAN_ARRAY:
 			case INTEGER_ARRAY:
 			case REAL_ARRAY:
 			case STRING_ARRAY:
 			case STATE:
-			case INTEGER: //TODO: these shouldn't be just "true"
-			case REAL:
 				// All of these are always known
 				return LustreUtil.TRUE;
 			default:

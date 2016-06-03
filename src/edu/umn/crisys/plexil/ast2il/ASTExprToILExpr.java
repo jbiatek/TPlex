@@ -81,7 +81,7 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
             throw new RuntimeException("Node references should be resolved by "
                     + "the operation that needs them, they can't be used directly");
         }
-        return context.resolveVariable(expr.getName(), expr.getPlexilType().toILType());
+        return context.resolveVariable(expr.getName(), expr.getPlexilType().toILTypeIfPossible());
     }
 
     @Override

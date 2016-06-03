@@ -212,7 +212,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("array3");
+		doSingleTest("array4");
 	}
 	
 	@Test

@@ -281,8 +281,9 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 	@Override
 	public Void visitAssignment(AssignmentBody assign, Node n) {
 		PlexilType t = assign.getLeftHandSide().getPlexilType();
-		// It's probably not set, though. 
-		if (t == PlexilType.UNKNOWN) {
+		// Odds are, the left hand side is an "UnresolvedVariable", so let's
+		// dig deeper. 
+		if (! t.isSpecificType()) {
 			t = resolveVariableType(assign.getLeftHandSide(), n);
 		}
 		

@@ -60,7 +60,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    PlexilType typeGuess = lhsUntranslated.getPlexilType().getMoreSpecific(
 		    		assignment.getRightHandSide().getPlexilType());
 		    ILExpr lhsExpr = nodeToIL.resolveVariableForWriting(lhsUntranslated,
-		    		typeGuess.toILType());
+		    		typeGuess.toILTypeIfPossible());
 		    ILExpr rhs = nodeToIL.toIL(assignment.getRightHandSide(), typeGuess);
 		    AssignAction assignAction = new AssignAction(lhsExpr, rhs, nodeToIL.getPriority());
 		    // Add the previous value now that we have the IL left hand side
@@ -106,7 +106,7 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    
 		    Optional<ILExpr> returnTo = cmd.getVarToAssign().map(
 		    		lhs -> nodeToIL.resolveVariableForWriting(lhs, 
-		    				lhs.getPlexilType().toILType()));
+		    				lhs.getPlexilType().toILTypeIfPossible()));
 		    List<ILExpr> args = nodeToIL.toIL(cmd.getCommandArguments(), PlexilType.UNKNOWN);
 		    
 		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);

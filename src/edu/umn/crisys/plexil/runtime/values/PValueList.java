@@ -76,7 +76,6 @@ public class PValueList<T extends PValue> extends ILExprBase implements PValue, 
 	public PlexilType getPlexilType() {
 		// Get the AST type from the IL type.
 		switch(getType()) {
-		case ARRAY: return PlexilType.ARRAY;
 		case BOOLEAN_ARRAY: return PlexilType.BOOLEAN_ARRAY;
 		case INTEGER_ARRAY: return PlexilType.INTEGER_ARRAY;
 		case REAL_ARRAY: return PlexilType.REAL_ARRAY;

@@ -29,7 +29,6 @@ public enum ILType {
     STRING			(Optional.of(UnknownValue.get())),
     //NUMERIC			(Optional.of(UnknownValue.get())),
     UNKNOWN			(Optional.of(UnknownValue.get())),
-    ARRAY           (Optional.empty()),
     BOOLEAN_ARRAY	(Optional.empty()),
     INTEGER_ARRAY   (Optional.empty()),
     REAL_ARRAY      (Optional.empty()),
@@ -37,8 +36,7 @@ public enum ILType {
     STATE			(Optional.empty()),
     OUTCOME			(Optional.of(NodeOutcome.UNKNOWN)),
     FAILURE			(Optional.of(NodeFailureType.UNKNOWN)),
-    COMMAND_HANDLE	(Optional.of(CommandHandleState.UNKNOWN)),
-    NODEREF         (Optional.empty());
+    COMMAND_HANDLE	(Optional.of(CommandHandleState.UNKNOWN));
     // TODO: TIME ??????
 
     private final Optional<PValue> unknown;
@@ -70,7 +68,6 @@ public enum ILType {
         case OUTCOME: return NodeOutcome.class;
         case FAILURE: return NodeFailureType.class;
         case COMMAND_HANDLE: return CommandHandleState.class;
-        case ARRAY:
         case BOOLEAN_ARRAY:
         case INTEGER_ARRAY: 
         case REAL_ARRAY: 
@@ -101,18 +98,37 @@ public enum ILType {
             }
             throw new RuntimeException("Type error: Trying to use "+other+" as a "+this);
         }
-        else if (this == ARRAY) {
-            if (other.isArrayType()) return;
-        }
-        
         // They better just be the same at this point.
         if (this != other) {
             throw new RuntimeException("Type error: Trying to use "+other+" as a "+this);
         }        
     }
     
+    /**
+     * Ensure that the given type is exactly compatible with this one. Use this
+     * to ensure that all types involved are IL compatible: they must both be
+     * 
+     * 
+     * @param other
+     */
+    public void strictTypeCheck(ILType other) {
+    	if (this == ILType.UNKNOWN) {
+    		throw new RuntimeException("Type faileure: The left hand type was UNKNOWN");
+    	}
+    	if (other == ILType.UNKNOWN) {
+    		throw new RuntimeException("Type failure: The right hand type was UNKNOWN");
+    	}
+    	if (this != other) {
+    		throw new RuntimeException("Type failure: "+this+" does not match "+other);
+    	}
+    }
+    
+    public void strictTypeCheck(ILExpr expression) {
+    	strictTypeCheck(expression.getType());
+    }
+    
     public boolean isSpecificType() {
-    	return /*this != NUMERIC && */this != UNKNOWN &&  this != ARRAY;
+    	return this != UNKNOWN;
     }
     
     public ILType getMoreSpecific(ILType other) {
@@ -204,8 +220,6 @@ public enum ILType {
             return REAL;
         case STRING_ARRAY:
             return STRING;
-        case ARRAY:
-            return UNKNOWN;
         default:
         	throw new RuntimeException(this+" is not an array and has no elements");
         }

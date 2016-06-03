@@ -477,7 +477,6 @@ public class PlanToLustre {
 		case INTEGER_ARRAY:
 		case REAL_ARRAY:
 		case STRING_ARRAY:
-		case ARRAY:
 			throw new RuntimeException("Array types require a length");
 		case UNKNOWN:
 		default:
