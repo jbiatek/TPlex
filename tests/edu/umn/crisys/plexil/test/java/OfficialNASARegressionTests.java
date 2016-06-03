@@ -260,6 +260,11 @@ public class OfficialNASARegressionTests {
 		LUSTRE_BLACKLIST.add("array4");
 		LUSTRE_BLACKLIST.add("array5");
 		
+		// Returning values from commands isn't supported yet.
+		LUSTRE_BLACKLIST.add("command3");
+		LUSTRE_BLACKLIST.add("array1");
+		LUSTRE_BLACKLIST.add("array3");
+		
 		// String concatenation is probably never going to be supported.
 		LUSTRE_BLACKLIST.add("concat1");
 		LUSTRE_BLACKLIST.add("concat2");

@@ -20,7 +20,7 @@ public class CompileRegressionTest {
 	public static void main(String[] args) throws Exception {
 		// Compile tests:
 		/*/
-		buildTestLustre(getSuiteByName("boolean1"),
+		buildTestLustre(getSuiteByName("command3"),
 				RegressionTest.RESOURCES,
 				RegressionTest.LUSTRE_FILES);
 		//*/

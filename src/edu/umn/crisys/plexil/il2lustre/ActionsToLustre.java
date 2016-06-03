@@ -212,7 +212,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 				cmd.getNameAsConstantString());
 		
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
-			System.err.println("WARNING: Variable assignments from commands not supported yet!");
+			throw new RuntimeException("Variable assignments from commands not supported yet!");
 		}
 		
 		return null;
