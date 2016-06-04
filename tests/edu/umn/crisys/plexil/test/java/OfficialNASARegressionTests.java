@@ -268,6 +268,8 @@ public class OfficialNASARegressionTests {
 		
 		// Update handles are not turned into inputs yet.
 		LUSTRE_BLACKLIST.add("UpdateLookupTest");
+		LUSTRE_BLACKLIST.add("UpdateTest");
+		LUSTRE_BLACKLIST.add("array8");
 		
 		// String concatenation is probably never going to be supported.
 		LUSTRE_BLACKLIST.add("concat1");
