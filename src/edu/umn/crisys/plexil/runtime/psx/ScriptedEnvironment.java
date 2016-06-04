@@ -29,7 +29,8 @@ import edu.umn.crisys.util.Pair;
 public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Object, Void> {
 	
 	public static boolean DEBUG = false;
-	public static boolean HANDLE_PLEXIL_PRINT_COMMANDS = false;
+	private boolean handlePlexilPrintCommands = false;
+	private boolean throwExceptionIfDataIsMissing = false;
 
 	private Map<FunctionCall, PValue> lookup = new HashMap<FunctionCall, PValue>();
 	private List<Pair<CommandHandler,FunctionCall>> commandQueue = 
@@ -37,6 +38,14 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	private List<Pair<CommandHandler,FunctionCall>> unhandledCommands =
 			new ArrayList<Pair<CommandHandler,FunctionCall>>();
     private List<UpdateHandler> updaters = new ArrayList<UpdateHandler>();
+    
+    public void enableAutoResponseToPlexilPrintCommands() {
+    	handlePlexilPrintCommands = true;
+    }
+    
+    public void enableExceptionsForMissingLookupData() {
+    	throwExceptionIfDataIsMissing = true;
+    }
     
     public void applyEvent(Event e) {
     	e.accept(this, null);
@@ -131,10 +140,16 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 		    return RealValue.get(0.0);
 		} 
 		
-		System.err.println("Warning: Script has no response for "+key+
-		", returning UNKNOWN");
+		if (throwExceptionIfDataIsMissing) {
+			throw new RuntimeException("Script has no response for "+key+
+					", current lookup environment was "
+					+lookup);
+		} else {
+			System.err.println("Warning: Script has no response for "+key+
+					", returning UNKNOWN");
+			return UnknownValue.get();
+		}
 		
-		return UnknownValue.get();
 	}
 
 	@Override
@@ -142,7 +157,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 			PValue... args) {
 		Pair<CommandHandler,FunctionCall> e = new Pair<CommandHandler, FunctionCall>(caller, 
 				new FunctionCall(name.getString(), args));
-        if (HANDLE_PLEXIL_PRINT_COMMANDS &&
+        if (handlePlexilPrintCommands &&
         		(e.second.getName().equals("print")
                 || e.second.getName().equals("pprint"))) {
         	// Handle utility commands right away

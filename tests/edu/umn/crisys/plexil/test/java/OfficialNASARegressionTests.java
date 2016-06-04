@@ -252,6 +252,7 @@ public class OfficialNASARegressionTests {
 		// Parameterized lookups aren't supported yet.
 		LUSTRE_BLACKLIST.add("SimpleDrive");
 		LUSTRE_BLACKLIST.add("SimpleDriveRegressionTest");
+		LUSTRE_BLACKLIST.add("conjuncts");
 		
 		// Array assignments aren't supported yet.
 		LUSTRE_BLACKLIST.add("AssignmentFailureTest");
@@ -264,6 +265,9 @@ public class OfficialNASARegressionTests {
 		LUSTRE_BLACKLIST.add("command3");
 		LUSTRE_BLACKLIST.add("array1");
 		LUSTRE_BLACKLIST.add("array3");
+		
+		// Update handles are not turned into inputs yet.
+		LUSTRE_BLACKLIST.add("UpdateLookupTest");
 		
 		// String concatenation is probably never going to be supported.
 		LUSTRE_BLACKLIST.add("concat1");

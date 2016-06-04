@@ -128,14 +128,9 @@ public class JKindResultUtils {
 	
 	public static List<LustreTrace> simulateCSV(File lustreFile, String mainNode, 
 			File inputCsv) throws Exception{
-
 		Program program = parseProgram(lustreFile);
-		
-		
-		
 		List<LustreTrace> inputs = testsuite.ReadTestSuite
 				.read(inputCsv.getPath(), program);
-		
 		return simulate(program, inputs);
 	}
 	
@@ -146,29 +141,6 @@ public class JKindResultUtils {
 	public static List<LustreTrace> simulate(Program program, List<LustreTrace> inputs) {
 		// Check traces for incompleteness first
 		Map<String, Type> typeTable = ResolvedTypeTable.get(program);
-		
-		for (LustreTrace input : inputs) {
-			for (VarDecl varDecl : program.getMainNode().inputs) {
-				String name = varDecl.id;
-				Type type = typeTable.get(name);
-				if (input.getVariable(name) == null) {
-					System.err.println("Warning: Variable "+varDecl+" is null, filling with defaults");
-					Signal<Value> newVar = new Signal<Value>(varDecl.id);
-					for (int i=0; i < input.getLength(); i++) {
-						newVar.putValue(i, getDefaultValueFor(type).get());
-					}
-					input.addVariable(newVar);
-				} else {
-					Signal<Value> var = input.getVariable(name);
-					for (int i = 0; i < input.getLength(); i++) {
-						if (var.getValue(i) == null) {
-							var.putValue(i, getDefaultValueFor(type).get());
-						}
-					}
-				}
-			}
-		}
-		
 		
 		LustreSimulator lustreSim = new LustreSimulator(program);
 		List<String> varsToGet = new ArrayList<>();
@@ -452,11 +424,11 @@ public class JKindResultUtils {
 	}
 	
 	public static Map<ILExpr, List<PValue>> createILMapFromLustre(
-			LustreTrace rawTrace, Plan ilPlan, ReverseTranslationMap mapper) {
+			LustreTrace fullTrace, Plan ilPlan, ReverseTranslationMap mapper) {
 		// Put the trace in terms of variable names
 		Map<String, Signal<Value>> stringTrace = new HashMap<>();
-		rawTrace.getVariableNames().forEach(
-				name -> stringTrace.put(name, rawTrace.getVariable(name)));
+		fullTrace.getVariableNames().forEach(
+				name -> stringTrace.put(name, fullTrace.getVariable(name)));
 		
 		// Now, for each IL expression we're interested in, find it in Lustre. 
 		final Map<ILExpr, List<PValue>> ilTrace = new HashMap<>();
@@ -466,9 +438,13 @@ public class JKindResultUtils {
 				attachILExprToLustreVar(new GetNodeStateExpr(uid), 
 						stringTrace, ilTrace, mapper)));
 		// Then all variables from the plan
-		ilPlan.getVariables().forEach(var -> 
+		try { 
+			ilPlan.getVariables().forEach(var -> 
 				attachILExprToLustreVar(var, stringTrace, ilTrace, mapper));
-
+		} catch (Exception e) {
+			System.out.println("\n\n\n\n\n"+fullTrace);
+			throw e;
+		}
 		return ilTrace;
 	}
 

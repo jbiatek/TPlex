@@ -64,6 +64,7 @@ public class PlanToLustre {
 	
 	private ProgramBuilder pb;
 	private NodeBuilder nb;
+	private Set<ILVariable> unhandledCommandVars;
 	
 	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
 	private ILExprToLustre ilToLustre = new ILExprToLustre(reverseMap);
@@ -102,6 +103,7 @@ public class PlanToLustre {
 	public Program toLustre(Obligation obilgations) {
 		pb = getProgramWithPlexilTypes();
 		nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
+		unhandledCommandVars = new HashSet<>();
 		properties = new LustrePropertyGenerator(this, nb);
 		
 		uninlineNamedExpressions();
@@ -123,6 +125,20 @@ public class PlanToLustre {
 		ActionsToLustre a2l = new ActionsToLustre(this);
 		a2l.navigate(p);
 		a2l.toLustre(nb);
+		
+		// If any commands didn't actually have command actions (this happens
+		// in "TestEndCondition", for example, because the command transition
+		// gets optimized out), put them in as UNKNOWN. And still add an
+		// input, but of course it'll be ignored.
+		for (ILVariable unused : unhandledCommandVars) {
+			nb.addLocal(new VarDecl(LustreNamingConventions.getVariableId(unused),
+					LustreNamingConventions.PCOMMAND));
+			nb.addEquation(new Equation(
+					id(LustreNamingConventions.getVariableId(unused)), 
+					toLustre(CommandHandleState.UNKNOWN)));
+			nb.addInput(new VarDecl(LustreNamingConventions.getRawCommandHandleId(unused), 
+					LustreNamingConventions.PCOMMAND));
+		}
 		
 		// Add string enum, if any
 		Set<String> allExpectedStrings = getTranslationMap().getAllExpectedStringIds();
@@ -211,6 +227,8 @@ public class PlanToLustre {
 	 * @return the raw, unconstrained input ID. 
 	 */
 	public String addCommandHandleInputFor(ILVariable handle, String cmdName) {
+		// This one is being handled!
+		unhandledCommandVars.remove(handle);
 		// In the Lustre translation, command handles are actually pure inputs,
 		// not variables. 
 		String rawIdName = LustreNamingConventions.getRawCommandHandleId(handle);
@@ -504,8 +522,10 @@ public class PlanToLustre {
 		
 		if (v.getType() == ILType.COMMAND_HANDLE) {
 			// Really, this is an input. We need the command's information 
-			// too, so the Command action is responsible for telling us to
-			// add this variable. 
+			// too, so we have to wait for the action to give us more 
+			// information. In the meantime, we should mark it as something
+			// we haven't dealt with yet.
+			unhandledCommandVars.add(v);
 			return;
 		}
 		if (v.getType().isNumeric() 

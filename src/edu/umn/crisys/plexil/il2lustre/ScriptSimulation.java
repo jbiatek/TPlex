@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jkind.lustre.Expr;
@@ -98,20 +100,41 @@ public class ScriptSimulation {
 	}
 	
 	public static String toCSV(LustreTrace trace) {
+		return toCSV(traceToMap(trace, Optional.empty()));
+	}
+	
+	public static String toMoreReadableCSV(LustreTrace trace) {
+		return toCSV(traceToMap(trace, Optional.of(name -> ! name.contains("~"))));
+	}
+	
+	/**
+	 * Turn a trace into a LinkedHashMap of values. If you want, you can also
+	 * provide a filtering function, which takes the name of a variable and
+	 * returns true if it should be included in the map. (If one isn't provided,
+	 * all variables will be let in.)
+	 * 
+	 * @param trace
+	 * @param filter
+	 * @return
+	 */
+	private static LinkedHashMap<String,List<String>> traceToMap(LustreTrace trace,
+			Optional<Function<String,Boolean>> filter) {
 		LinkedHashMap<String,List<String>> data = new LinkedHashMap<>();
 		for (String name : trace.getVariableNames()) {
-			List<String> values = new ArrayList<>();
-			for (int i = 0; i < trace.getLength(); i++) {
-				String value = "null";
-				if (trace.getVariable(name).getValue(i) != null) {
-					value = trace.getVariable(name).getValue(i).toString();
+			if (filter.map(f -> f.apply(name)).orElse(true)) {
+				List<String> values = new ArrayList<>();
+				for (int i = 0; i < trace.getLength(); i++) {
+					String value = "null";
+					if (trace.getVariable(name).getValue(i) != null) {
+						value = trace.getVariable(name).getValue(i).toString();
+					}
+					
+					values.add(value);
 				}
-				
-				values.add(value);
+				data.put(name, values);
 			}
-			data.put(name, values);
 		}
-		return toCSV(data);
+		return data;
 	}
 	
 	public static String toCSV(LinkedHashMap<String, List<String>> data) {
@@ -177,7 +200,8 @@ public class ScriptSimulation {
 		
 		// Tell the script to handle built-in PLEXIL commands like print and
 		// pprint:
-		ScriptedEnvironment.HANDLE_PLEXIL_PRINT_COMMANDS = true;
+		script.getEnvironment().enableAutoResponseToPlexilPrintCommands();
+		script.getEnvironment().enableExceptionsForMissingLookupData();
 		
 		sim.addObserver(new JavaPlanObserver() {
 

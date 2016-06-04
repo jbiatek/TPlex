@@ -33,6 +33,7 @@ import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
+import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
@@ -207,19 +208,27 @@ public class RegressionTest {
 		ScriptedEnvironment.DEBUG = false;
 	}
 
-	public void doSingleTest(String planName) throws Exception {
-		runTestSuiteIL(
-				getAllValidTestSuites().stream()
-					.filter(suite -> suite.planFile.equals(planName))
-					.findAny()
-					.orElseThrow(() -> new RuntimeException(
-							planName+" not found in list of tests!")));
+	public void doSingleTest(String planName, String language) throws Exception {
+		TestSuite found = getAllValidTestSuites().stream()
+				.filter(suite -> suite.planFile.equals(planName))
+				.findAny()
+				.orElseThrow(() -> new RuntimeException(
+						planName+" not found in list of tests!"));
+		if (language.equalsIgnoreCase("IL")) { 
+			runTestSuiteIL(found);
+		} else if (language.equalsIgnoreCase("Lustre")) {
+			runTestSuiteLustre(found);
+		} else if (language.equalsIgnoreCase("Java")) {
+			runTestSuiteJava(found);
+		} else {
+			throw new RuntimeException("What language is "+language+"?");
+		}
 		
 	}
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("UpdateLookupTest");
+		doSingleTest("TestEndCondition", "lustre");
 	}
 	
 	@Test
@@ -377,40 +386,40 @@ public class RegressionTest {
 		// And grab the Lustre stuff
 		File lustreFile = new File(LUSTRE_FILES, planName+".lus");
 		File csvFile = new File(LUSTRE_FILES, planName+"__"+scriptName+".csv");
-		LustreTrace trace = getLustreTraceData(lustreFile, planName, csvFile);
+		LustreTrace fullTrace = getFullTrace(lustreFile, planName, csvFile);
 		ReverseTranslationMap mapper = TPlex.getStringMapForLus(lustreFile);
 		
-		complianceTest(ilPlan, script, trace, mapper);
+		complianceTest(ilPlan, script, fullTrace, mapper);
 	}
 	
 	public static void complianceTest(Plan ilPlan, ExternalWorld environment,
-			LustreTrace rawTrace, ReverseTranslationMap mapper) throws Exception{
+			LustreTrace fullTrace, ReverseTranslationMap mapper) throws Exception{
 
 		// Attach an observer to check these values against the IL sim
 
 		ILSimulator sim = new ILSimulator(ilPlan, environment);
-		sim.addObserver(createComplianceChecker(rawTrace, ilPlan, mapper));
+		sim.addObserver(createComplianceChecker(fullTrace, ilPlan, mapper));
 		// Here we go!
-		//try { 
+		try { 
 		JavaPlan.DEBUG = true;
 		sim.runPlanToCompletion();
-//		} catch (Exception e) {
-//			System.out.println(ScriptSimulation.toCSV(rawTrace));
-//			throw e;
-//		}
+		} catch (Exception e) {
+			System.out.println("\n\n\n\n\n"+ScriptSimulation.toMoreReadableCSV(fullTrace));
+			throw e;
+		}
 		
 	}
 	
 	
 	public static LustreComplianceChecker createComplianceChecker(
-			LustreTrace rawTrace, Plan ilPlan, ReverseTranslationMap mapper) {
+			LustreTrace fullTrace, Plan ilPlan, ReverseTranslationMap mapper) {
 		final Map<ILExpr, List<PValue>> ilTrace = 
-				JKindResultUtils.createILMapFromLustre(rawTrace, ilPlan, mapper);
+				JKindResultUtils.createILMapFromLustre(fullTrace, ilPlan, mapper);
 		// This isn't an IL variable, it's PLEXIL semantics encoded in Lustre. 
 		// If it's wrong, we want to know so that we can debug it, because it'll
 		// mess up other stuff too. 
 		final Signal<Value> macrostepEnded = 
-				rawTrace.getVariable(LustreNamingConventions.MACRO_STEP_ENDED_ID);
+				fullTrace.getVariable(LustreNamingConventions.MACRO_STEP_ENDED_ID);
 		
 		return new LustreComplianceChecker(ilTrace, macrostepEnded, mapper);
 
@@ -420,7 +429,7 @@ public class RegressionTest {
 	
 	
 	
-	public static LustreTrace getLustreTraceData(File lustreFile, String mainNode, 
+	public static LustreTrace getFullTrace(File lustreFile, String mainNode, 
 			File inputCsv) throws Exception{
 		List<LustreTrace> ret = 
 				JKindResultUtils.simulateCSV(lustreFile, mainNode, inputCsv);
@@ -432,14 +441,14 @@ public class RegressionTest {
 	}
 
 	
-	public static void runTest(JavaPlan root, ExternalWorld world,
+	public static void runTest(JavaPlan root, JavaPlexilScript world,
 			TestOracle oracle) {
-		ScriptedEnvironment.HANDLE_PLEXIL_PRINT_COMMANDS = true;
+		world.getEnvironment().enableAutoResponseToPlexilPrintCommands();
 		root.addObserver(oracle);
 		root.runPlanToCompletion();
 	}
 	
-	public static void runTest(JavaPlan root, ExternalWorld world, 
+	public static void runTest(JavaPlan root, JavaPlexilScript world, 
 			List<PlanState> expected) {
         runTest(root, world, new PlanStateChecker(expected));
 
@@ -455,6 +464,12 @@ public class RegressionTest {
 	    for (String script : suite.planScripts) {
 	        runSingleTestJava(suite.planFile, script);
 	    }
+	}
+	
+	public static void runTestSuiteLustre(TestSuite suite) throws Exception {
+		for (String script : suite.planScripts) {
+			runSingleTestLustre(suite.planFile, script, suite.libs);
+		}
 	}
 	
 }
