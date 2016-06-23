@@ -25,11 +25,10 @@ build script in the root directory can build a JAR file for you.
 The `--help` option shows all the possible flags that can be passed
 to TPlex. 
 
-It is best to set a shell alias to TPlex so that it
-can be run in any directory like a normal command, instead of 
-having to specify the path to the JAR file every time. This document
-assumes that `tplex` has been aliased to run TPlex.
-
+The release also includes a small shell script `tplex`. To run TPlex on the
+command line, it is recommended to put `tplex` and `TPlex.jar` on your
+`$PATH`. As long as they are in the same directory, `tplex` will run 
+TPlex without having to specify the path to the JAR file. 
 
 ### Z3
 
@@ -44,6 +43,14 @@ it can be installed with Homebrew very easily:
     brew install z3
 
 There also appear to be releases for Windows, Ubuntu, Debian, and FreeBSD.
+
+As long as Z3 is on your `$PATH`, JKind should be able to find it. 
+Make sure that 
+
+    `which z3`
+
+displays the path to the Z3 binary, and it should work. 
+
 
 ## Translation
 
@@ -95,13 +102,15 @@ that will probably never be supported:
 - Dynamic command and lookup names are not supported.
   - For example, `Lookup(var)`, where `var` is a String variable. 
     It is also possible in PLEXIL to issue a command `var()`, 
-    where `var` is a String. This is not possible in Lustre. 
+    where `var` is a String variable. This is not possible in 
+    Lustre. 
 
 The enumeration of possible strings is extracted from the PLEXIL
 plan. Any string literals in the plan will also be present in
-the PLEXIL plan. 
+the Lustre translation of the plan, and will be possible string
+inputs when generating test cases.
 
-If the plan does not contain any because the environment is 
+If the plan does not contain any literals because the environment is 
 the only one expected to generate or return strings, the 
 `--lustre-generic-strings <num>` option may be of interest. It will add
 generic strings like "1", "2", "3"... to the list of possible 

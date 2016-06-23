@@ -23,7 +23,7 @@
 	<target name="build_for_distribution" depends="create_run_jar" > 
 		<zip destfile="release/TPlex.zip"> 
 			<fileset file="TPlex.jar"/>
-			<fileset file="jpf.properties"/>
+			<fileset file="tplex"/>
 		</zip>
 	</target>
 </project>
