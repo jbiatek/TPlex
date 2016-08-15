@@ -148,7 +148,7 @@ public class JKindResultUtils {
 		// therefore different from the Program
 		varsToGet.addAll(lustreSim.getInputVars());
 		varsToGet.addAll(lustreSim.getLocalVars());
-		List<LustreTrace> rawResults = lustreSim.simulate(inputs, Simulation.COMPLETE, varsToGet);
+		List<LustreTrace> rawResults = lustreSim.simulate(inputs, Simulation.PARTIAL, varsToGet);
 		
 		// Enums and such are all integers in this trace. Let's fix that.
 		
