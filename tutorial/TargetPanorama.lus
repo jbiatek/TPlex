@@ -1,0 +1,473 @@
+type pboolean = enum {p_unknown, p_true, p_false};
+type pstate = enum {inactive, waiting, executing, finishing, iteration_ended, failing, finished};
+type command_handle = enum {commandhandlestate_unknown, command_accepted, command_success, command_rcvd_by_system, command_sent_to_system, command_failed, command_denied, command_aborted, command_abort_failed};
+type node_outcome = enum {nodeoutcome_unknown, success, failure, skipped, interrupted};
+type node_failure = enum {nodefailuretype_unknown, pre_condition_failed, post_condition_failed, invariant_condition_failed, parent_failed, exited, parent_exited};
+type PlexilString = enum {unknown_str__, empty_str__};
+
+node p_and(
+  first : pboolean;
+  second : pboolean
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = p_false) or (second = p_false)) then p_false else (if ((first = p_unknown) or (second = p_unknown)) then p_unknown else p_true));
+
+tel;
+
+node p_or(
+  first : pboolean;
+  second : pboolean
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = p_true) or (second = p_true)) then p_true else (if ((first = p_unknown) or (second = p_unknown)) then p_unknown else p_false));
+
+tel;
+
+node p_not(
+  value : pboolean
+) returns (
+  result : pboolean
+);
+let
+  result = (if (value = p_true) then p_false else (if (value = p_false) then p_true else p_unknown));
+
+tel;
+
+node to_pboolean(
+  value : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if value then p_true else p_false);
+
+tel;
+
+node pint_lt(
+  av : int;
+  ak : bool;
+  bv : int;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av < bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node preal_lt(
+  av : real;
+  ak : bool;
+  bv : real;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av < bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node pint_le(
+  av : int;
+  ak : bool;
+  bv : int;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av <= bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node preal_le(
+  av : real;
+  ak : bool;
+  bv : real;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av <= bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node pint_eq(
+  av : int;
+  ak : bool;
+  bv : int;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av = bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node preal_eq(
+  av : real;
+  ak : bool;
+  bv : real;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av = bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node pint_gt(
+  av : int;
+  ak : bool;
+  bv : int;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av > bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node preal_gt(
+  av : real;
+  ak : bool;
+  bv : real;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av > bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node pint_ge(
+  av : int;
+  ak : bool;
+  bv : int;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av >= bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node preal_ge(
+  av : real;
+  ak : bool;
+  bv : real;
+  bk : bool
+) returns (
+  result : pboolean
+);
+let
+  result = (if (ak and bk) then (if (av >= bv) then p_true else p_false) else p_unknown);
+
+tel;
+
+node p_eq_pboolean(
+  first : pboolean;
+  second : pboolean
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = p_unknown) or (second = p_unknown)) then p_unknown else (if (first = second) then p_true else p_false));
+
+tel;
+
+node p_eq_node_outcome(
+  first : node_outcome;
+  second : node_outcome
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = nodeoutcome_unknown) or (second = nodeoutcome_unknown)) then p_unknown else (if (first = second) then p_true else p_false));
+
+tel;
+
+node p_eq_node_failure(
+  first : node_failure;
+  second : node_failure
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = nodefailuretype_unknown) or (second = nodefailuretype_unknown)) then p_unknown else (if (first = second) then p_true else p_false));
+
+tel;
+
+node p_eq_command_handle(
+  first : command_handle;
+  second : command_handle
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = commandhandlestate_unknown) or (second = commandhandlestate_unknown)) then p_unknown else (if (first = second) then p_true else p_false));
+
+tel;
+
+node p_eq_PlexilString(
+  first : PlexilString;
+  second : PlexilString
+) returns (
+  result : pboolean
+);
+let
+  result = (if ((first = unknown_str__) or (second = unknown_str__)) then p_unknown else (if (first = second) then p_true else p_false));
+
+tel;
+
+node TargetPanorama(
+  raw__Lookup__time__value : real;
+  raw__Lookup__time__isknown : bool;
+  raw__Lookup__temperature__value : real;
+  raw__Lookup__temperature__isknown : bool;
+  raw__Lookup__target_in_view : pboolean;
+  raw__Drive____command_handle : command_handle;
+  raw__StopForTimeout___Stop____command_handle : command_handle;
+  raw__StopForTarget___Stop____command_handle : command_handle;
+  raw__TakeNavcam____command_handle : command_handle;
+  raw__TakePancam____command_handle : command_handle
+) returns (
+  outcome : node_outcome;
+  state : pstate
+);
+var
+  DriveToTarget__end_condition : pboolean;
+  Drive__ancestor_ends_disjoined : pboolean;
+  StopForTimeout__ancestor_ends_disjoined : pboolean;
+  StopForTimeout__start_condition : pboolean;
+  StopForTimeout__end_condition : pboolean;
+  StopForTimeout___Stop__ancestor_ends_disjoined : pboolean;
+  SetTimeoutFlag__ancestor_ends_disjoined : pboolean;
+  StopForTarget__ancestor_ends_disjoined : pboolean;
+  StopForTarget__skip_condition : pboolean;
+  StopForTarget__start_condition : pboolean;
+  StopForTarget__end_condition : pboolean;
+  StopForTarget___Stop__ancestor_ends_disjoined : pboolean;
+  SetDriveFlag__ancestor_ends_disjoined : pboolean;
+  TakeNavcam__ancestor_ends_disjoined : pboolean;
+  TakeNavcam__skip_condition : pboolean;
+  TakeNavcam__start_condition : pboolean;
+  TakePancam__ancestor_ends_disjoined : pboolean;
+  TakePancam__skip_condition : pboolean;
+  TakePancam__start_condition : pboolean;
+  Lookup__time__value : real;
+  Lookup__time__isknown : bool;
+  Lookup__temperature__value : real;
+  Lookup__temperature__isknown : bool;
+  Lookup__target_in_view : pboolean;
+  DriveToTarget : int;
+  DriveToTarget__state : pstate;
+  Drive : int;
+  Drive__state : pstate;
+  StopForTimeout : int;
+  StopForTimeout__state : pstate;
+  StopForTimeout___Stop : int;
+  StopForTimeout___Stop__state : pstate;
+  SetTimeoutFlag : int;
+  SetTimeoutFlag__state : pstate;
+  StopForTarget : int;
+  StopForTarget__state : pstate;
+  StopForTarget___Stop : int;
+  StopForTarget___Stop__state : pstate;
+  SetDriveFlag : int;
+  SetDriveFlag__state : pstate;
+  TakeNavcam : int;
+  TakeNavcam__state : pstate;
+  TakePancam : int;
+  TakePancam__state : pstate;
+  StopForTimeout___Stop____outcome : node_outcome;
+  TakeNavcam____failure : node_failure;
+  DriveToTarget__timeout : pboolean;
+  StopForTarget___Stop____outcome : node_outcome;
+  StopForTarget____failure : node_failure;
+  TakePancam____outcome : node_outcome;
+  DriveToTarget____outcome : node_outcome;
+  Drive____failure : node_failure;
+  StopForTimeout___Stop____failure : node_failure;
+  Drive____outcome : node_outcome;
+  SetTimeoutFlag____failure : node_failure;
+  SetDriveFlag____failure : node_failure;
+  DriveToTarget__drive_done : pboolean;
+  TakeNavcam____outcome : node_outcome;
+  StopForTarget____outcome : node_outcome;
+  SetTimeoutFlag____outcome : node_outcome;
+  TakePancam____failure : node_failure;
+  SetDriveFlag____outcome : node_outcome;
+  StopForTimeout____outcome : node_outcome;
+  StopForTimeout____failure : node_failure;
+  DriveToTarget____failure : node_failure;
+  StopForTarget___Stop____failure : node_failure;
+  Drive____command_handle : command_handle;
+  StopForTimeout___Stop____command_handle : command_handle;
+  StopForTarget___Stop____command_handle : command_handle;
+  TakeNavcam____command_handle : command_handle;
+  TakePancam____command_handle : command_handle;
+  macrostep_end : bool;
+let
+  --%MAIN;
+  DriveToTarget__end_condition = p_and(p_and(p_and(p_and(to_pboolean((finished = Drive__state)), to_pboolean((finished = StopForTimeout__state))), to_pboolean((finished = StopForTarget__state))), to_pboolean((finished = TakeNavcam__state))), to_pboolean((finished = TakePancam__state)));
+
+  Drive__ancestor_ends_disjoined = DriveToTarget__end_condition;
+
+  StopForTimeout__ancestor_ends_disjoined = DriveToTarget__end_condition;
+
+  StopForTimeout__start_condition = preal_ge(Lookup__time__value, Lookup__time__isknown, 10.0, true);
+
+  StopForTimeout__end_condition = p_and(to_pboolean((finished = StopForTimeout___Stop__state)), to_pboolean((finished = SetTimeoutFlag__state)));
+
+  StopForTimeout___Stop__ancestor_ends_disjoined = p_or(StopForTimeout__end_condition, StopForTimeout__ancestor_ends_disjoined);
+
+  SetTimeoutFlag__ancestor_ends_disjoined = p_or(StopForTimeout__end_condition, StopForTimeout__ancestor_ends_disjoined);
+
+  StopForTarget__ancestor_ends_disjoined = DriveToTarget__end_condition;
+
+  StopForTarget__skip_condition = DriveToTarget__timeout;
+
+  StopForTarget__start_condition = Lookup__target_in_view;
+
+  StopForTarget__end_condition = p_and(to_pboolean((finished = StopForTarget___Stop__state)), to_pboolean((finished = SetDriveFlag__state)));
+
+  StopForTarget___Stop__ancestor_ends_disjoined = p_or(StopForTarget__end_condition, StopForTarget__ancestor_ends_disjoined);
+
+  SetDriveFlag__ancestor_ends_disjoined = p_or(StopForTarget__end_condition, StopForTarget__ancestor_ends_disjoined);
+
+  TakeNavcam__ancestor_ends_disjoined = DriveToTarget__end_condition;
+
+  TakeNavcam__skip_condition = DriveToTarget__drive_done;
+
+  TakeNavcam__start_condition = DriveToTarget__timeout;
+
+  TakePancam__ancestor_ends_disjoined = DriveToTarget__end_condition;
+
+  TakePancam__skip_condition = DriveToTarget__timeout;
+
+  TakePancam__start_condition = DriveToTarget__drive_done;
+
+  Lookup__time__value = (raw__Lookup__time__value -> (if macrostep_end then raw__Lookup__time__value else (pre Lookup__time__value)));
+
+  Lookup__time__isknown = (raw__Lookup__time__isknown -> (if macrostep_end then raw__Lookup__time__isknown else (pre Lookup__time__isknown)));
+
+  Lookup__temperature__value = (raw__Lookup__temperature__value -> (if macrostep_end then raw__Lookup__temperature__value else (pre Lookup__temperature__value)));
+
+  Lookup__temperature__isknown = (raw__Lookup__temperature__isknown -> (if macrostep_end then raw__Lookup__temperature__isknown else (pre Lookup__temperature__isknown)));
+
+  Lookup__target_in_view = (raw__Lookup__target_in_view -> (if macrostep_end then raw__Lookup__target_in_view else (pre Lookup__target_in_view)));
+
+  DriveToTarget = (0 -> (if ((pre DriveToTarget) = 0) then 1 else (if ((pre DriveToTarget) = 1) then 2 else (if (((pre DriveToTarget) = 2) and (pre (DriveToTarget__end_condition = p_true))) then 3 else (if (((pre DriveToTarget) = 3) and (pre ((((((Drive__state = waiting) or (Drive__state = finished)) and ((StopForTimeout__state = waiting) or (StopForTimeout__state = finished))) and ((StopForTarget__state = waiting) or (StopForTarget__state = finished))) and ((TakeNavcam__state = waiting) or (TakeNavcam__state = finished))) and ((TakePancam__state = waiting) or (TakePancam__state = finished))))) then 4 else (if ((pre DriveToTarget) = 4) then 5 else (pre DriveToTarget)))))));
+
+  DriveToTarget__state = (if (DriveToTarget = 5) then finished else (if (DriveToTarget = 4) then iteration_ended else (if (DriveToTarget = 3) then finishing else (if (DriveToTarget = 2) then executing else (if (DriveToTarget = 1) then waiting else (if (DriveToTarget = 0) then inactive else inactive))))));
+
+  Drive = (0 -> (if (((pre Drive) = 0) and (pre (finished = DriveToTarget__state))) then 5 else (if (((pre Drive) = 0) and (pre (executing = DriveToTarget__state))) then 1 else (if (((pre Drive) = 1) and (pre (Drive__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre Drive) = 1) then 2 else (if ((pre Drive) = 2) then 3 else (if (((pre Drive) = 3) and (pre (Drive____command_handle <> commandhandlestate_unknown))) then 4 else (if (((pre Drive) = 4) and (pre (Drive__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre Drive) = 4) then 5 else (if (((pre Drive) = 5) and (pre (waiting = DriveToTarget__state))) then 0 else (pre Drive)))))))))));
+
+  Drive__state = (if (Drive = 5) then finished else (if (Drive = 4) then iteration_ended else (if (Drive = 3) then finishing else (if (Drive = 2) then executing else (if (Drive = 1) then waiting else (if (Drive = 0) then inactive else inactive))))));
+
+  StopForTimeout = (0 -> (if (((pre StopForTimeout) = 0) and (pre (finished = DriveToTarget__state))) then 5 else (if (((pre StopForTimeout) = 0) and (pre (executing = DriveToTarget__state))) then 1 else (if (((pre StopForTimeout) = 1) and (pre (StopForTimeout__ancestor_ends_disjoined = p_true))) then 5 else (if (((pre StopForTimeout) = 1) and (pre (StopForTimeout__start_condition = p_true))) then 2 else (if (((pre StopForTimeout) = 2) and (pre (StopForTimeout__end_condition = p_true))) then 3 else (if (((pre StopForTimeout) = 3) and (pre (((StopForTimeout___Stop__state = waiting) or (StopForTimeout___Stop__state = finished)) and ((SetTimeoutFlag__state = waiting) or (SetTimeoutFlag__state = finished))))) then 4 else (if (((pre StopForTimeout) = 4) and (pre (StopForTimeout__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre StopForTimeout) = 4) then 5 else (if (((pre StopForTimeout) = 5) and (pre (waiting = DriveToTarget__state))) then 0 else (pre StopForTimeout)))))))))));
+
+  StopForTimeout__state = (if (StopForTimeout = 5) then finished else (if (StopForTimeout = 4) then iteration_ended else (if (StopForTimeout = 3) then finishing else (if (StopForTimeout = 2) then executing else (if (StopForTimeout = 1) then waiting else (if (StopForTimeout = 0) then inactive else inactive))))));
+
+  StopForTimeout___Stop = (0 -> (if (((pre StopForTimeout___Stop) = 0) and (pre (finished = StopForTimeout__state))) then 5 else (if (((pre StopForTimeout___Stop) = 0) and (pre (executing = StopForTimeout__state))) then 1 else (if (((pre StopForTimeout___Stop) = 1) and (pre (StopForTimeout___Stop__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre StopForTimeout___Stop) = 1) then 2 else (if ((pre StopForTimeout___Stop) = 2) then 3 else (if (((pre StopForTimeout___Stop) = 3) and (pre (StopForTimeout___Stop____command_handle <> commandhandlestate_unknown))) then 4 else (if (((pre StopForTimeout___Stop) = 4) and (pre (StopForTimeout___Stop__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre StopForTimeout___Stop) = 4) then 5 else (if (((pre StopForTimeout___Stop) = 5) and (pre (waiting = StopForTimeout__state))) then 0 else (pre StopForTimeout___Stop)))))))))));
+
+  StopForTimeout___Stop__state = (if (StopForTimeout___Stop = 5) then finished else (if (StopForTimeout___Stop = 4) then iteration_ended else (if (StopForTimeout___Stop = 3) then finishing else (if (StopForTimeout___Stop = 2) then executing else (if (StopForTimeout___Stop = 1) then waiting else (if (StopForTimeout___Stop = 0) then inactive else inactive))))));
+
+  SetTimeoutFlag = (0 -> (if (((pre SetTimeoutFlag) = 0) and (pre (finished = StopForTimeout__state))) then 4 else (if (((pre SetTimeoutFlag) = 0) and (pre (executing = StopForTimeout__state))) then 1 else (if (((pre SetTimeoutFlag) = 1) and (pre (SetTimeoutFlag__ancestor_ends_disjoined = p_true))) then 4 else (if ((pre SetTimeoutFlag) = 1) then 2 else (if ((pre SetTimeoutFlag) = 2) then 3 else (if (((pre SetTimeoutFlag) = 3) and (pre (SetTimeoutFlag__ancestor_ends_disjoined = p_true))) then 4 else (if ((pre SetTimeoutFlag) = 3) then 4 else (if (((pre SetTimeoutFlag) = 4) and (pre (waiting = StopForTimeout__state))) then 0 else (pre SetTimeoutFlag))))))))));
+
+  SetTimeoutFlag__state = (if (SetTimeoutFlag = 4) then finished else (if (SetTimeoutFlag = 3) then iteration_ended else (if (SetTimeoutFlag = 2) then executing else (if (SetTimeoutFlag = 1) then waiting else (if (SetTimeoutFlag = 0) then inactive else inactive)))));
+
+  StopForTarget = (0 -> (if (((pre StopForTarget) = 0) and (pre (finished = DriveToTarget__state))) then 5 else (if (((pre StopForTarget) = 0) and (pre (executing = DriveToTarget__state))) then 1 else (if (((pre StopForTarget) = 1) and (pre (StopForTarget__ancestor_ends_disjoined = p_true))) then 5 else (if (((pre StopForTarget) = 1) and (pre (StopForTarget__skip_condition = p_true))) then 5 else (if (((pre StopForTarget) = 1) and (pre (StopForTarget__start_condition = p_true))) then 2 else (if (((pre StopForTarget) = 2) and (pre (StopForTarget__end_condition = p_true))) then 3 else (if (((pre StopForTarget) = 3) and (pre (((StopForTarget___Stop__state = waiting) or (StopForTarget___Stop__state = finished)) and ((SetDriveFlag__state = waiting) or (SetDriveFlag__state = finished))))) then 4 else (if (((pre StopForTarget) = 4) and (pre (StopForTarget__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre StopForTarget) = 4) then 5 else (if (((pre StopForTarget) = 5) and (pre (waiting = DriveToTarget__state))) then 0 else (pre StopForTarget))))))))))));
+
+  StopForTarget__state = (if (StopForTarget = 5) then finished else (if (StopForTarget = 4) then iteration_ended else (if (StopForTarget = 3) then finishing else (if (StopForTarget = 2) then executing else (if (StopForTarget = 1) then waiting else (if (StopForTarget = 0) then inactive else inactive))))));
+
+  StopForTarget___Stop = (0 -> (if (((pre StopForTarget___Stop) = 0) and (pre (finished = StopForTarget__state))) then 5 else (if (((pre StopForTarget___Stop) = 0) and (pre (executing = StopForTarget__state))) then 1 else (if (((pre StopForTarget___Stop) = 1) and (pre (StopForTarget___Stop__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre StopForTarget___Stop) = 1) then 2 else (if ((pre StopForTarget___Stop) = 2) then 3 else (if (((pre StopForTarget___Stop) = 3) and (pre (StopForTarget___Stop____command_handle <> commandhandlestate_unknown))) then 4 else (if (((pre StopForTarget___Stop) = 4) and (pre (StopForTarget___Stop__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre StopForTarget___Stop) = 4) then 5 else (if (((pre StopForTarget___Stop) = 5) and (pre (waiting = StopForTarget__state))) then 0 else (pre StopForTarget___Stop)))))))))));
+
+  StopForTarget___Stop__state = (if (StopForTarget___Stop = 5) then finished else (if (StopForTarget___Stop = 4) then iteration_ended else (if (StopForTarget___Stop = 3) then finishing else (if (StopForTarget___Stop = 2) then executing else (if (StopForTarget___Stop = 1) then waiting else (if (StopForTarget___Stop = 0) then inactive else inactive))))));
+
+  SetDriveFlag = (0 -> (if (((pre SetDriveFlag) = 0) and (pre (finished = StopForTarget__state))) then 4 else (if (((pre SetDriveFlag) = 0) and (pre (executing = StopForTarget__state))) then 1 else (if (((pre SetDriveFlag) = 1) and (pre (SetDriveFlag__ancestor_ends_disjoined = p_true))) then 4 else (if ((pre SetDriveFlag) = 1) then 2 else (if ((pre SetDriveFlag) = 2) then 3 else (if (((pre SetDriveFlag) = 3) and (pre (SetDriveFlag__ancestor_ends_disjoined = p_true))) then 4 else (if ((pre SetDriveFlag) = 3) then 4 else (if (((pre SetDriveFlag) = 4) and (pre (waiting = StopForTarget__state))) then 0 else (pre SetDriveFlag))))))))));
+
+  SetDriveFlag__state = (if (SetDriveFlag = 4) then finished else (if (SetDriveFlag = 3) then iteration_ended else (if (SetDriveFlag = 2) then executing else (if (SetDriveFlag = 1) then waiting else (if (SetDriveFlag = 0) then inactive else inactive)))));
+
+  TakeNavcam = (0 -> (if (((pre TakeNavcam) = 0) and (pre (finished = DriveToTarget__state))) then 5 else (if (((pre TakeNavcam) = 0) and (pre (executing = DriveToTarget__state))) then 1 else (if (((pre TakeNavcam) = 1) and (pre (TakeNavcam__ancestor_ends_disjoined = p_true))) then 5 else (if (((pre TakeNavcam) = 1) and (pre (TakeNavcam__skip_condition = p_true))) then 5 else (if (((pre TakeNavcam) = 1) and (pre (TakeNavcam__start_condition = p_true))) then 2 else (if ((pre TakeNavcam) = 2) then 3 else (if (((pre TakeNavcam) = 3) and (pre (TakeNavcam____command_handle <> commandhandlestate_unknown))) then 4 else (if (((pre TakeNavcam) = 4) and (pre (TakeNavcam__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre TakeNavcam) = 4) then 5 else (if (((pre TakeNavcam) = 5) and (pre (waiting = DriveToTarget__state))) then 0 else (pre TakeNavcam))))))))))));
+
+  TakeNavcam__state = (if (TakeNavcam = 5) then finished else (if (TakeNavcam = 4) then iteration_ended else (if (TakeNavcam = 3) then finishing else (if (TakeNavcam = 2) then executing else (if (TakeNavcam = 1) then waiting else (if (TakeNavcam = 0) then inactive else inactive))))));
+
+  TakePancam = (0 -> (if (((pre TakePancam) = 0) and (pre (finished = DriveToTarget__state))) then 5 else (if (((pre TakePancam) = 0) and (pre (executing = DriveToTarget__state))) then 1 else (if (((pre TakePancam) = 1) and (pre (TakePancam__ancestor_ends_disjoined = p_true))) then 5 else (if (((pre TakePancam) = 1) and (pre (TakePancam__skip_condition = p_true))) then 5 else (if (((pre TakePancam) = 1) and (pre (TakePancam__start_condition = p_true))) then 2 else (if ((pre TakePancam) = 2) then 3 else (if (((pre TakePancam) = 3) and (pre (TakePancam____command_handle <> commandhandlestate_unknown))) then 4 else (if (((pre TakePancam) = 4) and (pre (TakePancam__ancestor_ends_disjoined = p_true))) then 5 else (if ((pre TakePancam) = 4) then 5 else (if (((pre TakePancam) = 5) and (pre (waiting = DriveToTarget__state))) then 0 else (pre TakePancam))))))))))));
+
+  TakePancam__state = (if (TakePancam = 5) then finished else (if (TakePancam = 4) then iteration_ended else (if (TakePancam = 3) then finishing else (if (TakePancam = 2) then executing else (if (TakePancam = 1) then waiting else (if (TakePancam = 0) then inactive else inactive))))));
+
+  Drive____command_handle = (commandhandlestate_unknown -> (if ((((inactive = Drive__state) or (waiting = Drive__state)) or (skipped = Drive____outcome)) or (pre_condition_failed = Drive____failure)) then commandhandlestate_unknown else (if macrostep_end then raw__Drive____command_handle else (pre Drive____command_handle))));
+
+  StopForTimeout___Stop____command_handle = (commandhandlestate_unknown -> (if ((((inactive = StopForTimeout___Stop__state) or (waiting = StopForTimeout___Stop__state)) or (skipped = StopForTimeout___Stop____outcome)) or (pre_condition_failed = StopForTimeout___Stop____failure)) then commandhandlestate_unknown else (if macrostep_end then raw__StopForTimeout___Stop____command_handle else (pre StopForTimeout___Stop____command_handle))));
+
+  StopForTarget___Stop____command_handle = (commandhandlestate_unknown -> (if ((((inactive = StopForTarget___Stop__state) or (waiting = StopForTarget___Stop__state)) or (skipped = StopForTarget___Stop____outcome)) or (pre_condition_failed = StopForTarget___Stop____failure)) then commandhandlestate_unknown else (if macrostep_end then raw__StopForTarget___Stop____command_handle else (pre StopForTarget___Stop____command_handle))));
+
+  TakeNavcam____command_handle = (commandhandlestate_unknown -> (if ((((inactive = TakeNavcam__state) or (waiting = TakeNavcam__state)) or (skipped = TakeNavcam____outcome)) or (pre_condition_failed = TakeNavcam____failure)) then commandhandlestate_unknown else (if macrostep_end then raw__TakeNavcam____command_handle else (pre TakeNavcam____command_handle))));
+
+  TakePancam____command_handle = (commandhandlestate_unknown -> (if ((((inactive = TakePancam__state) or (waiting = TakePancam__state)) or (skipped = TakePancam____outcome)) or (pre_condition_failed = TakePancam____failure)) then commandhandlestate_unknown else (if macrostep_end then raw__TakePancam____command_handle else (pre TakePancam____command_handle))));
+
+  DriveToTarget____outcome = (nodeoutcome_unknown -> (if (((pre DriveToTarget) = 3) and (pre ((((((Drive__state = waiting) or (Drive__state = finished)) and ((StopForTimeout__state = waiting) or (StopForTimeout__state = finished))) and ((StopForTarget__state = waiting) or (StopForTarget__state = finished))) and ((TakeNavcam__state = waiting) or (TakeNavcam__state = finished))) and ((TakePancam__state = waiting) or (TakePancam__state = finished))))) then (pre success) else (pre DriveToTarget____outcome)));
+
+  Drive____failure = (nodefailuretype_unknown -> (if (((pre Drive) = 0) and (pre (finished = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre Drive) = 1) and (pre (Drive__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if (((pre Drive) = 3) and (pre (Drive____command_handle <> commandhandlestate_unknown))) then (pre nodefailuretype_unknown) else (if (((pre Drive) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (pre Drive____failure))))));
+
+  StopForTarget____outcome = (nodeoutcome_unknown -> (if (((pre StopForTarget) = 0) and (pre (finished = DriveToTarget__state))) then (pre skipped) else (if (((pre StopForTarget) = 1) and (pre (StopForTarget__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if ((((pre StopForTarget) = 1) and (pre (StopForTarget__skip_condition = p_true))) and (not (pre (StopForTarget__ancestor_ends_disjoined = p_true)))) then (pre skipped) else (if (((pre StopForTarget) = 3) and (pre (((StopForTarget___Stop__state = waiting) or (StopForTarget___Stop__state = finished)) and ((SetDriveFlag__state = waiting) or (SetDriveFlag__state = finished))))) then (pre success) else (if (((pre StopForTarget) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodeoutcome_unknown) else (pre StopForTarget____outcome)))))));
+
+  SetTimeoutFlag____outcome = (nodeoutcome_unknown -> (if (((pre SetTimeoutFlag) = 0) and (pre (finished = StopForTimeout__state))) then (pre skipped) else (if (((pre SetTimeoutFlag) = 1) and (pre (SetTimeoutFlag__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if ((pre SetTimeoutFlag) = 2) then (pre success) else (if (((pre SetTimeoutFlag) = 4) and (pre (waiting = StopForTimeout__state))) then (pre nodeoutcome_unknown) else (pre SetTimeoutFlag____outcome))))));
+
+  TakePancam____failure = (nodefailuretype_unknown -> (if (((pre TakePancam) = 0) and (pre (finished = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre TakePancam) = 1) and (pre (TakePancam__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if ((((pre TakePancam) = 1) and (pre (TakePancam__skip_condition = p_true))) and (not (pre (TakePancam__ancestor_ends_disjoined = p_true)))) then (pre nodefailuretype_unknown) else (if (((pre TakePancam) = 3) and (pre (TakePancam____command_handle <> commandhandlestate_unknown))) then (pre nodefailuretype_unknown) else (if (((pre TakePancam) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (pre TakePancam____failure)))))));
+
+  DriveToTarget__timeout = (p_false -> (if (((pre SetTimeoutFlag) <> 2) and (SetTimeoutFlag = 2)) then (pre p_true) else (pre DriveToTarget__timeout)));
+
+  StopForTimeout___Stop____failure = (nodefailuretype_unknown -> (if (((pre StopForTimeout___Stop) = 0) and (pre (finished = StopForTimeout__state))) then (pre nodefailuretype_unknown) else (if (((pre StopForTimeout___Stop) = 1) and (pre (StopForTimeout___Stop__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if (((pre StopForTimeout___Stop) = 3) and (pre (StopForTimeout___Stop____command_handle <> commandhandlestate_unknown))) then (pre nodefailuretype_unknown) else (if (((pre StopForTimeout___Stop) = 5) and (pre (waiting = StopForTimeout__state))) then (pre nodefailuretype_unknown) else (pre StopForTimeout___Stop____failure))))));
+
+  StopForTimeout____failure = (nodefailuretype_unknown -> (if (((pre StopForTimeout) = 0) and (pre (finished = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre StopForTimeout) = 1) and (pre (StopForTimeout__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if (((pre StopForTimeout) = 3) and (pre (((StopForTimeout___Stop__state = waiting) or (StopForTimeout___Stop__state = finished)) and ((SetTimeoutFlag__state = waiting) or (SetTimeoutFlag__state = finished))))) then (pre nodefailuretype_unknown) else (if (((pre StopForTimeout) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (pre StopForTimeout____failure))))));
+
+  Drive____outcome = (nodeoutcome_unknown -> (if (((pre Drive) = 0) and (pre (finished = DriveToTarget__state))) then (pre skipped) else (if (((pre Drive) = 1) and (pre (Drive__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if (((pre Drive) = 3) and (pre (Drive____command_handle <> commandhandlestate_unknown))) then (pre success) else (if (((pre Drive) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodeoutcome_unknown) else (pre Drive____outcome))))));
+
+  SetTimeoutFlag____failure = (nodefailuretype_unknown -> (if (((pre SetTimeoutFlag) = 0) and (pre (finished = StopForTimeout__state))) then (pre nodefailuretype_unknown) else (if (((pre SetTimeoutFlag) = 1) and (pre (SetTimeoutFlag__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if ((pre SetTimeoutFlag) = 2) then (pre nodefailuretype_unknown) else (if (((pre SetTimeoutFlag) = 4) and (pre (waiting = StopForTimeout__state))) then (pre nodefailuretype_unknown) else (pre SetTimeoutFlag____failure))))));
+
+  StopForTimeout___Stop____outcome = (nodeoutcome_unknown -> (if (((pre StopForTimeout___Stop) = 0) and (pre (finished = StopForTimeout__state))) then (pre skipped) else (if (((pre StopForTimeout___Stop) = 1) and (pre (StopForTimeout___Stop__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if (((pre StopForTimeout___Stop) = 3) and (pre (StopForTimeout___Stop____command_handle <> commandhandlestate_unknown))) then (pre success) else (if (((pre StopForTimeout___Stop) = 5) and (pre (waiting = StopForTimeout__state))) then (pre nodeoutcome_unknown) else (pre StopForTimeout___Stop____outcome))))));
+
+  TakeNavcam____failure = (nodefailuretype_unknown -> (if (((pre TakeNavcam) = 0) and (pre (finished = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre TakeNavcam) = 1) and (pre (TakeNavcam__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if ((((pre TakeNavcam) = 1) and (pre (TakeNavcam__skip_condition = p_true))) and (not (pre (TakeNavcam__ancestor_ends_disjoined = p_true)))) then (pre nodefailuretype_unknown) else (if (((pre TakeNavcam) = 3) and (pre (TakeNavcam____command_handle <> commandhandlestate_unknown))) then (pre nodefailuretype_unknown) else (if (((pre TakeNavcam) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (pre TakeNavcam____failure)))))));
+
+  StopForTarget___Stop____outcome = (nodeoutcome_unknown -> (if (((pre StopForTarget___Stop) = 0) and (pre (finished = StopForTarget__state))) then (pre skipped) else (if (((pre StopForTarget___Stop) = 1) and (pre (StopForTarget___Stop__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if (((pre StopForTarget___Stop) = 3) and (pre (StopForTarget___Stop____command_handle <> commandhandlestate_unknown))) then (pre success) else (if (((pre StopForTarget___Stop) = 5) and (pre (waiting = StopForTarget__state))) then (pre nodeoutcome_unknown) else (pre StopForTarget___Stop____outcome))))));
+
+  DriveToTarget____failure = (nodefailuretype_unknown -> (if (((pre DriveToTarget) = 3) and (pre ((((((Drive__state = waiting) or (Drive__state = finished)) and ((StopForTimeout__state = waiting) or (StopForTimeout__state = finished))) and ((StopForTarget__state = waiting) or (StopForTarget__state = finished))) and ((TakeNavcam__state = waiting) or (TakeNavcam__state = finished))) and ((TakePancam__state = waiting) or (TakePancam__state = finished))))) then (pre nodefailuretype_unknown) else (pre DriveToTarget____failure)));
+
+  StopForTarget___Stop____failure = (nodefailuretype_unknown -> (if (((pre StopForTarget___Stop) = 0) and (pre (finished = StopForTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre StopForTarget___Stop) = 1) and (pre (StopForTarget___Stop__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if (((pre StopForTarget___Stop) = 3) and (pre (StopForTarget___Stop____command_handle <> commandhandlestate_unknown))) then (pre nodefailuretype_unknown) else (if (((pre StopForTarget___Stop) = 5) and (pre (waiting = StopForTarget__state))) then (pre nodefailuretype_unknown) else (pre StopForTarget___Stop____failure))))));
+
+  SetDriveFlag____outcome = (nodeoutcome_unknown -> (if (((pre SetDriveFlag) = 0) and (pre (finished = StopForTarget__state))) then (pre skipped) else (if (((pre SetDriveFlag) = 1) and (pre (SetDriveFlag__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if ((pre SetDriveFlag) = 2) then (pre success) else (if (((pre SetDriveFlag) = 4) and (pre (waiting = StopForTarget__state))) then (pre nodeoutcome_unknown) else (pre SetDriveFlag____outcome))))));
+
+  SetDriveFlag____failure = (nodefailuretype_unknown -> (if (((pre SetDriveFlag) = 0) and (pre (finished = StopForTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre SetDriveFlag) = 1) and (pre (SetDriveFlag__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if ((pre SetDriveFlag) = 2) then (pre nodefailuretype_unknown) else (if (((pre SetDriveFlag) = 4) and (pre (waiting = StopForTarget__state))) then (pre nodefailuretype_unknown) else (pre SetDriveFlag____failure))))));
+
+  StopForTimeout____outcome = (nodeoutcome_unknown -> (if (((pre StopForTimeout) = 0) and (pre (finished = DriveToTarget__state))) then (pre skipped) else (if (((pre StopForTimeout) = 1) and (pre (StopForTimeout__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if (((pre StopForTimeout) = 3) and (pre (((StopForTimeout___Stop__state = waiting) or (StopForTimeout___Stop__state = finished)) and ((SetTimeoutFlag__state = waiting) or (SetTimeoutFlag__state = finished))))) then (pre success) else (if (((pre StopForTimeout) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodeoutcome_unknown) else (pre StopForTimeout____outcome))))));
+
+  StopForTarget____failure = (nodefailuretype_unknown -> (if (((pre StopForTarget) = 0) and (pre (finished = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (if (((pre StopForTarget) = 1) and (pre (StopForTarget__ancestor_ends_disjoined = p_true))) then (pre nodefailuretype_unknown) else (if ((((pre StopForTarget) = 1) and (pre (StopForTarget__skip_condition = p_true))) and (not (pre (StopForTarget__ancestor_ends_disjoined = p_true)))) then (pre nodefailuretype_unknown) else (if (((pre StopForTarget) = 3) and (pre (((StopForTarget___Stop__state = waiting) or (StopForTarget___Stop__state = finished)) and ((SetDriveFlag__state = waiting) or (SetDriveFlag__state = finished))))) then (pre nodefailuretype_unknown) else (if (((pre StopForTarget) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodefailuretype_unknown) else (pre StopForTarget____failure)))))));
+
+  TakePancam____outcome = (nodeoutcome_unknown -> (if (((pre TakePancam) = 0) and (pre (finished = DriveToTarget__state))) then (pre skipped) else (if (((pre TakePancam) = 1) and (pre (TakePancam__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if ((((pre TakePancam) = 1) and (pre (TakePancam__skip_condition = p_true))) and (not (pre (TakePancam__ancestor_ends_disjoined = p_true)))) then (pre skipped) else (if (((pre TakePancam) = 3) and (pre (TakePancam____command_handle <> commandhandlestate_unknown))) then (pre success) else (if (((pre TakePancam) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodeoutcome_unknown) else (pre TakePancam____outcome)))))));
+
+  DriveToTarget__drive_done = (p_false -> (if (((pre SetDriveFlag) <> 2) and (SetDriveFlag = 2)) then (pre p_true) else (pre DriveToTarget__drive_done)));
+
+  TakeNavcam____outcome = (nodeoutcome_unknown -> (if (((pre TakeNavcam) = 0) and (pre (finished = DriveToTarget__state))) then (pre skipped) else (if (((pre TakeNavcam) = 1) and (pre (TakeNavcam__ancestor_ends_disjoined = p_true))) then (pre skipped) else (if ((((pre TakeNavcam) = 1) and (pre (TakeNavcam__skip_condition = p_true))) and (not (pre (TakeNavcam__ancestor_ends_disjoined = p_true)))) then (pre skipped) else (if (((pre TakeNavcam) = 3) and (pre (TakeNavcam____command_handle <> commandhandlestate_unknown))) then (pre success) else (if (((pre TakeNavcam) = 5) and (pre (waiting = DriveToTarget__state))) then (pre nodeoutcome_unknown) else (pre TakeNavcam____outcome)))))));
+
+  macrostep_end = (false -> (if (((pre Drive) <> 2) and (Drive = 2)) then true else (if (((pre StopForTimeout___Stop) <> 2) and (StopForTimeout___Stop = 2)) then true else (if (((pre SetTimeoutFlag) <> 2) and (SetTimeoutFlag = 2)) then true else (if (((pre StopForTarget___Stop) <> 2) and (StopForTarget___Stop = 2)) then true else (if (((pre SetDriveFlag) <> 2) and (SetDriveFlag = 2)) then true else (if (((pre TakeNavcam) <> 2) and (TakeNavcam = 2)) then true else (if (((pre TakePancam) <> 2) and (TakePancam = 2)) then true else ((((((((((DriveToTarget = (pre DriveToTarget)) and (Drive = (pre Drive))) and (StopForTimeout = (pre StopForTimeout))) and (StopForTimeout___Stop = (pre StopForTimeout___Stop))) and (SetTimeoutFlag = (pre SetTimeoutFlag))) and (StopForTarget = (pre StopForTarget))) and (StopForTarget___Stop = (pre StopForTarget___Stop))) and (SetDriveFlag = (pre SetDriveFlag))) and (TakeNavcam = (pre TakeNavcam))) and (TakePancam = (pre TakePancam)))))))))));
+
+  outcome = (nodeoutcome_unknown -> DriveToTarget____outcome);
+
+  state = (inactive -> DriveToTarget__state);
+
+tel;
