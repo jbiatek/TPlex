@@ -38,6 +38,7 @@ import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
@@ -94,27 +95,6 @@ public class RegressionTest {
 	 */
 	private static final TestSuite[] MANUAL_TESTS = new TestSuite[] {
 		simple_drive_r
-	};
-	
-	/**
-	 * Tests where the script name matches the plan name
-	 */
-	private static final String[] SAME_NAME_TESTS = new String[] {
-	    "CruiseControl", "DriveToSchool", "DriveToTarget", "SafeDrive", "SimpleDrive",
-	    "array1", "array3", "array4", "array8", "command1", "command2", "command3",
-	    "command4", "command5", "long_command", "uncle_command", "repeat2", 
-	    "repeat5", "repeat7", "repeat8", "AtomicAssignment", "boolean1", 
-	    "ChangeLookupTest"
-	};
-
-	/**
-	 * Tests that don't have a script at all
-	 */
-	private static final String[] EMPTY_SCRIPT_TESTS = new String[] {
-	    "AncestorReferenceTest", "AssignFailureWithConflict", 
-	    "AssignToParentExit", "AssignToParentInvariant", 
-	    "array2", "array5", "array6", "array9", "FailureType1", "FailureType2",
-	    "FailureType3", "FailureType4", "ArrayInLoop", "repeat1", "repeat3", "repeat4"
 	};
 	
 	private static TestSuite produceSameNameTest(String name) {
@@ -180,14 +160,6 @@ public class RegressionTest {
 							.contains(ts.planFile))
 				.collect(Collectors.toList());
 		
-		
-		/*Preeeeety limited for now. 
-		return Arrays.asList(
-				produceSameNameTest("DriveToSchool"),
-				produceSameNameTest("DriveToTarget"),
-				produceSameNameTest("CruiseControl"),
-				//produceSameNameTest("SimpleDrive"),
-				produceSameNameTest("SafeDrive")); */
 	}
 	
 	
@@ -271,24 +243,9 @@ public class RegressionTest {
 			script = Optional.of(new File(RESOURCES, scriptName+".psx"));
 		}
 		File libDir = RESOURCES;
-		return generateOracle(plan, script, Optional.of(libDir));
+		return ComplianceTesting.generateOracle(plan, script, Optional.of(libDir));
 	}
 
-	
-	public static List<PlanState> generateOracle(File plan, Optional<File> script, Optional<File> libDir) 
-	throws Exception {
-		List<PlanState> oracles = new ArrayList<PlanState>();
-		BufferedReader in = OfficialPlexilExecutive.generateLogFor(plan, script, libDir);
-		PlanState state = PlanState.parseLogFile(in);
-		while (state != null) {
-			if (PlanState.DEBUG) 
-				System.out.println("*******************************");
-			oracles.add(state);
-			state = PlanState.parseLogFile(in);
-		}
-		return oracles;
-
-	}
 	
 //	public static List<PlanState> parseLogFile(File logFile) throws Exception {
 //		List<PlanState> oracles = new ArrayList<PlanState>();
@@ -331,18 +288,15 @@ public class RegressionTest {
 		List<PlanState> expected = parseLogFile(planName, scriptName);
 		
 		assertTrue("Check the log file, nothing was pulled from it.", expected.size() > 0);
-
-		
         System.out.println("Running "+planName+" with script "+scriptName);
         
-//		root.fullReset();
 		// Get the script
 		JavaPlexilScript world = getScript(scriptName);
 		// Read the plan
 		Plan ilPlan = getSimulatablePlan(planName, libs);
 		
-		ILSimulator theSim = new ILSimulator(ilPlan, world);
-		runTest(theSim, world, expected);
+		ComplianceTesting.intermediateLanguage(ilPlan, world, 
+				new PlanStateChecker(expected));
 	}
 	
 	private static Plan getSimulatablePlan(String planName, String[] libs) {
@@ -371,7 +325,7 @@ public class RegressionTest {
 		// Need to find the root node
 		JavaPlan root = getPlan(planName, world);
 		
-		runTest(root, world, expected);
+		ComplianceTesting.java(root, world, expected);
 	}
 	
 	public static void runSingleTestLustre(String planName, String scriptName, String[] libs) throws Exception {
@@ -394,39 +348,14 @@ public class RegressionTest {
 	
 	public static void complianceTest(Plan ilPlan, ExternalWorld environment,
 			LustreTrace fullTrace, ReverseTranslationMap mapper) throws Exception{
-
-		// Attach an observer to check these values against the IL sim
-
-		ILSimulator sim = new ILSimulator(ilPlan, environment);
-		sim.addObserver(createComplianceChecker(fullTrace, ilPlan, mapper));
-		// Here we go!
-		try { 
-		JavaPlan.DEBUG = true;
-		sim.runPlanToCompletion();
+		try {
+			ComplianceTesting.lustreMatchesIL(ilPlan, environment, 
+					ComplianceTesting.createLustreChecker(fullTrace, ilPlan, mapper));
 		} catch (Exception e) {
 			System.out.println("\n\n\n\n\n"+ScriptSimulation.toMoreReadableCSV(fullTrace));
 			throw e;
 		}
-		
 	}
-	
-	
-	public static LustreComplianceChecker createComplianceChecker(
-			LustreTrace fullTrace, Plan ilPlan, ReverseTranslationMap mapper) {
-		final Map<ILExpr, List<PValue>> ilTrace = 
-				JKindResultUtils.createILMapFromLustre(fullTrace, ilPlan, mapper);
-		// This isn't an IL variable, it's PLEXIL semantics encoded in Lustre. 
-		// If it's wrong, we want to know so that we can debug it, because it'll
-		// mess up other stuff too. 
-		final Signal<Value> macrostepEnded = 
-				fullTrace.getVariable(LustreNamingConventions.MACRO_STEP_ENDED_ID);
-		
-		return new LustreComplianceChecker(ilTrace, macrostepEnded, mapper);
-
-	}
-	
-	
-	
 	
 	
 	public static LustreTrace getFullTrace(File lustreFile, String mainNode, 
@@ -440,20 +369,6 @@ public class RegressionTest {
 
 	}
 
-	
-	public static void runTest(JavaPlan root, JavaPlexilScript world,
-			TestOracle oracle) {
-		world.getEnvironment().enableAutoResponseToPlexilPrintCommands();
-		root.addObserver(oracle);
-		root.runPlanToCompletion();
-	}
-	
-	public static void runTest(JavaPlan root, JavaPlexilScript world, 
-			List<PlanState> expected) {
-        runTest(root, world, new PlanStateChecker(expected));
-
-	}
-	
 	public static void runTestSuiteIL(TestSuite suite) throws Exception {
 	    for (String script : suite.planScripts) {
 	        runSingleTestILSimulator(suite.planFile, script, suite.libs);

@@ -58,6 +58,20 @@ public class PlanState {
     	vars.put(name, value);
     }
 
+    
+    public static List<PlanState> parseLogFile(BufferedReader in) throws IOException {
+    	List<PlanState> stateSnapshots = new ArrayList<>();
+		PlanState state = parseSingleStep(in);
+		while (state != null) {
+			if (PlanState.DEBUG) 
+				System.out.println("*******************************");
+			stateSnapshots.add(state);
+			state = parseSingleStep(in);
+		}
+		return stateSnapshots;
+
+    }
+    
     /**
      * Read in one entry from a Plexil Executive log file. The log should
      * consist solely of [PlexilExec:printPlan] entries.
@@ -66,7 +80,7 @@ public class PlanState {
      * @return the next PlanState from the stream
      * @throws IOException
      */
-    public static PlanState parseLogFile(BufferedReader in) throws IOException {
+    public static PlanState parseSingleStep(BufferedReader in) throws IOException {
     	// Find the first node name, then pass it off
     	String firstName = "";
     	while (firstName != null && !firstName.endsWith("{")) {
@@ -76,10 +90,10 @@ public class PlanState {
     	
     	if (firstName == null) return null;
     	
-    	return parseLogFile(in, firstName, null);
+    	return parseSingleNode(in, firstName, null);
     }
     
-    private static PlanState parseLogFile(BufferedReader in, String rawName, PlanState parent) throws IOException {
+    private static PlanState parseSingleNode(BufferedReader in, String rawName, PlanState parent) throws IOException {
     	PlanState node;
     	String nodeName = rawName.replace("{", "").replaceAll("^\\s*", "");
         if (parent == null) {
@@ -95,7 +109,7 @@ public class PlanState {
         while (! (line = in.readLine().replaceAll("^\\s*", "")).equals("}") ){
     		if (line.endsWith("{")) {
     			// This is the start of a new node, one of our children.
-    			PlanState child = parseLogFile(in, line, node);
+    			PlanState child = parseSingleNode(in, line, node);
     			node.addChild(child);
     		} else if (line.contains("[i]")) {
     			// This means that the variable or condition is "inactive"

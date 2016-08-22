@@ -58,37 +58,29 @@ public abstract class JKindSearch {
 		StaticAnalyzer.check(lustreProgram, SolverOption.Z3);
 	}
 	
-	
+	public void turnOffIncrementalSearch() {
+		doIncrementalSearch = false;
+	}
 	
 	public Set<TraceProperty> getRequestedGoals() {
 		return requestedGoals;
 	}
 
-
-
 	public Set<TraceProperty> getUnmetGoals() {
 		return unmetGoals;
 	}
-
-
 
 	public Set<IncrementalTrace> getChosenTraces() {
 		return chosenTraces;
 	}
 
-
-
 	public Set<IncrementalTrace> getRedundantTraces() {
 		return redundantTraces;
 	}
 
-
-
 	public Set<TraceProperty> getNonPrefixAlreadyRun() {
 		return nonPrefixAlreadyRun;
 	}
-
-
 
 	public void go() {
 		go(JKindSettings.createBMCOnly(Integer.MAX_VALUE, 20));
@@ -342,9 +334,9 @@ public abstract class JKindSearch {
 		int found = 0;
 		int notFound = 0;
 		
-		for (Entry<String, LustreTrace> e : result.entrySet()) {
-			printNullValueReport(e.getKey(), e.getValue());
-		}
+//		for (Entry<String, LustreTrace> e : result.entrySet()) {
+//			printNullValueReport(e.getKey(), e.getValue());
+//		}
 		
 		for (TraceProperty prop : attemptedProps) {
 			// Did we get this one? 

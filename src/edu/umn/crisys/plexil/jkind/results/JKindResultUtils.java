@@ -67,6 +67,7 @@ import edu.umn.crisys.plexil.script.ast.FunctionCall;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.ast.Simultaneous;
 import edu.umn.crisys.plexil.script.ast.StateChange;
+import edu.umn.crisys.plexil.test.java.ComplianceTesting;
 import edu.umn.crisys.plexil.test.java.LustreComplianceChecker;
 import edu.umn.crisys.plexil.test.java.RegressionTest;
 import enums.Simulation;
@@ -354,7 +355,7 @@ public class JKindResultUtils {
 		// from the Lustre trace that we give it. 
 		ScriptRecorderFromLustreData recorder = new ScriptRecorderFromLustreData(trace, map);
 		LustreComplianceChecker checker = 
-				RegressionTest.createComplianceChecker(trace, ilPlan, map);
+				ComplianceTesting.createLustreChecker(trace, ilPlan, map);
 		ILSimulator sim = new ILSimulator(ilPlan, recorder);
 		sim.addObserver(recorder);
 		sim.addObserver(checker);
