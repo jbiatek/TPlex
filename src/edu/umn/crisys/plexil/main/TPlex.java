@@ -59,6 +59,7 @@ import edu.umn.crisys.plexil.jkind.search.TPlexTestGenerator;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.StateCoverageMeasurer;
+import edu.umn.crisys.plexil.runtime.plx.TransitionCoverageMeasurer;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -81,12 +82,6 @@ public class TPlex {
 
 	@Parameter(names = "--output-dir", description = "The directory to output files to. For Java, this is where the package will be placed.")
 	public File outputDir = new File("./");
-	
-	@Parameter(names = "--generate", description = "Generate test cases "
-			+ "instead of translating anything. Pass in PLEXIL plan(s) and "
-			+ "test cases will be placed in --output-dir. The original Lustre "
-			+ "traces will be placed in output-dir/jkind-traces for debug purposes. ")
-	public boolean generate = false;
 	
 	@Parameter(description="FILE1.{plx|psx} [FILE2.{plx|psx} ...]", variableArity = true)
 	public List<File> files = new ArrayList<>();
@@ -717,13 +712,16 @@ public class TPlex {
 				Plan thePlan = ilPlans.entrySet().stream()
 						.findFirst().get().getValue();
 				System.out.println("Simulating "+thePlan.getPlanName()+" to measure coverage...");
-				StateCoverageMeasurer observer = new StateCoverageMeasurer();
+				StateCoverageMeasurer stateObs = new StateCoverageMeasurer();
+				TransitionCoverageMeasurer transObs = new TransitionCoverageMeasurer(thePlan);
 				for (PlexilScript script : scripts.values()) {
 					ILSimulator sim = new ILSimulator(thePlan, new JavaPlexilScript(script));
-					sim.addObserver(observer);
+					sim.addObserver(stateObs);
+					sim.addObserver(transObs);
 					sim.runPlanToCompletion();
 				}
-				observer.printData();
+				stateObs.printData();
+				transObs.printData();
 			}
 		}
 		

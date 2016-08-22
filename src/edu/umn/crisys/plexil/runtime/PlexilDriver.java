@@ -15,6 +15,7 @@ import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.plx.StateCoverageMeasurer;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.RandomValues;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.ReplayValues;
+import edu.umn.crisys.plexil.runtime.psx.symbolic.ScriptDecisionMaker;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.SimulatedBacktrackException;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.SymbolicDecisionMaker;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.SymbolicScript;
@@ -214,7 +215,7 @@ public class PlexilDriver {
     }
 	
 	private static SymbolicScript runSingleTest(TestGenerationInfo info, ValueSource values, JavaPlanObserver... observers) {
-		SymbolicDecisionMaker dm = info.createDecisionMaker(values);
+		ScriptDecisionMaker dm = info.createDecisionMaker(values);
 		SymbolicScript world = new SymbolicScript(dm);
 		JavaPlan plan = info.createPlanUnderTest(world);
 		runSingleTest(plan, world, observers);

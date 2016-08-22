@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.il.simulator;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -421,6 +422,16 @@ public class ILSimulator extends JavaPlan {
 		.orElseThrow(() -> new RuntimeException("Couldn't find UID "+uid));
 	}
 	
+	private List<ILSimObserver> getSimObservers() {
+		return getObservers().stream()
+				.filter(o -> o instanceof ILSimObserver)
+				.map(o -> (ILSimObserver) o)
+				.collect(Collectors.toList());
+	}
+	
+	private void notifyTransitionTaken(Transition t) {
+		getSimObservers().forEach(o -> o.transitionTaken(t));
+	}
 	
 	@Override
 	public void doMicroStep() {
@@ -440,6 +451,8 @@ public class ILSimulator extends JavaPlan {
 					states.get(nsm).setNext(t.end.getIndex());
 					// ... when the step ends
 					commitAfterMicroStep(states.get(nsm));
+					// Notify that this transition was taken
+					notifyTransitionTaken(t);
 					// Finally, notify that we didn't quiesce
 					changeOccurred();
 					// And stop trying to find new transitions.

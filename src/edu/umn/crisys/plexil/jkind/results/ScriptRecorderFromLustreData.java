@@ -11,6 +11,7 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
 import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
+import edu.umn.crisys.plexil.il.simulator.ILSimObserver;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
@@ -31,7 +32,8 @@ import jkind.lustre.values.Value;
 import jkind.results.Signal;
 import lustre.LustreTrace;
 
-public class ScriptRecorderFromLustreData extends JavaPlexilScript {
+public class ScriptRecorderFromLustreData extends JavaPlexilScript 
+										implements ILSimObserver {
 
 	private LustreTrace lustreData;
 	private ReverseTranslationMap map;
@@ -225,6 +227,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript {
 		return lookupNow(stateName, args);
 	}
 
+	@Override
 	public void specialCommand(SimpleVar simpleVar, CommandHandler handle, PString commandName, PValue... args) {
 		log("Received command from node "+simpleVar.getNodeUID()
 			+": name "+commandName+", args "+join(args));

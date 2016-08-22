@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.runtime.plx;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +44,10 @@ public abstract class JavaPlan {
     
     public void addObserver(JavaPlanObserver obs) {
     	observers.add(obs);
+    }
+    
+    public List<JavaPlanObserver> getObservers() {
+    	return Collections.unmodifiableList(observers);
     }
     
     private void notifyPrematureEnd() {
