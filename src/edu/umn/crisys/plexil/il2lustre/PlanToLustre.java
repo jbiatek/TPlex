@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import jkind.SolverOption;
+import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -43,6 +45,7 @@ import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
+import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
@@ -181,7 +184,7 @@ public class PlanToLustre {
 		pb.addNode(nb.build());
 		
 		Program program = pb.build();
-		//StaticAnalyzer.check(program, SolverOption.Z3);
+		JKindSettings.staticCheckLustreProgram(program, SolverOption.Z3);
 		return program;
 	}
 	

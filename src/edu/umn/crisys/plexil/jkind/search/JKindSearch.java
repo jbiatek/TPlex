@@ -55,7 +55,7 @@ public abstract class JKindSearch {
 		this.translator = translator;
 		System.out.println("Re-translating to Lustre");
 		this.lustreProgram = translator.toLustre();
-		StaticAnalyzer.check(lustreProgram, SolverOption.Z3);
+		JKindSettings.staticCheckLustreProgram(lustreProgram, SolverOption.Z3);
 	}
 	
 	public void turnOffIncrementalSearch() {
@@ -110,7 +110,7 @@ public abstract class JKindSearch {
 				workQueue.execute(() -> {
 					Program init = simplify(addProperties(lustreProgram, 
 							Arrays.asList(p), translator));
-					StaticAnalyzer.check(init, SolverOption.Z3);
+					JKindSettings.staticCheckLustreProgram(init, SolverOption.Z3);
 					Map<String, LustreTrace> result = jkind.execute(init, System.out);
 					fileResults(Optional.empty(), result, Arrays.asList(p));				
 				});
@@ -132,7 +132,7 @@ public abstract class JKindSearch {
 		
 		System.out.println("Main thread now sleeping until work queue empties.");
 		// We can now wait until the work queue is emptied
-		boolean keepGoing = true;
+		boolean keepGoing = ! workQueue.isQuiescent();
 		while (keepGoing) {
 			try {
 				Thread.sleep(30 * 1000);
@@ -284,7 +284,7 @@ public abstract class JKindSearch {
 			// Yes. Add the properties and go.
 			Program init = simplify(addProperties(lustreProgram, 
 					run.getPropertiesWithoutPrefix(), translator));
-			StaticAnalyzer.check(init, SolverOption.Z3);
+			JKindSettings.staticCheckLustreProgram(init, SolverOption.Z3);
 			Map<String, LustreTrace> result = jkind.execute(init, System.out);
 			fileResults(Optional.empty(), result, run.getPropertiesWithoutPrefix());
 		}
@@ -298,7 +298,7 @@ public abstract class JKindSearch {
 				simplify(addProperties(lustreProgram, propertiesToTry, translator)), 
 				prefix.getFullTrace());
 		
-		StaticAnalyzer.check(prog, SolverOption.Z3);
+		JKindSettings.staticCheckLustreProgram(prog, SolverOption.Z3);
 		Map<String, LustreTrace> result = jkind.execute(prog, System.out);
 		fileResults(Optional.of(prefix), result, propertiesToTry);
 	}

@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.jkind.search;
 
 import java.io.PrintStream;
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,55 @@ public class JKindSettings {
 	
 	public static JKindSettings createBMCOnly(int timeout, int iteration) {
 		return new JKindSettings(timeout, iteration, false, false, true, 0);
+	}
+	
+	
+	/**
+	 * Statically check a Lustre program with JKind's static checker. However,
+	 * this method doesn't let JKind do a System.exit(), instead it throws
+	 * a runtime exception so you can continue to execute if you want. 
+	 * 
+	 * @param p
+	 * @param opt
+	 * @return
+	 */
+	public static void staticCheckLustreProgram(Program p, SolverOption opt) {
+		SysExitStopper stopper = new SysExitStopper();
+		stopper.suppressSystemExit();
+		StaticAnalyzer.check(p, opt);
+		stopper.returnToNormalOperation();
+		if (stopper.sawSystemExit()) {
+			throw new RuntimeException("Static analysis of Lustre program failed: "
+					+ p);
+		} 
+	}
+	
+	private static class SysExitStopper {
+		
+		private boolean sawSystemExit = false;
+		private SecurityManager old = null;
+		
+		public boolean sawSystemExit() {
+			return sawSystemExit;
+		}
+		
+		public void suppressSystemExit() {
+			old = System.getSecurityManager();
+			final SecurityManager sm = new SecurityManager() {
+				@Override
+				public void checkPermission(Permission permission) {
+					if (permission.getName().contains("exitVM")) {
+						sawSystemExit = true;
+						throw new SecurityException("System.exit() supressed");
+					}
+				}
+			};
+			System.setSecurityManager(sm);
+		}
+		
+		public void returnToNormalOperation() {
+			System.setSecurityManager(old);
+		}
 	}
 	
 	/*private final int timeout = 100;
@@ -96,7 +146,7 @@ public class JKindSettings {
 		printer.ifPresent( out -> out.println("Iterations: " + iteration));
 		printer.ifPresent( out -> out.println("Timeout: " + timeout + " seconds"));
 
-		StaticAnalyzer.check(p, SolverOption.Z3);
+		staticCheckLustreProgram(p, SolverOption.Z3);
 		
 		jkind.execute(p, result, monitor);
 
