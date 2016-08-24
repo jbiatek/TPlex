@@ -42,21 +42,28 @@ public class JKindSettings {
 	public static void staticCheckLustreProgram(Program p, SolverOption opt) {
 		SysExitStopper stopper = new SysExitStopper();
 		stopper.suppressSystemExit();
-		StaticAnalyzer.check(p, opt);
+		try {
+			StaticAnalyzer.check(p, opt);
+		} catch (edu.umn.crisys.plexil.jkind.search.JKindSettings
+				.SysExitStopper.SystemExitSuppressedException se) {
+			throw new RuntimeException("Static analysis of Lustre program failed. \n"
+					+ "The errors are probably above this message.\n"
+					+ "Here is the program that was checked: \n\n"
+					+ p, se);
+		}
 		stopper.returnToNormalOperation();
-		if (stopper.sawSystemExit()) {
-			throw new RuntimeException("Static analysis of Lustre program failed: "
-					+ p);
-		} 
 	}
 	
 	private static class SysExitStopper {
 		
-		private boolean sawSystemExit = false;
 		private SecurityManager old = null;
 		
-		public boolean sawSystemExit() {
-			return sawSystemExit;
+		public static class SystemExitSuppressedException extends SecurityException {
+			private static final long serialVersionUID = -3036213945357116554L;
+
+			public SystemExitSuppressedException() {
+				super("System.exit() supressed");
+			}
 		}
 		
 		public void suppressSystemExit() {
@@ -65,8 +72,7 @@ public class JKindSettings {
 				@Override
 				public void checkPermission(Permission permission) {
 					if (permission.getName().contains("exitVM")) {
-						sawSystemExit = true;
-						throw new SecurityException("System.exit() supressed");
+						throw new SystemExitSuppressedException();
 					}
 				}
 			};

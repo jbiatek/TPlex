@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il2lustre;
 
 import static jkind.lustre.LustreUtil.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,10 +11,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import jkind.SolverOption;
-import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
+import jkind.lustre.CastExpr;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -23,6 +24,7 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.Program;
+import jkind.lustre.RealExpr;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
@@ -426,6 +428,51 @@ public class PlanToLustre {
 			pb.addNode(numericComparator("pint_"+e.getKey(), e.getValue(), NamedType.INT));
 			pb.addNode(numericComparator("preal_"+e.getKey(), e.getValue(), NamedType.REAL));
 		}
+		
+		// Numeric max and min for ints and reals
+		pb.addNode(createMaxOrMin(ILType.INTEGER, true));
+		pb.addNode(createMaxOrMin(ILType.INTEGER, false));
+		pb.addNode(createMaxOrMin(ILType.REAL, true));
+		pb.addNode(createMaxOrMin(ILType.REAL, false));
+		
+		// Lustre defines "mod" for integers, but not reals.
+		
+		NodeBuilder real_mod = new NodeBuilder("real_mod");
+		// We will follow C++'s "std::fmod()" function, since I'm guessing
+		// that is what the interpreter does.
+		
+		// The floating-point remainder of the division operation x/y 
+		// calculated by this function is exactly the value x - n*y, where n 
+		// is x/y with its fractional part truncated.
+		real_mod.addInput(new VarDecl("x", NamedType.REAL));
+		real_mod.addInput(new VarDecl("y", NamedType.REAL));
+		real_mod.addOutput(new VarDecl("o", NamedType.REAL));
+		Expr n = new CastExpr(NamedType.REAL, 
+					new CastExpr(NamedType.INT, 
+							new BinaryExpr(id("x"), BinaryOp.DIVIDE, id("y"))));
+		real_mod.addEquation(new Equation(id("o"), 
+				new BinaryExpr(id("x"), BinaryOp.MINUS, 
+						new BinaryExpr(n, BinaryOp.MULTIPLY, id("y")))));
+		pb.addNode(real_mod.build());
+		
+		// Absolute value function needs to be defined.
+		NodeBuilder int_abs = new NodeBuilder("int_abs");
+		int_abs.addInput(new VarDecl("n", NamedType.INT));
+		int_abs.addOutput(new VarDecl("out", NamedType.INT));
+		int_abs.addEquation(new Equation(id("out"), 
+				ite(new BinaryExpr(id("n"), BinaryOp.LESS, new IntExpr(0)),
+						new UnaryExpr(UnaryOp.NEGATIVE, id("n")),
+						id("n"))));
+		
+		NodeBuilder real_abs = new NodeBuilder("real_abs");
+		real_abs.addInput(new VarDecl("n", NamedType.REAL));
+		real_abs.addOutput(new VarDecl("out", NamedType.REAL));
+		real_abs.addEquation(new Equation(id("out"), 
+				ite(new BinaryExpr(id("n"), BinaryOp.LESS, new RealExpr(new BigDecimal(0.0))),
+						new UnaryExpr(UnaryOp.NEGATIVE, id("n")),
+						id("n"))));
+
+		
 		// Equality operations for enums that have unknowns
 		pb.addNode(createPEqualNode(ILType.BOOLEAN, LustreNamingConventions.PBOOLEAN));
 		pb.addNode(createPEqualNode(ILType.OUTCOME, LustreNamingConventions.POUTCOME));
@@ -436,6 +483,36 @@ public class PlanToLustre {
 		// create the p_eq node for them. 
 		
 		return pb;
+	}
+	
+	private jkind.lustre.Node createMaxOrMin(ILType ilType, boolean doMax) {
+		if (ilType != ILType.INTEGER && ilType != ILType.REAL) {
+			throw new RuntimeException("No min/max operator for "+ilType);
+		}
+		String name = (ilType == ILType.INTEGER ? "int" : "real")
+						+ "_"
+						+ (doMax ? "max" : "min");
+		NamedType lustreType = ilType == ILType.INTEGER ? NamedType.INT : NamedType.REAL;
+		
+		NodeBuilder operator = new NodeBuilder(name);
+		operator.addInput(new VarDecl("a", lustreType));
+		operator.addInput(new VarDecl("b", lustreType));
+		operator.addOutput(new VarDecl("o", lustreType));
+		
+		BinaryOp comparator;
+		if (doMax) {
+			comparator = BinaryOp.GREATER;
+		} else {
+			comparator = BinaryOp.LESS;
+		}
+		
+		operator.addEquation(new Equation(id("o"),
+				ite(
+						new BinaryExpr(id("a"), comparator, id("b")),
+						id("a"),
+						id("b"))));
+		
+		return operator.build();
 	}
 	
 	private jkind.lustre.Node createPEqualNode(ILType ilType, EnumType lustreType) {
@@ -554,6 +631,22 @@ public class PlanToLustre {
 	}
 
 	private void addStateMachineToNode(NodeStateMachine nsm) {
+		if (nsm.getNodeIds().size() == 1) {
+			// This machine only has 1 node in it. We can just do the
+			// PLEXIL state machine directly, with no integer states at all.
+			NodeUID uid = nsm.getNodeIds().get(0);
+			String id = LustreNamingConventions.getStateMapperId(uid);
+			VarDecl machine = new VarDecl(id, LustreNamingConventions.PSTATE);
+			nb.addLocal(machine);
+			nb.addEquation(singleNodeStateMachineEquation(nsm));
+			// That's it! The state mapper ID is actually the direct machine,
+			// but no one else needs to know that.
+			return;
+		}
+		
+		
+		// Create the integer state machine, and also a state mapper for PLEXIL
+		// to read node states from it. 
 		String id = LustreNamingConventions.getStateId(nsm);
 		
 		VarDecl stateVar = new VarDecl(id, NamedType.INT);
@@ -583,6 +676,43 @@ public class PlanToLustre {
 		}
 	}
 	
+	private static boolean isSingleNodeStateMachine(NodeStateMachine nsm) {
+		return nsm.getNodeIds().size() == 1;
+	}
+	
+	private static NodeUID getSingleNodeUID(NodeStateMachine nsm) {
+		if ( ! isSingleNodeStateMachine(nsm)) {
+			throw new RuntimeException("Not a single node state machine, "
+					+ "it has "+nsm.getNodeIds().size()+" nodes.");
+		}
+		return nsm.getNodeIds().get(0);
+	}
+	
+	public Equation singleNodeStateMachineEquation(NodeStateMachine nsm) {
+		NodeUID theNode = getSingleNodeUID(nsm);
+		IdExpr varName = id(LustreNamingConventions.getStateMapperId(theNode));
+		
+		// We always start in Inactive.
+		PlexilEquationBuilder state = new PlexilEquationBuilder(
+				varName, toLustre(NodeState.INACTIVE));
+		
+		// Make sure transitions are in the right order.
+		nsm.orderTransitionsByPriority();
+		
+		// Add guards and their destination states
+		for (Transition t : nsm.getTransitions()) {
+			Expr guard = getGuardExprFor(t);
+			// Check that we were in the start state before
+			Expr stateCheck = equal(toLustre(t.start.tags.get(theNode)), 
+					pre(varName));
+			state.addAssignment(and(stateCheck, guard), 
+					toLustre(t.end.tags.get(theNode)));
+		}
+		
+		// That's all! Build it and move on.
+		return state.buildEquation();
+	}
+	
 	public Equation stateMachineEquation(NodeStateMachine nsm) {
 		// By IL semantics, we always start in state 0. 
 		PlexilEquationBuilder state = new PlexilEquationBuilder(
@@ -593,7 +723,7 @@ public class PlanToLustre {
 		
 		// Add guards for each transition with results
 		for (Transition t : nsm.getTransitions()) {
-			state.addAssignment(createGuardWithStateCheck(getStateExpr(nsm), t),
+			state.addAssignment(createGuardWithStateCheck(nsm, t),
 					new IntExpr(t.end.getIndex()));
 		}
 		
@@ -625,7 +755,7 @@ public class PlanToLustre {
 	public Expr getGuardForThisSpecificTransition(Transition t, NodeStateMachine nsm) {
 		// This transition has to be active, but also all the transitions before 
 		// it have to be inactive. 
-		Expr specificGuard = createGuardWithStateCheck(getStateExpr(nsm), t);
+		Expr specificGuard = createGuardWithStateCheck(nsm, t);
 		
 		Set<Transition> highers = nsm.getHigherTransitionsThan(t);
 		
@@ -638,25 +768,50 @@ public class PlanToLustre {
 	}
 	
 	public static Expr getEnteringThisSpecificState(NodeStateMachine nsm, State s) {
-		Expr currentState = getStateExpr(nsm);
-		Expr previousState = new UnaryExpr(UnaryOp.PRE, currentState);
-		Expr specifiedState = new IntExpr(s.getIndex());
+		Expr currentState;
+		Expr specifiedState;
+		if (isSingleNodeStateMachine(nsm)) {
+			currentState = getPlexilStateExprForNode(getSingleNodeUID(nsm));
+			specifiedState = id(
+					LustreNamingConventions.getEnumId(
+							s.tags.get(getSingleNodeUID(nsm))));
+		} else {
+			currentState = getStateExpr(nsm);
+			specifiedState = new IntExpr(s.getIndex());
+		}
+		
 		return new BinaryExpr(
-				new BinaryExpr(previousState, BinaryOp.NOTEQUAL, specifiedState), 
+				new BinaryExpr(pre(currentState), BinaryOp.NOTEQUAL, specifiedState), 
 				BinaryOp.AND, 
 				new BinaryExpr(currentState, BinaryOp.EQUAL, specifiedState));
 	}
 	
 	public static Expr getCurrentlyInSpecificState(NodeStateMachine nsm, State s) {
-		Expr currentState = getStateExpr(nsm);
-		Expr specifiedState = new IntExpr(s.getIndex());
+		Expr currentState;
+		Expr specifiedState;
+		if (isSingleNodeStateMachine(nsm)) {
+			currentState = getPlexilStateExprForNode(getSingleNodeUID(nsm));
+			specifiedState = id(
+					LustreNamingConventions.getEnumId(
+							s.tags.get(getSingleNodeUID(nsm))));
+		} else {
+			currentState = getStateExpr(nsm);
+			specifiedState = new IntExpr(s.getIndex());
+		}
 		return new BinaryExpr(currentState, BinaryOp.EQUAL, specifiedState);
 	}
 	
 	public static Expr getStateIsUnchanged(NodeStateMachine nsm) {
-		return new BinaryExpr(getStateExpr(nsm), 
+		Expr currentState;
+		if (isSingleNodeStateMachine(nsm)) {
+			currentState = getPlexilStateExprForNode(getSingleNodeUID(nsm));
+		} else {
+			currentState = getStateExpr(nsm);
+		}
+
+		return new BinaryExpr(currentState, 
 				BinaryOp.EQUAL, 
-				new UnaryExpr(UnaryOp.PRE, getStateExpr(nsm)));
+				pre(currentState));
 	}
 	
 	public static Expr isCurrentlyEndOfMacroStep() {
@@ -671,12 +826,25 @@ public class PlanToLustre {
 	 * @param t
 	 * @return
 	 */
-	public Expr createGuardWithStateCheck(Expr stateId, Transition t) {
+	private Expr createGuardWithStateCheck(NodeStateMachine nsm, Transition t) {
+		Expr currentState;
+		Expr transitionOrigin;
+		
+		if (isSingleNodeStateMachine(nsm)) {
+			// The state machine is going to use PLEXIL states directly.
+			currentState = getPlexilStateExprForNode(getSingleNodeUID(nsm));
+			transitionOrigin = toLustre(t.start.tags.get(getSingleNodeUID(nsm)));
+		} else {
+			currentState = getStateExpr(nsm);
+			transitionOrigin = new IntExpr(t.start.getIndex());
+		}
+		
+		
 		// First off, we need to have been in the start state.
 		Expr guardExpr = new BinaryExpr(
-				new UnaryExpr(UnaryOp.PRE, stateId), 
+				pre(currentState), 
 				BinaryOp.EQUAL, 
-				new IntExpr(t.start.getIndex()));
+				transitionOrigin);
 		
 		// Then the transition's guards have to apply, if any.
 		if (t.isAlwaysTaken()) {

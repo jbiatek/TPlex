@@ -276,8 +276,9 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 		// These need special tuple handling too, but the unary() and binary()
 		// methods all handle that for us. 
 		case PINT_ABS:
+			return unary(op.getArguments(), "int_abs", ILType.INTEGER);
 		case PREAL_ABS:
-			return unary(op.getArguments(), "abs", op.getUnaryArg().getType());
+			return unary(op.getArguments(), "real_abs", ILType.REAL);
 		case PINT_ADD:
 		case PREAL_ADD:
 			return binary(op.getArguments(), BinaryOp.PLUS, op.getBinaryFirst().getType());
@@ -285,23 +286,22 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 		case PREAL_DIV:
 			return binary(op.getArguments(), BinaryOp.DIVIDE, op.getBinaryFirst().getType());
 		case PINT_MAX:
+			return binary(op.getArguments(), "int_max", ILType.INTEGER);
 		case PREAL_MAX:
-			return binary(op.getArguments(), "max", 
-					op.getBinaryFirst().getType());
+			return binary(op.getArguments(), "real_max", ILType.REAL);
 		case PINT_MIN:
+			return binary(op.getArguments(), "int_min", ILType.INTEGER);
 		case PREAL_MIN:
-			return binary(op.getArguments(), "min", 
-					op.getBinaryFirst().getType());
+			return binary(op.getArguments(), "real_min", ILType.REAL);
 		case PINT_MOD:
-		case PREAL_MOD:
 			return binary(op.getArguments(), BinaryOp.MODULUS, 
-					op.getBinaryFirst().getType());
+					ILType.INTEGER);
+		case PREAL_MOD:
+			return binary(op.getArguments(), "real_mod", ILType.REAL);
 		case PINT_MUL:
 		case PREAL_MUL:
 			return binary(op.getArguments(), BinaryOp.MULTIPLY, 
 					op.getBinaryFirst().getType());
-		case PREAL_SQRT:
-			return unary(op.getArguments(), "sqrt", ILType.REAL);
 		case PINT_SUB:
 		case PREAL_SUB:
 			return binary(op.getArguments(), BinaryOp.MINUS, 
@@ -313,6 +313,9 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 		// ---------------- String operators (not supported)
 		case PSTR_CONCAT:
 			throw new RuntimeException("String concatenation not supported when translating to Lustre");
+		// ---------------- Square root isn't supported by Lustre AFAIK (non-linear)
+		case PREAL_SQRT:
+			throw new RuntimeException("Square root operator is unsupported in Lustre");
 		default:
 			throw new RuntimeException("Missing operator: "+op.getOperator());
 		}
@@ -378,7 +381,7 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 			Expr firstValue = getValueComponent(first);
 			Expr firstKnown = getKnownComponent(first);
 			Expr secondValue = getValueComponent(second);
-			Expr secondKnown = getValueComponent(second);
+			Expr secondKnown = getKnownComponent(second);
 			
 			return tuple(new NodeCallExpr(fn, firstValue, secondValue), 
 					and(firstKnown, secondKnown));

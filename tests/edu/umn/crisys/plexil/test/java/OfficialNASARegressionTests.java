@@ -281,6 +281,10 @@ public class OfficialNASARegressionTests {
 		LUSTRE_BLACKLIST.add("command2");
 		LUSTRE_BLACKLIST.add("command4");
 		LUSTRE_BLACKLIST.add("lookup2");
+		
+		// Square root operator is non-linear, I don't know if it can be 
+		// supported.
+		LUSTRE_BLACKLIST.add("TestAbsSqrt");
 	}
 
 }
