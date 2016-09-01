@@ -363,7 +363,7 @@ public class TPlex {
 			} else if (f.getName().endsWith(".lus.xml")
 						|| f.getName().endsWith(".csv")) {
 				try {
-					return processLustreTestCasesIn(f);
+					processLustreTestCasesIn(f);
 				} catch (IOException e) {
 					System.err.println("Error reading test cases in "+f.getName()+":");
 					e.printStackTrace();
