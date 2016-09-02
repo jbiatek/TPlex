@@ -124,6 +124,16 @@ public enum ILType {
     }
     
     public void strictTypeCheck(ILExpr expression) {
+    	if (expression instanceof UnknownValue) {
+    		// This is going to say UNKNOWN. As long as this is one of the
+    		// main IL types, this is okay.
+    		if (this == ILType.BOOLEAN
+    				|| this == INTEGER
+    				|| this == REAL
+    				|| this == STRING) {
+    			return;
+    		}
+    	}
     	strictTypeCheck(expression.getType());
     }
     

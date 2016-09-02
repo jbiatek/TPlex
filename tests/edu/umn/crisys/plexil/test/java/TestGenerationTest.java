@@ -18,6 +18,7 @@ import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.jkind.results.ScriptRecorderFromLustreData;
 import edu.umn.crisys.plexil.jkind.search.IncrementalTrace;
 import edu.umn.crisys.plexil.jkind.search.JKindSearch;
+import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.jkind.search.TraceProperty;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.main.TPlex.OutputLanguage;
@@ -48,6 +49,7 @@ public class TestGenerationTest {
 		}
 		
 		tplex.staticLibraries = true;
+		tplex.inferTypes = true;
 		// Just translate to IL, we'll take over for the rest
 		tplex.outputLanguage = OutputLanguage.NONE;
 		try {
@@ -67,11 +69,11 @@ public class TestGenerationTest {
 		
 		// Search for tests and check 'em
 		TestSearcher searcher = new TestSearcher(p2l, template);
-		searcher.addNodeExecutesNoParentFailObligations();
+		searcher.addTransitionCoverageObligations();
 		// Just do 1 round of searching, otherwise this will go on forever for
-		// some of these. 
+		// some of these. Give each test 20 seconds.
 		searcher.turnOffIncrementalSearch();
-		searcher.go();
+		searcher.go(new JKindSettings(20, Integer.MAX_VALUE));
 		
 		searcher.testAllTheTests();
 		
@@ -144,6 +146,12 @@ public class TestGenerationTest {
 							ilPlan, 
 							translator.getTranslationMap()));
 			
+		}
+
+
+		@Override
+		public void goalFoundToBeImpossible(TraceProperty property) {
+			// Nothing to do about that. 
 		}
 		
 		

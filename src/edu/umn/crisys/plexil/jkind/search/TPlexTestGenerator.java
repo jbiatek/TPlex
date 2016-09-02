@@ -87,5 +87,10 @@ public class TPlexTestGenerator extends JKindSearch {
 		// Superclass will log this, we've got nothing to do. 
 	}
 
+	@Override
+	public void goalFoundToBeImpossible(TraceProperty property) {
+		// Oh, well nothing can be done about that. 
+	}
+
 
 }

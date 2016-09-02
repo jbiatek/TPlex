@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
@@ -17,7 +16,7 @@ import edu.umn.crisys.util.Util;
 import enums.Generation;
 import enums.Simulation;
 import jkind.SolverOption;
-import jkind.analysis.StaticAnalyzer;
+import jkind.api.results.JKindResult;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.builders.NodeBuilder;
@@ -42,6 +41,7 @@ public abstract class JKindSearch {
 	private PlanToLustre translator;
 	private Set<TraceProperty> requestedGoals = new HashSet<>();
 	private Set<TraceProperty> unmetGoals = new HashSet<>();
+	private Set<TraceProperty> impossibleGoals = new HashSet<>();
 	private Set<IncrementalTrace> chosenTraces = new HashSet<>();
 	private Set<IncrementalTrace> redundantTraces = new HashSet<>();
 	private Set<TraceProperty> nonPrefixAlreadyRun = new HashSet<>();
@@ -111,8 +111,8 @@ public abstract class JKindSearch {
 					Program init = simplify(addProperties(lustreProgram, 
 							Arrays.asList(p), translator));
 					JKindSettings.staticCheckLustreProgram(init, SolverOption.Z3);
-					Map<String, LustreTrace> result = jkind.execute(init, System.out);
-					fileResults(Optional.empty(), result, Arrays.asList(p));				
+					JKindResult result = jkind.execute(init, System.out);
+					fileResults(Optional.empty(), init, result, Arrays.asList(p));				
 				});
 			}
 		}
@@ -125,10 +125,33 @@ public abstract class JKindSearch {
 		
 		// Prepare the work queue
 		workQueue = new ForkJoinPool();
+		// But don't start searching just yet -- we'll do a single search in
+		// this thread first. That might be enough.
+		boolean oldIncrementalSearchValue = doIncrementalSearch;
+		doIncrementalSearch = false;
 		
-		// We want to just run the initial goals in this thread, it'll spin off
-		// new threads. 
+		// Run the "worker thread" in this thread, with a search that just tries
+		// everything. 
 		workerThread(generateMonolithicSearchStep());
+		
+		// Set search flag back to how it was
+		doIncrementalSearch = oldIncrementalSearchValue;
+		// If we're not incrementally searching, there's nothing more to do
+		if ( ! doIncrementalSearch) {
+			System.out.println("Incremental search is disabled, search is finished.");
+			return;
+		}
+		// Did we find everything?
+		if (unmetGoals.isEmpty()) {
+			System.out.println("All search goals were found, search is finished.");
+			return;
+		}
+		// Nope. Let's start searching incrementally.
+		for (IncrementalTrace foundTrace : chosenTraces) {
+			addTestCaseExtensionToQueue(foundTrace);
+		}
+		
+		
 		
 		System.out.println("Main thread now sleeping until work queue empties.");
 		// We can now wait until the work queue is emptied
@@ -177,8 +200,9 @@ public abstract class JKindSearch {
 		JKindTestRun testRun = new JKindTestRun();
 		// Do any properties see stuff to do for this trace?
 		unmetGoals.forEach(goal -> {
-			if (trace.propertyHasntBeenTriedYet(goal) && 
-					goal.traceLooksReachable(trace)) {
+			if ( ! impossibleGoals.contains(goal) 
+					&& trace.propertyHasntBeenTriedYet(goal) 
+					&& goal.traceLooksReachable(trace)) {
 				testRun.add(trace, goal);
 			} 
 			goal.createIntermediateGoalsFrom(trace, translator).stream()
@@ -256,12 +280,6 @@ public abstract class JKindSearch {
 		}
 	}
 	
-	public abstract void newGoalFound(IncrementalTrace foundTrace, LustreTrace extendedTrace);
-	
-	public abstract void redundantGoalFound(IncrementalTrace foundTrace, LustreTrace extendedTrace);
-	
-	public abstract void noTestFound(Optional<IncrementalTrace> prefix, TraceProperty property);
-	
 	private synchronized void fileFailure(Optional<IncrementalTrace> prefix, TraceProperty prop) {
 		if (prefix.isPresent()) {
 			prefix.get().addAsFailure(prop);
@@ -270,7 +288,22 @@ public abstract class JKindSearch {
 		}
 		noTestFound(prefix, prop);
 	}
+
+	private synchronized void fileImpossible(TraceProperty prop) {
+		// The solver proved that this property is never true under initial
+		// conditions. Don't look for it any more, and file it as such.
+		unmetGoals.remove(prop);
+		impossibleGoals.add(prop);
+		goalFoundToBeImpossible(prop);
+	}
 	
+	public abstract void newGoalFound(IncrementalTrace foundTrace, LustreTrace extendedTrace);
+	
+	public abstract void redundantGoalFound(IncrementalTrace foundTrace, LustreTrace extendedTrace);
+	
+	public abstract void noTestFound(Optional<IncrementalTrace> prefix, TraceProperty property);
+	
+	public abstract void goalFoundToBeImpossible(TraceProperty property);
 	
 	public void workerThread(JKindTestRun run) {
 		searchAllNoPrefix(run);
@@ -285,8 +318,8 @@ public abstract class JKindSearch {
 			Program init = simplify(addProperties(lustreProgram, 
 					run.getPropertiesWithoutPrefix(), translator));
 			JKindSettings.staticCheckLustreProgram(init, SolverOption.Z3);
-			Map<String, LustreTrace> result = jkind.execute(init, System.out);
-			fileResults(Optional.empty(), result, run.getPropertiesWithoutPrefix());
+			JKindResult result = jkind.execute(init, System.out);
+			fileResults(Optional.empty(), init, result, run.getPropertiesWithoutPrefix());
 		}
 	}
 
@@ -299,8 +332,8 @@ public abstract class JKindSearch {
 				prefix.getFullTrace());
 		
 		JKindSettings.staticCheckLustreProgram(prog, SolverOption.Z3);
-		Map<String, LustreTrace> result = jkind.execute(prog, System.out);
-		fileResults(Optional.of(prefix), result, propertiesToTry);
+		JKindResult result = jkind.execute(prog, System.out);
+		fileResults(Optional.of(prefix), prog, result, propertiesToTry);
 	}
 	
 	private void printNullValueReport(String name, LustreTrace trace) {
@@ -330,29 +363,37 @@ public abstract class JKindSearch {
 	}
 	
 	private void fileResults(Optional<IncrementalTrace> prefix, 
-			Map<String,LustreTrace> result, Collection<TraceProperty> attemptedProps) {
+			Program lustre,
+			JKindResult result, 
+			Collection<TraceProperty> attemptedProps) {
 		int found = 0;
 		int notFound = 0;
 		
 //		for (Entry<String, LustreTrace> e : result.entrySet()) {
 //			printNullValueReport(e.getKey(), e.getValue());
 //		}
+		Map<String, LustreTrace> tests = JKindSettings.getTestCases(lustre, result);
+		Set<String> impossible = JKindSettings.getUntestableProperties(result);
 		
 		for (TraceProperty prop : attemptedProps) {
 			// Did we get this one? 
-			if (result.containsKey(prop.getPropertyId())
-					&& result.get(prop.getPropertyId()) != null) {
+			if (tests.containsKey(prop.getPropertyId())
+					&& tests.get(prop.getPropertyId()) != null) {
 				// Yes we did.
 				IncrementalTrace foundTrace = new IncrementalTrace(
-						result.get(prop.getPropertyId()), 
+						tests.get(prop.getPropertyId()), 
 						prefix,
 						Util.asHashSet(prop));
 				LustreTrace reEnumed = reEnumAndExtend(
 						foundTrace.getFullTrace(), lustreProgram);
 				fileSuccess(foundTrace, reEnumed);
 				found++;
+			} else if (impossible.contains(prop.getPropertyId())
+					&&  ! prefix.isPresent()) {
+				fileImpossible(prop);
 			} else {
-				// Can't get this one. Don't try this combination again.
+				// This one wasn't reachable from here, probably due to a
+				// timeout. Make sure we don't try this again.
 				fileFailure(prefix, prop);
 				notFound++;
 			}

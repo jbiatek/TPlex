@@ -31,6 +31,9 @@ public class LustreComplianceChecker extends TestOracle {
 		if (macrostepEnded == null) {
 			throw new RuntimeException("No macrostep data given");
 		}
+		if (macrostepEnded.getValues().size() == 0) {
+			throw new RuntimeException("Lustre trace is empty, nothing is being tested");
+		}
 		this.mapper = mapper;
 	}
 

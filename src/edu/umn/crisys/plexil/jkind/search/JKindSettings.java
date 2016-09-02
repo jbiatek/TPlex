@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -117,18 +119,37 @@ public class JKindSettings {
 		this.bmc = bmc;
 		this.pdr_threads = pdr_threads;
 	}
+	
+	public static Map<String, LustreTrace> getTestCases(Program p, JKindResult result) {
+		Map<String, LustreTrace> output = new HashMap<String, LustreTrace>();
+		for (PropertyResult pr : result.getPropertyResults()) {
+			if (pr.getStatus().equals(Status.INVALID)) {
+				InvalidProperty ipr = (InvalidProperty) pr.getProperty();
+				Counterexample ce = ipr.getCounterexample();
 
-	public Map<String, LustreTrace> execute(Program p) {
+				LustreTrace testCase = generateInputValues(ce, p);
+				output.put(pr.getName(), testCase);
+			}
+		}
+		return output;
+	}
+	
+	public static Set<String> getUntestableProperties(JKindResult result) {
+		return result.getPropertyResults().stream()
+			.filter(p -> p.getStatus() == Status.VALID)
+			.map(p -> p.getName())
+			.collect(Collectors.toSet());
+	}
+
+	public JKindResult execute(Program p) {
 		return execute(p, Optional.empty());
 	}
 	
-	public Map<String, LustreTrace> execute(Program p, PrintStream out) {
+	public JKindResult execute(Program p, PrintStream out) {
 		return execute(p, Optional.of(out));
 	}
 
-	public Map<String, LustreTrace> execute(Program p, Optional<PrintStream> printer) {
-		Map<String, LustreTrace> output = new HashMap<String, LustreTrace>();
-
+	public JKindResult execute(Program p, Optional<PrintStream> printer) {
 		JKindResult result = new JKindResult(null);
 		NullProgressMonitor monitor = new NullProgressMonitor();
 
@@ -159,19 +180,7 @@ public class JKindSettings {
 		printer.ifPresent( out -> out.println("------------JKind checked "
 				+ result.getPropertyResults().size() + " properties"));
 
-		for (PropertyResult pr : result.getPropertyResults()) {
-			if (pr.getStatus().equals(Status.INVALID)) {
-				InvalidProperty ipr = (InvalidProperty) pr.getProperty();
-				Counterexample ce = ipr.getCounterexample();
-
-				LustreTrace testCase = generateInputValues(ce, p);
-				output.put(pr.getName(), testCase);
-			} else {
-				output.put(pr.getName(), null);
-			}
-		}
-		return output;
-
+		return result;
 	}
 	
 	// Generate input values for the program from a counter-example

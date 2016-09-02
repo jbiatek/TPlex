@@ -200,7 +200,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("TestEndCondition", "lustre");
+		doSingleTest("repeat5", "lustre");
 	}
 	
 	@Test
