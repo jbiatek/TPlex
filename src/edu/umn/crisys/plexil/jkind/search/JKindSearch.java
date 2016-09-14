@@ -83,7 +83,7 @@ public abstract class JKindSearch {
 	}
 
 	public void go() {
-		go(JKindSettings.createBMCOnly(Integer.MAX_VALUE, 20));
+		go(new JKindSettings(Integer.MAX_VALUE, 20));
 	}
 	
 	public void addNodeExecutesNoParentFailObligations() {

@@ -591,7 +591,7 @@ public class TPlex {
 					searcher.addNodeExecutesNoParentFailObligations();					
 				}
 				
-				searcher.go(JKindSettings.createBMCOnly(
+				searcher.go(new JKindSettings(
 						Integer.MAX_VALUE, lustreIncrementalDepth));
 			}
 		}

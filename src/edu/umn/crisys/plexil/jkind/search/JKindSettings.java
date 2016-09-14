@@ -27,11 +27,6 @@ import lustre.LustreTrace;
 
 public class JKindSettings {
 	
-	public static JKindSettings createBMCOnly(int timeout, int iteration) {
-		return new JKindSettings(timeout, iteration, false, false, true, 0);
-	}
-	
-	
 	/**
 	 * Statically check a Lustre program with JKind's static checker. However,
 	 * this method doesn't let JKind do a System.exit(), instead it throws
