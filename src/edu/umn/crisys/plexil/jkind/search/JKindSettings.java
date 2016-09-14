@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import edu.umn.crisys.util.Util;
+import edu.umn.crisys.util.Util.SystemExitSuppressedException;
 import jkind.SolverOption;
 import jkind.analysis.StaticAnalyzer;
 import jkind.api.JKindApi;
@@ -37,49 +39,18 @@ public class JKindSettings {
 	 * @return
 	 */
 	public static void staticCheckLustreProgram(Program p, SolverOption opt) {
-		SysExitStopper stopper = new SysExitStopper();
-		stopper.suppressSystemExit();
+		Util.suppressSystemExit();
 		try {
 			StaticAnalyzer.check(p, opt);
-		} catch (edu.umn.crisys.plexil.jkind.search.JKindSettings
-				.SysExitStopper.SystemExitSuppressedException se) {
+		} catch (SystemExitSuppressedException se) {
 			throw new RuntimeException("Static analysis of Lustre program failed. \n"
 					+ "The errors are probably above this message.\n"
 					+ "Here is the program that was checked: \n\n"
 					+ p, se);
 		}
-		stopper.returnToNormalOperation();
+		Util.returnSystemExitToNormal();
 	}
-	
-	private static class SysExitStopper {
-		
-		private SecurityManager old = null;
-		
-		public static class SystemExitSuppressedException extends SecurityException {
-			private static final long serialVersionUID = -3036213945357116554L;
 
-			public SystemExitSuppressedException() {
-				super("System.exit() supressed");
-			}
-		}
-		
-		public void suppressSystemExit() {
-			old = System.getSecurityManager();
-			final SecurityManager sm = new SecurityManager() {
-				@Override
-				public void checkPermission(Permission permission) {
-					if (permission.getName().contains("exitVM")) {
-						throw new SystemExitSuppressedException();
-					}
-				}
-			};
-			System.setSecurityManager(sm);
-		}
-		
-		public void returnToNormalOperation() {
-			System.setSecurityManager(old);
-		}
-	}
 	
 	/*private final int timeout = 100;
 	private final int iteration = 200;
