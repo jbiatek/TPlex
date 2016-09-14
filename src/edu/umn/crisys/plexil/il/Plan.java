@@ -17,8 +17,15 @@ import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
+import edu.umn.crisys.plexil.il.action.AssignAction;
+import edu.umn.crisys.plexil.il.action.CommandAction;
+import edu.umn.crisys.plexil.il.action.CompositeAction;
+import edu.umn.crisys.plexil.il.action.EndMacroStep;
 import edu.umn.crisys.plexil.il.action.ILActionVisitor;
 import edu.umn.crisys.plexil.il.action.PlexilAction;
+import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
+import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
@@ -189,6 +196,62 @@ public class Plan {
 	            }
 	        }
 	    }
+	}
+	
+	public <P> void visitAllExpressions(ILExprVisitor<P, ?> visitor, P param) {
+		visitAllGuards(visitor, param);
+		// We also want to visit expressions inside actions.
+		ILActionVisitor<P,Void> exprVisitor = new ILActionVisitor<P, Void>() {
+
+			@Override
+			public Void visitAlsoRunNodes(AlsoRunNodesAction run, P param) {
+				// No expressions in these
+				return null;
+			}
+
+			@Override
+			public Void visitAssign(AssignAction assign, P param) {
+				assign.getLHS().accept(visitor, param);
+				assign.getRHS().accept(visitor, param);
+				return null;
+			}
+
+			@Override
+			public Void visitCommand(CommandAction cmd, P param) {
+				cmd.getName().accept(visitor, param);
+				cmd.getArgs().forEach(e -> e.accept(visitor, param));
+				cmd.getHandle().accept(visitor, param);
+				cmd.getPossibleLeftHandSide().ifPresent(e -> e.accept(visitor, param));
+				return null;
+			}
+
+			@Override
+			public Void visitEndMacroStep(EndMacroStep end, P param) {
+				// No expressions here. 
+				return null;
+			}
+
+			@Override
+			public Void visitRunLibraryNode(RunLibraryNodeAction lib, P param) {
+				lib.getLibNode().accept(visitor, param);
+				lib.getLibNode().getAliases().values().forEach(e -> e.accept(visitor, param));
+				return null;
+			}
+
+			@Override
+			public Void visitComposite(CompositeAction composite, P param) {
+				composite.getActions().forEach(a -> a.accept(this, param));
+				return null;
+			}
+
+			@Override
+			public Void visitUpdate(UpdateAction update, P param) {
+				update.getUpdates().forEach(pair -> pair.second.accept(visitor, param));
+				update.getHandle().accept(visitor, param);
+				return null;
+			}
+		};
+		visitAllActions(exprVisitor, param);
 	}
 	
 	public <P> void filterActions(ILActionVisitor<P,Boolean> visitor, final P param) {
