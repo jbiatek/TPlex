@@ -272,6 +272,18 @@ public class PlanToLustre {
 		Expr cmdUnknown = toLustre(CommandHandleState.UNKNOWN, 
 				ILType.COMMAND_HANDLE);
 		
+		// When we do grab a new value from the raw input, there are some 
+		// restrictions still. Specifically, the official PLEXIL interpreter
+		// will error out if an environment attempts to set a handle to 
+		// UNKNOWN. We will emulate this behavior: if the environment tries
+		// to pass in UNKNOWN, just leave it as whatever it is. 
+		Expr readRawValue = 
+				ite(equal(rawId, toLustre(CommandHandleState.UNKNOWN)),
+						// It's passing an UNKNOWN, not allowed. Stay the same.
+						pre(id(constrainedIdName)),
+						// Not UNKNOWN, take the raw value.
+						rawId);
+		
 		// Build these guards into an equation. 
 		Equation e = new Equation(id(constrainedIdName), 
 				// Starts out UNKNOWN,
@@ -282,7 +294,7 @@ public class PlanToLustre {
 						// Otherwise, if it's the macrostep end, take a new raw
 						// value, if not stay the same. 
 						ite(isCurrentlyEndOfMacroStep(),
-								rawId,
+								readRawValue,
 								pre(id(constrainedIdName))))));
 		nb.addEquation(e);
 		
