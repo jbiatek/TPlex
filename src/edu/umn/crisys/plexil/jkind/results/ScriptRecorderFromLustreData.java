@@ -89,34 +89,30 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 		for (ILVariable cmdHandle : lastKnownCommand.keySet()) {
 			NodeUID uid = cmdHandle.getNodeUID();
 			log("Node "+uid+" is being examined.");
-			// As long as it's not INACTIVE or WAITING, Lustre could 
-			// respond to it. (Lustre isn't allowed to respond to SKIPPED or
-			// precondition-failed nodes either, but in those cases there 
-			// either won't be a command to respond to, or our "response" 
-			// should just be setting an unknown handle to unknown again.)
-			NodeState state = (NodeState) sim.eval(new GetNodeStateExpr(uid));
-			if (state != NodeState.INACTIVE 
-					&& state != NodeState.WAITING) {
-				// Respond to this command with whatever Lustre said.
-				FunctionCall thatNodesCall = lastKnownCommand.get(cmdHandle);
-				CommandHandleState value = readCommandHandleFromTrace(cmdHandle); 
+			
+			CommandHandleState current = (CommandHandleState)sim.eval(cmdHandle);
+			CommandHandleState value = readCommandHandleFromTrace(cmdHandle);
+			
+			if (current == value) continue;
+			
+			if (value != CommandHandleState.UNKNOWN) {
+				FunctionCall thatNodesCall = lastKnownCommand.get(cmdHandle); 
 				log(uid+" handle is set to "+value+" in Lustre.");
 				log("Its last known command was "+thatNodesCall);
 				if (thatNodesCall == null) {
 					log("So it is being skipped.");
 					continue;
 				}
-				
+						
 				CommandAck ack = commandAck(value, thatNodesCall.getName(), thatNodesCall.getArgs());
 				log("Event generated as a response: "+ack);
 				
 				getEnvironment().applyEvent(ack);
 				currentStepEvents.addEvent(ack);
-			} else {
-				log("It's in state "+state+" so it is being skipped.");
-			}
+			} 
+				
 		}
-	};
+	}
 
 	private static void log(String s) {
 		if (JavaPlan.DEBUG) {
@@ -153,11 +149,15 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 		log("Received request for lookup "+stateName+" with args "+join(args));
 		
 		PValue lustreValue = readLookupFromTrace(stateName.getString());
-		log("Lustre says it should be "+lustreValue+".");
-		// Pretend that we always had this value all along...
-		StateChange stateChangeEvent = stateChange(lustreValue, stateName.getString(), args);
-		getEnvironment().applyEvent(stateChangeEvent);
-		currentStepEvents.addEvent(stateChangeEvent);
+		
+		if (!getEnvironment().lookupNow(stateName, args).equalTo(lustreValue).isTrue())
+		{				
+			log("Lustre says it should be "+lustreValue+".");
+			// Pretend that we always had this value all along...
+			StateChange stateChangeEvent = stateChange(lustreValue, stateName.getString(), args);
+			getEnvironment().applyEvent(stateChangeEvent);
+			currentStepEvents.addEvent(stateChangeEvent);
+		}
 		
 		return getEnvironment().lookupNow(stateName, args);
 	}
