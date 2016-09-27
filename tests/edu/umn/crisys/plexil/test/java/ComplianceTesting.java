@@ -31,6 +31,7 @@ public class ComplianceTesting {
 		BufferedReader in = new OfficialPlexilExecutive(plan)
 				.setScript(script)
 				.setLibDir(libDir)
+				.setDebugFile(new File(RegressionTest.RESOURCES, "Debug.cfg"))
 				.generateLog();
 		return PlanState.parseLogFile(in);
 	}

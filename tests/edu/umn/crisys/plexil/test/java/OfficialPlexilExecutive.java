@@ -12,11 +12,10 @@ import java.util.stream.Collectors;
 
 public class OfficialPlexilExecutive {
 
-	public static final File DEBUG_CFG = new File(RegressionTest.RESOURCES, "Debug.cfg");
-	
 	private File plx;
 	private Optional<File> psx = Optional.empty();
 	private Optional<File> libDir = Optional.empty();
+	private Optional<File> debugFile = Optional.empty();
 	private List<File> libs = new ArrayList<>();
 	
 	public OfficialPlexilExecutive(File plx) {
@@ -40,6 +39,16 @@ public class OfficialPlexilExecutive {
 	
 	public OfficialPlexilExecutive setScript(Optional<File> psxFile) {
 		this.psx = psxFile;
+		return this;
+	}
+	
+	public OfficialPlexilExecutive setDebugFile(File debugFile) {
+		this.debugFile = Optional.of(debugFile);
+		return this;
+	}
+	
+	public OfficialPlexilExecutive setDebugFile(Optional<File> debugFile) {
+		this.debugFile = debugFile;
 		return this;
 	}
 	
@@ -85,13 +94,15 @@ public class OfficialPlexilExecutive {
 		List<String> args = new ArrayList<>();
 		args.add("plexiltest");
 		args.add("-q");
-		args.add("-d");
-		args.add(DEBUG_CFG.getPath());
 		args.add("-p");
 		args.add(plx.getPath());
 		if (psx.isPresent()) {
 			args.add("-s");
 			args.add(psx.get().getPath());
+		}
+		if (debugFile.isPresent()) {
+			args.add("-d");
+			args.add(debugFile.get().getPath());
 		}
 		if (libDir.isPresent()) {
 			args.add("-L");

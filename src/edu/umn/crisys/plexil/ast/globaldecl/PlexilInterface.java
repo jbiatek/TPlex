@@ -87,5 +87,27 @@ public class PlexilInterface {
         return true;
     }
 
+    /**
+     * If defined, get the type of the named variable. Otherwise, UNKNOWN
+     * is returned. 
+     * 
+     * @param varName
+     * @return
+     */
+    public PlexilType getType(String varName) {
+    	if (isDefined) {
+    		return varsIn.entrySet().stream()
+    				.filter(e -> e.getKey().equals(varName))
+    				.findFirst()
+    				.map(e -> e.getValue())
+    				.orElse(varsInOut.entrySet().stream()
+    						.filter(e -> e.getKey().equals(varName))
+    						.findFirst()
+    						.map(e -> e.getValue())
+    						.orElse(PlexilType.UNKNOWN));
+    	} else {
+    		return PlexilType.UNKNOWN;
+    	}
+    }
     
 }

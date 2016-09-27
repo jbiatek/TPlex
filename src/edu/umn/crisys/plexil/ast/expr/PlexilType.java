@@ -47,10 +47,20 @@ public enum PlexilType {
     	return this != NODEREF && this.isSpecificType();
     }
     
+    /**
+     * Convert this PLEXIL type into an ILType. This method is more permissive
+     * than toILType(): if the PLEXIL type is not legal in the IL, it will
+     * return the UNKNOWN type instead of throwing an exception. 
+     */
     public ILType toILTypeIfPossible() {
     	if (isLegalInIL()) return toILType(); else return ILType.UNKNOWN;
     }
     
+    /**
+     * Convert this PLEXIL type into an ILType. If it is not a legal ILType,
+     * an exception is thrown. You can check first with isLegalInIL(), or use
+     * toILTypeIfPossible() which will not throw an exception. 
+     */
     public ILType toILType() {
     	switch(this) {
 		case BOOLEAN: return ILType.BOOLEAN;

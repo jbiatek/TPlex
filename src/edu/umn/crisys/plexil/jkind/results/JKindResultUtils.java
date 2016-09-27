@@ -348,9 +348,6 @@ public class JKindResultUtils {
 	public static Optional<PlexilScript> translateToScript(String name, LustreTrace trace,
 			ReverseTranslationMap map, Plan ilPlan) {
 		
-		JavaPlan.DEBUG = true;
-		ScriptedEnvironment.DEBUG = true;
-
 		// Use the recorder as the environment, it will create proper events
 		// from the Lustre trace that we give it. 
 		ScriptRecorderFromLustreData recorder = new ScriptRecorderFromLustreData(trace, map);

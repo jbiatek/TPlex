@@ -278,7 +278,7 @@ public class PlanToLustre {
 		// UNKNOWN. We will emulate this behavior: if the environment tries
 		// to pass in UNKNOWN, just leave it as whatever it is. 
 		Expr readRawValue = 
-				ite(equal(rawId, toLustre(CommandHandleState.UNKNOWN)),
+				ite(equal(rawId, cmdUnknown),
 						// It's passing an UNKNOWN, not allowed. Stay the same.
 						pre(id(constrainedIdName)),
 						// Not UNKNOWN, take the raw value.
