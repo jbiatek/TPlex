@@ -14,6 +14,7 @@ import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ILOperation;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.LookupExpr;
 import edu.umn.crisys.plexil.il.expr.NamedCondition;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExpr;
@@ -33,10 +34,10 @@ import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
 import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
+import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 	
@@ -194,7 +195,9 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
         // If it has a type, it needs to be cast to that type, because the
         // external world will just return a PValue. 
         if (lookup.getType().isSpecificType()) {
-        	return JExpr.cast(cm.ref(lookup.getType().getTypeClass()), jlookup);
+        	return JExpr.cast(cm.ref(lookup.getType().getTypeClass()), 
+        			jlookup.invoke("castTo").arg(cm.ref(ILType.class)
+        					.staticRef(lookup.getType().name())));
         } else {
         	return jlookup;
         }
@@ -326,57 +329,8 @@ class IL2Java extends ILExprVisitor<JCodeModel, JExpression> {
 	}
 
 	@Override
-	public JExpression visit(BooleanValue bool, JCodeModel cm) {
-		return ILExprToJava.PValueToJava(bool, cm);
-	}
-
-	@Override
-	public JExpression visit(IntegerValue integer,
-			JCodeModel cm) {
-		return ILExprToJava.PValueToJava(integer, cm);
-	}
-
-	@Override
-	public JExpression visit(RealValue real, JCodeModel cm) {
-		return ILExprToJava.PValueToJava(real, cm);
-	}
-
-	@Override
-	public JExpression visit(StringValue string, JCodeModel cm) {
-		return ILExprToJava.PValueToJava(string, cm);
-	}
-
-	@Override
-	public JExpression visit(UnknownValue unk, JCodeModel cm) {
-		return ILExprToJava.PValueToJava(unk, cm);
-	}
-
-	@Override
-	public JExpression visit(PValueList<?> list, JCodeModel cm) {
-		return ILExprToJava.PValueToJava(list, cm);
-	}
-
-	@Override
-	public JExpression visit(CommandHandleState state,
-			JCodeModel cm) {
-		return ILExprToJava.PValueToJava(state, cm);
-	}
-
-	@Override
-	public JExpression visit(NodeFailureType type,
-			JCodeModel cm) {
-		return ILExprToJava.PValueToJava(type, cm);
-	}
-
-	@Override
-	public JExpression visit(NodeOutcome outcome,
-			JCodeModel cm) {
-		return ILExprToJava.PValueToJava(outcome, cm);
-	}
-
-	@Override
-	public JExpression visit(NodeState state, JCodeModel cm) {
-		return ILExprToJava.PValueToJava(state, cm);
+	public JExpression visit(PValue value, JCodeModel cm) {
+		return ILExprToJava.PValueToJava(value, cm);
 	}
 
 	@Override

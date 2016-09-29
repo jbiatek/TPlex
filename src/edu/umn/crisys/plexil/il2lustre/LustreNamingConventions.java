@@ -26,7 +26,10 @@ import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 import edu.umn.crisys.util.NameUtils;
 
 public class LustreNamingConventions {
@@ -104,8 +107,8 @@ public class LustreNamingConventions {
 			Optional<ReverseTranslationMap> stringMap) {
 		if (enumValue.equals(P_TRUE_ID)) return BooleanValue.get(true);
 		if (enumValue.equals(P_FALSE_ID)) return BooleanValue.get(false);
-		if (enumValue.equals(P_UNKNOWN_ID)) return UnknownValue.get();
-		if (enumValue.equals(UNKNOWN_STRING)) return UnknownValue.get();
+		if (enumValue.equals(P_UNKNOWN_ID)) return UnknownBool.get();
+		if (enumValue.equals(UNKNOWN_STRING)) return UnknownString.get();
 		if (enumValue.equals(EMPTY_STRING)) return StringValue.get("");
 		
 		for (NodeState state : NodeState.values()) {
@@ -137,13 +140,17 @@ public class LustreNamingConventions {
 	
 	public static PValue reverseTranslateNumber(String valuePart, 
 			String knownPart, ILType type) {
-		if (knownPart.equals("false")) {
-			return UnknownValue.get();
-		}
 		if (type == ILType.INTEGER) {
-			return IntegerValue.get(Integer.parseInt(valuePart));
+			if (knownPart.equals("false")) {
+				return UnknownInt.get();
+			} else {
+				return IntegerValue.get(Integer.parseInt(valuePart));
+			}
 		}
 		if (type == ILType.REAL) {
+			if (knownPart.equals("false")) {
+				return UnknownReal.get();
+			}
 			if (valuePart.contains("/")) {
 				// The Lustre traces sometimes contain fractions :P
 				// We need to turn it back into a double.

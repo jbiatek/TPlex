@@ -8,7 +8,7 @@ import java.util.Set;
 
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 import edu.umn.crisys.util.NameUtils;
 
 public class ReverseTranslationMap {
@@ -70,7 +70,7 @@ public class ReverseTranslationMap {
 	
 	public Optional<PString> getPStringFromEnumId(String enumId) {
 		if (enumId.equals(LustreNamingConventions.UNKNOWN_STRING)) {
-			return Optional.of(UnknownValue.get());
+			return Optional.of(UnknownString.get());
 		}
 		return Optional.ofNullable(allExpectedStrings.get(enumId));
 	}

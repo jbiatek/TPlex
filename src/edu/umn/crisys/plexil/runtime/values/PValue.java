@@ -24,18 +24,16 @@ public interface PValue extends ILExpr, PlexilExpr {
 	}
 	
 	/**
-	 * Performs, essentially, Java's == operator but with PLEXIL logic. That is,
-	 * if either one is unknown, return UNKNOWN, but otherwise they
-	 * must be the exact same object. Just as in Java, sometimes this is okay
-	 * for checking equality but sometimes not (e.g. 1 == 1 but "hello" doesn't
-	 * always == "hello" in Java). 
+	 * Performs, essentially, Java's equals() operator but with PLEXIL logic. 
+	 * That is, if either one is unknown, return UNKNOWN, but otherwise return the
+	 * result of the equals() operator. 
 	 * 
 	 * @param o
 	 * @return a PBoolean answer
 	 */
 	default public PBoolean equalTo(PValue o) {
-		if (this.isUnknown() || o.isUnknown()) return UnknownValue.get();
-		else return BooleanValue.get(this == o);
+		if (this.isUnknown() || o.isUnknown()) return UnknownBool.get();
+		else return BooleanValue.get(this.equals(o));
 	}
 	
 	/**

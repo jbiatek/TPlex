@@ -35,135 +35,115 @@ public class RealValue implements PReal {
 	}
 	
 	@Override
-	public boolean isReal() {
-		return true; // yes, this is real
-	}
-
-	@Override
-	public PInteger castToInteger() {
-		return IntegerValue.get((int) value);
-	}
-
-	@Override
-	public PReal castToReal() {
-		return this; // already a real;
-	}
-
-	@Override
-	public int getIntValue() {
-		return (int) value;
-	}
-
-	@Override
 	public double getRealValue() {
 		return value;
 	}
 
 	@Override
-	public PBoolean gt(PNumeric o) {
+	public PBoolean gt(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		return BooleanValue.get(value > o.getRealValue());
 	}
 
 	@Override
-	public PBoolean ge(PNumeric o) {
+	public PBoolean ge(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		return BooleanValue.get(value >= o.getRealValue());
 	}
 
 	@Override
-	public PBoolean lt(PNumeric o) {
+	public PBoolean lt(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		return BooleanValue.get(value < o.getRealValue());
 	}
 
 	@Override
-	public PBoolean le(PNumeric o) {
+	public PBoolean le(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		return BooleanValue.get(value <= o.getRealValue());
 	}
 
 	@Override
-	public PNumeric add(PNumeric o) {
+	public PReal add(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get(value + o.getRealValue());
 	}
 
 	@Override
-	public PNumeric sub(PNumeric o) {
+	public PReal sub(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get( value - o.getRealValue());
 	}
 
 	@Override
-	public PNumeric mul(PNumeric o) {
+	public PReal mul(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get(value * o.getRealValue());
 	}
 
 	@Override
-	public PNumeric div(PNumeric o) {
+	public PReal div(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get(value / o.getRealValue());
 	}
 
 	@Override
-	public PNumeric mod(PNumeric o) {
+	public PReal mod(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get(value % o.getRealValue());
 	}
 
 	@Override
-	public PNumeric max(PNumeric o) {
+	public PReal max(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get(Math.max(value, o.getRealValue()));
 	}
 
 	@Override
-	public PNumeric min(PNumeric o) {
+	public PReal min(PReal o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownReal.get();
 		}
 		return RealValue.get(Math.max(value, o.getRealValue()));
 	}
 
 	@Override
-	public PNumeric sqrt() {
+	public PReal sqrt() {
 		return RealValue.get(Math.sqrt(value));
 	}
 
 	@Override
-	public PNumeric abs() {
+	public PReal abs() {
 		return RealValue.get(Math.abs(value));
 	}
 
 	@Override
 	public PBoolean equalTo(PValue o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
-		if (o instanceof PNumeric) {
-			PNumeric other = (PNumeric) o;
+		if (o instanceof PReal) {
+			PReal other = (PReal) o;
 			return BooleanValue.get(value == other.getRealValue());
 		}
 		return BooleanValue.get(false);
@@ -176,11 +156,9 @@ public class RealValue implements PReal {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof PNumeric) {
-			PNumeric other = (PNumeric) o;
+		if (o instanceof PReal) {
+			PReal other = (PReal) o;
 			return other.isKnown() && this.value == other.getRealValue();
-		} else if (o instanceof Double) {
-		    return ((Double) value).equals(o);
 		}
 		return false;
 	}
@@ -213,6 +191,52 @@ public class RealValue implements PReal {
 	@Override
 	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
 		return v.visit(this, param);
+	}
+
+	private boolean outOfIntRange() {
+		return value > Integer.MAX_VALUE || value < Integer.MIN_VALUE;
+	}
+	
+	@Override
+	public PInteger ceil() {
+		if (outOfIntRange()) {
+			return UnknownInt.get();
+		}
+		return IntegerValue.get((int)Math.ceil(value));
+	}
+
+	@Override
+	public PInteger floor() {
+		if (outOfIntRange()) {
+			return UnknownInt.get();
+		}
+		return IntegerValue.get((int)Math.floor(value));
+	}
+
+	@Override
+	public PInteger round() {
+		if (outOfIntRange()) {
+			return UnknownInt.get();
+		}
+		return IntegerValue.get((int)Math.round(value));
+	}
+
+	@Override
+	public PInteger trunc() {
+		if (outOfIntRange()) {
+			return UnknownInt.get();
+		}
+		return value < 0 ? ceil() : floor();
+	}
+
+	@Override
+	public PInteger real_to_int() {
+		if (outOfIntRange()) {
+			return UnknownInt.get();
+		}
+		return value - (int)value == 0 ? 
+				IntegerValue.get((int)value)
+				: UnknownInt.get();
 	}
 
 }

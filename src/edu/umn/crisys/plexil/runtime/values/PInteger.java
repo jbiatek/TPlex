@@ -1,13 +1,21 @@
 package edu.umn.crisys.plexil.runtime.values;
 
-import edu.umn.crisys.plexil.il.expr.ILType;
-
-public interface PInteger extends PNumeric {
+public interface PInteger extends PValue {
 	
-	@Override
-	default public PValue castTo(ILType type) {
-		if (type == ILType.REAL) return castToReal();
-		else return PNumeric.super.castTo(type);
-	}
+	public abstract PReal castToReal();
+	public abstract int getIntValue();
 
+	public abstract PBoolean gt(PInteger o);
+	public abstract PBoolean ge(PInteger o);
+	public abstract PBoolean lt(PInteger o);
+	public abstract PBoolean le(PInteger o);
+	public abstract PInteger add(PInteger o);
+	public abstract PInteger sub(PInteger o);
+	public abstract PInteger mul(PInteger o);
+	public abstract PInteger div(PInteger o);
+	public abstract PInteger mod(PInteger o);
+	public abstract PInteger max(PInteger o);
+	public abstract PInteger min(PInteger o);
+	public abstract PInteger abs();
+	
 }

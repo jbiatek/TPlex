@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.NodeUID;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
 import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.simulator.ILSimObserver;
@@ -18,8 +17,7 @@ import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
-import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
@@ -222,7 +220,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 	}
 	
 	@Override
-	public PValue lookupOnChange(PString stateName, PNumeric tolerance, PValue... args) {
+	public PValue lookupOnChange(PString stateName, PReal tolerance, PValue... args) {
 		// Same thing that LookupNow does
 		return lookupNow(stateName, args);
 	}

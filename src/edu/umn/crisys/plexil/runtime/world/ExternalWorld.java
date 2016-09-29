@@ -1,7 +1,7 @@
 package edu.umn.crisys.plexil.runtime.world;
 
 import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
@@ -36,7 +36,7 @@ public interface ExternalWorld extends JavaPlanObserver {
 	 * @param tolerance
 	 * @param args
 	 */
-	public PValue lookupOnChange(PString stateName, PNumeric tolerance, 
+	public PValue lookupOnChange(PString stateName, PReal tolerance, 
 			PValue... args);
 	
 	/**

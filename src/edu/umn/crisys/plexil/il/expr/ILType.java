@@ -10,25 +10,25 @@ import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PInteger;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
 import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
-import edu.umn.crisys.plexil.script.translator.ScriptParser;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 
 public enum ILType {
 
 	NATIVE_BOOL     (Optional.empty()),
-    BOOLEAN			(Optional.of(UnknownValue.get())),
-    INTEGER			(Optional.of(UnknownValue.get())),
-    REAL			(Optional.of(UnknownValue.get())),
-    STRING			(Optional.of(UnknownValue.get())),
-    //NUMERIC			(Optional.of(UnknownValue.get())),
-    UNKNOWN			(Optional.of(UnknownValue.get())),
+    BOOLEAN			(Optional.of(UnknownBool.get())),
+    INTEGER			(Optional.of(UnknownInt.get())),
+    REAL			(Optional.of(UnknownReal.get())),
+    STRING			(Optional.of(UnknownString.get())),
+    UNKNOWN			(Optional.empty()), // TODO: Get rid of this if possible.
     BOOLEAN_ARRAY	(Optional.empty()),
     INTEGER_ARRAY   (Optional.empty()),
     REAL_ARRAY      (Optional.empty()),
@@ -124,16 +124,6 @@ public enum ILType {
     }
     
     public void strictTypeCheck(ILExpr expression) {
-    	if (expression instanceof UnknownValue) {
-    		// This is going to say UNKNOWN. As long as this is one of the
-    		// main IL types, this is okay.
-    		if (this == ILType.BOOLEAN
-    				|| this == INTEGER
-    				|| this == REAL
-    				|| this == STRING) {
-    			return;
-    		}
-    	}
     	strictTypeCheck(expression.getType());
     }
     

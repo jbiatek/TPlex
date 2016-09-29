@@ -7,7 +7,7 @@ import java.util.List;
 
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
@@ -147,7 +147,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 
 	@Override
-	public PValue lookupOnChange(PString stateName, PNumeric tolerance,
+	public PValue lookupOnChange(PString stateName, PReal tolerance,
 			PValue... args) {
 		return env.lookupOnChange(stateName, tolerance, args);
 	}

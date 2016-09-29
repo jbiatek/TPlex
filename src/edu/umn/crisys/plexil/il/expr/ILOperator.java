@@ -268,7 +268,7 @@ public enum ILOperator {
     PREAL_TO_PINT(1, "real_to_int(", ILType.REAL, ILType.INTEGER) {
 		@Override
 		public Optional<Function<PValue, PValue>> getUnaryEval() {
-			return Optional.of(v -> preal(v).castToInteger());
+			return Optional.of(v -> preal(v).real_to_int());
 		}
     },
     
@@ -648,19 +648,19 @@ public enum ILOperator {
 	}
 	
 	private static PBoolean pbool(PValue e) {
-		return (PBoolean) e;
+		return (PBoolean) e.castTo(ILType.BOOLEAN);
 	}
 	
 	private static PInteger pint(PValue e) {
-		return (PInteger) e;
+		return (PInteger) e.castTo(ILType.INTEGER);
 	}
 	
 	private static PReal preal(PValue v) {
-		return (PReal) v;
+		return (PReal) v.castTo(ILType.REAL);
 	}
 	
 	private static PString pstring(PValue v) {
-		return (PString) v;
+		return (PString) v.castTo(ILType.STRING);
 	}
 	
 	private static NodeState pstate(PValue v) {

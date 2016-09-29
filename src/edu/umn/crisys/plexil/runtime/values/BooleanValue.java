@@ -103,7 +103,7 @@ public class BooleanValue implements PBoolean {
 	@Override
 	public PBoolean equalTo(PValue o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		else if ( ! (o instanceof BooleanValue)) {
 			return singleFalse;

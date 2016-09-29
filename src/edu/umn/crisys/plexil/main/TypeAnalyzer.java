@@ -28,9 +28,6 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeBody;
 import edu.umn.crisys.plexil.ast.nodebody.NodeBodyVisitor;
 import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
-import edu.umn.crisys.plexil.il.expr.ILExpr;
-import edu.umn.crisys.plexil.il.expr.ILType;
-import edu.umn.crisys.plexil.il.expr.NamedCondition;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -41,7 +38,10 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 
 public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements NodeBodyVisitor<Node, Void>{
 	
@@ -334,9 +334,23 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 		return null;
 	}
 
+	@Override
+	public Void visit(UnknownBool unk, PlexilType param) {
+		return null;
+	}
 
 	@Override
-	public Void visit(UnknownValue unk, PlexilType currentType) {
+	public Void visit(UnknownInt unk, PlexilType param) {
+		return null;
+	}
+
+	@Override
+	public Void visit(UnknownReal unk, PlexilType param) {
+		return null;
+	}
+
+	@Override
+	public Void visit(UnknownString unk, PlexilType param) {
 		return null;
 	}
 
@@ -406,6 +420,7 @@ public class TypeAnalyzer extends ASTExprVisitor<PlexilType, Void> implements No
 		// Nothing to do
 		return null;
 	}
+
 
 
 }

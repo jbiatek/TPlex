@@ -3,15 +3,16 @@ package edu.umn.crisys.plexil.ast.expr;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
-import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
-import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 
 public abstract class ASTExprVisitor<P,R> {
 	
@@ -20,7 +21,10 @@ public abstract class ASTExprVisitor<P,R> {
 	public abstract R visit(IntegerValue integer, P param);
 	public abstract R visit(RealValue real, P param);
 	public abstract R visit(StringValue string, P param);
-	public abstract R visit(UnknownValue unk, P param);
+	public abstract R visit(UnknownBool unk, P param);
+	public abstract R visit(UnknownInt unk, P param);
+	public abstract R visit(UnknownReal unk, P param);
+	public abstract R visit(UnknownString unk, P param);
 	public abstract R visit(PValueList<?> list, P param);
 	public abstract R visit(CommandHandleState state, P param);
 	public abstract R visit(NodeFailureType type, P param);

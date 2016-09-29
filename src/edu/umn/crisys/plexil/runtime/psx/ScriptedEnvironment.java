@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.plexil.runtime.world.UpdateHandler;
@@ -126,7 +126,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 
 	@Override
 	public PValue lookupOnChange(PString stateName,
-			PNumeric tolerance, PValue... args) {
+			PReal tolerance, PValue... args) {
 		return lookup(stateName, args);
 	}
 	
@@ -147,7 +147,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 		} else {
 			System.err.println("Warning: Script has no response for "+key+
 					", returning UNKNOWN");
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		
 	}

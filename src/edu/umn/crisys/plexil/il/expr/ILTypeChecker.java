@@ -14,7 +14,6 @@ import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 
 /**
  * Check an expression for type safety, given the expected type. Throws a 
@@ -35,11 +34,6 @@ public class ILTypeChecker extends ILExprVisitor<ILType, Void> implements ILActi
 	
 	public static void ensureExpressionContainsLegalTypes(ILExpr e) {
 		// Recursively check that types are legal. 
-		if (e instanceof UnknownValue) {
-			// Oh, wait, that's fine.
-			return;
-		}
-		
 		try {
 			checkTypeIsLegalInIL(e.getType());
 		} catch (Exception ex) {
@@ -57,6 +51,9 @@ public class ILTypeChecker extends ILExprVisitor<ILType, Void> implements ILActi
 	
 	private static void basicCheck(ILExpr e, ILType expected) {
 		checkTypeIsLegalInIL(expected);
+		if (e instanceof PValue && ((PValue) e).isUnknown()) {
+			return;
+		}
 		if (e.getType() != expected) {
 			// Nope, wrong.
 			throw new RuntimeException("Expected type "+expected+" for expression "+e);
@@ -95,18 +92,6 @@ public class ILTypeChecker extends ILExprVisitor<ILType, Void> implements ILActi
 		}
 	}
 	
-	@Override
-	public Void visit(UnknownValue unk, ILType expected) {
-		// UnknownValue represents a few different types.
-		if (expected == ILType.BOOLEAN 
-				|| expected == ILType.INTEGER
-				|| expected == ILType.REAL
-				|| expected == ILType.STRING) {
-			return null;
-		}
-		throw new RuntimeException("Type "+expected+" is not acceptable for UnknownValue");
-	}
-
 	@Override
 	public Void visit(PValueList<?> list, ILType expected) {
 		basicCheck(list, expected);

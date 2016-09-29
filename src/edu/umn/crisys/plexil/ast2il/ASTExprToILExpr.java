@@ -28,7 +28,10 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 
 public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
     
@@ -368,11 +371,6 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
 	}
 
 	@Override
-	public ILExpr visit(UnknownValue unk, PlexilType param) {
-		return unk;
-	}
-
-	@Override
 	public ILExpr visit(PValueList<?> list, PlexilType param) {
 		return list;
 	}
@@ -395,6 +393,26 @@ public class ASTExprToILExpr extends ASTExprVisitor<PlexilType, ILExpr> {
 	@Override
 	public ILExpr visit(NodeState state, PlexilType param) {
 		return state;
+	}
+
+	@Override
+	public ILExpr visit(UnknownBool unk, PlexilType param) {
+		return unk;
+	}
+
+	@Override
+	public ILExpr visit(UnknownInt unk, PlexilType param) {
+		return unk;
+	}
+
+	@Override
+	public ILExpr visit(UnknownReal unk, PlexilType param) {
+		return unk;
+	}
+
+	@Override
+	public ILExpr visit(UnknownString unk, PlexilType param) {
+		return unk;
 	}
     
 }

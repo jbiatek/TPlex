@@ -19,7 +19,6 @@ import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast.expr.UnresolvedVariableExpr;
 import edu.umn.crisys.plexil.ast.expr.ASTOperation.Operator;
-import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -31,7 +30,7 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.util.xml.UnexpectedTagException;
 
@@ -105,8 +104,6 @@ public class ExprParser {
     	}
     	
         switch(type) {
-        case UNKNOWN:
-            return UnknownValue.get();
         case BOOLEAN:
             // (?i) means case insensitive.
             if (value.equals("1") || value.matches("(?i)T(rue)?")) {
@@ -114,7 +111,7 @@ public class ExprParser {
             } else if (value.equals("0") || value.matches("(?i)F(alse)?")) {
                 return BooleanValue.get(false);
             }
-            return UnknownValue.get();
+            return UnknownBool.get();
         case INTEGER:
             return IntegerValue.get(Integer.parseInt(value));
         case REAL:

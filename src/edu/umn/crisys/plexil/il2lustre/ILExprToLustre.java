@@ -40,7 +40,10 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 
 public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 	
@@ -328,7 +331,8 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 		// The index is split, we need both parts of it separately.
 		Expr indexValue = getValueComponent(indexTuple);
 		Expr indexKnown = getKnownComponent(indexTuple);
-		Expr unknownValue = UnknownValue.get().accept(this, op.getType());
+		Expr unknownValue = arrayType.elementType().getUnknown()
+				.accept(this, op.getType());
 		
 		// Is the array also split? 
 		if (LustreNamingConventions.hasValueAndKnownSplit(op.getType())) {
@@ -444,21 +448,25 @@ public class ILExprToLustre extends ILExprVisitor<ILType, jkind.lustre.Expr>{
 	}
 
 	@Override
-	public Expr visit(UnknownValue unk, ILType expectedType) {
-		switch(expectedType) {
-		case BOOLEAN:
-			return LustreNamingConventions.P_UNKNOWN;
-		case INTEGER:
-			return tuple(new IntExpr(0), LustreUtil.FALSE);
-		case REAL:
-			return tuple(new RealExpr(new BigDecimal(0)), LustreUtil.FALSE);
-		case STRING:
-			return id(mapper.stringToEnum(unk));
-		default: 
-			throw new RuntimeException("Need an expected type here, but got "+expectedType);	
-		}
+	public Expr visit(UnknownBool unk, ILType param) {
+		return LustreNamingConventions.P_UNKNOWN;
 	}
-
+	
+	@Override
+	public Expr visit(UnknownInt unk, ILType param) {
+		return tuple(new IntExpr(0), LustreUtil.FALSE);
+	}
+	
+	@Override
+	public Expr visit(UnknownReal unk, ILType param) {
+		return tuple(new RealExpr(new BigDecimal(0)), LustreUtil.FALSE);
+	}
+	
+	@Override
+	public Expr visit(UnknownString unk, ILType param) {
+		return id(mapper.stringToEnum(unk));
+	}
+	
 	@Override
 	public Expr visit(PValueList<?> list, ILType expectedType) {
 		List<Expr> values = new ArrayList<Expr>();

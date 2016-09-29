@@ -17,7 +17,6 @@ import edu.umn.crisys.plexil.runtime.values.PBoolean;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 import edu.umn.crisys.util.NameUtils;
 
 public class ILExprToJava {
@@ -88,8 +87,9 @@ public class ILExprToJava {
                 JClass clazz = cm.ref(type.getConcreteTypeClass());
                 return clazz.staticRef(type.getUnknown().toString());
             } else {
-            	// Everything else uses the singleton.
-                return cm.ref(UnknownValue.class).staticInvoke("get");
+            	// Everything else uses a singleton. Since this value 
+            	// must *be* the singleton, we'll just take its class directly.
+            	return cm.ref(v.getClass()).staticInvoke("get");
             }
         }
         

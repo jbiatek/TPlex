@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import edu.umn.crisys.plexil.il.expr.ExprVisitor;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
 
 /**
  * Lookup expression which does no type checking. 
@@ -74,7 +73,7 @@ public class ASTLookupExpr extends PlexilExprBase {
     public List<PlexilExpr> getPlexilArguments() {
         ArrayList<PlexilExpr> argList = new ArrayList<PlexilExpr>(args);
         argList.add(0, name);
-        argList.add(1, tolerance.orElse(UnknownValue.get()));
+        argList.add(1, tolerance.orElse(UnknownReal.get()));
         return argList;
     }
     

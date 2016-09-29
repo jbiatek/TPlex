@@ -18,7 +18,10 @@ import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 import edu.umn.crisys.plexil.test.java.DebugOutputPlexilArray;
 
 public class PlanState {
@@ -160,23 +163,23 @@ public class PlanState {
     				} else if (valStr.equals("0")) {
     					value = BooleanValue.get(false);
     				} else {
-    					value = UnknownValue.get();
+    					value = UnknownBool.get();
     				}
     			} else if (line.contains("Real")) {
     				if (valStr.equals("UNKNOWN")) {
-    					value = UnknownValue.get();
+    					value = UnknownReal.get();
     				} else {
     					value = RealValue.get(Double.parseDouble(valStr));
     				}
     			} else if (line.contains("Integer")) {
     				if (valStr.equals("UNKNOWN")) {
-    					value = UnknownValue.get();
+    					value = UnknownInt.get();
     				} else {
     					value = IntegerValue.get(Integer.parseInt(valStr));
     				}
     			} else if (line.contains("String")) {
     				if (valStr.equals("UNKNOWN")) {
-    					value = UnknownValue.get();
+    					value = UnknownString.get();
     				} else {
     					value = StringValue.get(valStr);
     				}

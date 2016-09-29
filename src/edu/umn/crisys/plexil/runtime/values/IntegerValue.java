@@ -34,18 +34,6 @@ public class IntegerValue implements PInteger {
 	}
 	
 	@Override
-	public boolean isReal() {
-		// Nope, not real.
-		return false;
-	}
-
-	@Override
-	public IntegerValue castToInteger() {
-		// already an int
-		return this;
-	}
-
-	@Override
 	public PReal castToReal() {
 		return RealValue.get((double) value);
 	}
@@ -56,53 +44,36 @@ public class IntegerValue implements PInteger {
 	}
 
 	@Override
-	public double getRealValue() {
-		return (double) value;
-	}
-
-	@Override
-	public PBoolean gt(PNumeric o) {
+	public PBoolean gt(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().gt(o);
+			return UnknownBool.get();
 		} else {
 			return BooleanValue.get(value > o.getIntValue());
 		}
 	}
 
 	@Override
-	public PBoolean ge(PNumeric o) {
+	public PBoolean ge(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().ge(o);
+			return UnknownBool.get();
 		} else {
 			return BooleanValue.get(value >= o.getIntValue());
 		}
 	}
 
 	@Override
-	public PBoolean lt(PNumeric o) {
+	public PBoolean lt(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().lt(o);
+			return UnknownBool.get();
 		} else {
 			return BooleanValue.get(value < o.getIntValue());
 		}
 	}
 
 	@Override
-	public PBoolean le(PNumeric o) {
+	public PBoolean le(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().le(o);
+			return UnknownBool.get();
 		} else {
 			return BooleanValue.get(value <= o.getIntValue());
 		}
@@ -111,7 +82,7 @@ public class IntegerValue implements PInteger {
 	@Override
 	public PBoolean equalTo(PValue o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		if (o instanceof IntegerValue) {
 			IntegerValue other = (IntegerValue) o;
@@ -125,96 +96,70 @@ public class IntegerValue implements PInteger {
 	}
 
 	@Override
-	public PNumeric add(PNumeric o) {
+	public PInteger add(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().add(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get(value + o.getIntValue());
 		}
 	}
 
 	@Override
-	public PNumeric sub(PNumeric o) {
+	public PInteger sub(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().sub(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get( value - o.getIntValue());
 		}
 	}
 
 	@Override
-	public PNumeric mul(PNumeric o) {
+	public PInteger mul(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().mul(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get(value * o.getIntValue());
 		}
 	}
 
 	@Override
-	public PNumeric div(PNumeric o) {
+	public PInteger div(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().div(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get(value / o.getIntValue());
 		}
 	}
 
 	@Override
-	public PNumeric mod(PNumeric o) {
+	public PInteger mod(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().mod(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get(value % o.getIntValue());
 		}
 	}
 
 	@Override
-	public PNumeric max(PNumeric o) {
+	public PInteger max(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().max(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get(Math.max(value, o.getIntValue()));
 		}
 	}
 
 	@Override
-	public PNumeric min(PNumeric o) {
+	public PInteger min(PInteger o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
-		}
-		if (o.isReal()) {
-			return castToReal().min(o);
+			return UnknownInt.get();
 		} else {
 			return IntegerValue.get(Math.min(value, o.getIntValue()));
 		}
 	}
 
 	@Override
-	public PNumeric sqrt() {
-		return RealValue.get(Math.sqrt(value));
-	}
-
-	@Override
-	public PNumeric abs() {
+	public PInteger abs() {
 		return IntegerValue.get(Math.abs(value));
 	}
 
@@ -225,12 +170,10 @@ public class IntegerValue implements PInteger {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof PNumeric) {
-			PNumeric other = (PNumeric) o;
-			return other.isKnown() && this.value == other.getRealValue();
-		} else if (o instanceof Integer) {
-		    return ((Integer) value).equals(o);
-		}
+		if (o instanceof PInteger) {
+			PInteger other = (PInteger) o;
+			return other.isKnown() && this.value == other.getIntValue();
+		} 
 		return false;
 	}
 	

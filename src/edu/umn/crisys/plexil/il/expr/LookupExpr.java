@@ -9,7 +9,7 @@ import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
 
 public class LookupExpr extends ILExprBase {
 
@@ -98,7 +98,7 @@ public class LookupExpr extends ILExprBase {
     public List<ILExpr> getArguments() {
         ArrayList<ILExpr> argList = new ArrayList<ILExpr>(args);
         argList.add(0, name);
-        argList.add(1, tolerance.orElse(UnknownValue.get()));
+        argList.add(1, tolerance.orElse(UnknownReal.get()));
         return argList;
     }
     
@@ -111,7 +111,7 @@ public class LookupExpr extends ILExprBase {
     	ILExpr toleranceExpr = newArgs.remove(0);
     	// If it's UNKNOWN, we are actually a LookupNow, which has no tolerance.
     	Optional<ILExpr> tolerance = Optional.of(toleranceExpr);
-    	if (toleranceExpr instanceof UnknownValue) {
+    	if (toleranceExpr instanceof UnknownReal) {
     		tolerance = Optional.empty();
     	}
     	return new LookupExpr(typeData, name, newArgs, tolerance);

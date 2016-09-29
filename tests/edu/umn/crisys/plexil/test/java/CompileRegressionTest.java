@@ -53,12 +53,10 @@ public class CompileRegressionTest {
 			preconfigured.files.add(new File(resources, scriptName+".psx"));
 		}
 
-		try {
-			if ( ! preconfigured.execute()) {
-				throw new RuntimeException("TPlex didn't execute cleanly!");
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("Problem compiling "+suite.planFile, e);
+		boolean result = preconfigured.execute(); 
+		
+		if ( ! result) {
+			throw new RuntimeException("TPlex didn't execute cleanly!");
 		}
 
 	}

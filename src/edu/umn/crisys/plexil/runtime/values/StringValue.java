@@ -38,7 +38,7 @@ public class StringValue implements PString {
 	@Override
 	public PBoolean equalTo(PValue o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownBool.get();
 		}
 		if (!(o instanceof StringValue)) return BooleanValue.get(false);
 		StringValue other = (StringValue) o;
@@ -73,7 +73,7 @@ public class StringValue implements PString {
 	@Override
 	public PString concat(PString o) {
 		if (o.isUnknown()) {
-			return UnknownValue.get();
+			return UnknownString.get();
 		}
 		return StringValue.get(value + o.getString());
 	}

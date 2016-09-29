@@ -24,7 +24,6 @@ import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.ILOperation;
 import edu.umn.crisys.plexil.il.expr.ILOperator;
-import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.LookupExpr;
 import edu.umn.crisys.plexil.il.expr.RootAncestorExpr;
 import edu.umn.crisys.plexil.il.expr.vars.ArrayVar;
@@ -49,7 +48,6 @@ import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.plexil.runtime.world.UpdateHandler;
@@ -195,18 +193,6 @@ public class ILSimulator extends JavaPlan {
 		PValue v = e.accept(myResolver).eval()
 				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
 		// Make sure that the value is the same type
-		if (v instanceof UnknownValue) {
-			// For UNKNOWN, the singleton doesn't know what type it is. We just
-			// need to make sure it's one of the regular 4.
-			if (e.getType() == ILType.BOOLEAN
-					|| e.getType() == ILType.INTEGER
-					|| e.getType() == ILType.REAL
-					|| e.getType() == ILType.STRING) {
-				return v;
-			} else {
-				e.getType().strictTypeCheck(v);
-			}
-		}
 		e.getType().strictTypeCheck(v);
 		
 		return v;

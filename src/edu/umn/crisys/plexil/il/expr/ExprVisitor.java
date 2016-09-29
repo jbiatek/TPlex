@@ -15,7 +15,10 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
-import edu.umn.crisys.plexil.runtime.values.UnknownValue;
+import edu.umn.crisys.plexil.runtime.values.UnknownBool;
+import edu.umn.crisys.plexil.runtime.values.UnknownInt;
+import edu.umn.crisys.plexil.runtime.values.UnknownReal;
+import edu.umn.crisys.plexil.runtime.values.UnknownString;
 
 /**
  * Visitor pattern for Expressions. By default, visitor methods return the 
@@ -43,7 +46,10 @@ public interface ExprVisitor<P, R> {
 	public R visit(IntegerValue integer, P param);
 	public R visit(RealValue real, P param);
 	public R visit(StringValue string, P param);
-	public R visit(UnknownValue unk, P param);
+	public R visit(UnknownBool unk, P param);
+	public R visit(UnknownInt unk, P param);
+	public R visit(UnknownReal unk, P param);
+	public R visit(UnknownString unk, P param);
 	public R visit(PValueList<?> list, P param);
 	public R visit(CommandHandleState state, P param);
 	public R visit(NodeFailureType type, P param);

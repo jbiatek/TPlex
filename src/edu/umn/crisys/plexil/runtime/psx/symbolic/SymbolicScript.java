@@ -8,7 +8,7 @@ import java.util.Set;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
-import edu.umn.crisys.plexil.runtime.values.PNumeric;
+import edu.umn.crisys.plexil.runtime.values.PReal;
 import edu.umn.crisys.plexil.runtime.values.PString;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
@@ -100,7 +100,7 @@ public class SymbolicScript implements ExternalWorld {
 
 
 	@Override
-	public PValue lookupOnChange(PString stateName, PNumeric tolerance,
+	public PValue lookupOnChange(PString stateName, PReal tolerance,
 			PValue... args) {
 		// Same deal as lookupNow.
 		prepareForLookup(new FunctionCall(stateName.getString(), args));
