@@ -8,10 +8,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class OfficialPlexilExecutive {
 
+	public static final String PLEXIL_HOME = "PLEXIL_HOME";
+	
 	private File plx;
 	private Optional<File> psx = Optional.empty();
 	private Optional<File> libDir = Optional.empty();
@@ -57,21 +58,16 @@ public class OfficialPlexilExecutive {
 		return this;
 	}
 	
+	public boolean environmentSetCorrectly() {
+		return System.getenv(PLEXIL_HOME) != null;
+	}
+	
 	public BufferedReader generateLog() throws IOException {
 		ProcessBuilder pb;
-		if (System.getenv("PLEXIL_HOME") == null) {
-			System.out.println("$PLEXIL_HOME is missing. The JVM must not be"
-					+ " running in the proper environment.");
-			System.out.println("I'll try running `plexiltest` inside"
-					+" " +System.getenv("SHELL") +" for you instead.");
-			String command = getPlexilTestCommand()
-					.stream()
-					.map(arg -> arg.contains(" ") ? "\""+arg+"\"" : arg)
-					.collect(Collectors.joining(" "));
-			pb = new ProcessBuilder(System.getenv("SHELL"), "-c", command);
-		} else {
-			// The environment looks okay as-is.
+		if (environmentSetCorrectly()) {
 			 pb = new ProcessBuilder(getPlexilTestCommand());
+		} else {
+			throw new RuntimeException("$PLEXIL_HOME must be set in order to run PLEXIL.");
 		}
 		
 		
@@ -92,7 +88,7 @@ public class OfficialPlexilExecutive {
 	
 	private List<String> getPlexilTestCommand() {
 		List<String> args = new ArrayList<>();
-		args.add("plexiltest");
+		args.add(System.getenv(PLEXIL_HOME)+"/scripts/plexiltest");
 		args.add("-q");
 		args.add("-p");
 		args.add(plx.getPath());
