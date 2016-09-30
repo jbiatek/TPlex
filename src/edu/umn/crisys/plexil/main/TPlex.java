@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,7 @@ import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.jkind.search.TPlexTestGenerator;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
+import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.plx.StateCoverageMeasurer;
 import edu.umn.crisys.plexil.runtime.plx.TransitionCoverageMeasurer;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
@@ -67,6 +69,9 @@ import edu.umn.crisys.plexil.script.ast.PlexilScript;
 import edu.umn.crisys.plexil.script.translator.ScriptParser;
 import edu.umn.crisys.plexil.script.translator.ScriptToJava;
 import edu.umn.crisys.plexil.script.translator.ScriptToXML;
+import edu.umn.crisys.plexil.test.java.ComplianceTesting;
+import edu.umn.crisys.plexil.test.java.OfficialPlexilExecutive;
+import edu.umn.crisys.plexil.test.java.PlanStateChecker;
 import edu.umn.crisys.plexil.test.java.RegressionTest;
 import edu.umn.crisys.util.NameUtils;
 import edu.umn.crisys.util.Pair;
@@ -168,10 +173,12 @@ public class TPlex {
 			+ "files to PLEXILScript.")
 	public File simLustreFile = null;
 	@Parameter(names = "--compliance-plx", description =
-			"Also requires --sim-lustre-file. When translating a .lus.xml file"
-			+ " to PlexilScript, use this PLEXIL plan and the given Lustre file to"
-			+ " ensure that the translated script exhibits the same behavior that"
-			+ " it did in JKind/Lustre. If they differ, the errors will be printed. ")
+			"Specify a PLEXIL file to be used for compliance testing. Any "
+			+ "PLEXILScripts that TPlex has either read or created during execution "
+			+ "will be run against this PLEXIL file, using both the `plexiltest` "
+			+ "tool and TPlex's internal simulator. This will tell you if TPlex's "
+			+ "understanding of PLEXIL semantics differs from the reference "
+			+ "implementation for that plan and script. ")
 	public File compliancePlexilProgram = null;
 	
 	@Parameter(names = "--lustre-plan-to-simulate", description = 
@@ -768,45 +775,46 @@ public class TPlex {
 		return toLustre.toLustre();
 	}
 	
+	/** 
+	 * Go through all of our translated Scripts and compliance check them 
+	 * against the IL. 
+	 * @throws Exception
+	 */
 	private void doComplianceTesting() throws Exception {
-		// Both better be there
-		if (simLustreFile == null) {
-			System.err.println("Error: --sim-lustre-file not given");
-			return;
+		if (OfficialPlexilExecutive.environmentSetCorrectly()) {
+			Plan parsed = quickParsePlan(compliancePlexilProgram);
+			File debugFile = ComplianceTesting.createDebugCfgFile();
+			System.out.println("Testing all scripts in memory against `plexiltest`...");
+			System.out.println("=====================================================");
+			for (PlexilScript s : scripts.values()) {
+				complianceTest(debugFile, compliancePlexilProgram, parsed, s);
+			}
+			for (PlexilScript lustre : lustreResultsTranslated.values()) {
+				complianceTest(debugFile, compliancePlexilProgram, parsed, lustre);
+			}
+		} else {
+			System.err.println("Cannot find PLEXIL executive (check $PLEXIL_HOME).");
+			System.err.println("Scripts cannot be checked for compliance.");
 		}
-		if (compliancePlexilProgram == null) {
-			System.err.println("Error: --compliance-plx not given");
-			return;
-		}
-		if (lustreResultsTranslated.size() == 0 ) {
-			System.out.println("No scripts to do compliance testing on!");
-			return;
-		}
-		
-		Program lustreProg = JKindResultUtils.parseProgram(simLustreFile);
-		
-		Plan ilPlan = quickParsePlan(compliancePlexilProgram);
-		
-		ReverseTranslationMap mapper = getStringMapForLus(simLustreFile);
-		
-		for (Entry<LustreTrace, PlexilScript> e : lustreResultsTranslated.entrySet()) {
-			doLustreCompliance(lustreProg, ilPlan, mapper, e.getKey(), e.getValue());
-		}
-		
 	}
-
-	private void doLustreCompliance(Program lustreProg, Plan ilPlan,
-			ReverseTranslationMap mapper,
-			LustreTrace trace, PlexilScript plexilScript 
-			) throws Exception {
-
-		System.out.println("Testing translated script "+plexilScript.getScriptName());
+	
+	private void complianceTest(File debugFile, File compliancePlxFile, 
+			Plan parsedCompliance, PlexilScript script) throws Exception {
+		// Write this to a temp file
+		File scriptFile = ComplianceTesting.writeScriptToTempFile(script);
+		// Get the expected version from plexiltest
+		OfficialPlexilExecutive plexiltest = new OfficialPlexilExecutive(compliancePlxFile);
+		plexiltest.setDebugFile(debugFile);
+		plexiltest.setScript(scriptFile);
+		plexiltest.setLibDir(libraryDir);
+		List<PlanState> oracle = PlanState.parseLogFile(plexiltest.generateLog());
 		try {
-			RegressionTest.complianceTest(ilPlan, 
-					new JavaPlexilScript(plexilScript), 
-					trace, mapper);
+			ComplianceTesting.intermediateLanguage(parsedCompliance, 
+					new JavaPlexilScript(script), 
+					new PlanStateChecker(oracle));
+			System.out.println("Script "+script.getScriptName()+" ran correctly in PLEXIL.");
 		} catch (Exception e) {
-			System.err.println("Exception for script "+plexilScript.getScriptName());
+			System.out.println("Script "+script.getScriptName()+" didn't run correctly in PLEXIL:");
 			e.printStackTrace();
 		}
 	}

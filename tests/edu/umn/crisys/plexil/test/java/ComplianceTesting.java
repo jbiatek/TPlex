@@ -2,7 +2,9 @@ package edu.umn.crisys.plexil.test.java;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +66,18 @@ public class ComplianceTesting {
 			File temp = File.createTempFile(script.getScriptName(), ".psx");
 			ScriptToXML.writeToFile(temp, script);
 			return temp;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static File createDebugCfgFile() {
+		try {
+			File debugFile = File.createTempFile("Debug", ".cfg");
+			PrintStream out = new PrintStream(debugFile);
+			out.println(":PlexilExec:printPlan");
+			out.close();
+			return debugFile;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

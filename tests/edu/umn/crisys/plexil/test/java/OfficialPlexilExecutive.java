@@ -13,6 +13,10 @@ public class OfficialPlexilExecutive {
 
 	public static final String PLEXIL_HOME = "PLEXIL_HOME";
 	
+	public static boolean environmentSetCorrectly() {
+		return System.getenv(PLEXIL_HOME) != null;
+	}
+	
 	private File plx;
 	private Optional<File> psx = Optional.empty();
 	private Optional<File> libDir = Optional.empty();
@@ -56,10 +60,6 @@ public class OfficialPlexilExecutive {
 	public OfficialPlexilExecutive addLibrary(File libPlx) {
 		libs.add(libPlx);
 		return this;
-	}
-	
-	public boolean environmentSetCorrectly() {
-		return System.getenv(PLEXIL_HOME) != null;
 	}
 	
 	public BufferedReader generateLog() throws IOException {
