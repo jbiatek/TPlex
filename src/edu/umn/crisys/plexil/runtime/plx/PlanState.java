@@ -246,23 +246,23 @@ public class PlanState {
             if (expected.vars.get(var) == null) {
                 if (vars.get(var).isKnown() && !var.endsWith(".START") && !var.endsWith(".END")
                 		&& !var.equals(".previous_value")) {
-                    System.err.println("Warning: Oracle doesn't say what "
-                            +uid+"/"+var+" is. I think it's "+vars.get(var));
+                    System.err.println("Warning: No expected value for "
+                            +uid+"/"+var+". Current value is "+vars.get(var));
                 }
             } else if ( ! expected.vars.get(var).equals(vars.get(var))) {
                 // The expected one needs to be the one checking for equals()
                 // because the oracle arrays are actually TypelessPlexilArrays 
                 // that know things like 0 == false and 1 == true.
                 failures.add("Variable didn't match in "+uid+": "
-                        +var+" should be "+expected.vars.get(var)
-                        + " but I have "+vars.get(var));
+                        +var+" expected value was "+expected.vars.get(var)
+                        + " but actual value was "+vars.get(var));
             }
         }
         
         if ( children.size() != expected.children.size()) {
-            failures.add("Number of children didn't match. I have "+
-                    children.size() + ", but they have "+
-                    expected.children.size()+", so I stopped checking here.");
+            failures.add("Number of children for "+uid+"didn't match. Expected had "+
+            		expected.children.size()+", but actual had "+
+                    children.size() + ". As such, no children were compared.");
             return failures;
         }
         

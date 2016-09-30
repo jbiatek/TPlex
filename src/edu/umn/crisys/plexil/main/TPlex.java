@@ -54,7 +54,7 @@ import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
-import edu.umn.crisys.plexil.jkind.search.JKindSearch;
+import edu.umn.crisys.plexil.jkind.search.IncrementalTrace;
 import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.jkind.search.TPlexTestGenerator;
 import edu.umn.crisys.plexil.plx2ast.PlxParser;
@@ -72,7 +72,6 @@ import edu.umn.crisys.plexil.script.translator.ScriptToXML;
 import edu.umn.crisys.plexil.test.java.ComplianceTesting;
 import edu.umn.crisys.plexil.test.java.OfficialPlexilExecutive;
 import edu.umn.crisys.plexil.test.java.PlanStateChecker;
-import edu.umn.crisys.plexil.test.java.RegressionTest;
 import edu.umn.crisys.util.NameUtils;
 import edu.umn.crisys.util.Pair;
 import jkind.api.results.JKindResult;
@@ -97,7 +96,7 @@ public class TPlex {
 	public List<File> dirs = new ArrayList<>();
 	
 	@Parameter(names = "--lang", 
-			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'plexil' can be used to turn a .plx file in to a more readable .ple file.")
+			description = "The language to translate to. 'none' can be used to just get reports from TPlex without producing code. 'pretty' can be used to turn a .plx file in to a more readable .ple file.")
 	public OutputLanguage outputLanguage = OutputLanguage.NONE;
 	
 	@Parameter(names = "--static-libs", description="Instead of leaving library "
@@ -134,7 +133,7 @@ public class TPlex {
 	@Parameter(names = "--print-reachable-states", description="After any translating, print an analysis of reachable PLEXIL states.")
 	public boolean reachableStates = false;
 	
-	@Parameter(names = "--print-simulation", description="Print results of running all specified scripts against the first PLEXIL plan.")
+	@Parameter(names = "--print-simulation", description="Print results of running all specified scripts against the single PLX plan that was passed in.")
 	public boolean printSimulation = false;
 
 	//Java-specific options
@@ -158,9 +157,6 @@ public class TPlex {
 //			"Generate test generation properties to cover Plexil states.")
 //	public PlanToLustre.Obligation lustreObligation = Obligation.NONE;
 	
-	@Parameter(names = "--lustre-search-goal", description = 
-			"Specify goals for Lustre incremental search.")
-	public CoverageCriteria lustreSearchGoal = CoverageCriteria.EXECUTION;
 	
 	@Parameter(names = "--lustre-generic-strings", description = 
 			"Add the given number of strings to the Lustre string enum. These"
@@ -169,7 +165,7 @@ public class TPlex {
 	
 	@Parameter(names = {"--sim-lus-file", "--sim-lustre-file"}, description = 
 			"Specify a Lustre file to be used when simulation is required. "
-			+ "This is needed for --compliance-plx and for translating .csv "
+			+ "This is needed for translating .csv or JKind XML"
 			+ "files to PLEXILScript.")
 	public File simLustreFile = null;
 	@Parameter(names = "--compliance-plx", description =
@@ -181,6 +177,13 @@ public class TPlex {
 			+ "implementation for that plan and script. ")
 	public File compliancePlexilProgram = null;
 	
+	@Parameter(names = "--compliance", description = 
+			"Run compliance testing for each script read or created during execution, "
+			+ "using the single PLEXIL plan that was also passed in. Equivalent to "
+			+ "doing something like `--compliance-plx foo.plx foo.plx`, but less silly. "
+			+ "When using this option, you must pass in exactly one PLX file. ")
+	public boolean compliance = false;
+	
 	@Parameter(names = "--lustre-plan-to-simulate", description = 
 			"PLEXILScripts need to be translated via simulation, since Lustre input is at a "
 			+ "microstep level. The plan should be passed in as a file to be translated, "
@@ -188,14 +191,29 @@ public class TPlex {
 			+ "execution will be output as a CSV file.")
 	public String lustreSimulateScriptsAgainst = "";
 	
-	@Parameter(names = "--lustre-incremental", description = 
-			"Generate test cases incrementally using JKind, putting any "
-			+ "resulting test cases in the output directory. ")
-	public boolean lustreIncrementalSearch = false;
+	
+	
+	
+	
+	
+	@Parameter(names = "--incremental-search", description = 
+			"Generate test cases incrementally using JKind. The resulting Lustre"
+			+ " test cases will be placed in OUTPUT_DIR/jkind-traces. "
+			+ " The supplied Lustre translation options will be used. "
+			+ " If --lang plexil is specified, the traces will also be translated to "
+			+ " PLEXILScript format and placed in OUTPUT_DIR. (You can also "
+			+ " translate the .csv files to scripts later, but you'll have"
+			+ " to specify --sim-lustre-file and --compliance-plx.")
+	public boolean incrementalSearch = false;
+	
+	@Parameter(names = "--search-goal", description = 
+			"Specify goals for Lustre incremental search.")
+	public CoverageCriteria incrementalSearchGoal = CoverageCriteria.EXECUTION;
+
 	
 	@Parameter(names = {"--depth", "-d"}, description = 
 			"Set the depth limit for incremental search")
-	public int lustreIncrementalDepth = 15;
+	public int incrementalDepth = 15;
 	
 
 	//Variables to use during translation
@@ -205,8 +223,6 @@ public class TPlex {
 	public Map<String, Plan> ilPlans = new HashMap<>();
 	public Map<String, ReverseTranslationMap> lustreTranslationMap = new HashMap<>();
 	public Map<LustreTrace, PlexilScript> lustreResultsTranslated = new HashMap<>();
-//	public Map<Plan, NodeToIL> originalTranslator = new HashMap<>();
-//	public Map<Plan, PlexilPlan> originalAst = new HashMap<>();
 	public Map<String, String> idToFile = new HashMap<>();
 	
 	/**
@@ -216,7 +232,7 @@ public class TPlex {
 
 	
 	public static enum OutputLanguage {
-		JAVA, LUSTRE, PLEXIL, NONE;
+		JAVA, LUSTRE, PLEXIL, PRETTY, NONE;
 		
 		public String toString() {
 			return super.toString().toLowerCase();
@@ -255,6 +271,7 @@ public class TPlex {
 				&& parseInputFiles()
 				&& translateToIL()
 				&& optimizeIL()
+				&& testCaseGeneration()
 				&& generateOutput()
 				&& printReports();
 	}
@@ -357,6 +374,15 @@ public class TPlex {
 					System.err.println("Error starting XML parser: "+e.getMessage());
 					return false;
 				}
+				// Handle the "--compliance" option:
+				if (compliance) {
+					if (compliancePlexilProgram == null) {
+						compliancePlexilProgram = f;
+					} else if (! compliancePlexilProgram.equals(f)){
+						System.err.println("Two .PLX files were passed in while --compliance was on.");
+						return false;
+					}
+				}
 			} else if (f.getName().endsWith(".psx")) {
 				try {
 					scripts.put(getKeyForPsx(f), ScriptParser.parse(f));
@@ -443,7 +469,6 @@ public class TPlex {
 		lustreResultsTranslated.putAll(parsedScripts);
 		return true;
 	} 
-
 	
 	public boolean translateToIL() {
 		for (String filename : asts.keySet()) {
@@ -517,6 +542,15 @@ public class TPlex {
 		
 		return ilPlan;
 	}
+	
+	public boolean testCaseGeneration() {
+		if (incrementalSearch) {
+			for (Plan p : ilPlans.values()) {
+				performIncrementalSearch(p);
+			}
+		}
+		return true;
+	}
 
 	public boolean generateOutput() {
 		if (outputLanguage != OutputLanguage.NONE) {
@@ -529,6 +563,7 @@ public class TPlex {
 		case JAVA: return generateJava();
 		case LUSTRE: return generateLustre();
 		case PLEXIL: return generatePlexil();
+		case PRETTY: return generatePretty();
 		}
 		
 		return true;
@@ -561,45 +596,73 @@ public class TPlex {
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	private boolean generatePretty() {
 		boolean scriptSuccess =  asts.entrySet().stream()
-			.peek(entry -> System.out.println(entry.getKey()))
-			.map(e -> printStringToFile(e.getKey()+".ple",e.getValue().getFullPrintout()))
-			.allMatch(success -> success);
-		
+				.peek(entry -> System.out.println(entry.getKey()))
+				.map(e -> printStringToFile(e.getKey()+".ple",e.getValue().getFullPrintout()))
+				.allMatch(success -> success);
+
 		return scriptSuccess;
+
+	}
+	
+	private PlanToLustre getLustreTranslator(Plan p) {
+		HackOutArrayAssignments.hack(p);
+		
+		PlanToLustre p2l = new PlanToLustre(p);
+		p2l.addGenericStrings(lustreGenericStringsToAdd);
+		
+		
+
+		return p2l;
+	}
+	
+	private void performIncrementalSearch(Plan p) {
+		PlanToLustre p2l = getLustreTranslator(p); 
+		TPlexTestGenerator searcher = new TPlexTestGenerator(
+				p2l, new File(outputDir, "jkind-traces"));
+		Program lustreProgram = p2l.toLustre();
+		if (incrementalSearchGoal == CoverageCriteria.TRANSITION) {
+			searcher.addTransitionCoverageObligations();
+		} else {
+			searcher.addNodeExecutesNoParentFailObligations();					
+		}
+		
+		searcher.go(new JKindSettings(
+				Integer.MAX_VALUE, incrementalDepth));
+
+		// Translate found traces to scripts
+		for (IncrementalTrace incTrace : searcher.getChosenTraces()) {
+			// We need the trace *with* internal variables:
+			LustreTrace fullTrace = JKindResultUtils.simulate(lustreProgram, incTrace.getFullTrace());
+			Optional<PlexilScript> script = JKindResultUtils.translateToScript(
+					searcher.getFilenameUsedFor(incTrace).get(), 
+					fullTrace, 
+					p2l.getTranslationMap(), 
+					p);
+			if (script.isPresent()) {
+				lustreResultsTranslated.put(fullTrace, script.get());
+			}
+		}
 	}
 	
 	private boolean generateLustre() {
 		for (Entry<String, Plan> entry : ilPlans.entrySet()) {
 			Plan p = entry.getValue();
-			HackOutArrayAssignments.hack(p);
-			
-			PlanToLustre p2l = new PlanToLustre(p);
-			p2l.addGenericStrings(lustreGenericStringsToAdd);
-			
+
+			PlanToLustre p2l = getLustreTranslator(p);
 			if (! printStringToFile(p.getPlanName()+".lus", 
 					p2l.toLustreAsString())) {
 				return false;
 			}
-			
 			ReverseTranslationMap map = p2l.getTranslationMap();
 			lustreTranslationMap.put(entry.getKey(), map);
 			if (! printStringToFile(p.getPlanName()+".strings.txt",
 					new Gson().toJson(map))) {
 				return false;
-			}
-			if (lustreIncrementalSearch) {
-				// Probably needs to return results at some point, or be
-				// told where to put them. 
-				TPlexTestGenerator searcher = new TPlexTestGenerator(p2l, new File(outputDir, "jkind-traces"));
-				if (lustreSearchGoal == CoverageCriteria.TRANSITION) {
-					searcher.addTransitionCoverageObligations();
-				} else {
-					searcher.addNodeExecutesNoParentFailObligations();					
-				}
-				
-				searcher.go(new JKindSettings(
-						Integer.MAX_VALUE, lustreIncrementalDepth));
 			}
 		}
 		if ( ! scripts.isEmpty()) {

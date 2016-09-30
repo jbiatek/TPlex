@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleType;
 import jkind.lustre.Type;
-import jkind.lustre.VarDecl;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.TypeVisitor;
@@ -52,30 +50,18 @@ import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
 import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
-import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.QuiescenceLimitExceeded;
-import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
-import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
-import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
-import edu.umn.crisys.plexil.script.ast.CommandAck;
-import edu.umn.crisys.plexil.script.ast.Event;
-import edu.umn.crisys.plexil.script.ast.FunctionCall;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
-import edu.umn.crisys.plexil.script.ast.Simultaneous;
-import edu.umn.crisys.plexil.script.ast.StateChange;
 import edu.umn.crisys.plexil.test.java.ComplianceTesting;
 import edu.umn.crisys.plexil.test.java.LustreComplianceChecker;
-import edu.umn.crisys.plexil.test.java.RegressionTest;
 import enums.Simulation;
 
 public class JKindResultUtils {
 
-	private static final String COMMAND_HANDLE_SUFFIX = "__command_handle";
-	
 	public static jkind.lustre.Program parseProgram(File lusFile) 
 			throws RecognitionException, IOException {
 		return jkind.Main.parseLustre(lusFile.getPath());

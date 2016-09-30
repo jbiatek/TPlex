@@ -3,6 +3,8 @@ package edu.umn.crisys.plexil.jkind.search;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import lustre.LustreTrace;
 public class TPlexTestGenerator extends JKindSearch {
 
 	private int fileNameCounter = 0;
+	private Map<IncrementalTrace, String> filenameLog = new HashMap<>();
 	private File outDir;
 
 	
@@ -46,17 +49,29 @@ public class TPlexTestGenerator extends JKindSearch {
 			counter++;
 		}
 	}
+	
+	/**
+	 * Get the filename (not including extension) that was used to write this 
+	 * trace to disk. 
+	 * @param trace
+	 * @return
+	 */
+	public Optional<String> getFilenameUsedFor(IncrementalTrace trace) {
+		return Optional.ofNullable(filenameLog.get(trace));
+	}
 
 	
 	synchronized private void writeTraceToFile(IncrementalTrace trace, LustreTrace reEnumed) {
-		outDir.mkdir();
+		outDir.mkdirs();
 		
-		writeToFile("trace"+fileNameCounter
-					+"-"+createPropString(trace)
-					+"-hash-"
-					+trace.hashCode()
-					+".csv", 
+		String baseFilename = "trace"+fileNameCounter
+				+"-"+createPropString(trace)
+				+"-hash-"
+				+trace.hashCode();
+		
+		writeToFile(baseFilename+".csv", 
 					reEnumed.toString());
+		filenameLog.put(trace, baseFilename);
 		fileNameCounter++;
 	}
 
