@@ -23,7 +23,6 @@ import edu.umn.crisys.plexil.il.simulator.ILSimulator;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
-import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
@@ -59,9 +58,15 @@ public class ScriptSimulation {
 							((LookupExpr) expr)));
 				}
 			} else if (expr instanceof ILVariable) {
-				// These should be command handles
-				line.add(LustreNamingConventions
-						.getRawCommandHandleId((ILVariable) expr));
+				// Value/known split here too
+				if (LustreNamingConventions.hasValueAndKnownSplit(expr.getType())) {
+					line.add(LustreNamingConventions.getRawInputIdValuePart(((ILVariable) expr)));
+					line.add(LustreNamingConventions.getRawInputIdKnownPart(((ILVariable) expr)));
+				} else {
+					// Get the raw input name
+					line.add(LustreNamingConventions.getRawInputId(
+							((ILVariable) expr)));
+				}
 			}
 		}
 		// Print that first line

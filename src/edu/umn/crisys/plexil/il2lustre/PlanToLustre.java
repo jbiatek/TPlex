@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,10 +37,8 @@ import jkind.lustre.visitors.PrettyPrintVisitor;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
-import edu.umn.crisys.plexil.il.expr.ILOperator;
 import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.NamedCondition;
 import edu.umn.crisys.plexil.il.expr.vars.ArrayVar;
@@ -48,8 +47,6 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
 import edu.umn.crisys.plexil.jkind.search.JKindSettings;
-import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
-import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
@@ -69,7 +66,6 @@ public class PlanToLustre {
 	
 	private ProgramBuilder pb;
 	private NodeBuilder nb;
-	private Set<ILVariable> unhandledCommandVars;
 	
 	private ReverseTranslationMap reverseMap = new ReverseTranslationMap();
 	private ILExprToLustre ilToLustre = new ILExprToLustre(reverseMap);
@@ -108,7 +104,6 @@ public class PlanToLustre {
 	public Program toLustre(Obligation obilgations) {
 		pb = getProgramWithPlexilTypes();
 		nb = new NodeBuilder(NameUtils.clean(p.getPlanName()));
-		unhandledCommandVars = new HashSet<>();
 		properties = new LustrePropertyGenerator(this, nb);
 		
 		uninlineNamedExpressions();
@@ -130,20 +125,6 @@ public class PlanToLustre {
 		ActionsToLustre a2l = new ActionsToLustre(this);
 		a2l.navigate(p);
 		a2l.toLustre(nb);
-		
-		// If any commands didn't actually have command actions (this happens
-		// in "TestEndCondition", for example, because the command transition
-		// gets optimized out), put them in as UNKNOWN. And still add an
-		// input, but of course it'll be ignored.
-		for (ILVariable unused : unhandledCommandVars) {
-			nb.addLocal(new VarDecl(LustreNamingConventions.getVariableId(unused),
-					LustreNamingConventions.PCOMMAND));
-			nb.addEquation(new Equation(
-					id(LustreNamingConventions.getVariableId(unused)), 
-					toLustre(CommandHandleState.UNKNOWN)));
-			nb.addInput(new VarDecl(LustreNamingConventions.getRawCommandHandleId(unused), 
-					LustreNamingConventions.PCOMMAND));
-		}
 		
 		// Add string enum, if any
 		Set<String> allExpectedStrings = getTranslationMap().getAllExpectedStringIds();
@@ -222,87 +203,27 @@ public class PlanToLustre {
 		
 		
 	}
-
+	
 	/**
-	 * Add this command handle as a Lustre input. A constrained version will
-	 * be created with the proper name as given by LustreNamingConventions.getVariableId(),
-	 * which should be used in any normal circumstance. 
+	 * Add a "raw" input variable for this ILVariable. The ID(s) that are added
+	 * can be obtained with the LustreNamingConventions class.
 	 * 
-	 * @param handle The actual IL representation of the handle
-	 * @return the raw, unconstrained input ID. 
+	 * @param v
 	 */
-	public String addCommandHandleInputFor(ILVariable handle, String cmdName) {
-		// This one is being handled!
-		unhandledCommandVars.remove(handle);
-		// In the Lustre translation, command handles are actually pure inputs,
-		// not variables. 
-		String rawIdName = LustreNamingConventions.getRawCommandHandleId(handle);
-		nb.addInput(new VarDecl(rawIdName, LustreNamingConventions.PCOMMAND));
-		Expr rawId = id(rawIdName);
-		
-		String constrainedIdName = LustreNamingConventions.getVariableId(handle);
-		nb.addLocal(new VarDecl(constrainedIdName, LustreNamingConventions.PCOMMAND));
-
-		// But this input needs to have restrictions. In addition to the general
-		// PLEXIL rule that inputs can't change mid-macrostep, we also want
-		// to make sure that it appears to reset, and that it doesn't do weird
-		// things like change before the command is even issued.
-		
-		// First, we'll handle resets. In INACTIVE and WAITING, the only valid
-		// value is UNKNOWN. The only way to get to those two states is the 
-		// initial state of the plan and by resetting. 
-		NodeUID node = handle.getNodeUID();
-		
-		ILExpr inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
-		ILExpr waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
-		// If the node was SKIPPED, it must have gone directly from WAITING to
-		// FINISHED, with the command not being issued. Therefore, it should 
-		// be UNKNOWN too.
-		ILExpr skipped = ILOperator.DIRECT_COMPARE.expr(
-				NodeOutcome.SKIPPED, 
-				getNodeOutcomeFor(node));
-		// This is also true if the pre-condition failed.
-		ILExpr preFail = ILOperator.DIRECT_COMPARE.expr(
-				NodeFailureType.PRE_CONDITION_FAILED,
-				getFailureTypeFor(node));
-		ILExpr handleShouldBeUntouchedIL = ILOperator.OR.expr(
-				inactive, waiting, skipped, preFail);
-		
-		Expr handleShouldBeUntouched = toLustre(handleShouldBeUntouchedIL);
-		Expr cmdUnknown = toLustre(CommandHandleState.UNKNOWN, 
-				ILType.COMMAND_HANDLE);
-		
-		// When we do grab a new value from the raw input, there are some 
-		// restrictions still. Specifically, the official PLEXIL interpreter
-		// will error out if an environment attempts to set a handle to 
-		// UNKNOWN. We will emulate this behavior: if the environment tries
-		// to pass in UNKNOWN, just leave it as whatever it is. 
-		Expr readRawValue = 
-				ite(equal(rawId, cmdUnknown),
-						// It's passing an UNKNOWN, not allowed. Stay the same.
-						pre(id(constrainedIdName)),
-						// Not UNKNOWN, take the raw value.
-						rawId);
-		
-		// Build these guards into an equation. 
-		Equation e = new Equation(id(constrainedIdName), 
-				// Starts out UNKNOWN,
-				arrow(cmdUnknown,
-				// First and foremost, regardless of the macro step state, if
-				// it's untouched it must be UNKNOWN.
-				ite(handleShouldBeUntouched, cmdUnknown,
-						// Otherwise, if it's the macrostep end, take a new raw
-						// value, if not stay the same. 
-						ite(isCurrentlyEndOfMacroStep(),
-								readRawValue,
-								pre(id(constrainedIdName))))));
-		nb.addEquation(e);
-		
-		reverseMap.addCommandHandleMapping(rawIdName, cmdName);
-		 
-		return rawIdName;
+	public void addRawInputFor(ILVariable v) {
+		List<VarDecl> inputs = new ArrayList<>();
+		if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
+			inputs.add(new VarDecl(LustreNamingConventions.getRawInputIdValuePart(v), 
+					getLustreType(v.getType())));
+			inputs.add(new VarDecl(LustreNamingConventions.getRawInputIdKnownPart(v), 
+					NamedType.BOOL));
+		} else {
+			inputs.add(new VarDecl(LustreNamingConventions.getRawInputId(v),
+					getLustreType(v.getType())));
+		}
+		nb.addInputs(inputs);
 	}
-
+	
 	private void addLookupToNode(LookupDecl lookup) {
 		if (lookup.getParameters().size() > 0) {
 			System.err.println("Warning: Lookup parameters are not "
@@ -612,14 +533,6 @@ public class PlanToLustre {
 			t = getLustreType(v.getType());
 		}
 		
-		if (v.getType() == ILType.COMMAND_HANDLE) {
-			// Really, this is an input. We need the command's information 
-			// too, so we have to wait for the action to give us more 
-			// information. In the meantime, we should mark it as something
-			// we haven't dealt with yet.
-			unhandledCommandVars.add(v);
-			return;
-		}
 		if (v.getType().isNumeric() 
 				|| (v.getType().isArrayType() 
 						&& v.getType().elementType().isNumeric())	) {

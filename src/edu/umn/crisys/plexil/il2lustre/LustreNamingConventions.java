@@ -236,11 +236,28 @@ public class LustreNamingConventions {
 		return NameUtils.clean(v.getNodeUID() + "/" + v.getName());
 	}
 	
-	public static String getRawCommandHandleId(ILVariable v) {
-		if (v.getType() != ILType.COMMAND_HANDLE) {
-			throw new RuntimeException(v+" is a "+v.getType()+", not a command handle");
+	public static String getRawInputId(ILVariable v) {
+		if (hasValueAndKnownSplit(v)) {
+			throw new RuntimeException("Must use separate value and known "
+					+ "methods for variables of type "+v.getType());
 		}
 		return "raw__"+getVariableId(v);
+	}
+	
+	public static String getRawInputIdKnownPart(ILVariable v) {
+		if ( ! hasValueAndKnownSplit(v)) {
+			throw new RuntimeException("Variables of tpe "+v.getType()
+					+" do not have a value and known split");
+		}
+		return "raw__"+getNumericVariableKnownId(v);
+	}
+	
+	public static String getRawInputIdValuePart(ILVariable v) {
+		if ( ! hasValueAndKnownSplit(v)) {
+			throw new RuntimeException("Variables of tpe "+v.getType()
+					+" do not have a value and known split");
+		}
+		return "raw__"+getNumericVariableValueId(v);
 	}
 	
 	public static jkind.lustre.Expr getNumericValue(ILVariable v) {

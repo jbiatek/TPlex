@@ -17,9 +17,9 @@ import jkind.lustre.UnaryOp;
 /**
  * Build an equation using some standard conventions. Add pairs of guards
  * and values to have this variable take the given value if the guard is true. 
- * The order used to pass these in is maintained, so you do not have to worry
- * about, say, checking that a higher priority transition is active as long as
- * you add them in order. If no guard holds, there is a default assignment
+ * The order used to pass these in is maintained, that is, the first thing 
+ * added will have highest priority, followed by the next thing. 
+ * If no guard holds, there is a default assignment
  * which is unguarded. By default, this is simply pre(id). 
  * 
  * <p>You may also choose to specify a second set of guards and values to be

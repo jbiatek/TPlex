@@ -56,10 +56,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	public void navigate(Plan p) {
 		// Initialize variables
 		for (ILVariable v : p.getVariables()) {
-			if (v.getType() == ILType.COMMAND_HANDLE) {
-				// These are inputs, not really variables, so skip them.
-				continue;
-			} else if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
+			if (LustreNamingConventions.hasValueAndKnownSplit(v)) {
 				// There are two equations to build here
 				varNextValue.put(v, new PlexilEquationBuilder(
 						new IdExpr(LustreNamingConventions.getNumericVariableValueId(v)), 
@@ -172,13 +169,6 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		if (assign.getLHS() instanceof SimpleVar) {
 			SimpleVar v = (SimpleVar) assign.getLHS();
 			
-			if (v.getType() == ILType.COMMAND_HANDLE) {
-				// A special case here: command handles are inputs, not 
-				// variables. All their assignments and such are handled 
-				// elsewhere.
-				return null;
-			}
-			
 			Expr lustreRHS = translator.toLustre(assign.getRHS(), v.getType());
 			// Add this assignment under this condition. The value should be
 			// the RHS *before* variables are committed.
@@ -208,9 +198,54 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 		// We just get "results" back from the environment. To do that, we
 		// need the handle to be an input, not a regular variable. 
 		
-		translator.addCommandHandleInputFor(cmd.getHandle(), 
-				cmd.getNameAsConstantString());
+		ILVariable handle = cmd.getHandle();
 		
+		// In the Lustre translation, command handles are partially inputs.
+		translator.addRawInputFor(handle);
+		String rawIdName = LustreNamingConventions.getRawInputId(handle);
+		Expr rawId = id(rawIdName);
+		
+		// But this input needs to have restrictions. In addition to the general
+		// PLEXIL rule that inputs can't change mid-macrostep, we also want
+		// to make sure that it doesn't do weird
+		// things like change before the command is even issued.
+		
+		// In INACTIVE and WAITING, the only valid
+		// value is UNKNOWN. The only way to get to those two states is the 
+		// initial state of the plan and by resetting. 
+		NodeUID node = handle.getNodeUID();
+		
+		ILExpr inactive = ILOperator.DIRECT_COMPARE.expr(NodeState.INACTIVE, new GetNodeStateExpr(node));
+		ILExpr waiting = ILOperator.DIRECT_COMPARE.expr(NodeState.WAITING, new GetNodeStateExpr(node));
+		// If the node was SKIPPED, it must have gone directly from WAITING to
+		// FINISHED, with the command not being issued. Therefore, it should 
+		// be UNKNOWN too.
+		ILExpr skipped = ILOperator.DIRECT_COMPARE.expr(
+				NodeOutcome.SKIPPED, 
+				translator.getNodeOutcomeFor(node));
+		// This is also true if the pre-condition failed.
+		ILExpr preFail = ILOperator.DIRECT_COMPARE.expr(
+				NodeFailureType.PRE_CONDITION_FAILED,
+				translator.getFailureTypeFor(node));
+		ILExpr handleIsModifiableIL = ILOperator.NOT.expr((ILOperator.OR.expr(
+				inactive, waiting, skipped, preFail)));
+		
+		Expr handleIsModifiable = translator.toLustre(handleIsModifiableIL);
+		Expr cmdUnknown = translator.toLustre(CommandHandleState.UNKNOWN, 
+				ILType.COMMAND_HANDLE);
+		
+		// Use these guards for this variable's equation.
+		PlexilEquationBuilder builder = varNextValue.get(handle);
+		// If it's modifiable, and the new value isn't UNKNOWN, let it in.
+		// The official interpreter dictates that the environment is not allowed
+		// to set a handle to UNKNOWN. 
+		builder.addAssignmentBetweenMacro(and(handleIsModifiable,
+				new BinaryExpr(rawId, BinaryOp.NOTEQUAL, cmdUnknown)), 
+				rawId);
+		
+		translator.getTranslationMap().addCommandHandleMapping(rawIdName, 
+				cmd.getNameAsConstantString());
+		 
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
 			throw new RuntimeException("Variable assignments from commands not supported yet!");
 		}
