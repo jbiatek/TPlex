@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -84,16 +85,32 @@ public class PlanState {
      * @throws IOException
      */
     public static PlanState parseSingleStep(BufferedReader in) throws IOException {
-    	// Find the first node name, then pass it off
-    	String firstName = "";
-    	while (firstName != null && !firstName.endsWith("{")) {
-    		firstName = in.readLine();
+    	// Try to find the first node name, then pass it off
+    	String line = "";
+    	while (line != null) {
+    		if (line.startsWith("ERROR:") 
+    				|| line.startsWith("Assertion failed")) {
+    			// Read the rest of this too, let's give them everything
+    			List<String> remainingLines = new ArrayList<>();
+    			remainingLines.add(line);
+    			while ((line = in.readLine()) != null) {
+    				remainingLines.add(line);
+    			}
+    			throw new RuntimeException("This script caused an error in PLEXIL interpreter: \n"+
+    					remainingLines.stream().collect(Collectors.joining("\n")));
+    		}
+    		
+    		if (line.endsWith("{")) break;
+    		
+    		// Anything that isn't an error or a "{" we skip.
+    		line = in.readLine();
     		//System.out.println("Trying to start: "+firstName);
     	}
     	
-    	if (firstName == null) return null;
+    	// We didn't find one? Nothing to do then.
+    	if (line == null) return null;
     	
-    	return parseSingleNode(in, firstName, null);
+    	return parseSingleNode(in, line, null);
     }
     
     private static PlanState parseSingleNode(BufferedReader in, String rawName, PlanState parent) throws IOException {

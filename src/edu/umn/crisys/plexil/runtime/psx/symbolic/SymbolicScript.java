@@ -85,7 +85,7 @@ public class SymbolicScript implements ExternalWorld {
 	}
 
 	@Override
-	public boolean stop() {
+	public boolean done() {
 		// We can keep making stuff up forever, baby.
 		return false;
 	}

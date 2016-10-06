@@ -107,7 +107,7 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	}
 	
 	@Override
-	public boolean stop() {
+	public boolean done() {
 		return false;
 	}
 	

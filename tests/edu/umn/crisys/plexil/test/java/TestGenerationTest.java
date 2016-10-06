@@ -8,20 +8,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
+import static org.junit.Assert.*;
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.optimizations.HackOutArrayAssignments;
 import edu.umn.crisys.plexil.il2lustre.PlanToLustre;
-import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
-import edu.umn.crisys.plexil.jkind.results.ScriptRecorderFromLustreData;
 import edu.umn.crisys.plexil.jkind.search.IncrementalTrace;
 import edu.umn.crisys.plexil.jkind.search.JKindSearch;
 import edu.umn.crisys.plexil.jkind.search.JKindSettings;
 import edu.umn.crisys.plexil.jkind.search.TraceProperty;
 import edu.umn.crisys.plexil.main.TPlex;
 import edu.umn.crisys.plexil.main.TPlex.OutputLanguage;
+import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.script.ast.PlexilScript;
@@ -32,13 +31,19 @@ public class TestGenerationTest {
 
 	@Test
 	public void runQuickTestGeneration() {
-		RegressionTest.getLustreTestSuites().forEach(this::testSingleSuite);
+		JavaPlan.DEBUG = true;
+		PlanState.DEBUG = true;
+		RegressionTest.getLustreTestSuites()
+			.stream()
+			.filter(suite -> suite.planFile.equals("empty3"))
+			.forEach(this::testSingleSuite);
 	}
 	
 	private void testSingleSuite(TestSuite suite)  {
 		File plxPlan = new File(RegressionTest.RESOURCES, suite.planFile+".plx");
 
 		OfficialPlexilExecutive template = new OfficialPlexilExecutive(plxPlan);
+		template.setDebugFile(ComplianceTesting.createDebugCfgFile());
 		
 		TPlex tplex = new TPlex();
 		tplex.files.add(plxPlan);
@@ -75,7 +80,12 @@ public class TestGenerationTest {
 		searcher.turnOffIncrementalSearch();
 		searcher.go(new JKindSettings(20, Integer.MAX_VALUE));
 		
-		searcher.testAllTheTests();
+		try { 
+			searcher.testAllTheTests();
+		} catch (Exception e) {
+			throw new RuntimeException("Found a problem with test suite "+suite.planFile
+					, e);
+		}
 		
 	}
 	

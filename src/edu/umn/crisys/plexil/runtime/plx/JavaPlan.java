@@ -128,6 +128,9 @@ public abstract class JavaPlan {
      * Run the plan to completion, or stop if more than maxMacroSteps occur.
      * If this number is negative, there will be no limit. 
      * 
+     * Completion means that both the external world has indicated that it
+     * has finished, and the root node has reached FINISHED.
+     * 
      * @param maxMacroSteps
      * @return the number of steps actually taken. 
      */
@@ -147,7 +150,7 @@ public abstract class JavaPlan {
             if (maxMacroSteps > 0 && steps >= maxMacroSteps) {
             	break;
             }
-        } while ( ! world.stop() && getRootNodeState() != NodeState.FINISHED);
+        } while ( ! world.done() || getRootNodeState() != NodeState.FINISHED);
         
         notifyPlanEnded();
         return steps;

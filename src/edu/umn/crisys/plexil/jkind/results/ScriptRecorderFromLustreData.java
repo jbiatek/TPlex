@@ -62,7 +62,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 	public void beforeMacroStepRuns(JavaPlan plan) {
 		// Don't check anything after we run out of Lustre data, since there's
 		// nothing to check against. 
-		if (stop()) return;
+		if (done()) return;
 		if ( ! firstStepAlreadyStarted) {
 			firstStepAlreadyStarted = true;
 			return;
@@ -119,7 +119,7 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 	}
 	
 	@Override
-	public boolean stop() {
+	public boolean done() {
 		boolean ret = lustreStepCounter >= lustreData.getLength();
 		if (ret) {
 			log("Signalling stop because there is no more Lustre data");
