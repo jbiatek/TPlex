@@ -93,7 +93,7 @@ public class ComplianceTesting {
 			((JavaPlexilScript) script).reset();
 		}
 		plan.setWorld(script);
-		plan.runPlanToCompletion();
+		plan.runPlanUntilQuiescenceAndEnvironmentDone();
 	}
 	
 	public static void intermediateLanguage(Plan ilPlan, ExternalWorld script, TestOracle oracle) {

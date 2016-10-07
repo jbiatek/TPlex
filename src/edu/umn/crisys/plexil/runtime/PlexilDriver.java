@@ -17,7 +17,6 @@ import edu.umn.crisys.plexil.runtime.psx.symbolic.RandomValues;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.ReplayValues;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.ScriptDecisionMaker;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.SimulatedBacktrackException;
-import edu.umn.crisys.plexil.runtime.psx.symbolic.SymbolicDecisionMaker;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.SymbolicScript;
 import edu.umn.crisys.plexil.runtime.psx.symbolic.ValueSource;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
@@ -229,7 +228,7 @@ public class PlexilDriver {
 		}
 
 		try {
-			int steps = plan.runPlanToCompletion(STEP_LIMIT);
+			int steps = plan.runPlanUntilEnvironmentDone(STEP_LIMIT);
 			if (PRINT_INFO) {
 				System.out.println("Done in "+steps+" steps. Root node was "+
 						plan.getRootNodeState()+", outcome "+plan.getRootNodeOutcome());

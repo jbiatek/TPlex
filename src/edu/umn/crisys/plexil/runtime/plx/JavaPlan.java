@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -120,21 +121,77 @@ public abstract class JavaPlan {
     }
 
     
-    public int runPlanToCompletion() {
-    	return runPlanToCompletion(-1);
+    
+    /**
+     * Run this plan until both the external world has signaled that it is
+     * `done()` and the plan has reached quiescence. This should mean that the
+     * state of the plan will no longer change, assuming that the environment
+     * is actually done changing.  
+     * 
+     * This matches the behavior that the PLEXIL TestExec has when it runs a 
+     * PLEXILScript. 
+     * 
+     * @return the number of macrosteps taken
+     */
+    public int runPlanUntilQuiescenceAndEnvironmentDone() {
+    	return runPlanUntilQuiescenceAndEnvironmentDone(-1);
+    }
+
+    
+    /**
+     * Run this plan until both the external world has signaled that it is
+     * `done()` and the plan has reached quiescence. This should mean that the
+     * state of the plan will no longer change, assuming that the environment
+     * is actually done changing.  
+     * 
+     * Other than the maximum step limit, if any, this matches the behavior 
+     * that the PLEXIL TestExec has when it runs a PLEXILScript. 
+     * 
+     * @param maxMacroSteps The maximum number of macrosteps. If negative, no
+     * limit is applied.
+     * @return the number of macrosteps taken
+     */
+    public int runPlanUntilQuiescenceAndEnvironmentDone(int maxMacroSteps) {
+    	return runPlanUntilCondition(maxMacroSteps, 
+    			() -> endMacroStep || ! world.done());
     }
     
     /**
-     * Run the plan to completion, or stop if more than maxMacroSteps occur.
-     * If this number is negative, there will be no limit. 
+     * Run the plan until the ExternalWorld signals that it is done using its
+     * `done()` method. 
      * 
-     * Completion means that both the external world has indicated that it
-     * has finished, and the root node has reached FINISHED.
-     * 
-     * @param maxMacroSteps
-     * @return the number of steps actually taken. 
+     * @return the number of macrosteps taken
      */
-    public int runPlanToCompletion(int maxMacroSteps) {
+    public int runPlanUntilEnvironmentDone() {
+    	return runPlanUntilEnvironmentDone(-1);
+    }
+    
+    
+    /**
+     * Run the plan until the ExternalWorld signals that it is done using its
+     * `done()` method, or
+     * the maximum number of macro steps transpires.
+     *  
+     * @param maxMacroSteps The maximum number of macrosteps. If negative, no
+     * limit is applied.
+     * @return the number of macrosteps taken
+     */
+    public int runPlanUntilEnvironmentDone(int maxMacroSteps) {
+    	return runPlanUntilCondition(maxMacroSteps, 
+    			() -> ! world.done());
+
+    }
+    
+    /**
+     * Continue running this Plan until the given supplier becomes false, or
+     * the maximum number of macro steps transpires.  
+     * 
+     * @param maxMacroSteps The maximum number of macrosteps. If negative, no
+     * limit is applied.
+     * @param condition Continue running until this condition is false.
+     * @return The number of macrosteps that were taken. 
+     */
+    public int runPlanUntilCondition(int maxMacroSteps, BooleanSupplier condition) {
     	if ( ! observers.contains(world)) {
     		addObserver(world);
     	}
@@ -150,11 +207,10 @@ public abstract class JavaPlan {
             if (maxMacroSteps > 0 && steps >= maxMacroSteps) {
             	break;
             }
-        } while ( ! world.done() || getRootNodeState() != NodeState.FINISHED);
+        } while (condition.getAsBoolean());
         
         notifyPlanEnded();
         return steps;
-
     }
     
     public abstract void doMicroStep();
