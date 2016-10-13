@@ -1,7 +1,7 @@
 // A Plexil plan illustrating a simple rover driving task.
 
 Command rover_drive (Integer);
-Command rover_stop;
+Command rover_stop (String);
 Command take_navcam;
 Command take_pancam;
 
@@ -19,7 +19,7 @@ Concurrence {
   StopForTimeout:
   Concurrence {
     StartCondition Lookup(time, 0.1) >= 10;
-    Stop: rover_stop();
+    Stop: rover_stop("timeout");
 
     SetTimeoutFlag: timeout = true;
   }
@@ -29,7 +29,7 @@ Concurrence {
     StartCondition Lookup(target_in_view);
     SkipCondition timeout;
 
-    Stop: rover_stop();
+    Stop: rover_stop("target");
     SetDriveFlag: drive_done = true;
   }
 
