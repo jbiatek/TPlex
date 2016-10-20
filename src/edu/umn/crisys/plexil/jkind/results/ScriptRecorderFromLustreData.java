@@ -147,9 +147,9 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 		log("Received request for lookup "+stateName+" with args "+join(args));
 		
 		PValue lustreValue = readLookupFromTrace(stateName.getString());
-		
-		if (!getEnvironment().lookupNow(stateName, args).equalTo(lustreValue).isTrue())
-		{				
+				
+		if (!getEnvironment().getCurrentLookupMap().containsKey(new FunctionCall(stateName, args)) 
+				|| !getEnvironment().lookupNow(stateName, args).equalTo(lustreValue).isTrue())	{				
 			log("Lustre says it should be "+lustreValue+".");
 			// Pretend that we always had this value all along...
 			StateChange stateChangeEvent = stateChange(lustreValue, stateName.getString(), args);
