@@ -21,7 +21,7 @@ public class StateCoverageMeasurer implements JavaPlanObserver {
 	}
 	
 	private void recursiveCollection(PlanState state) {
-		NodeState pState = (NodeState) state.getVarValue(".state");
+		NodeState pState = (NodeState) state.getVarValue(".state").get();
 		if (state.getUID() == null) throw new NullPointerException("No UID for "+state);
 		if (pState == null) throw new NullPointerException("State variable is null in node "+state.getUID());
 		
