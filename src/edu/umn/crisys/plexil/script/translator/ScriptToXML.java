@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import edu.umn.crisys.plexil.il.expr.ILType;
+import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
+import edu.umn.crisys.plexil.script.ast.CommandAbortAck;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
@@ -186,6 +188,12 @@ public class ScriptToXML implements ScriptEventVisitor<PrintWriter,Void> {
 	@Override
 	public Void visitCommandReturn(CommandReturn ret, PrintWriter out) {
 		printParameterized("Command", "Result", ret.getCall(), ret.getValue(), out);
+		return null;
+	}
+
+	@Override
+	public Void visitCommandAbortAck(CommandAbortAck abort, PrintWriter out) {
+		printParameterized("CommandAbort", "Result", abort.getCall(), BooleanValue.get(true), out);
 		return null;
 	}
 

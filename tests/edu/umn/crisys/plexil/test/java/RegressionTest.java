@@ -1,49 +1,29 @@
 package edu.umn.crisys.plexil.test.java;
 
 import static org.junit.Assert.*;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import jkind.lustre.values.Value;
-import jkind.results.Signal;
-import lustre.LustreTrace;
-
 import org.junit.*;
 
-import edu.umn.crisys.plexil.ast.PlexilPlan;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import lustre.LustreTrace;
+
 import edu.umn.crisys.plexil.il.Plan;
-import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
-import edu.umn.crisys.plexil.il.expr.ILExpr;
-import edu.umn.crisys.plexil.il.expr.ILOperator;
-import edu.umn.crisys.plexil.il.expr.ILType;
-import edu.umn.crisys.plexil.il.expr.vars.ArrayVar;
-import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
-import edu.umn.crisys.plexil.il2lustre.ILExprToLustre;
-import edu.umn.crisys.plexil.il2lustre.LustreNamingConventions;
 import edu.umn.crisys.plexil.il2lustre.ReverseTranslationMap;
 import edu.umn.crisys.plexil.il2lustre.ScriptSimulation;
 import edu.umn.crisys.plexil.jkind.results.JKindResultUtils;
 import edu.umn.crisys.plexil.main.TPlex;
-import edu.umn.crisys.plexil.plx2ast.PlxParser;
 import edu.umn.crisys.plexil.runtime.plx.JavaPlan;
-import edu.umn.crisys.plexil.runtime.plx.JavaPlanObserver;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.psx.ScriptedEnvironment;
-import edu.umn.crisys.plexil.runtime.values.IntegerValue;
-import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.util.NameUtils;
 
@@ -94,7 +74,8 @@ public class RegressionTest {
 	 * Complex tests that were specified by hand
 	 */
 	private static final TestSuite[] MANUAL_TESTS = new TestSuite[] {
-		simple_drive_r
+		simple_drive_r,
+		produceSameNameTest("AbortCheck")
 	};
 	
 	private static TestSuite produceSameNameTest(String name) {
@@ -200,7 +181,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("repeat5", "lustre");
+		doSingleTest("AbortCheck", "il");
 	}
 	
 	@Test

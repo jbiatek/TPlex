@@ -94,7 +94,7 @@ public class StateMachineToJava {
 			}
 			// Let the transition do its thing
 			JConditional cond = addTransition(t, nsm.thePlan,
-					methodMap.get(t.start).body(), cm, stateVar, lastCondition.get(t.start));
+					methodMap.get(t.start).body(), clazz, stateVar, lastCondition.get(t.start));
 			// This is now the latest if statement for this state
 			lastCondition.put(t.start, cond);
 		}
@@ -107,7 +107,7 @@ public class StateMachineToJava {
 			if (state.inActions.size() == 0) continue;
 
 			JCase theCase = inActionSwitch._case(JExpr.lit(nsm.indexOf(state)));
-			ActionToJava a2j = new ActionToJava(cm, nsm.thePlan);
+			ActionToJava a2j = new ActionToJava(cm, clazz, nsm.thePlan);
 			for (PlexilAction a : state.inActions) {
 				a.accept(a2j, theCase.body());
 			}
@@ -175,11 +175,11 @@ public class StateMachineToJava {
      * @return The JConditional for this transition. Pass it to the next Transition.
      */
 	public static JConditional addTransition(Transition t, Plan ilPlan, 
-			JBlock block, JCodeModel cm, JFieldVar stateVar, JConditional prev) {
+			JBlock block, JDefinedClass clazz, JFieldVar stateVar, JConditional prev) {
 		// Is this our start state?
 //	    JExpression condExp = JExpr.invoke("getState").eq(
 //				cm.ref(NodeState.class).staticRef(start.toString()));
-		
+		JCodeModel cm = clazz.owner();
 	    
 	    
 		// Is each of our guards satisfied?
@@ -227,7 +227,7 @@ public class StateMachineToJava {
 		}
 		
 		// Perform the actions, if any, then move to the destination state.
-		ActionToJava a2j = new ActionToJava(cm, ilPlan);
+		ActionToJava a2j = new ActionToJava(cm, clazz, ilPlan);
 		for (PlexilAction action : t.actions) {
 			action.accept(a2j, thenBlock);
 		}

@@ -3,12 +3,12 @@ package edu.umn.crisys.plexil.il.simulator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -59,6 +59,7 @@ public class ILSimulator extends JavaPlan {
 	private Plan ilPlan;
 	private Map<ILExpr, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
 	private Map<ILExpr, SimplePArray<PValue>> arrayVars = new HashMap<>();
+	private Map<CommandAction, CommandHandler> commandHandlers = new HashMap<>();
 	private Map<NodeStateMachine, SimpleCurrentNext<Integer>> states = new HashMap<>();
 	
 	/**
@@ -294,30 +295,37 @@ public class ILSimulator extends JavaPlan {
 
 			@Override
 			public Void visitCommand(CommandAction cmd, Void param) {
-				SimpleCurrentNext<PValue> cmdHandleVar =  simpleVars.get(cmd.getHandle());
-				Optional<ILExpr> maybeLhs = cmd.getPossibleLeftHandSide();
 				// Wrap this command up in something that the external world 
 				// can use to interact with it. 
 
-				CommandHandler handle = new CommandHandler() {
+				CommandHandler handler = new CommandHandler() {
 
 					@Override
 					public void setCommandHandle(CommandHandleState state) {
 						// Apply this change immediately
-						cmdHandleVar.setNext(state);
-						cmdHandleVar.commit();
+						setNext(cmd.getHandle(), state, true);
 					}
 
 					@Override
 					public void commandReturns(PValue value) {
-						ILExpr lhs = maybeLhs.orElseThrow(() -> new RuntimeException(
+						ILExpr lhs = cmd.getPossibleLeftHandSide()
+								.orElseThrow(() -> new RuntimeException(
 								"Environment is trying to have "+cmd+" return"
 							+ " a value, but no left-hand side is present."));
 						// Assign it and commit immediately, since we should 
 						// be between macro steps. 
 						setNext(lhs, value, true);
 					}
+
+					@Override
+					public void acknowledgeAbort() {
+						setNext(cmd.getAckFlag(), NativeBool.TRUE, true);
+					}
 				};
+				
+				// Save this handler for later reference if necessary.
+				commandHandlers.put(cmd, handler);
+				
 				PString commandName = asString(eval(cmd.getName()));
 				if (JavaPlan.DEBUG) {
 					System.out.println("**** Issuing command "+commandName);
@@ -329,17 +337,29 @@ public class ILSimulator extends JavaPlan {
 					args = cmd.getArgs().stream().map(ILSimulator.this::eval)
 							.collect(Collectors.toList()).toArray(new PValue[]{});
 				}
-				 
+				
 				if (getWorld() instanceof ScriptRecorderFromLustreData) {
 					// This needs to be told the *name* of the node in addition
 					// to all the other stuff. 
 					ScriptRecorderFromLustreData rec = (ScriptRecorderFromLustreData) getWorld();
-					rec.specialCommand(cmd.getHandle(), handle, commandName, args);
+					rec.specialCommand(cmd.getHandle(), handler, commandName, args);
 				} else {
-					getWorld().command(handle, commandName, args);
+					getWorld().command(handler, commandName, args);
 				}
 				return null;
 			}
+			
+			
+
+			@Override
+			public Void visitAbortCommand(AbortCommand abort, Void param) {
+				// Get the handle that this command sent out originally
+				CommandHandler handler = commandHandlers.get(abort.getOriginalCommand());
+				// Tell the external world to abort
+				getWorld().commandAbort(handler);
+				return null;
+			}
+
 
 			@Override
 			public Void visitEndMacroStep(EndMacroStep end, Void param) {

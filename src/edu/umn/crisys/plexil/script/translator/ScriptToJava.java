@@ -12,6 +12,7 @@ import com.sun.codemodel.JMod;
 import edu.umn.crisys.plexil.il2java.expr.ILExprToJava;
 import edu.umn.crisys.plexil.runtime.psx.JavaPlexilScript;
 import edu.umn.crisys.plexil.runtime.values.PValue;
+import edu.umn.crisys.plexil.script.ast.CommandAbortAck;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
@@ -67,6 +68,16 @@ public class ScriptToJava implements ScriptEventVisitor<JCodeModel, JExpression>
 		return doCommandEvent(ret.getCall(), ret.getValue(), "commandReturn", cm);
 	}
 	
+	@Override
+	public JExpression visitCommandAbortAck(CommandAbortAck abort, JCodeModel cm) {
+		JInvocation invoke = JExpr.invoke("commandAbortAck")
+				.arg(JExpr.lit(abort.getCall().getName()));
+		for (PValue param : abort.getCall().getArgs()) {
+			invoke.arg(ILExprToJava.PValueToJava(param, cm));
+		}
+		return invoke;
+	}
+
 	private JExpression doCommandEvent(FunctionCall call, PValue result, String methodToInvoke, JCodeModel cm) {
 		JInvocation invoke = JExpr.invoke(methodToInvoke)
 				.arg(ILExprToJava.toJava(result, cm))

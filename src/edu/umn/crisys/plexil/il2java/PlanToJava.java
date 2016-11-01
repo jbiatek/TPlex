@@ -21,6 +21,7 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.CascadingExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.vars.ArrayVar;
 import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
 import edu.umn.crisys.plexil.il.expr.vars.LibraryVar;
@@ -32,6 +33,7 @@ import edu.umn.crisys.plexil.runtime.plx.LibraryInterface;
 import edu.umn.crisys.plexil.runtime.plx.PlanState;
 import edu.umn.crisys.plexil.runtime.plx.SimplePArray;
 import edu.umn.crisys.plexil.runtime.plx.SimplePValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.PBoolean;
@@ -359,7 +361,15 @@ public class PlanToJava {
         
         for (String varName : node.getVariables().keySet()) {
             ILExpr v = node.getVariables().get(varName);
-            b.invoke(ps, "addVariable").arg(varName).arg(ILExprToJava.toJava(v, cm));
+            // Special case for native booleans: wrap them to make them PValues
+            if (v.getType() == ILType.NATIVE_BOOL) {
+            	b.invoke(ps, "addVariable").arg(varName).arg(
+            			cm.ref(NativeBool.class)
+            				.staticInvoke("wrap")
+            					.arg(ILExprToJava.toJava(v, cm)));
+            } else {
+            	b.invoke(ps, "addVariable").arg(varName).arg(ILExprToJava.toJava(v, cm));
+            }
         }
         
         for (OriginalHierarchy child : node.getChildren()) {

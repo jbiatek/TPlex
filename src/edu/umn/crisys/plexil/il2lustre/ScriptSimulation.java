@@ -197,7 +197,8 @@ public class ScriptSimulation {
 		for (ILVariable var : ilPlan.getVariables()) {
 			if (var instanceof SimpleVar) {
 				SimpleVar simple = (SimpleVar) var;
-				if (simple.getType().equals(ILType.COMMAND_HANDLE)) {
+				if (simple.getType().equals(ILType.COMMAND_HANDLE)
+						|| simple.getName().equals(".command_abort_ack")) {
 					csv.put(simple,	new ArrayList<>());
 				}
 			}

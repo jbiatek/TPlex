@@ -22,6 +22,7 @@ import edu.umn.crisys.plexil.plx2ast.ExprParser;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.PValueList;
+import edu.umn.crisys.plexil.script.ast.CommandAbortAck;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
@@ -169,7 +170,7 @@ public class ScriptParser {
         case ACK:
         	return new CommandAck(call, (CommandHandleState) result);
         case ABORT:
-        	throw new RuntimeException("Abort is not implemented yet");
+        	return new CommandAbortAck(call);
         default:
         	throw new RuntimeException("Missing case: "+action);
         }

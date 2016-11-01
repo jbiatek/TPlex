@@ -1,0 +1,12 @@
+initial-state {}
+
+script {
+  simultaneous {}
+  simultaneous {}
+  simultaneous {}
+  simultaneous {}
+  command-abort abortme () = <unknown> : bool;
+  simultaneous {}
+  simultaneous {}
+  simultaneous {}
+}

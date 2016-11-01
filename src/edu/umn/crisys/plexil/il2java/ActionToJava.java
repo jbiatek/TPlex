@@ -10,6 +10,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
@@ -17,6 +18,7 @@ import com.sun.codemodel.JVar;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -133,10 +135,12 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	
 	
 	private JCodeModel cm;
+	private JDefinedClass classUnderConstruction;
 	private Plan ilPlan;
 	
-	public ActionToJava(JCodeModel cm, Plan ilPlan) {
+	public ActionToJava(JCodeModel cm, JDefinedClass classUnderConstruction, Plan ilPlan) {
 		this.cm = cm;
+		this.classUnderConstruction = classUnderConstruction;
 		this.ilPlan = ilPlan;
 	}
 	
@@ -177,8 +181,8 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
     @Override
 	public Void visitCommand(CommandAction cmd, JBlock block) {
 		// We need to wrap the SimpleCurrentNext in a CommandHandle interface.
-		// That interface lets the ExternalWorld set the state of the handle,
-		// as well as return a value.
+		// That interface lets the ExternalWorld set the state of the handle and 
+    	// acknowledge aborts, as well as return a value.
 		
 		JClass wrapper = cm.ref(CommandHandle.class);
 		if (cmd.getPossibleLeftHandSide().isPresent()) {
@@ -197,16 +201,31 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 		}
 		
 		
-        //ex.command(new CommandHandle(directToHandleVar), name, args);
+		// Save this wrapper object as an instance variable. It might be needed
+		// later, for example to abort this command. 
+		String fieldName = getFieldNameForCommandWrapper(cmd);
+		JFieldVar field = classUnderConstruction.field(JMod.PRIVATE, CommandHandle.class, fieldName);
+		// Give the wrapper pointers to the handle and the ACK flag
+		field.init(JExpr._new(wrapper)
+					.arg(JExpr.ref(ILExprToJava.getFieldName(cmd.getHandle())))
+					.arg(JExpr.ref(ILExprToJava.getFieldName(cmd.getAckFlag())))	
+				);
+		
+		// Now, let's add the actual command() call to the given block, using
+		// the wrapper as an argument. 
         JInvocation cmdCall = 
-        block.invoke(JExpr.invoke("getWorld"), "command")
-            .arg(JExpr._new(wrapper).arg(JExpr.ref(ILExprToJava.getFieldName(cmd.getHandle()))))
-            .arg(ILExprToJava.toJava(cmd.getName(), cm));
+	        block.invoke(JExpr.invoke("getWorld"), "command")
+	            .arg(field)
+	            .arg(ILExprToJava.toJava(cmd.getName(), cm));
         for (ILExpr arg : cmd.getArgs()) {
             cmdCall.arg(ILExprToJava.toJava(arg, cm));
         }
 		return null;
 	}
+    
+    private String getFieldNameForCommandWrapper(CommandAction cmd) {
+    	return cmd.getHandle().getNodeUID().toCleanString()+"__wrapper";
+    }
 
 	@Override
 	public Void visitRunLibraryNode(RunLibraryNodeAction lib, JBlock block) {
@@ -248,6 +267,16 @@ public class ActionToJava implements ILActionVisitor<JBlock, Void>{
 	public Void visitEndMacroStep(EndMacroStep end, JBlock block) {
 		// Super easy. 
 		block.invoke("endMacroStep");
+		return null;
+	}
+
+	@Override
+	public Void visitAbortCommand(AbortCommand abort, JBlock block) {
+		// When we issued this command, we included a wrapper indicating which
+		// command it was. We'll use it again for the abort.
+		String fieldName = getFieldNameForCommandWrapper(abort.getOriginalCommand());
+		block.invoke(JExpr.invoke("getWorld"), "commandAbort")
+    	       .arg(JExpr.ref(fieldName));
 		return null;
 	}
 

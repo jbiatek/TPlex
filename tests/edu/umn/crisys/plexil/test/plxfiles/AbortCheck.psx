@@ -1,0 +1,22 @@
+<PLEXILScript>
+  <InitialState/>
+  <Script>
+    <Simultaneous>
+    </Simultaneous>
+    <Simultaneous>
+    </Simultaneous>
+    <Simultaneous>
+    </Simultaneous>
+    <Simultaneous>
+    </Simultaneous>
+    <CommandAbort name="abortme" type="bool">
+      <Result>Plexil_Unknown</Result>
+    </CommandAbort>
+    <Simultaneous>
+    </Simultaneous>
+    <Simultaneous>
+    </Simultaneous>
+    <Simultaneous>
+    </Simultaneous>
+  </Script>
+</PLEXILScript>

@@ -117,6 +117,11 @@ public class SymbolicScript implements ExternalWorld {
 		env.command(caller, name, args);
 	}
 	
+	@Override
+	public void commandAbort(CommandHandler caller) {
+		env.commandAbort(caller);
+	}
+
 	private void applyEvent(Event e) {
 		currentStepEvents.add(e);
 		env.applyEvent(e);

@@ -19,6 +19,7 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -110,6 +111,8 @@ public class LustreNamingConventions {
 		if (enumValue.equals(P_UNKNOWN_ID)) return UnknownBool.get();
 		if (enumValue.equals(UNKNOWN_STRING)) return UnknownString.get();
 		if (enumValue.equals(EMPTY_STRING)) return StringValue.get("");
+		if (enumValue.equals("true")) return NativeBool.TRUE;
+		if (enumValue.equals("false")) return NativeBool.FALSE;
 		
 		for (NodeState state : NodeState.values()) {
 			if (getEnumId(state).equals(enumValue)) return state;

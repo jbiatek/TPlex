@@ -12,28 +12,31 @@ import edu.umn.crisys.plexil.runtime.values.StringValue;
 public class CommandAction implements PlexilAction {
 
     private SimpleVar handle;
+    private SimpleVar ackFlag;
     private ILExpr name;
     private List<ILExpr> args;
     private Optional<ILExpr> assignResultTo;
     
-    public CommandAction(SimpleVar handle, ILExpr name, 
+    public CommandAction(SimpleVar handle, SimpleVar ackFlag, ILExpr name, 
             List<ILExpr> args, Optional<ILExpr> assignResultTo) {
         ILType.COMMAND_HANDLE.typeCheck(handle.getType());
         ILType.STRING.typeCheck(name.getType());
+        ILType.NATIVE_BOOL.typeCheck(ackFlag.getType());
     	this.handle = handle;
+    	this.ackFlag = ackFlag;
         this.name = name;
         this.args = args;
         this.assignResultTo = assignResultTo;
     }
     
-    public CommandAction(SimpleVar handle, ILExpr name, 
+    public CommandAction(SimpleVar handle, SimpleVar ackFlag, ILExpr name, 
             List<ILExpr> args, ILExpr assignResultTo) {
-    	this(handle, name, args, Optional.of(assignResultTo));
+    	this(handle, ackFlag, name, args, Optional.of(assignResultTo));
     }
     
-    public CommandAction(SimpleVar handle, ILExpr name, 
+    public CommandAction(SimpleVar handle, SimpleVar ackFlag, ILExpr name, 
             List<ILExpr> args) {
-    	this(handle, name, args, Optional.empty());
+    	this(handle, ackFlag, name, args, Optional.empty());
     }
     
     public List<ILExpr> getArgs() {
@@ -59,6 +62,10 @@ public class CommandAction implements PlexilAction {
     
     public SimpleVar getHandle() {
     	return handle;
+    }
+    
+    public SimpleVar getAckFlag() {
+    	return ackFlag;
     }
     
     public Optional<ILExpr> getPossibleLeftHandSide() {

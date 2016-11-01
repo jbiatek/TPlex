@@ -117,6 +117,7 @@ public class PruneUnusedVariables {
             saveAllVariablesInExpression(((AssignAction) a).getRHS(), safeList);
         } else if (a instanceof CommandAction) {
         	saveAllVariablesInExpression(((CommandAction) a).getPossibleLeftHandSide().orElse(null), safeList);
+        	saveAllVariablesInExpression(((CommandAction)a).getAckFlag(), safeList);
         	saveAllVariablesInExpression(((CommandAction)a).getName(), safeList);
             saveAllVariablesInExpressions(((CommandAction) a).getArgs(), safeList);
         } else if (a instanceof UpdateAction) {

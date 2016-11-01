@@ -17,6 +17,7 @@ import edu.umn.crisys.plexil.ast.globaldecl.LibraryDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.LookupDecl;
 import edu.umn.crisys.plexil.ast.globaldecl.PlexilInterface;
 import edu.umn.crisys.plexil.ast.globaldecl.VariableDecl;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -30,7 +31,6 @@ import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.ILExprVisitor;
-import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.il.expr.vars.ILVariable;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
@@ -221,6 +221,7 @@ public class Plan {
 				cmd.getName().accept(visitor, param);
 				cmd.getArgs().forEach(e -> e.accept(visitor, param));
 				cmd.getHandle().accept(visitor, param);
+				cmd.getAckFlag().accept(visitor, param);
 				cmd.getPossibleLeftHandSide().ifPresent(e -> e.accept(visitor, param));
 				return null;
 			}
@@ -248,6 +249,14 @@ public class Plan {
 			public Void visitUpdate(UpdateAction update, P param) {
 				update.getUpdates().forEach(pair -> pair.second.accept(visitor, param));
 				update.getHandle().accept(visitor, param);
+				return null;
+			}
+
+			@Override
+			public Void visitAbortCommand(AbortCommand abort, P param) {
+				// This has no expressions, just a pointer to the original
+				// command action. 
+				abort.getOriginalCommand().accept(this, param);
 				return null;
 			}
 		};

@@ -23,7 +23,6 @@ import edu.umn.crisys.plexil.il.expr.vars.SimpleVar;
 import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.il.statemachine.Transition;
-import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -536,8 +535,6 @@ public class StateMachineBuilder {
     }
     
     private ILExpr abortComplete() {
-    	return ILOperator.DIRECT_COMPARE.expr(
-    			translator.getCommandHandle(), 
-    			CommandHandleState.COMMAND_ABORTED);
+    	return translator.getCommandAbortAck();
     }
 }

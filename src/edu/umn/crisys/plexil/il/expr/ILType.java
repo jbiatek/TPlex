@@ -57,7 +57,7 @@ public enum ILType {
     /**
      * Get the Class that represents this type. It may be an interface.
      */
-    public Class<? extends PValue> getTypeClass() {
+    public Class<?> getTypeClass() {
         switch(this) {
         case BOOLEAN: return PBoolean.class;
         case INTEGER: return PInteger.class;
@@ -73,6 +73,7 @@ public enum ILType {
         case REAL_ARRAY: 
         case STRING_ARRAY:
         	return PValueList.class;
+        case NATIVE_BOOL: return Boolean.class;
         default:
         	throw new RuntimeException(this+" does not have a type class."); 
         }
@@ -160,7 +161,7 @@ public enum ILType {
      * @param type
      * @return
      */
-    public static Class<? extends PValue> getTypeClass(String type) {
+    public static Class<?> getTypeClass(String type) {
         return valueOf(type).getTypeClass();
     }
     
@@ -168,7 +169,7 @@ public enum ILType {
      * Get the class that represents this type when it's not UNKNOWN.
      * @return
      */
-    public Class<? extends PValue> getConcreteTypeClass() {
+    public Class<?> getConcreteTypeClass() {
         switch(this) {
         case BOOLEAN: return BooleanValue.class;
         case INTEGER: return IntegerValue.class;
@@ -183,7 +184,7 @@ public enum ILType {
      * Get the class that represents this type when it's not UNKNOWN.
      * @return
      */
-    public static Class<? extends PValue> getConcreteTypeClass(String type) {
+    public static Class<?> getConcreteTypeClass(String type) {
         return valueOf(type).getConcreteTypeClass();
     }
 

@@ -12,6 +12,7 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -150,6 +151,12 @@ public class PlanState {
                     System.out.println(nodeName+" failure type: "+extractSimple(line));
                 node.addVariable(".failure", 
                         NodeFailureType.valueOf(extractSimple(line)));
+    		} else if (line.startsWith("AbortCompleteCondition: ")) {
+    			if (DEBUG) {
+    				System.out.println(nodeName+" abort ack: "+extractValue(line));
+    			}
+    			node.addVariable(".command_abort_ack", NativeBool.wrap(
+    					extractValue(line).equalsIgnoreCase("1")));
     		}
     		
     		else if (line.matches(".*?: \\(Variable .*")) {
