@@ -83,6 +83,10 @@ public enum ILOperator {
 		public Optional<PValue> getShortCircuitValue() {
 			return Optional.of(BooleanValue.get(false));
 		}
+		@Override
+		public Optional<PValue> getIdentityValue() {
+			return Optional.of(BooleanValue.get(true));
+		}
     },
     POR(2, "||", ILType.BOOLEAN, ILType.BOOLEAN) {
 		@Override
@@ -92,6 +96,9 @@ public enum ILOperator {
 		@Override
 		public Optional<PValue> getShortCircuitValue() {
 			return Optional.of(BooleanValue.get(true));
+		}
+		public Optional<PValue> getIdentityValue() {
+			return Optional.of(BooleanValue.get(false));
 		}
     },
     PXOR(2, "XOR", ILType.BOOLEAN, ILType.BOOLEAN) {
@@ -367,6 +374,10 @@ public enum ILOperator {
 		public Optional<PValue> getShortCircuitValue() {
 			return Optional.of(NativeBool.FALSE);
 		}
+		public Optional<PValue> getIdentityValue() {
+			return Optional.of(NativeBool.TRUE);
+		}
+
     },
 	OR(2, "or", ILType.NATIVE_BOOL, ILType.NATIVE_BOOL) {
 		@Override
@@ -378,6 +389,9 @@ public enum ILOperator {
 		@Override
 		public Optional<PValue> getShortCircuitValue() {
 			return Optional.of(NativeBool.TRUE);
+		}
+		public Optional<PValue> getIdentityValue() {
+			return Optional.of(NativeBool.FALSE);
 		}
     },
 	NOT(1, "not", ILType.NATIVE_BOOL, ILType.NATIVE_BOOL) {
@@ -577,13 +591,13 @@ public enum ILOperator {
 				|| this == PSTRING_INDEX;
 	}
 	
-	public Optional<PValue> eval(List<ILExpr> args) {
+	public Optional<PValue> eval(List<ILExpr> args, Function<ILExpr, Optional<PValue>> mapper) {
 		if (args.isEmpty()) {
 			throw new RuntimeException("No args passed to "+this);
 		}
 		
 		List<Optional<PValue>> eval = args.stream()
-				.map(ILExpr::eval)
+				.map(e -> e.eval(mapper))
 				.collect(Collectors.toList());
 		
 		if (getShortCircuitValue().isPresent()) {
@@ -634,6 +648,10 @@ public enum ILOperator {
 	}
 	
 	public Optional<PValue> getShortCircuitValue() {
+		return Optional.empty();
+	}
+	
+	public Optional<PValue> getIdentityValue() {
 		return Optional.empty();
 	}
 		

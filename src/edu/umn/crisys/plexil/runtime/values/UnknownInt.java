@@ -32,9 +32,13 @@ public class UnknownInt implements PInteger {
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
 	}
+	
+	public String asString() {
+		return toString();
+	}
 
 	@Override
-	public String asString() {
+	public String toString() {
 		return "UNKNOWN";
 	}
 

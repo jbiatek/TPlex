@@ -14,6 +14,11 @@ public class UnknownBool implements PBoolean {
 	private UnknownBool() {}
 
 	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
 	public String toString() {
 		return "UNKNOWN";
 	}
@@ -86,11 +91,6 @@ public class UnknownBool implements PBoolean {
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override

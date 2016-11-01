@@ -8,8 +8,6 @@ import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.ILOperation;
-import edu.umn.crisys.plexil.runtime.values.BooleanValue;
-import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
 public class ConstantPropagation extends ILExprModifier<Void> {
@@ -26,6 +24,7 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 
 	@Override
 	public ILExpr visit(ILExpr e, Void param) {
+		// Replace any constants found.
 		Optional<PValue> eval = e.eval();
 		if (eval.isPresent()) {
 			return eval.get();
@@ -34,19 +33,6 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 		}
 	}
 	
-//	@Override
-//	public Expression visit(NamedCondition named, Void param) {
-//		Expression optimized = visit((Expression) named, param);
-//		if (optimized instanceof NamedCondition) {
-//			// If it's not an operator, just use it directly instead. 
-//			NamedCondition newNamed = (NamedCondition) optimized;
-//			if ( ! (newNamed.getExpression() instanceof ILOperation)) {
-//				return newNamed.getExpression();
-//			}
-//		}
-//		return optimized;
-//	}
-
 	@Override
 	public ILExpr visit(ILOperation op, Void param) {
 		Optional<PValue> eval = op.eval();
@@ -55,21 +41,13 @@ public class ConstantPropagation extends ILExprModifier<Void> {
 			return eval.get();
 		}
 		
-		// Well, bits of it might be redundant. 
-		final PValue identity;
-		switch(op.getOperator()) {
-		case PAND: identity = BooleanValue.get(true); break;
-		case POR: identity = BooleanValue.get(false); break;
-		case AND: identity = NativeBool.TRUE; break;
-		case OR: identity = NativeBool.FALSE; break;
-		default: identity = null;
-		}
-		
-		if (identity == null) {
+		// Well, bits of it might be redundant. Things like true && something.
+		if ( ! op.getOperator().getIdentityValue().isPresent()) {
 			// Okay, nothing special to do, other than propagate the listener,
 			// which is done by default. 
 			return super.visit(op, param);
 		}
+		final PValue identity = op.getOperator().getIdentityValue().get();
 		
 		// Remove identity expressions if found. 
 		List<ILExpr> newArgs = op.getArguments().stream()

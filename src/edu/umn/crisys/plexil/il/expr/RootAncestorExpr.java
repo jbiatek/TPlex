@@ -1,5 +1,10 @@
 package edu.umn.crisys.plexil.il.expr;
 
+import java.util.Optional;
+import java.util.function.Function;
+
+import edu.umn.crisys.plexil.runtime.values.PValue;
+
 public enum RootAncestorExpr implements ILExpr {
 
 	END,
@@ -20,6 +25,11 @@ public enum RootAncestorExpr implements ILExpr {
 	@Override
 	public String asString() {
 		return "<root ancestor's "+this.toString().toLowerCase()+">";
+	}
+
+	@Override
+	public Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper) {
+		return mapper.apply(this);
 	}
 	
 }

@@ -14,6 +14,11 @@ public class UnknownString implements PString {
 	private UnknownString() {}
 
 	@Override
+	public String asString() {
+		return toString();
+	}
+
+	@Override
 	public String toString() {
 		return "UNKNOWN";
 	}
@@ -56,11 +61,6 @@ public class UnknownString implements PString {
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override

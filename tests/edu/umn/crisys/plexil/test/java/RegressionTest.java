@@ -181,7 +181,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("AbortCheck", "il");
+		doSingleTest("array1", "il");
 	}
 	
 	@Test

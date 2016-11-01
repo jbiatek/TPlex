@@ -33,8 +33,12 @@ public class UnknownReal implements PReal {
 		return visitor.visit(this, param);
 	}
 
-	@Override
 	public String asString() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
 		return "UNKNOWN";
 	}
 

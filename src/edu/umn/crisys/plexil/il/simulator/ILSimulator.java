@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il.simulator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.NodeUID;
@@ -19,9 +20,9 @@ import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.expr.CascadingExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ExprVisitor;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.ILOperation;
 import edu.umn.crisys.plexil.il.expr.ILOperator;
 import edu.umn.crisys.plexil.il.expr.LookupExpr;
@@ -66,17 +67,10 @@ public class ILSimulator extends JavaPlan {
 	 * This visitor goes through an expression replacing variables and inputs
 	 * with their current values. 
 	 */
-	private ILExprModifier<Void> myResolver = new ILExprModifier<Void>() {
+	private ExprVisitor<Void,PValue> myResolver = new CascadingExprVisitor<Void, PValue>() {
 
 		@Override
-		public ILExpr visit(ILExpr e, Void param) {
-			return e.getCloneWithArgs(e.getArguments().stream()
-					.map(arg -> arg.accept(this))
-					.collect(Collectors.toList()));
-		}
-		
-		@Override
-		public ILExpr visit(LookupExpr lookup, Void param) {
+		public PValue visit(LookupExpr lookup, Void param) {
 			PValue[] args = new PValue[]{};
 			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
 				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
@@ -96,7 +90,7 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public ILExpr visit(RootAncestorExpr root, Void param) {
+		public PValue visit(RootAncestorExpr root, Void param) {
 			switch (root) {
 			case END:
 				return getInterface().evalAncestorEnd();
@@ -112,17 +106,17 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public ILExpr visit(SimpleVar var, Void param) {
+		public PValue visit(SimpleVar var, Void param) {
 			return simpleVars.get(var).getCurrent();
 		}
 
 		@Override
-		public ILExpr visit(ArrayVar array, Void param) {
+		public PValue visit(ArrayVar array, Void param) {
 			return arrayVars.get(array).getCurrent();
 		}
 
 		@Override
-		public ILExpr visit(GetNodeStateExpr state, Void param) {
+		public PValue visit(GetNodeStateExpr state, Void param) {
 			return getCurrentStateOf(state.getNodeUid());
 		}
 		
@@ -191,8 +185,9 @@ public class ILSimulator extends JavaPlan {
 	public PValue eval(ILExpr e) {
 		if (e instanceof PValue) return (PValue) e;
 		
-		PValue v = e.accept(myResolver).eval()
-				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
+		PValue v = e.eval(expr -> Optional.of(expr.accept(myResolver)))
+				.orElseThrow(() -> 
+				new RuntimeException("Couldn't eval "+e));
 		// Make sure that the value is the same type
 		e.getType().strictTypeCheck(v);
 		
