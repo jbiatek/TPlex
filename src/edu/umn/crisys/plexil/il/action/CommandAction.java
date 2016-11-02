@@ -2,6 +2,7 @@ package edu.umn.crisys.plexil.il.action;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILType;
@@ -74,12 +75,10 @@ public class CommandAction implements PlexilAction {
     
     @Override
     public String toString() {
-        String ret = "Issue command: ";
-        ret += name + "(";
-        for (ILExpr arg : args) {
-            ret += arg + ", ";
-        }
-        return ret.substring(0, ret.length() - 2) +")";
+        String ret = "Issue command: " + name.toString();
+        ret += args.stream().map(Object::toString)
+        		.collect(Collectors.joining(", ", "(", ")"));
+        return ret;
     }
 
 	@Override

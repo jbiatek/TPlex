@@ -1,17 +1,20 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprSingletonBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
-public class UnknownInt implements PInteger {
+public class UnknownInt extends ILExprSingletonBase implements PInteger {
 
 	public static PInteger get() {
 		return SINGLETON;
 	}
 	private static UnknownInt SINGLETON = new UnknownInt();
-	private UnknownInt() {}
+	private UnknownInt() { }
 	
 	@Override
 	public boolean isKnown() {
@@ -24,21 +27,12 @@ public class UnknownInt implements PInteger {
 	}
 
 	@Override
-	public ILType getType() {
-		return ILType.INTEGER;
-	}
-
-	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
 	}
 	
-	public String asString() {
-		return toString();
-	}
-
 	@Override
-	public String toString() {
+	public String asString() {
 		return "UNKNOWN";
 	}
 
@@ -120,6 +114,21 @@ public class UnknownInt implements PInteger {
 	@Override
 	public PInteger abs() {
 		return this;
+	}
+
+	@Override
+	public boolean equals(ILExpr e) {
+		return this == e;
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
+	}
+
+	@Override
+	public ILType getType() {
+		return ILType.INTEGER;
 	}
 
 }

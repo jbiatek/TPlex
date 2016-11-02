@@ -23,13 +23,18 @@ public enum RootAncestorExpr implements ILExpr {
 	}
 
 	@Override
-	public String asString() {
-		return "<root ancestor's "+this.toString().toLowerCase()+">";
+	public String toString() {
+		return "<root ancestor's "+this.name().toLowerCase()+">";
 	}
 
 	@Override
 	public Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper) {
 		return mapper.apply(this);
+	}
+
+	@Override
+	public String asString() {
+		return toString();
 	}
 	
 }

@@ -1,25 +1,26 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprSingletonBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
-public class UnknownBool implements PBoolean {
+public class UnknownBool extends ILExprSingletonBase implements PBoolean {
 
 	public static UnknownBool get() {
+		if (SINGLETON == null) {
+			 SINGLETON = new UnknownBool();
+		}
 		return SINGLETON;
 	}
-	private static UnknownBool SINGLETON = new UnknownBool();
-	private UnknownBool() {}
+	private static UnknownBool SINGLETON;
+	private UnknownBool() { }
 
 	@Override
 	public String asString() {
-		return toString();
-	}
-
-	@Override
-	public String toString() {
 		return "UNKNOWN";
 	}
 	
@@ -36,11 +37,6 @@ public class UnknownBool implements PBoolean {
 	@Override
 	public PBoolean equalTo(PValue o) {
 		return this;
-	}
-
-	@Override
-	public ILType getType() {
-		return ILType.BOOLEAN;
 	}
 
 	@Override
@@ -103,4 +99,21 @@ public class UnknownBool implements PBoolean {
 		return v.visit(this, param);
 	}
 
+	@Override
+	public boolean equals(ILExpr e) {
+		return this == e;
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
+	}
+
+	@Override
+	public ILType getType() {
+		return ILType.BOOLEAN;
+	}
+
+
+	
 }

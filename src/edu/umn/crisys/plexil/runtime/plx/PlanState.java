@@ -256,10 +256,18 @@ public class PlanState {
                     System.err.println("Warning: No expected value for "
                             +uid+"/"+var+". Current value is "+vars.get(var));
                 }
+            } else if (expected.vars.get(var) instanceof DebugOutputPlexilArray) {
+            	// Ah, this is a little bit of a special case. This array doesn't
+            	// have all the type info we'd like, so we have to use a method
+            	// that compares a little more loosely.
+            	DebugOutputPlexilArray expArray = (DebugOutputPlexilArray) expected.vars.get(var);
+            	if ( ! expArray.nonStrictEquals(vars.get(var))) {
+                    failures.add("Array didn't match in "+uid+": "
+                            +var+" expected value was "+expected.vars.get(var)
+                            + " but actual value was "+vars.get(var)
+                            + " (this array was checked using DebugOutputPlexilArray)");
+            	}
             } else if ( ! expected.vars.get(var).equals(vars.get(var))) {
-                // The expected one needs to be the one checking for equals()
-                // because the oracle arrays are actually TypelessPlexilArrays 
-                // that know things like 0 == false and 1 == true.
                 failures.add("Variable didn't match in "+uid+": "
                         +var+" expected value was "+expected.vars.get(var)
                         + " but actual value was "+vars.get(var));

@@ -30,5 +30,31 @@ public class AliasExpr extends ILExprBase {
 		return writeable;
 	}
 
+	@Override
+	public boolean equals(ILExpr e) {
+		if (this == e)
+			return true;
+		if (getClass() != e.getClass())
+			return false;
+		AliasExpr other = (AliasExpr) e;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (writeable != other.writeable)
+			return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (writeable ? 1231 : 1237);
+		return result;
+	}
+
 
 }

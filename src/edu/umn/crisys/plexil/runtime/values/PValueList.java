@@ -161,12 +161,33 @@ public class PValueList<T extends PValue> extends ILExprBase implements PValue, 
 		return Optional.of(this);
 	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(myValues);
+		return result;
+	}
+
+	@Override
+	public boolean equals(ILExpr e) {
+		if (this == e)
+			return true;
+		if (getClass() != e.getClass())
+			return false;
+		@SuppressWarnings("rawtypes")
+		PValueList other = (PValueList) e;
+		if (!Arrays.equals(myValues, other.myValues))
+			return false;
+		return true;
+	}
+
 	
 	/*
 	 * List methods:
 	 */
 	
-
 	@Override
 	public boolean add(T e) {
 		throw new UnsupportedOperationException();

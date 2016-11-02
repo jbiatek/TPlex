@@ -1,25 +1,23 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprSingletonBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
-public class UnknownString implements PString {
+public class UnknownString extends ILExprSingletonBase implements PString {
 	
 	public static UnknownString get() {
 		return SINGLETON;
 	}
 	private static UnknownString SINGLETON = new UnknownString();
-	private UnknownString() {}
+	private UnknownString() { }
 
 	@Override
 	public String asString() {
-		return toString();
-	}
-
-	@Override
-	public String toString() {
 		return "UNKNOWN";
 	}
 	
@@ -41,11 +39,6 @@ public class UnknownString implements PString {
 	@Override
 	public PBoolean equalTo(PValue o) {
 		return UnknownBool.get();
-	}
-
-	@Override
-	public ILType getType() {
-		return ILType.STRING;
 	}
 
 	@Override
@@ -71,6 +64,21 @@ public class UnknownString implements PString {
 	@Override
 	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
 		return v.visit(this, param);
+	}
+
+	@Override
+	public boolean equals(ILExpr e) {
+		return this == e;
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
+	}
+
+	@Override
+	public ILType getType() {
+		return ILType.STRING;
 	}
 
 }

@@ -3,9 +3,11 @@ package edu.umn.crisys.plexil.runtime.values;
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
-public class IntegerValue implements PInteger {
+public class IntegerValue extends ILExprBase implements PInteger {
 	
 	private final int value;
 	
@@ -20,6 +22,7 @@ public class IntegerValue implements PInteger {
 	 * @param v
 	 */
 	public IntegerValue(int v) {
+		super(ILType.INTEGER);
 		value = v;
 	}
 	
@@ -164,12 +167,7 @@ public class IntegerValue implements PInteger {
 	}
 
 	@Override
-	public ILType getType() {
-		return ILType.INTEGER;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(ILExpr o) {
 		if (o instanceof PInteger) {
 			PInteger other = (PInteger) o;
 			return other.isKnown() && this.value == other.getIntValue();
@@ -183,18 +181,13 @@ public class IntegerValue implements PInteger {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return value+"";
 	}
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override

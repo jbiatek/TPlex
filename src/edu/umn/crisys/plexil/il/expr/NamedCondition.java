@@ -76,14 +76,14 @@ public class NamedCondition extends ILExprBase {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(ILExpr e) {
+		if (this == e)
 			return true;
-		if (obj == null)
+		if (e == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != e.getClass())
 			return false;
-		NamedCondition other = (NamedCondition) obj;
+		NamedCondition other = (NamedCondition) e;
 		if (description != other.description)
 			return false;
 		if (uid == null) {
