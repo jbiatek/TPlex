@@ -385,9 +385,9 @@ public class JKindResultUtils {
 			ReverseTranslationMap stringMap) {
 		switch(getType(value)) {
 		case "int":
-			return IntegerValue.get(Integer.parseInt(value.toString()));
+			return LustreNamingConventions.reverseTranslateNumber(value.toString(),"true", ILType.INTEGER);
 		case "real":
-			return RealValue.get(Double.parseDouble(value.toString()));
+			return LustreNamingConventions.reverseTranslateNumber(value.toString(),"true", ILType.REAL);
 		case "bool":
 			return BooleanValue.get(value.toString().equalsIgnoreCase("true"));
 		case "enum":
