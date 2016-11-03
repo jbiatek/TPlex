@@ -150,7 +150,8 @@ public class XMLUtils {
         } else if (e.isEndElement()) {
             return e.asEndElement().getName().getLocalPart();
         }
-        throw new RuntimeException(e+" isn't a tag to get the name of.");
+        throw new RuntimeException(e.getLocation().getLineNumber() + "," + e.getLocation().getColumnNumber() + ": " +
+        		e +" isn't a tag to get the name of.");
     }
     
     /**
@@ -222,7 +223,7 @@ public class XMLUtils {
     
     public static StartElement assertStart(String name, XMLEvent event) {
         if ( ! isTag(event, name)) {
-            throw new RuntimeException("Was expecting a "+name+" tag, not this:" + event);
+            throw new RuntimeException(event.getLocation().getLineNumber() + "," + event.getLocation().getColumnNumber() + ": Was expecting a "+name+" tag, not this:" + event);
         }
         return event.asStartElement();
     }
@@ -244,7 +245,7 @@ public class XMLUtils {
     
     public static EndElement assertEnd(String name, XMLEvent event) {
         if ( ! isEndTag(event, name)) {
-            throw new RuntimeException("Was expecting an end tag "+name+", not this: "+event);
+            throw new RuntimeException(event.getLocation().getLineNumber() + "," + event.getLocation().getColumnNumber() + ": Was expecting an end tag "+name+", not this: "+event);
         }
         return event.asEndElement();
     }

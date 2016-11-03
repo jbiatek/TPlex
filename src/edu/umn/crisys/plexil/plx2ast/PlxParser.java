@@ -117,9 +117,9 @@ public class PlxParser {
     	} else if (returns.size() == 1) {
     		cmd.setReturnValue(returns.get(0));
     	}
-    	
-    	// After that, any number of parameters.
-    	while (nextTagIsStartOf("Parameter", xml)) {
+    	   		
+    	// After that any number of parameters.    	
+    	else while (nextTagIsStartOf("Parameter", xml) || nextTagIsStartOf("AnyParameters", xml)) {
     		cmd.addParameter(parseReturnOrParam(xml, nextTag(xml).asStartElement()));
     	}
     	
@@ -171,24 +171,28 @@ public class PlxParser {
     }
     
     private static VariableDecl parseReturnOrParam(XMLEventReader xml, StartElement start) {
-    	
     	String name = "";
+    	PlexilType type = PlexilType.UNKNOWN;
+    	int maxSize = -1;
+    	
     	// First, an optional name.
     	if (nextTagIsStartOf("Name", xml)) {
     		name = getStringContent(nextTag(xml), xml);
     	}
-    	// Next, there has to be a type.
-    	StartElement typeTag = assertStart("Type", nextTag(xml));
-    	String typeStr = getStringContent(typeTag, xml);
-    	PlexilType type = ExprParser.fuzzyParseType(typeStr);
+    	    	
+    	if(!start.getName().getLocalPart().equals("AnyParameters")) {
+	    	// Next, there has to be a type.
+	    	StartElement typeTag = assertStart("Type", nextTag(xml));
+	    	String typeStr = getStringContent(typeTag, xml);
+	    	type = ExprParser.fuzzyParseType(typeStr);
     	
-    	// Finally, an optional size (which indicates that this shoulud actually
-    	// be an array.
-    	int maxSize = -1;
-    	if (nextTagIsStartOf("MaxSize", xml)) {
-    		XMLEvent maxSizeTag = nextTag(xml);
-    		type = type.toArrayType();
-    		maxSize = Integer.parseInt(getStringContent(maxSizeTag, xml));
+	    	// Finally, an optional size (which indicates that this should actually
+	    	// be an array.
+	    	if (nextTagIsStartOf("MaxSize", xml)) {
+	    		XMLEvent maxSizeTag = nextTag(xml);
+	    		type = type.toArrayType();
+	    		maxSize = Integer.parseInt(getStringContent(maxSizeTag, xml));
+	    	}
     	}
     	
     	// And that should be it.
@@ -202,6 +206,4 @@ public class PlxParser {
     		return new VariableDecl(name, type);
     	}
     }
-
-    
 }

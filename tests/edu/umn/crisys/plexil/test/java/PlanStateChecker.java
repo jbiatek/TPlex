@@ -22,7 +22,7 @@ public class PlanStateChecker extends TestOracle {
         List<String> failures = actual.testAgainst(expected.get(getMacroStep()-1));
 
         if (failures.size() > 0) {
-            String errorMsg = "Failures at " + this.getMacroStep() + " : ";
+            String errorMsg = "Failures at cycle " + this.getMacroStep() + " : ";
             for (String failure : failures) {
                 errorMsg += "\n"+failure;
             }
