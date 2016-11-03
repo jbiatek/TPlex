@@ -749,7 +749,7 @@ public class TPlex {
 							+" against "+ilPlan.getPlanName());
 					ILSimulator sim = new ILSimulator(ilPlan, 
 							new JavaPlexilScript(entry.getValue()));
-					sim.runPlanToCompletion();
+					sim.runPlanUntilQuiescenceAndEnvironmentDone();
 				}
 			} else {
 				System.out.println("Didn't run simulations: "+ilPlans.keySet().size()
@@ -788,7 +788,7 @@ public class TPlex {
 					ILSimulator sim = new ILSimulator(thePlan, new JavaPlexilScript(script));
 					sim.addObserver(stateObs);
 					sim.addObserver(transObs);
-					sim.runPlanToCompletion();
+					sim.runPlanUntilQuiescenceAndEnvironmentDone();
 				}
 				stateObs.printData();
 				transObs.printData();

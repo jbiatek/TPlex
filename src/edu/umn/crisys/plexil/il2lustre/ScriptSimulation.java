@@ -228,15 +228,10 @@ public class ScriptSimulation {
 				}
 			}
 			
-			private void deleteLastState() {
-				for (List<PValue> values : csv.values()) {
-					values.remove(values.size()-1);
-				}
-			}
 		});
 		
 		// Now run the simulation
-		sim.runPlanToCompletion();
+		sim.runPlanUntilEnvironmentDone();
 		
 		// All done!
 		return csv;

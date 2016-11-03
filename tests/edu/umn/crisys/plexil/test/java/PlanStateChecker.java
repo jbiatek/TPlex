@@ -10,6 +10,10 @@ public class PlanStateChecker extends TestOracle {
 	private List<PlanState> expected;
 	
 	public PlanStateChecker(List<PlanState> expected) {
+		if (expected.isEmpty()) {
+			throw new RuntimeException("No expected snapshots were given");
+		}
+		
 		this.expected = expected;
 	}
 	
@@ -18,7 +22,7 @@ public class PlanStateChecker extends TestOracle {
         List<String> failures = actual.testAgainst(expected.get(getMacroStep()-1));
 
         if (failures.size() > 0) {
-            String errorMsg = "Failures: ";
+            String errorMsg = "Failures at " + this.getMacroStep() + " : ";
             for (String failure : failures) {
                 errorMsg += "\n"+failure;
             }
@@ -41,8 +45,8 @@ public class PlanStateChecker extends TestOracle {
 	public void endOfExecution(JavaPlan plan) {
 		// We should be out of stuff to check, if not something might be wrong
 		if (expected.size() != getMacroStep()) {
-			System.err.println("Warning: Execution ended at step "+getMacroStep()
-					+", but I have "+expected.size()+" snapshots.");
+			throw new RuntimeException("Error: Execution ended at macrostep "+getMacroStep()
+					+", but there were "+expected.size()+" expected snapshots.");
 		}
 	}
 

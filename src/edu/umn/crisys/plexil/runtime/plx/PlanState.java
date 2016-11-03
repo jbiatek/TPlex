@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
@@ -32,7 +33,7 @@ public class PlanState {
 	private NodeUID uid;
 	
 	private List<PlanState> children = new ArrayList<PlanState>();
-    private Map<String, PValue> vars = new HashMap<String, PValue>();
+    private Map<String, Optional<PValue>> vars = new HashMap<>();
 
     public PlanState(String id) {
         uid = new NodeUID(Optional.of(id));
@@ -46,7 +47,7 @@ public class PlanState {
     	return uid;
     }
     
-    public PValue getVarValue(String varName) {
+    public Optional<PValue> getVarValue(String varName) {
     	return vars.get(varName);
     }
     
@@ -58,10 +59,14 @@ public class PlanState {
     	children.add(child);
     }
     
-    public void addVariable(String name, PValue value) {
+    public void addVariable(String name, Optional<PValue> value) {
     	vars.put(name, value);
     }
 
+    
+    public void addVariable(String name, PValue value) {
+    	vars.put(name, Optional.of(value));
+    }
     
     public static List<PlanState> parseLogFile(BufferedReader in) throws IOException {
     	List<PlanState> stateSnapshots = new ArrayList<>();
@@ -85,16 +90,32 @@ public class PlanState {
      * @throws IOException
      */
     public static PlanState parseSingleStep(BufferedReader in) throws IOException {
-    	// Find the first node name, then pass it off
-    	String firstName = "";
-    	while (firstName != null && !firstName.endsWith("{")) {
-    		firstName = in.readLine();
+    	// Try to find the first node name, then pass it off
+    	String line = "";
+    	while (line != null) {
+    		if (line.startsWith("ERROR:") 
+    				|| line.startsWith("Assertion failed")) {
+    			// Read the rest of this too, let's give them everything
+    			List<String> remainingLines = new ArrayList<>();
+    			remainingLines.add(line);
+    			while ((line = in.readLine()) != null) {
+    				remainingLines.add(line);
+    			}
+    			throw new RuntimeException("This script caused an error in PLEXIL interpreter: \n"+
+    					remainingLines.stream().collect(Collectors.joining("\n")));
+    		}
+    		
+    		if (line.endsWith("{")) break;
+    		
+    		// Anything that isn't an error or a "{" we skip.
+    		line = in.readLine();
     		//System.out.println("Trying to start: "+firstName);
     	}
     	
-    	if (firstName == null) return null;
+    	// We didn't find one? Nothing to do then.
+    	if (line == null) return null;
     	
-    	return parseSingleNode(in, firstName, null);
+    	return parseSingleNode(in, line, null);
     }
     
     private static PlanState parseSingleNode(BufferedReader in, String rawName, PlanState parent) throws IOException {
@@ -131,26 +152,32 @@ public class PlanState {
     			
     			if (DEBUG)
     				System.out.println(nodeName+" in state "+correctState);
-    			node.addVariable(".state", NodeState.valueOf(
-    					correctState));
+    			node.addVariable(".state", Optional.of(NodeState.valueOf(
+    					correctState)));
     			node.addVariable("."+correctState+".START", 
-    					RealValue.get(Double.parseDouble(startTime)));
+    					Optional.of(RealValue.get(Double.parseDouble(startTime))));
     			
     		} else if (line.startsWith("Outcome:")) {
     			if (DEBUG)
     				System.out.println(nodeName+" outcome is "+extractSimple(line));
-    			node.addVariable(".outcome", NodeOutcome.valueOf(
-    					extractSimple(line)));
+    			node.addVariable(".outcome", Optional.of(NodeOutcome.valueOf(
+    					extractSimple(line))));
     		} else if (line.startsWith("Command handle:")) {
-    			if (DEBUG)
-    				System.out.println(nodeName+" command handle: "+extractValue(line));
-    			node.addVariable(".command_handle", 
-    					CommandHandleState.valueOf(extractValue(line)));
+    			if (line.contains("[i]")) {
+    				// This is an inactive variable. The reported value may 
+    				// be complete garbage, so ignore it for compliance.
+        			node.addVariable(".command_handle", Optional.empty());
+    			} else {
+    				if (DEBUG)
+    					System.out.println(nodeName+" command handle: "+extractValue(line));
+    				node.addVariable(".command_handle", 
+    						CommandHandleState.valueOf(extractValue(line)));
+    			}
     		} else if (line.startsWith("Failure type:")) {
     		    if (DEBUG)
                     System.out.println(nodeName+" failure type: "+extractSimple(line));
                 node.addVariable(".failure", 
-                        NodeFailureType.valueOf(extractSimple(line)));
+                		NodeFailureType.valueOf(extractSimple(line)));
     		} else if (line.startsWith("AbortCompleteCondition: ")) {
     			if (DEBUG) {
     				System.out.println(nodeName+" abort ack: "+extractValue(line));
@@ -161,37 +188,40 @@ public class PlanState {
     		
     		else if (line.matches(".*?: \\(Variable .*")) {
     			// This is possibly a variable.
-    			PValue value = null;
+    			Optional<PValue> value = Optional.empty();
     			String valStr = extractValue(line);
     			
-    			if (line.contains("Boolean")) {
+    			if (line.contains("[i]")) {
+    				// This value is ignored by the interpreter, and might be garbage.
+    				// Leave it as Optional.empty().
+    			} else if (line.contains("Boolean")) {
     				if (valStr.equals("1")) {
-    					value = BooleanValue.get(true);
+    					value = Optional.of(BooleanValue.get(true));
     				} else if (valStr.equals("0")) {
-    					value = BooleanValue.get(false);
+    					value = Optional.of(BooleanValue.get(false));
     				} else {
-    					value = UnknownBool.get();
+    					value = Optional.of(UnknownBool.get());
     				}
     			} else if (line.contains("Real")) {
     				if (valStr.equals("UNKNOWN")) {
-    					value = UnknownReal.get();
+    					value = Optional.of(UnknownReal.get());
     				} else {
-    					value = RealValue.get(Double.parseDouble(valStr));
+    					value = Optional.of(RealValue.get(Double.parseDouble(valStr)));
     				}
     			} else if (line.contains("Integer")) {
     				if (valStr.equals("UNKNOWN")) {
-    					value = UnknownInt.get();
+    					value = Optional.of(UnknownInt.get());
     				} else {
-    					value = IntegerValue.get(Integer.parseInt(valStr));
+    					value = Optional.of(IntegerValue.get(Integer.parseInt(valStr)));
     				}
     			} else if (line.contains("String")) {
     				if (valStr.equals("UNKNOWN")) {
-    					value = UnknownString.get();
+    					value = Optional.of(UnknownString.get());
     				} else {
-    					value = StringValue.get(valStr);
+    					value = Optional.of(StringValue.get(valStr));
     				}
     			} else if (line.endsWith("String")) {
-    			    value = new DebugOutputPlexilArray(valStr);
+    			    value = Optional.of(new DebugOutputPlexilArray(valStr));
     			} 
 
     			String varName = line.replaceAll(":.*", "");
@@ -250,18 +280,24 @@ public class PlanState {
         }
         
         for (String var : vars.keySet()) {
-            if (expected.vars.get(var) == null) {
-                if (vars.get(var).isKnown() && !var.endsWith(".START") && !var.endsWith(".END")
+        	if (expected.vars.get(var) == null) {
+        		// This variable was entirely missing in the oracle's logs.
+                if (vars.get(var).get().isKnown() && !var.endsWith(".START") && !var.endsWith(".END")
                 		&& !var.equals(".previous_value")) {
-                    System.err.println("Warning: No expected value for "
-                            +uid+"/"+var+". Current value is "+vars.get(var));
+                	if (DEBUG) {
+                		System.err.println("Warning: No expected value found in oracle for "
+                				+uid+"/"+var+". Current value is "+vars.get(var));                		
+                	}
                 }
-            } else if (expected.vars.get(var) instanceof DebugOutputPlexilArray) {
+            } else if ( ! expected.vars.get(var).isPresent()) {
+        		// This variable was inactive in the oracle's logs.
+        		// We don't have anything to compare to. 
+        	} else if (expected.vars.get(var).get() instanceof DebugOutputPlexilArray) {
             	// Ah, this is a little bit of a special case. This array doesn't
             	// have all the type info we'd like, so we have to use a method
             	// that compares a little more loosely.
-            	DebugOutputPlexilArray expArray = (DebugOutputPlexilArray) expected.vars.get(var);
-            	if ( ! expArray.nonStrictEquals(vars.get(var))) {
+            	DebugOutputPlexilArray expArray = (DebugOutputPlexilArray) expected.vars.get(var).get();
+            	if ( ! expArray.nonStrictEquals(vars.get(var).get())) {
                     failures.add("Array didn't match in "+uid+": "
                             +var+" expected value was "+expected.vars.get(var)
                             + " but actual value was "+vars.get(var)
@@ -300,7 +336,7 @@ public class PlanState {
             if ( ! expected.vars.containsKey(var)) {
                 mentionExpectedVars = true;
                 failures.add("No expected value for "+var);
-            } else if ( this.vars.get(var).equalTo(expected.vars.get(var)).isFalse()) {
+            } else if ( this.vars.get(var).get().equalTo(expected.vars.get(var).get()).isFalse()) {
                 failures.add("Variable "+var+" does not match: "+this.vars.get(var)+", expected "+expected.vars.get(var));
             }
         }

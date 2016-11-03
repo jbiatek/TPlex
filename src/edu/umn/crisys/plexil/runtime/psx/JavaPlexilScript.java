@@ -129,7 +129,7 @@ public class JavaPlexilScript implements ExternalWorld {
 	}
 	
 	@Override
-	public boolean stop() {
+	public boolean done() {
 		// Go until we are out of events, then do one more
 		return eventsRemaining() <= -1;
 	}

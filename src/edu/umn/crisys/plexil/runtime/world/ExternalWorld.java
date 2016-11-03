@@ -12,7 +12,7 @@ public interface ExternalWorld extends JavaPlanObserver {
 	 * a script has run out of things to do. 
 	 * @return true to indicate that the script should probably be stopped soon.
 	 */
-	public boolean stop();
+	public boolean done();
 	
 	/**
 	 * Receive an update from the Plexil program.

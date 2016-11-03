@@ -343,7 +343,7 @@ public class JKindResultUtils {
 		sim.addObserver(recorder);
 		sim.addObserver(checker);
 		try {
-			sim.runPlanToCompletion();
+			sim.runPlanUntilEnvironmentDone(-1);
 		} catch (QuiescenceLimitExceeded q) {
 			// This is a problem with their plan, not us. At least, it passed
 			// compliance the whole time as far as we knew. 

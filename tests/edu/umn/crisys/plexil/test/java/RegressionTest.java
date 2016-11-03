@@ -7,9 +7,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import lustre.LustreTrace;
@@ -181,7 +181,7 @@ public class RegressionTest {
 	
 	@Test
 	public void testSomethingSpecific() throws Exception {
-		doSingleTest("array1", "il");
+		doSingleTest("lookup1", "il");
 	}
 	
 	@Test
