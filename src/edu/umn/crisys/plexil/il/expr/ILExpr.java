@@ -3,10 +3,38 @@ package edu.umn.crisys.plexil.il.expr;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
-import edu.umn.crisys.plexil.ast.expr.ASTOperation;
 import edu.umn.crisys.plexil.runtime.values.PValue;
 
+/**
+ * <p>Common interface for IL expressions. If possible, extend the ILExprBase 
+ * class rather than implementing this interface directly. The base class
+ * is able to more strictly enforce the required conventions.
+ * 
+ * <p>If this expression contains other expressions, you must override both the
+ * getArguments() and getCloneWithArgs() methods. See their individual documentation
+ * for more details. 
+ * 
+ * <p>If this expression can appear on the left hand side of an assignment,
+ * override the isAssignable() method. 
+ * 
+ * <p>The other default
+ * methods should not need to be overridden, they are convenience methods that 
+ * should apply universally to any ILExpr.  
+ * 
+ * <p>If you cannot extend ILExprBase for your purposes (writing an enum, a class
+ * that absolutely must extend something else, etc.) please do the following:
+ * <ul>
+ *   <li>Implement a toString() method that returns the expression as it might 
+ *   appear in source code. Your "asString()" method should just return toString().</li>
+ *   <li>Implement hashCode() and equals() following the normal Java rules, 
+ *   making sure that objects are equal if and only if they represent the same
+ *   abstract syntax tree. </li>
+ * </ul>
+ * @author jbiatek
+ *
+ */
 public interface ILExpr {
     
     public <P,R> R accept(ExprVisitor<P,R> visitor, P param);
@@ -79,9 +107,30 @@ public interface ILExpr {
     	return this;
     }
 
+    /**
+     * Evaluate this expression statically. (This method almost certainly does
+     * not need to be overridden.)
+     * 
+     * @return The static value of this expression, or empty if it depends
+     * on values that are not constant.
+     */
     public default Optional<PValue> eval() {
-    	return Optional.empty();
+    	// Provide an empty context for resolving variables.
+    	return eval((e) -> Optional.empty());
     }
+    
+    /**
+     * Evaluate this expression, using the given function to map variables
+     * and other dynamic expressions to concrete values. Empty will be returned
+     * if the expression depends on a non-constant expression that is not
+     * mapped to a value. 
+     * 
+     * @param mapper A function that maps dynamic IL expressions to 
+     * concrete values. 
+     * @return The value of this expression under the provided mappings of
+     * variable expressions. 
+     */
+    public Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper);
     
     /**
      * @return a human readable string. It's not toString() so that no one 

@@ -38,4 +38,9 @@ public class ActionVisitorAdapter<Param> implements
 		return null;
 	}
 
+	@Override
+	public Void visitAbortCommand(AbortCommand abort, Param param) {
+		return null;
+	}
+
 }

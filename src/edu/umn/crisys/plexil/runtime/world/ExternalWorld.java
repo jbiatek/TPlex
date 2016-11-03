@@ -47,4 +47,11 @@ public interface ExternalWorld extends JavaPlanObserver {
 	 * @param args The arguments.
 	 */
 	public void command(CommandHandler caller, PString name, PValue... args);
+	
+	/**
+	 * A notification that the PLEXIL plan is aborting the command with this 
+	 * handle. The issuing command node will wait for acknowledgement via the 
+	 * acknowledgeAbort() method before continuing. 
+	 */
+	public void commandAbort(CommandHandler caller);
 }

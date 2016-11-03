@@ -3,9 +3,11 @@ package edu.umn.crisys.plexil.runtime.values;
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
-public class StringValue implements PString {
+public class StringValue extends ILExprBase implements PString {
 
 	private final String value;
 
@@ -14,6 +16,7 @@ public class StringValue implements PString {
 	}
 	
 	private StringValue(String initial) {
+		super(ILType.STRING);
 		value = initial;
 	}
 
@@ -46,19 +49,12 @@ public class StringValue implements PString {
 	}
 
 	@Override
-	public ILType getType() {
-		return ILType.STRING;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(ILExpr o) {
 		if (o instanceof StringValue) {
 			StringValue other = (StringValue) o;
 			return (this.isKnown() == other.isKnown())
 					&& this.value.equals(other.value);
-		} else if (o instanceof String) {
-		    return this.value.equals(o);
-		}
+		} 
 		return false;
 	}
 	
@@ -79,18 +75,13 @@ public class StringValue implements PString {
 	}
 	
 	@Override
-	public String toString() {
+	public String asString() {
 		return "\""+value+"\"";
 	}
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override

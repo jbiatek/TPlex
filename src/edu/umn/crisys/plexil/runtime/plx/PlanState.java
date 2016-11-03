@@ -13,6 +13,7 @@ import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeFailureType;
 import edu.umn.crisys.plexil.runtime.values.NodeOutcome;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
@@ -170,13 +171,19 @@ public class PlanState {
     				if (DEBUG)
     					System.out.println(nodeName+" command handle: "+extractValue(line));
     				node.addVariable(".command_handle", 
-    						Optional.of(CommandHandleState.valueOf(extractValue(line))));
+    						CommandHandleState.valueOf(extractValue(line)));
     			}
     		} else if (line.startsWith("Failure type:")) {
     		    if (DEBUG)
                     System.out.println(nodeName+" failure type: "+extractSimple(line));
                 node.addVariable(".failure", 
-                        Optional.of(NodeFailureType.valueOf(extractSimple(line))));
+                		NodeFailureType.valueOf(extractSimple(line)));
+    		} else if (line.startsWith("AbortCompleteCondition: ")) {
+    			if (DEBUG) {
+    				System.out.println(nodeName+" abort ack: "+extractValue(line));
+    			}
+    			node.addVariable(".command_abort_ack", NativeBool.wrap(
+    					extractValue(line).equalsIgnoreCase("1")));
     		}
     		
     		else if (line.matches(".*?: \\(Variable .*")) {
@@ -285,10 +292,18 @@ public class PlanState {
             } else if ( ! expected.vars.get(var).isPresent()) {
         		// This variable was inactive in the oracle's logs.
         		// We don't have anything to compare to. 
-        	} else if ( ! expected.vars.get(var).equals(vars.get(var))) {
-                // The expected one needs to be the one checking for equals()
-                // because the oracle arrays are actually TypelessPlexilArrays 
-                // that know things like 0 == false and 1 == true.
+        	} else if (expected.vars.get(var).get() instanceof DebugOutputPlexilArray) {
+            	// Ah, this is a little bit of a special case. This array doesn't
+            	// have all the type info we'd like, so we have to use a method
+            	// that compares a little more loosely.
+            	DebugOutputPlexilArray expArray = (DebugOutputPlexilArray) expected.vars.get(var).get();
+            	if ( ! expArray.nonStrictEquals(vars.get(var).get())) {
+                    failures.add("Array didn't match in "+uid+": "
+                            +var+" expected value was "+expected.vars.get(var)
+                            + " but actual value was "+vars.get(var)
+                            + " (this array was checked using DebugOutputPlexilArray)");
+            	}
+            } else if ( ! expected.vars.get(var).equals(vars.get(var))) {
                 failures.add("Variable didn't match in "+uid+": "
                         +var+" expected value was "+expected.vars.get(var)
                         + " but actual value was "+vars.get(var));

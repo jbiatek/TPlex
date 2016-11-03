@@ -41,6 +41,7 @@ import edu.umn.crisys.plexil.il.statemachine.NodeStateMachine;
 import edu.umn.crisys.plexil.il.statemachine.State;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.CommandHandleState;
+import edu.umn.crisys.plexil.runtime.values.NativeBool;
 import edu.umn.crisys.plexil.runtime.values.NodeState;
 import edu.umn.crisys.plexil.runtime.values.NodeTimepoint;
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -71,6 +72,7 @@ public class NodeToIL {
     private static final String OUTCOME = ".outcome";
     private static final String FAILURE = ".failure";
     private static final String COMMAND_HANDLE = ".command_handle";
+    private static final String ABORT_ACK_HANDLE = ".command_abort_ack";
     private static final String LIBRARY_HANDLE = ".library_handle";
     private static final String UPDATE_HANDLE = ".update_handle";
     
@@ -155,6 +157,7 @@ public class NodeToIL {
         // Special variables based on the type of node this is.
         if (myNode.isCommandNode()) {
             ilVars.put(COMMAND_HANDLE, new SimpleVar(COMMAND_HANDLE, myUid, ILType.COMMAND_HANDLE));
+            ilVars.put(ABORT_ACK_HANDLE, new SimpleVar(ABORT_ACK_HANDLE, myUid, ILType.NATIVE_BOOL, NativeBool.FALSE));
         } else if (myNode.isUpdateNode()) {
             ilVars.put(UPDATE_HANDLE, new SimpleVar(UPDATE_HANDLE, myUid, ILType.BOOLEAN, BooleanValue.get(false)));
         } else if (myNode.isLibraryNode()) {
@@ -294,6 +297,17 @@ public class NodeToIL {
             throw new RuntimeException("Not a command node: "+myNode.getNodeBody());
         }
         return (SimpleVar) ilVars.get(COMMAND_HANDLE);
+    }
+    
+    public boolean hasCommandAbortAck() {
+    	return ilVars.containsKey(ABORT_ACK_HANDLE);
+    }
+    
+    public SimpleVar getCommandAbortAck() {
+    	if ( ! hasCommandAbortAck()) {
+            throw new RuntimeException("Not a command node: "+myNode.getNodeBody());
+    	}
+    	return (SimpleVar) ilVars.get(ABORT_ACK_HANDLE);
     }
     
     public boolean hasLibraryHandle() {

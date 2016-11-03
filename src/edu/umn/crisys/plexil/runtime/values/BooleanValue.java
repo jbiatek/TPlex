@@ -1,8 +1,11 @@
 package edu.umn.crisys.plexil.runtime.values;
 
+
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprSingletonBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
 /**
@@ -11,7 +14,7 @@ import edu.umn.crisys.plexil.il.expr.ILType;
  * @author Jason Biatek
  *
  */
-public class BooleanValue implements PBoolean {
+public class BooleanValue extends ILExprSingletonBase implements PBoolean {
 	public static boolean SINGLETON = true;
 
     /**
@@ -112,11 +115,6 @@ public class BooleanValue implements PBoolean {
 	}
 	
 	@Override
-	public ILType getType() {
-		return ILType.BOOLEAN;
-	}
-	
-	@Override
 	public boolean isKnown() {
 		return true;
 	}
@@ -132,29 +130,22 @@ public class BooleanValue implements PBoolean {
 	}
 	
 	@Override
-	public boolean equals(Object o) {
-	    if (o instanceof BooleanValue) {
-	        return o == this;
-	    } else if (o instanceof Boolean) {
-	        return ((Boolean) bool).equals(o);
-	    }
+	public boolean equals(ILExpr e) {
+	    if (e instanceof BooleanValue) {
+	        return ((BooleanValue) e).bool == this.bool;
+	    } 
 	    return false;
 	}
 	
 	
 	@Override
-	public String toString() {
+	public String asString() {
 		return bool+"";
 	}
-
+	
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override
@@ -165,6 +156,11 @@ public class BooleanValue implements PBoolean {
 	@Override
 	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
 		return v.visit(this, param);
+	}
+
+	@Override
+	public ILType getType() {
+		return ILType.BOOLEAN;
 	}
 
 }

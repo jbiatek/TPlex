@@ -1,0 +1,8 @@
+
+Command abortme();
+
+Aborter: {
+  ExitCondition Aborter.state == EXECUTING;
+
+  abortme();
+}

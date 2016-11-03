@@ -38,4 +38,10 @@ public abstract class ILActionFilter<Param> implements ILActionVisitor<Param, Bo
 		return true;
 	}
 
+	@Override
+	public Boolean visitAbortCommand(AbortCommand abort, Param param) {
+		return true;
+	}
+
+	
 }

@@ -6,10 +6,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
+import java.util.function.Function;
 
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
 import edu.umn.crisys.plexil.il.expr.ILExprBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
@@ -151,7 +154,36 @@ public class PValueList<T extends PValue> extends ILExprBase implements PValue, 
 		}
 		return ret.replaceFirst(", $", "")+")";
 	}
+	
+	@Override
+	public Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper) {
+		// We are constant.
+		return Optional.of(this);
+	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(myValues);
+		return result;
+	}
+
+	@Override
+	public boolean equals(ILExpr e) {
+		if (this == e)
+			return true;
+		if (getClass() != e.getClass())
+			return false;
+		@SuppressWarnings("rawtypes")
+		PValueList other = (PValueList) e;
+		if (!Arrays.equals(myValues, other.myValues))
+			return false;
+		return true;
+	}
+
+	
 	/*
 	 * List methods:
 	 */

@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il.expr;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import edu.umn.crisys.plexil.runtime.values.PValue;
@@ -41,8 +42,8 @@ public class ILOperation extends ILExprBase {
 	}
 	
 	@Override
-	public Optional<PValue> eval() {
-		return op.eval(args);
+	public Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper) {
+		return op.eval(args, mapper);
 	}
 
 	@Override
@@ -62,6 +63,32 @@ public class ILOperation extends ILExprBase {
 						op.getStringDeliminator(), 
 						op.getStringPrefix(), 
 						op.getStringSuffix()));
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((args == null) ? 0 : args.hashCode());
+		result = prime * result + ((op == null) ? 0 : op.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(ILExpr e) {
+		if (this == e)
+			return true;
+		if (getClass() != e.getClass())
+			return false;
+		ILOperation other = (ILOperation) e;
+		if (args == null) {
+			if (other.args != null)
+				return false;
+		} else if (!args.equals(other.args))
+			return false;
+		if (op != other.op)
+			return false;
+		return true;
 	}
 	
 }

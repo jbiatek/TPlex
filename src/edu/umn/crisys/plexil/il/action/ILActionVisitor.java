@@ -3,7 +3,7 @@ package edu.umn.crisys.plexil.il.action;
 
 public interface ILActionVisitor<Param,Return> {
 	
-	//public Return visitAbortCommand(AbortCommandAction abort, Param param);
+	public Return visitAbortCommand(AbortCommand abort, Param param);
 	public Return visitAlsoRunNodes(AlsoRunNodesAction run, Param param);
 	public Return visitAssign(AssignAction assign, Param param);
 	public Return visitCommand(CommandAction cmd, Param param);

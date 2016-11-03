@@ -16,6 +16,7 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -254,6 +255,30 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 	}
 
 	@Override
+	public Void visitAbortCommand(AbortCommand abort, Expr param) {
+		// The actual abort going out doesn't really matter. As with Commands,
+		// for Lustre there really isn't an environment that needs to know
+		// about the abort. But we do need an input to act as the abort ack.
+		
+		ILVariable ack = abort.getOriginalCommand().getAckFlag();
+		// We'll need a raw input for this.
+		translator.addRawInputFor(ack);
+		// Now we can build the correct behavior for the flag.
+		PlexilEquationBuilder builder = varNextValue.get(ack);
+		// The abort gets issued in FAILING, and the node doesn't leave FAILING
+		// until it is complete. Therefore, it should only take a raw value in
+		// that state. 
+		ILExpr failing = ILOperator.DIRECT_COMPARE.expr(NodeState.FAILING, 
+				new GetNodeStateExpr(ack.getNodeUID()));
+		builder.addAssignmentBetweenMacro(translator.toLustre(failing), 
+				id(LustreNamingConventions.getRawInputId(ack)));
+		// That should basically be it. That flag shouldn't change otherwise,
+		// and it'll be reset when it needs to be by the normal reset action.
+		
+		return null;
+	}
+
+	@Override
 	public Void visitEndMacroStep(EndMacroStep end, Expr actionCondition) {
 		macroStepIsEnded.addAssignment(actionCondition, LustreUtil.TRUE);
 		return null;
@@ -261,8 +286,7 @@ public class ActionsToLustre implements ILActionVisitor<Expr, Void>{
 
 	@Override
 	public Void visitRunLibraryNode(RunLibraryNodeAction lib, Expr actionCondition) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Library nodes are not supported in Lustre");
 	}
 
 	@Override

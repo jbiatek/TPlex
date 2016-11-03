@@ -13,6 +13,7 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.plexil.runtime.world.UpdateHandler;
+import edu.umn.crisys.plexil.script.ast.CommandAbortAck;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
@@ -91,6 +92,11 @@ public class JavaPlexilScript implements ExternalWorld {
 		return new CommandAck(new FunctionCall(name, args), response);
 	}
 	
+	public CommandAbortAck commandAbortAck(String name, PValue...args) {
+		return new CommandAbortAck(new FunctionCall(name, args));
+	}
+
+	
 	public CommandReturn commandReturn(PValue value, 
 			String name, PValue... args) {
 		return new CommandReturn(new FunctionCall(name, args), value);
@@ -155,6 +161,11 @@ public class JavaPlexilScript implements ExternalWorld {
 	@Override
 	public void command(CommandHandler caller, PString name, PValue... args) {
 		env.command(caller, name, args);
+	}
+
+	@Override
+	public void commandAbort(CommandHandler caller) {
+		env.commandAbort(caller);
 	}
 
 

@@ -16,6 +16,7 @@ import edu.umn.crisys.plexil.ast.nodebody.NodeListBody;
 import edu.umn.crisys.plexil.ast.nodebody.UpdateBody;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -109,14 +110,17 @@ public class NodeBodyToIL implements NodeBodyVisitor<Void, Void> {
 		    				lhs.getPlexilType().toILTypeIfPossible()));
 		    List<ILExpr> args = nodeToIL.toIL(cmd.getCommandArguments(), PlexilType.UNKNOWN);
 		    
-		    CommandAction issueCmd = new CommandAction(nodeToIL.getCommandHandle(), name, args, returnTo);
+		    SimpleVar cmdHandle = nodeToIL.getCommandHandle();
+		    SimpleVar ackHandle = nodeToIL.getCommandAbortAck();
+		    
+		    CommandAction issueCmd = new CommandAction(cmdHandle, ackHandle, 
+		    		name, args, returnTo);
 		    
 		    map.get(NodeState.EXECUTING).addEntryAction(issueCmd);
 		    map.get(NodeState.EXECUTING).addEntryAction(EndMacroStep.get());
 		    
-		    // TODO: Implement aborting commands.
-//	            AbortCommandAction abort = new AbortCommandAction(getCommandHandle());
-//	            map.get(NodeState.FAILING).addEntryAction(abort);
+            AbortCommand abort = new AbortCommand(issueCmd);
+            map.get(NodeState.FAILING).addEntryAction(abort);
 		    
 			return null;
 		}

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.OriginalHierarchy;
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -19,9 +20,9 @@ import edu.umn.crisys.plexil.il.action.PlexilAction;
 import edu.umn.crisys.plexil.il.action.RunLibraryNodeAction;
 import edu.umn.crisys.plexil.il.action.UpdateAction;
 import edu.umn.crisys.plexil.il.expr.CascadingExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ExprVisitor;
 import edu.umn.crisys.plexil.il.expr.GetNodeStateExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
-import edu.umn.crisys.plexil.il.expr.ILExprModifier;
 import edu.umn.crisys.plexil.il.expr.ILOperation;
 import edu.umn.crisys.plexil.il.expr.ILOperator;
 import edu.umn.crisys.plexil.il.expr.LookupExpr;
@@ -59,23 +60,17 @@ public class ILSimulator extends JavaPlan {
 	private Plan ilPlan;
 	private Map<ILExpr, SimpleCurrentNext<PValue>> simpleVars = new HashMap<>();
 	private Map<ILExpr, SimplePArray<PValue>> arrayVars = new HashMap<>();
+	private Map<CommandAction, CommandHandler> commandHandlers = new HashMap<>();
 	private Map<NodeStateMachine, SimpleCurrentNext<Integer>> states = new HashMap<>();
 	
 	/**
 	 * This visitor goes through an expression replacing variables and inputs
 	 * with their current values. 
 	 */
-	private ILExprModifier<Void> myResolver = new ILExprModifier<Void>() {
+	private ExprVisitor<Void,PValue> myResolver = new CascadingExprVisitor<Void, PValue>() {
 
 		@Override
-		public ILExpr visit(ILExpr e, Void param) {
-			return e.getCloneWithArgs(e.getArguments().stream()
-					.map(arg -> arg.accept(this))
-					.collect(Collectors.toList()));
-		}
-		
-		@Override
-		public ILExpr visit(LookupExpr lookup, Void param) {
+		public PValue visit(LookupExpr lookup, Void param) {
 			PValue[] args = new PValue[]{};
 			if (LIMIT_TO_LUSTRE_FUNCTIONALITY && ! lookup.getLookupArgs().isEmpty()) {
 				System.err.println("WARNING: Lookup args are being dropped for Lustre compatibility!");
@@ -95,7 +90,7 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public ILExpr visit(RootAncestorExpr root, Void param) {
+		public PValue visit(RootAncestorExpr root, Void param) {
 			switch (root) {
 			case END:
 				return getInterface().evalAncestorEnd();
@@ -111,17 +106,17 @@ public class ILSimulator extends JavaPlan {
 		}
 
 		@Override
-		public ILExpr visit(SimpleVar var, Void param) {
+		public PValue visit(SimpleVar var, Void param) {
 			return simpleVars.get(var).getCurrent();
 		}
 
 		@Override
-		public ILExpr visit(ArrayVar array, Void param) {
+		public PValue visit(ArrayVar array, Void param) {
 			return arrayVars.get(array).getCurrent();
 		}
 
 		@Override
-		public ILExpr visit(GetNodeStateExpr state, Void param) {
+		public PValue visit(GetNodeStateExpr state, Void param) {
 			return getCurrentStateOf(state.getNodeUid());
 		}
 		
@@ -190,8 +185,9 @@ public class ILSimulator extends JavaPlan {
 	public PValue eval(ILExpr e) {
 		if (e instanceof PValue) return (PValue) e;
 		
-		PValue v = e.accept(myResolver).eval()
-				.orElseThrow(() -> new RuntimeException("Couldn't eval "+e));
+		PValue v = e.eval(expr -> Optional.of(expr.accept(myResolver)))
+				.orElseThrow(() -> 
+				new RuntimeException("Couldn't eval "+e));
 		// Make sure that the value is the same type
 		e.getType().strictTypeCheck(v);
 		
@@ -294,30 +290,37 @@ public class ILSimulator extends JavaPlan {
 
 			@Override
 			public Void visitCommand(CommandAction cmd, Void param) {
-				SimpleCurrentNext<PValue> cmdHandleVar =  simpleVars.get(cmd.getHandle());
-				Optional<ILExpr> maybeLhs = cmd.getPossibleLeftHandSide();
 				// Wrap this command up in something that the external world 
 				// can use to interact with it. 
 
-				CommandHandler handle = new CommandHandler() {
+				CommandHandler handler = new CommandHandler() {
 
 					@Override
 					public void setCommandHandle(CommandHandleState state) {
 						// Apply this change immediately
-						cmdHandleVar.setNext(state);
-						cmdHandleVar.commit();
+						setNext(cmd.getHandle(), state, true);
 					}
 
 					@Override
 					public void commandReturns(PValue value) {
-						ILExpr lhs = maybeLhs.orElseThrow(() -> new RuntimeException(
+						ILExpr lhs = cmd.getPossibleLeftHandSide()
+								.orElseThrow(() -> new RuntimeException(
 								"Environment is trying to have "+cmd+" return"
 							+ " a value, but no left-hand side is present."));
 						// Assign it and commit immediately, since we should 
 						// be between macro steps. 
 						setNext(lhs, value, true);
 					}
+
+					@Override
+					public void acknowledgeAbort() {
+						setNext(cmd.getAckFlag(), NativeBool.TRUE, true);
+					}
 				};
+				
+				// Save this handler for later reference if necessary.
+				commandHandlers.put(cmd, handler);
+				
 				PString commandName = asString(eval(cmd.getName()));
 				if (JavaPlan.DEBUG) {
 					System.out.println("**** Issuing command "+commandName);
@@ -329,17 +332,29 @@ public class ILSimulator extends JavaPlan {
 					args = cmd.getArgs().stream().map(ILSimulator.this::eval)
 							.collect(Collectors.toList()).toArray(new PValue[]{});
 				}
-				 
+				
 				if (getWorld() instanceof ScriptRecorderFromLustreData) {
 					// This needs to be told the *name* of the node in addition
 					// to all the other stuff. 
 					ScriptRecorderFromLustreData rec = (ScriptRecorderFromLustreData) getWorld();
-					rec.specialCommand(cmd.getHandle(), handle, commandName, args);
+					rec.specialCommand(cmd.getHandle(), handler, commandName, args);
 				} else {
-					getWorld().command(handle, commandName, args);
+					getWorld().command(handler, commandName, args);
 				}
 				return null;
 			}
+			
+			
+
+			@Override
+			public Void visitAbortCommand(AbortCommand abort, Void param) {
+				// Get the handle that this command sent out originally
+				CommandHandler handler = commandHandlers.get(abort.getOriginalCommand());
+				// Tell the external world to abort
+				getWorld().commandAbort(handler);
+				return null;
+			}
+
 
 			@Override
 			public Void visitEndMacroStep(EndMacroStep end, Void param) {

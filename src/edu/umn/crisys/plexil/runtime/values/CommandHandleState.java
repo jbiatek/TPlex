@@ -7,14 +7,13 @@ import edu.umn.crisys.plexil.il.expr.ILType;
 
 public enum CommandHandleState implements PValue {
 	UNKNOWN,
-	COMMAND_ACCEPTED,
-	COMMAND_SUCCESS,
-	COMMAND_RCVD_BY_SYSTEM,
 	COMMAND_SENT_TO_SYSTEM,
+	COMMAND_ACCEPTED,
+	COMMAND_RCVD_BY_SYSTEM,
 	COMMAND_FAILED,
 	COMMAND_DENIED,
-	COMMAND_ABORTED,
-	COMMAND_ABORT_FAILED;
+	COMMAND_SUCCESS,
+	COMMAND_INTERFACE_ERROR;
 	
 	public boolean isKnown() {
 		return this != UNKNOWN;

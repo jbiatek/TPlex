@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il.expr;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import edu.umn.crisys.plexil.il.NodeUID;
 import edu.umn.crisys.plexil.il.PlexilExprDescription;
@@ -60,8 +61,8 @@ public class NamedCondition extends ILExprBase {
 	}
 
 	@Override
-	public Optional<PValue> eval() {
-		return theExpr.eval();
+	public Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper) {
+		return theExpr.eval(mapper);
 	}
 
 	@Override
@@ -75,14 +76,14 @@ public class NamedCondition extends ILExprBase {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(ILExpr e) {
+		if (this == e)
 			return true;
-		if (obj == null)
+		if (e == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != e.getClass())
 			return false;
-		NamedCondition other = (NamedCondition) obj;
+		NamedCondition other = (NamedCondition) e;
 		if (description != other.description)
 			return false;
 		if (uid == null) {

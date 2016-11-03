@@ -6,6 +6,8 @@ import java.util.List;
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 import edu.umn.crisys.plexil.runtime.values.BooleanValue;
 import edu.umn.crisys.plexil.runtime.values.IntegerValue;
@@ -14,11 +16,26 @@ import edu.umn.crisys.plexil.runtime.values.PValue;
 import edu.umn.crisys.plexil.runtime.values.RealValue;
 import edu.umn.crisys.plexil.runtime.values.StringValue;
 
-public class DebugOutputPlexilArray implements PValue {
+/**
+ * When we read PLEXIL debug output logs, we get basically a value dump straight
+ * out of the C++ interpreter. Most of it is fine, but one slightly tricky area
+ * is arrays. They are printed but without any useful type information. That's
+ * where this class comes in. It stores the values that PLEXIL gives us as 
+ * strings, not trying to parse them or cast them to a particular type. We can
+ * then perform a "non strict" check for equality. For example, booleans are 
+ * represented as 1 and 0,
+ * but of course so are integers. This will ensure that 1 and true match each
+ * other, and so on. 
+ * 
+ * @author jbiatek
+ *
+ */
+public class DebugOutputPlexilArray extends ILExprBase implements PValue {
 
     private String[] values;
     
     public DebugOutputPlexilArray(String valStr) {
+    	super(ILType.UNKNOWN);
         String justArray = valStr.replaceFirst("Array: \\[", "")
                                 .replaceFirst("\\]$", "");
         values = justArray.split(", ");
@@ -27,7 +44,16 @@ public class DebugOutputPlexilArray implements PValue {
         }
     }
     
-    public boolean equals(Object o) {
+    /**
+     * Check for equality loosely, since this array represents data gathered
+     * from PLEXIL debug output that isn't easy to know the type of. This
+     * method does things like assume 1 means either the number 1 or the 
+     * boolean true. 
+     * 
+     * @param o
+     * @return
+     */
+    public boolean nonStrictEquals(ILExpr o) {
         if (o instanceof List<?>) {
             List<?> arr = (List<?>) o;
             if (arr.size() != values.length) {
@@ -48,11 +74,24 @@ public class DebugOutputPlexilArray implements PValue {
             }
             
             return true;
-        } else if (o instanceof DebugOutputPlexilArray) {
-            return Arrays.equals(values, ((DebugOutputPlexilArray) o).values);
+        } else {
+        	return equals(o);
         }
-        return false;
+        	
     }
+    
+    @Override
+    public boolean equals(ILExpr e) {
+    	if (e instanceof DebugOutputPlexilArray) {
+            return Arrays.equals(values, ((DebugOutputPlexilArray) e).values);
+        }
+    	return false;
+    }
+    
+	@Override
+	public int hashCode() {
+		return 0;
+	}
 
     private boolean checkIndividual(String mine, PValue theirs) {
         if (mine.equals("<unknown>")) {
@@ -76,18 +115,14 @@ public class DebugOutputPlexilArray implements PValue {
         return false;
     }
     
-    public String toString() {
+    @Override
+    public String asString() {
         return Arrays.toString(values);
     }
 
 	@Override
 	public PBoolean equalTo(PValue o) {
 		return BooleanValue.get(equals(o));
-	}
-
-	@Override
-	public ILType getType() {
-		return ILType.UNKNOWN;
 	}
 
 	@Override
@@ -98,11 +133,6 @@ public class DebugOutputPlexilArray implements PValue {
 	@Override
 	public boolean isUnknown() {
 		return false;
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override
@@ -119,5 +149,7 @@ public class DebugOutputPlexilArray implements PValue {
 	public <P, R> R accept(ASTExprVisitor<P, R> v, P param) {
 		throw new RuntimeException("Why are you visiting this? It's an internal testing class.");
 	}
+
+
     
 }

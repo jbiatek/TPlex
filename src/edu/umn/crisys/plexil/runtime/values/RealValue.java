@@ -3,9 +3,11 @@ package edu.umn.crisys.plexil.runtime.values;
 import edu.umn.crisys.plexil.ast.expr.ASTExprVisitor;
 import edu.umn.crisys.plexil.ast.expr.PlexilType;
 import edu.umn.crisys.plexil.il.expr.ExprVisitor;
+import edu.umn.crisys.plexil.il.expr.ILExpr;
+import edu.umn.crisys.plexil.il.expr.ILExprBase;
 import edu.umn.crisys.plexil.il.expr.ILType;
 
-public class RealValue implements PReal {
+public class RealValue extends ILExprBase implements PReal {
 	
 	private final double value;
 	
@@ -20,6 +22,7 @@ public class RealValue implements PReal {
 	 * @param value
 	 */
 	public RealValue(double value) {
+		super(ILType.REAL);
 		this.value = value;
 	}
 	
@@ -150,12 +153,7 @@ public class RealValue implements PReal {
 	}
 
 	@Override
-	public ILType getType() {
-		return ILType.REAL;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
+	public boolean equals(ILExpr o) {
 		if (o instanceof PReal) {
 			PReal other = (PReal) o;
 			return other.isKnown() && this.value == other.getRealValue();
@@ -169,18 +167,13 @@ public class RealValue implements PReal {
 	}
 
 	@Override
-	public String toString() {
+	public String asString() {
 		return value+"";
 	}
 
 	@Override
 	public <P, R> R accept(ExprVisitor<P, R> visitor, P param) {
 		return visitor.visit(this, param);
-	}
-
-	@Override
-	public String asString() {
-		return toString();
 	}
 
 	@Override

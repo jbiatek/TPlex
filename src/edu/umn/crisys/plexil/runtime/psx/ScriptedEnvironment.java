@@ -15,6 +15,7 @@ import edu.umn.crisys.plexil.runtime.values.UnknownBool;
 import edu.umn.crisys.plexil.runtime.world.CommandHandler;
 import edu.umn.crisys.plexil.runtime.world.ExternalWorld;
 import edu.umn.crisys.plexil.runtime.world.UpdateHandler;
+import edu.umn.crisys.plexil.script.ast.CommandAbortAck;
 import edu.umn.crisys.plexil.script.ast.CommandAck;
 import edu.umn.crisys.plexil.script.ast.CommandReturn;
 import edu.umn.crisys.plexil.script.ast.Delay;
@@ -32,12 +33,11 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	private boolean handlePlexilPrintCommands = false;
 	private boolean throwExceptionIfDataIsMissing = false;
 
-	private Map<FunctionCall, PValue> lookup = new HashMap<FunctionCall, PValue>();
-	private List<Pair<CommandHandler,FunctionCall>> commandQueue = 
-			new ArrayList<Pair<CommandHandler,FunctionCall>>();
-	private List<Pair<CommandHandler,FunctionCall>> unhandledCommands =
-			new ArrayList<Pair<CommandHandler,FunctionCall>>();
-    private List<UpdateHandler> updaters = new ArrayList<UpdateHandler>();
+	private Map<FunctionCall, PValue> lookup = new HashMap<>();
+	private List<Pair<CommandHandler,FunctionCall>> commandQueue = new ArrayList<>();
+	private List<CommandHandler> commandAbortQueue = new ArrayList<>();
+	private List<Pair<CommandHandler,FunctionCall>> unhandledCommands = new ArrayList<>();
+    private List<UpdateHandler> updaters = new ArrayList<>();
     
     public void enableAutoResponseToPlexilPrintCommands() {
     	handlePlexilPrintCommands = true;
@@ -170,6 +170,12 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
         }
 	}
 	
+	@Override
+	public void commandAbort(CommandHandler caller) {
+		// Queue this handle for a future abort acknowledgement
+		commandAbortQueue.add(caller);
+	}
+
 	
 	/*
 	 * Visitor methods for script events:
@@ -203,6 +209,23 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 	}
 
 	@Override
+	public Void visitCommandAbortAck(CommandAbortAck abort, Object param) {
+		// Get the handle, first of all. 
+		CommandHandler handle = findCommandThatSent(abort.getCall()).first;
+		// Did we even hear about an abort?
+		if ( ! commandAbortQueue.contains(handle)) {
+			throw new RuntimeException("Command call "+abort.getCall()+" not waiting for an abort acknowledgement!");
+		}
+		// The exec does in fact remove these, you can't abort a call twice.
+		commandAbortQueue.remove(handle);
+		
+		// And finally, the actual ack.
+		handle.acknowledgeAbort();
+		
+		return null;
+	}
+	
+	@Override
 	public Void visitDelay(Delay d, Object param) {
 		// Don't need to do anything.
 		return null;
@@ -235,6 +258,8 @@ public class ScriptedEnvironment implements ExternalWorld, ScriptEventVisitor<Ob
 
         return null;
 	}
+
+
 
 
 }

@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.test.java;
 
 import static org.junit.Assert.*;
+import org.junit.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,8 +13,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import lustre.LustreTrace;
-
-import org.junit.*;
 
 import edu.umn.crisys.plexil.il.Plan;
 import edu.umn.crisys.plexil.il.simulator.ILSimulator;
@@ -75,7 +74,8 @@ public class RegressionTest {
 	 * Complex tests that were specified by hand
 	 */
 	private static final TestSuite[] MANUAL_TESTS = new TestSuite[] {
-		simple_drive_r
+		simple_drive_r,
+		produceSameNameTest("AbortCheck")
 	};
 	
 	private static TestSuite produceSameNameTest(String name) {

@@ -488,6 +488,8 @@ public class PlanToLustre {
 	
 	private static Type getLustreType(ILType t) {
 		switch (t) {
+		case NATIVE_BOOL: 
+			return NamedType.BOOL;
 		case BOOLEAN:
 			return LustreNamingConventions.PBOOLEAN;
 		case INTEGER:

@@ -1,6 +1,7 @@
 package edu.umn.crisys.plexil.runtime.values;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import edu.umn.crisys.plexil.ast.expr.PlexilExpr;
 import edu.umn.crisys.plexil.il.expr.ILExpr;
@@ -19,9 +20,11 @@ public interface PValue extends ILExpr, PlexilExpr {
 
 	public abstract ILType getType();
 
-	public default Optional<PValue> eval() {
-		return Optional.of(this);
-	}
+    public default Optional<PValue> eval(Function<ILExpr, Optional<PValue>> mapper) {
+    	// We don't need a mapper, these all are static.
+    	return Optional.of(this);
+    }
+
 	
 	/**
 	 * Performs, essentially, Java's equals() operator but with PLEXIL logic. 

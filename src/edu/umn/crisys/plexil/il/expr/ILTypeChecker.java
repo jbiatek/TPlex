@@ -3,6 +3,7 @@ package edu.umn.crisys.plexil.il.expr;
 import java.util.List;
 
 import edu.umn.crisys.plexil.il.Plan;
+import edu.umn.crisys.plexil.il.action.AbortCommand;
 import edu.umn.crisys.plexil.il.action.AlsoRunNodesAction;
 import edu.umn.crisys.plexil.il.action.AssignAction;
 import edu.umn.crisys.plexil.il.action.CommandAction;
@@ -162,8 +163,16 @@ public class ILTypeChecker extends ILExprVisitor<ILType, Void> implements ILActi
 	@Override
 	public Void visitCommand(CommandAction cmd, Void param) {
 		typeCheck(cmd.getHandle(), ILType.COMMAND_HANDLE);
+		typeCheck(cmd.getAckFlag(), ILType.NATIVE_BOOL);
 		cmd.getPossibleLeftHandSide().ifPresent(
 				lhs -> checkTypeIsLegalInIL(lhs.getType()));
+		return null;
+	}
+	
+	@Override
+	public Void visitAbortCommand(AbortCommand abort, Void param) {
+		// No expressions, but it does contain a reference to another action
+		visitCommand(abort.getOriginalCommand(), param);
 		return null;
 	}
 
