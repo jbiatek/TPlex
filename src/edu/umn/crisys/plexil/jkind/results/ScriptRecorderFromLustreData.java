@@ -52,10 +52,20 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 		lustreStepCounter++;
 	}
 	
+	private void doEndOfMacroStep() {
+		log("Macro step ended. Committing all generated events...");
+		// All the events that occurred last step are done. Add them to the 
+		// script we're building and move on. 
+		this.addEvent(currentStepEvents.getCleanestEvent());
+		currentStepEvents = new Simultaneous();
+		lookupsAlreadyRespondedTo.clear();		
+	}
+	
 	@Override
 	public void endOfMacroStep(JavaPlan plan) {
 		// This is where a JavaPlexilScript applies its events. We are not 
-		// doing that, so override this with nothing. 
+		// doing that, so override this with nothing.
+		doEndOfMacroStep();
 	}
 	
 	@Override
@@ -67,19 +77,14 @@ public class ScriptRecorderFromLustreData extends JavaPlexilScript
 			firstStepAlreadyStarted = true;
 			return;
 		}
-		
+	
 		// We're running in a simulation, right? 
 		if ( ! (plan instanceof ILSimulator)) {
 			throw new RuntimeException("Script recorder only runs in an ILSimulator");
 		}
 		ILSimulator sim = (ILSimulator) plan;
 
-		log("Macro step ended. Committing all generated events...");
-		// All the events that occurred last step are done. Add them to the 
-		// script we're building and move on. 
-		this.addEvent(currentStepEvents.getCleanestEvent());
-		currentStepEvents = new Simultaneous();
-		lookupsAlreadyRespondedTo.clear();
+		// doEndOfMacroStep();
 		
 		// Lookups will change during the step. 
 		// We need to respond to commands that got responses in Lustre.

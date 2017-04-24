@@ -110,7 +110,10 @@ public class TPlex {
 	
 	@Parameter(names = "--no-optimizations", description="Disable all optimizations.")
 	public boolean skipAllOptimizations = false;
-	
+
+	@Parameter(names = "--noUnknownLookups", description="Force lookup values to be known.")
+	public boolean noUnknownLookups = false;
+
 	@Parameter(names = "--no-biasing", description="Disable the optimization which biases 3-valued logic expressions.")
 	public boolean noBiasing = false;
 	
@@ -612,7 +615,7 @@ public class TPlex {
 	private PlanToLustre getLustreTranslator(Plan p) {
 		HackOutArrayAssignments.hack(p);
 		
-		PlanToLustre p2l = new PlanToLustre(p);
+		PlanToLustre p2l = new PlanToLustre(p, noUnknownLookups);
 		p2l.addGenericStrings(lustreGenericStringsToAdd);
 		
 		
@@ -638,6 +641,7 @@ public class TPlex {
 		for (IncrementalTrace incTrace : searcher.getChosenTraces()) {
 			// We need the trace *with* internal variables:
 			LustreTrace fullTrace = JKindResultUtils.simulate(lustreProgram, incTrace.getFullTrace());
+			System.out.println("Processing: " + searcher.getFilenameUsedFor(incTrace).orElse("???"));
 			Optional<PlexilScript> script = JKindResultUtils.translateToScript(
 					searcher.getFilenameUsedFor(incTrace).get(), 
 					fullTrace, 

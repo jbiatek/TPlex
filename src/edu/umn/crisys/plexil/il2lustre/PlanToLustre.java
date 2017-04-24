@@ -62,7 +62,9 @@ public class PlanToLustre {
 		NONE, EXECUTE
 	}
 	
-	private Plan p;
+	private final Plan p;
+	
+	private final boolean lookupsKnown;
 	
 	private ProgramBuilder pb;
 	private NodeBuilder nb;
@@ -71,10 +73,13 @@ public class PlanToLustre {
 	private ILExprToLustre ilToLustre = new ILExprToLustre(reverseMap);
 	private LustrePropertyGenerator properties;
 	
-	
-	public PlanToLustre(Plan p) {
+
+	public PlanToLustre(Plan p, boolean lookupsKnown) {
 		this.p = p;
+		this.lookupsKnown = lookupsKnown;
 	}
+
+	public PlanToLustre(Plan p) { this(p, false); }
 	
 	public Plan getILPlan() {
 		return p;
@@ -260,9 +265,11 @@ public class PlanToLustre {
 			builderKnown.addAssignmentBetweenMacro(LustreUtil.TRUE, id(rawKnown));
 			nb.addEquation(builderKnown.buildEquation());
 			
+			// Eliminate unknowns in lookup values if so directed by user
+			if (lookupsKnown) nb.addAssertion(new IdExpr(rawKnown));
+			
 			// Write this down for reverse mapping later
 			reverseMap.addLookupMapping(constrainedValue, lookup.getName());
-
 		} else {
 			String constrained = LustreNamingConventions.getLookupId(lookupName);
 			String raw = LustreNamingConventions.getRawLookupId(lookupName);
@@ -277,7 +284,10 @@ public class PlanToLustre {
 			PlexilEquationBuilder peb = new PlexilEquationBuilder(constrained, id(raw));
 			peb.addAssignmentBetweenMacro(LustreUtil.TRUE, id(raw));
 			nb.addEquation(peb.buildEquation());
-			
+
+			// Eliminate unknowns in lookup values if so directed by user
+			if (lookupsKnown) nb.addAssertion(new BinaryExpr(new IdExpr(raw), BinaryOp.NOTEQUAL, id("p_unknown")));
+
 			// Write this down for reverse mapping later
 			reverseMap.addLookupMapping(constrained, lookup.getName());
 		}
